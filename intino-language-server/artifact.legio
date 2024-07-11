@@ -4,6 +4,8 @@ Artifact(groupId = "io.intino", version = "1.0.0") intino-language-server
 	Imports
 		Compile("org.eclipse.lsp4j", "org.eclipse.lsp4j", "0.23.1")
         Compile("org.eclipse.lsp4j", "org.eclipse.lsp4j.jsonrpc", "0.23.1")
+        Compile("io.intino.tara", "builder", "1.2.4")
+        Compile("tara.dsl", "proteo", "1.0.4")
 
 		Test("junit", "junit", "4.13.2")
 	Package(mode = ModulesAndLibrariesLinkedByManifest)
