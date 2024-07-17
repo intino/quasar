@@ -1,0 +1,7 @@
+TARGETS:{editor}
+
++ workspaces in "workspaces"
+    - definition(name) in "{name}/definition.json"
+    - documents(name) in "{name}/documents"
+
++ tmp

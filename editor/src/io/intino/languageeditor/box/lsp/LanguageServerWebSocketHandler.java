@@ -1,3 +1,5 @@
+package io.intino.languageeditor.box.lsp;
+
 import io.intino.alexandria.logger.Logger;
 import io.intino.ls.DocumentManager;
 import io.intino.ls.IntinoLanguageServer;
@@ -24,36 +26,26 @@ import static java.nio.ByteBuffer.wrap;
 
 @WebSocket
 public class LanguageServerWebSocketHandler {
-	private final LanguageServer server;
-	private Session session;
-	private final ExecutorService executorService = Executors.newCachedThreadPool();
 	private PipedInputStream input;
 	private PipedOutputStream output;
+	private LanguageServer server;
+	private final ExecutorService executorService = Executors.newCachedThreadPool();
 
-	public LanguageServerWebSocketHandler(Tara dsl, File workspace) throws IOException {
-		server = new IntinoLanguageServer(new Proteo(), new DocumentManager(workspace));
+	public LanguageServerWebSocketHandler() {
+	}
+
+	public void init(LanguageServer server) throws IOException {
+		this.server = server;
 	}
 
 	@OnWebSocketConnect
 	public void onConnect(Session session) {
-		this.session = session;
 		try {
 			input = new PipedInputStream();
 			output = new PipedOutputStream(input);
-			this.executorService.submit(this::notificationThread);
+			executorService.submit(() -> notificationThread(session));
 			Launcher<LanguageClient> serverLauncher = LSPLauncher.createServerLauncher(server, input, output);
 			serverLauncher.startListening();
-		} catch (Exception e) {
-			Logger.error(e);
-		}
-	}
-
-	private void notificationThread() {
-		try {
-			byte[] buffer = new byte[1024];
-			int bytesRead;
-			while ((bytesRead = input.read(buffer)) != -1)
-				this.session.getRemote().sendBytes(wrap(buffer, 0, bytesRead));
 		} catch (Exception e) {
 			Logger.error(e);
 		}
@@ -72,5 +64,16 @@ public class LanguageServerWebSocketHandler {
 	@OnWebSocketClose
 	public void onClose(int statusCode, String reason) {
 		this.executorService.shutdown();
+	}
+
+	private void notificationThread(Session session) {
+		try {
+			byte[] buffer = new byte[1024];
+			int bytesRead;
+			while ((bytesRead = input.read(buffer)) != -1)
+				session.getRemote().sendBytes(wrap(buffer, 0, bytesRead));
+		} catch (Exception e) {
+			Logger.error(e);
+		}
 	}
 }

@@ -1,7 +1,27 @@
 dsl Legio
 
-Artifact(groupId = "io.intino", version = "1.0.0") editor
+Artifact(groupId = "io.intino", version = "1.0.0") language-editor
+	Dsl("Konos", "12.2.4") > Builder(generationPackage = "box")
+	Archetype("io.intino", "editor-archetype", "1.0.0-SNAPSHOT")
+
 	Imports
-		Test(groupId = "junit", artifactId = "junit", version = "4.13")
-	Package(mode = ModulesAndLibrariesLinkedByManifest)
+		Compile("io.intino.alexandria", "ui-framework", "5.1.25")
+		Compile("io.intino.alexandria", "core-framework", "2.2.0")
+		Compile("io.intino.alexandria", "logger4j", "1.0.1")
+		Compile("io.intino", "language-server", "1.0.0-SNAPSHOT")
+
+		Web("io.intino.lsp", "editor-elements", "1.0.0")
+
+		Test("junit", "junit", "4.13")
+		Web(groupId = "io.intino", artifactId = "editor-elements", version = "1.0.0")
+
+	Package(mode = ModulesAndLibrariesLinkedByManifest) as Runnable(mainClass="io.intino.languageeditor.box.Main")
+
+	Parameter("home")
+	Parameter("port")
+	Parameter("title")
+
 RunConfiguration local
+	Argument("home", "./temp")
+	Argument("port", "8080")
+	Argument("title", "Intino Language editor")

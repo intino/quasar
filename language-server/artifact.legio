@@ -1,6 +1,7 @@
 dsl Legio
 
-Artifact("io.intino", "1.0.0") language-server
+Artifact("io.intino", "1.0.0-SNAPSHOT") language-server
+
 	Imports
 		Compile("org.eclipse.lsp4j", "org.eclipse.lsp4j", "0.23.1")
         Compile("org.eclipse.lsp4j", "org.eclipse.lsp4j.jsonrpc", "0.23.1")
@@ -8,9 +9,9 @@ Artifact("io.intino", "1.0.0") language-server
         Compile("io.intino.alexandria", "logger", "2.1.0")
         Compile("io.intino.alexandria", "ui-framework", "5.1.25")
         Compile("tara.dsl", "proteo", "1.0.4")
+
 		Test("junit", "junit", "4.13.2")
 
-
-
 	Package(mode = ModulesAndLibrariesLinkedByManifest)
+
 RunConfiguration local

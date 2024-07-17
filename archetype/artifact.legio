@@ -1,0 +1,13 @@
+dsl Legio
+
+Artifact("io.intino", "1.0.0-SNAPSHOT") language-archetype
+	Package(mode = ModulesAndLibrariesLinkedByManifest)
+	IntinoPlugin("io.intino.archetype", "archetype-plugin", "2.0.1", Export)
+
+	Distribution
+		Artifactory("monentia-maven")
+			Release("https://artifactory.monentia.es/artifactory/libs-release-local")
+			Snapshot("https://artifactory.monentia.es/artifactory/libs-snapshot-local")
+
+Repository("intino-maven")
+	Release("https://artifactory.intino.io/artifactory/releases")
