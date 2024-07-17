@@ -3,8 +3,6 @@ package io.intino.ls;
 import io.intino.alexandria.logger.Logger;
 import io.intino.tara.Checker;
 import io.intino.tara.Tara;
-import io.intino.tara.builder.FileSourceProvider;
-import io.intino.tara.builder.SourceProvider;
 import io.intino.tara.builder.TaraCompilerRunner;
 import io.intino.tara.builder.core.CompilerConfiguration;
 import io.intino.tara.language.grammar.TaraGrammar;
@@ -16,10 +14,9 @@ import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.InputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -64,22 +61,26 @@ public class IntinoDocumentService implements TextDocumentService {
 	}
 
 	@Override
-	public void didSave(DidSaveTextDocumentParams didSaveTextDocumentParams) {
-
+	public void didSave(DidSaveTextDocumentParams params) {
+		documentManager.upsertDocument(URI.create(params.getTextDocument().getUri()), params.getText());
 	}
 
 	@Override
 	public CompletableFuture<SemanticTokens> semanticTokensFull(SemanticTokensParams params) {
 		var data = new ArrayList<Integer>();
-		String text = documentManager.getDocumentText(params.getTextDocument().getUri());
-		TaraLexer lexer = new TaraLexer(CharStreams.fromString(text));
-		lexer.reset();
-		var parser = new TaraGrammar(new CommonTokenStream(lexer));
-		SemanticTokenVisitor listener = new SemanticTokenVisitor(parser, data);
-		new ParseTreeWalker().walk(listener, parser.root());
 		var result = new SemanticTokens();
-		result.setData(data.stream().mapToInt(i -> i).boxed().toList());
-		return CompletableFuture.completedFuture(result);
+		try {
+			InputStream content = documentManager.getDocumentText(URI.create(params.getTextDocument().getUri()));
+			TaraLexer lexer = new TaraLexer(CharStreams.fromStream(content));
+			lexer.reset();
+			var parser = new TaraGrammar(new CommonTokenStream(lexer));
+			SemanticTokenVisitor listener = new SemanticTokenVisitor(parser, data);
+			new ParseTreeWalker().walk(listener, parser.root());
+			result.setData(data.stream().mapToInt(i -> i).boxed().toList());
+		} catch (IOException e) {
+			Logger.error(e);
+		}
+		return completedFuture(result);
 	}
 
 	@Override

@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.net.http.WebSocket;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -53,10 +54,10 @@ public class LauncherTest {
 		PipedOutputStream outClient = new PipedOutputStream();
 		PipedInputStream inServer = new PipedInputStream();
 		PipedOutputStream outServer = new PipedOutputStream();
-		File file = new File();
+		File workspace = new File("./workspace");
 		inClient.connect(outServer);
 		outClient.connect(inServer);
-		server = new IntinoLanguageServer(new Proteo(), new DocumentManager(file));
+		server = new IntinoLanguageServer(new Proteo(), new DocumentManager(workspace));
 		serverLauncher = LSPLauncher.createServerLauncher(server, inServer, outServer);
 		serverListening = serverLauncher.startListening();
 

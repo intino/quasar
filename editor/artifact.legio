@@ -1,0 +1,8 @@
+dsl Legio
+
+Artifact(groupId = "io.intino", version = "1.0.0") editor
+	Imports
+		Test(groupId = "junit", artifactId = "junit", version = "4.13")
+
+	Package(mode = ModulesAndLibrariesLinkedByManifest)
+RunConfiguration local

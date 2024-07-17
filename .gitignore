@@ -1,3 +1,5 @@
 .idea/libraries
 .idea/workspace.xml
 .idea/uiDesigner.xml
+# Project exclude paths
+/out/
