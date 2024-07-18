@@ -3,3 +3,10 @@
 .idea/uiDesigner.xml
 # Project exclude paths
 /out/
+/temp/
+/editor-elements/node_modules/
+gen/
+package.json
+.intino/
+package-lock.json
+webpack.config.js
