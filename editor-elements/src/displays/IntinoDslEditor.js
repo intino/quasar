@@ -44,7 +44,7 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
                 enableSnippets={true}
                 enableBasicAutocompletion={true}
                 enableLiveAutoComplete={true}
-                setOptions={{showLineNumbers: true, tabSize: 2 }}
+                setOptions={{showLineNumbers: true, tabSize: 4 }}
              />
         );
     };

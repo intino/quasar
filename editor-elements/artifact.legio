@@ -2,7 +2,7 @@ dsl Legio
 
 Artifact(groupId = "io.intino", version = "1.0.0") editor-elements
 	WebImports
-		WebArtifact("io.intino.alexandria", "ui-framework-elements", "5.1.25") alexandria-ui-elements
+		WebArtifact("io.intino.alexandria", "ui-framework-elements", "5.1.26") alexandria-ui-elements
 		WebComponent("react-complex-tree", "^2.4.4")
 		WebComponent("ace-linters", "^1.2.3")
 

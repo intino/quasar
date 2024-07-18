@@ -4,8 +4,8 @@ import io.intino.tara.Tara;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.services.*;
 
-import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static io.intino.ls.IntinoSemanticTokens.tokenModifiers;
@@ -28,6 +28,18 @@ public class IntinoLanguageServer implements LanguageServer, LanguageClientAware
 		capabilities.setSemanticTokensProvider(semanticTokensWithRegistrationOptions());
 		capabilities.setDocumentHighlightProvider(new DocumentHighlightOptions());
 		capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
+		WorkspaceServerCapabilities workspaceCaps = new WorkspaceServerCapabilities();
+		WorkspaceFoldersOptions workspaceFolders = new WorkspaceFoldersOptions();
+		workspaceFolders.setChangeNotifications(true);
+		workspaceFolders.setSupported(true);
+		workspaceCaps.setWorkspaceFolders(workspaceFolders);
+		FileOperationsServerCapabilities fileCaps = new FileOperationsServerCapabilities();
+		FileOperationOptions fileOptions = new FileOperationOptions();
+		FileOperationFilter fileFilter = new FileOperationFilter();
+		fileFilter.setPattern(new FileOperationPattern("*.tara"));
+		fileOptions.setFilters(List.of(fileFilter));
+		fileCaps.setDidCreate(fileOptions);
+		capabilities.setWorkspace(workspaceCaps);
 		return completedFuture(new InitializeResult(capabilities));
 	}
 
@@ -42,7 +54,17 @@ public class IntinoLanguageServer implements LanguageServer, LanguageClientAware
 
 	@Override
 	public WorkspaceService getWorkspaceService() {
-		return null;
+		return new WorkspaceService() {
+			@Override
+			public void didChangeConfiguration(DidChangeConfigurationParams params) {
+				System.out.println(params);
+			}
+
+			@Override
+			public void didChangeWatchedFiles(DidChangeWatchedFilesParams params) {
+				System.out.println(params);
+			}
+		};
 	}
 
 
