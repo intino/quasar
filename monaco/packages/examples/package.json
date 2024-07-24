@@ -1,0 +1,126 @@
+{
+  "name": "monaco-languageclient-examples",
+  "version": "2024.7.3",
+  "description": "Monaco Language client examples",
+  "author": {
+    "name": "TypeFox GmbH",
+    "url": "http://www.typefox.io"
+  },
+  "homepage": "https://github.com/TypeFox/monaco-languageclient/blob/main/packages/examples/README.md",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TypeFox/monaco-languageclient.git",
+    "directory": "packages/examples"
+  },
+  "bugs": {
+    "url": "https://github.com/TypeFox/monaco-languageclient/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "default": "./dist/node.js"
+    },
+    "./json-client": {
+      "types": "./dist/json/client/wrapperWs.d.ts",
+      "default": "./dist/json/client/wrapperWs.js"
+    },
+    "./python-client": {
+      "types": "./dist/python/client/main.d.ts",
+      "default": "./dist/python/client/main.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      ".": [
+        "dist/index"
+      ],
+      "node": [
+        "dist/node"
+      ],
+      "json-client": [
+        "dist/json/client/wrapperWs"
+      ],
+      "python-client": [
+        "dist/python/client/main"
+      ]
+    }
+  },
+  "dependencies": {
+    "@codingame/monaco-vscode-configuration-service-override": "~7.0.7",
+    "@codingame/monaco-vscode-files-service-override": "~7.0.7",
+    "@codingame/monaco-vscode-groovy-default-extension": "~7.0.7",
+    "@codingame/monaco-vscode-keybindings-service-override": "~7.0.7",
+    "@codingame/monaco-vscode-lifecycle-service-override": "~7.0.7",
+    "@codingame/monaco-vscode-localization-service-override": "~7.0.7",
+    "@codingame/monaco-vscode-java-default-extension": "~7.0.7",
+    "@codingame/monaco-vscode-javascript-default-extension": "~7.0.7",
+    "@codingame/monaco-vscode-json-default-extension": "~7.0.7",
+    "@codingame/monaco-vscode-python-default-extension": "~7.0.7",
+    "@codingame/monaco-vscode-standalone-languages": "~7.0.7",
+    "@codingame/monaco-vscode-standalone-typescript-language-features": "~7.0.7",
+    "@codingame/monaco-vscode-standalone-json-language-features": "~7.0.7",
+    "@codingame/monaco-vscode-textmate-service-override": "~7.0.7",
+    "@codingame/monaco-vscode-theme-defaults-default-extension": "~7.0.7",
+    "@codingame/monaco-vscode-theme-service-override": "~7.0.7",
+    "@codingame/monaco-vscode-typescript-basics-default-extension": "~7.0.7",
+    "@codingame/monaco-vscode-typescript-language-features-default-extension": "~7.0.7",
+    "@typefox/monaco-editor-react": "~4.4.0",
+    "express": "~4.19.2",
+    "langium": "~3.1.2",
+    "monaco-editor": "npm:@codingame/monaco-vscode-editor-api@~7.0.7",
+    "monaco-editor-wrapper": "~5.4.0",
+    "monaco-languageclient": "~8.7.0",
+    "pyright": "~1.1.371",
+    "react": "~18.3.1",
+    "react-dom": "~18.3.1",
+    "request-light": "~0.8.0",
+    "vscode": "npm:@codingame/monaco-vscode-api@~7.0.7",
+    "vscode-json-languageservice": "~5.4.0",
+    "vscode-languageclient": "~9.0.1",
+    "vscode-languageserver": "~9.0.1",
+    "vscode-uri": "~3.0.8",
+    "vscode-ws-jsonrpc": "~3.3.2",
+    "ws": "~8.18.0"
+  },
+  "devDependencies": {
+    "@types/express": "~4.17.21",
+    "@types/ws": "~8.5.11",
+    "langium-cli": "~3.1.0",
+    "ts-node": "~10.9.1",
+    "vscode-languageserver-types": "~3.17.5"
+  },
+  "volta": {
+    "node": "20.15.1",
+    "npm": "10.7.0"
+  },
+  "files": [
+    "dist",
+    "src",
+    "*.html",
+    "*.ts",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "clean": "vite-node ../../scripts/clean.ts --relativePath packages/examples --recursive --paths dist *.tsbuildinfo resources/vsix",
+    "compile": "tsc --build tsconfig.src.json",
+    "resources:download": "vite-node ./build/downloadResources.mts",
+    "build:msg": "echo Building main examples:",
+    "build": "npm run build:msg && npm run clean && npm run resources:download && npm run compile",
+    "build:bundle": "vite --config vite.bundle.config.ts build",
+    "start:server:json": "vite-node src/json/server/direct.ts",
+    "start:server:python": "vite-node src/python/server/direct.ts",
+    "start:server:groovy": "vite-node src/groovy/server/direct.ts",
+    "start:server:jdtls": "vite-node src/eclipse.jdt.ls/server/direct.ts",
+    "langium:generate": "langium generate --file ./src/langium/statemachine/config/langium-config.json"
+  }
+}
