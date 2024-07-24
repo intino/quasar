@@ -135,3 +135,4 @@ Schema intinoDslEditorFile
 	Attribute uri as Text
 	Attribute content as Text
 	Attribute language as Text
+	Attribute extension as Text

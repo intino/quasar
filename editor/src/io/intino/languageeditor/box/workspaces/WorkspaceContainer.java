@@ -58,6 +58,10 @@ public class WorkspaceContainer {
 			return name;
 		}
 
+		public String extension() {
+			return extensionOf(name);
+		}
+
 		public List<String> parents() {
 			return parents;
 		}

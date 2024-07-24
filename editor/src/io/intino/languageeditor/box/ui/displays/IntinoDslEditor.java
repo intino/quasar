@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 
 public class IntinoDslEditor extends AbstractIntinoDslEditor<LanguageEditorBox> {
 	private String name;
+	private String extension;
 	private File content;
 	private String language;
 	private Consumer<Boolean> fileModifiedListener;
@@ -20,8 +21,9 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<LanguageEditorBox> 
 		super(box);
 	}
 
-	public void file(String name, File content, String language) {
+	public void file(String name, String extension, File content, String language) {
 		this.name = name;
+		this.extension = extension;
 		this.content = content;
 		this.language = language;
 	}
@@ -55,7 +57,7 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<LanguageEditorBox> 
 	}
 
 	private IntinoDslEditorFile file() {
-		return new IntinoDslEditorFile().name(name).uri("file://" + content.getPath()).content(content()).language(language);
+		return new IntinoDslEditorFile().name(name).uri("file://" + content.getPath()).extension(extension).content(content()).language(language);
 	}
 
 	private String content() {

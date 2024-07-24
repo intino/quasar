@@ -34,10 +34,7 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
 	    //const wsUrl = "ws://localhost:30000/sampleServer";
         return {
             webSocketUrl: wsUrl,
-            name: this.state.file.name,
-            uri: this.state.file.uri,
-            content: this.state.file.content,
-            language: this.state.file.language,
+            file: this.state.file,
         }
     };
 

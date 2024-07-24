@@ -42,7 +42,7 @@ const config = {
     resolve: {
         extensions: ['.ts', '.js', '.json', '.ttf']
     },
-    mode: 'development',
+    mode: 'production',
     devtool: 'source-map'
 };
 

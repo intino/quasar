@@ -10,6 +10,10 @@ import getThemeServiceOverride from '@codingame/monaco-vscode-theme-service-over
 import getTextmateServiceOverride from '@codingame/monaco-vscode-textmate-service-override';
 import '@codingame/monaco-vscode-theme-defaults-default-extension';
 import '@codingame/monaco-vscode-json-default-extension';
+import '@codingame/monaco-vscode-java-default-extension';
+import '@codingame/monaco-vscode-javascript-default-extension';
+import '@codingame/monaco-vscode-groovy-default-extension';
+import '@codingame/monaco-vscode-python-default-extension';
 import { MonacoLanguageClient } from 'monaco-languageclient';
 import { WebSocketMessageReader, WebSocketMessageWriter, toSocket } from 'vscode-ws-jsonrpc';
 import { CloseAction, ErrorAction } from 'vscode-languageclient';
@@ -32,25 +36,27 @@ export const runClient = async () => {
             debugLogging: true,
         }
     });
-    // register language with Monaco
+    const parameters = window.parent.intinoDslEditorParameters();
+    const file = parameters.file;
     monaco.languages.register({
-        id: window.parent.intinoDslEditorParameters().language,
-        extensions: ['.' + window.parent.intinoDslEditorParameters().language],
-        aliases: [window.parent.intinoDslEditorParameters().language.toUpperCase(), window.parent.intinoDslEditorParameters().language],
+        id: file.language.toLowerCase(),
+        extensions: ['.' + file.extension],
+        aliases: [file.language.toUpperCase(), file.language],
     });
     // create monaco editor
     const editor = monaco.editor.create(document.getElementById('monaco-editor-root'), {
         automaticLayout: true,
         wordBasedSuggestions: 'off'
     });
-    const parameters = window.parent.intinoDslEditorParameters();
-    const model = monaco.editor.createModel(parameters.content, parameters.language, monaco.Uri.parse(parameters.uri));
+    const model = monaco.editor.createModel(file.content, file.language.toLowerCase(), monaco.Uri.parse(file.uri));
     editor.setModel(model);
     window.parent.intinoDslEditorSetup(editor);
     initWebSocketAndStartClient(parameters.webSocketUrl);
 };
 /** parameterized version , support all languageId */
 export const initWebSocketAndStartClient = (url) => {
+    const parameters = window.parent.intinoDslEditorParameters();
+    if (parameters.file.language != "tara") return;
     const webSocket = new WebSocket(url);
     webSocket.onopen = () => {
         const socket = toSocket(webSocket);
