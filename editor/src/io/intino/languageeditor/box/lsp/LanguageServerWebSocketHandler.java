@@ -14,20 +14,16 @@ import org.eclipse.lsp4j.services.LanguageServer;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @WebSocket
 public class LanguageServerWebSocketHandler {
 	private LanguageServer server;
-	private final ExecutorService executorService = Executors.newCachedThreadPool();
+	private ExecutorService executorService;
 	private PipedOutputStream clientOutput;
 	private PipedInputStream serverInput;
 	private final Object monitor = new Object();
-
-	public LanguageServerWebSocketHandler() {
-	}
 
 	public void init(LanguageServer server) throws IOException {
 		this.server = server;
@@ -40,6 +36,7 @@ public class LanguageServerWebSocketHandler {
 				PipedInputStream clientInput = new PipedInputStream();
 				clientOutput = new PipedOutputStream(clientInput);
 				serverInput = new PipedInputStream();
+				executorService = Executors.newSingleThreadExecutor();
 				executorService.submit(() -> notificationThread(session));
 				Launcher<LanguageClient> serverLauncher = LSPLauncher.createServerLauncher(server, clientInput, new PipedOutputStream(serverInput));
 				serverLauncher.startListening();
@@ -71,7 +68,9 @@ public class LanguageServerWebSocketHandler {
 		try {
 			byte[] buffer = new byte[1024];
 			while (serverInput.read(buffer) != -1) {
-				session.getRemote().sendString(new String(buffer).trim());
+				String content = new String(buffer);
+				content = content.substring(content.indexOf("\n"));
+				session.getRemote().sendString(content.trim());
 			}
 		} catch (Throwable e) {
 			Logger.error(e);
