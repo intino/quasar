@@ -5,7 +5,7 @@ Artifact(groupId = "io.intino", version = "1.0.0") language-editor
 	Archetype("io.intino", "editor-archetype", "1.0.0-SNAPSHOT")
 
 	Imports
-		Compile("io.intino.alexandria", "ui-framework", "5.1.25")
+		Compile("io.intino.alexandria", "ui-framework", "5.1.27")
 		Compile("io.intino.alexandria", "core-framework", "2.2.0")
 		Compile("io.intino.alexandria", "logger4j", "1.0.1")
 		Compile("io.intino", "language-server", "1.0.0-SNAPSHOT")

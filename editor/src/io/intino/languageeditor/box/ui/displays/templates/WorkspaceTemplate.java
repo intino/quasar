@@ -19,6 +19,7 @@ import java.util.Map;
 public class WorkspaceTemplate extends AbstractWorkspaceTemplate<LanguageEditorBox> {
 	private Workspace workspace;
 	private WorkspaceContainer.File selectedFile;
+	private WorkspaceContainer.File selectedNewFile;
 	private WorkspaceContainer workspaceContainer;
 	private boolean selectedFileIsModified = false;
 
@@ -38,7 +39,7 @@ public class WorkspaceTemplate extends AbstractWorkspaceTemplate<LanguageEditorB
 		continueWithoutSavingFile.onExecute(e -> {
 			fileModifiedDialog.close();
 			selectedFileIsModified = false;
-			open(selectedFile);
+			open(selectedNewFile);
 		});
 	}
 
@@ -88,6 +89,7 @@ public class WorkspaceTemplate extends AbstractWorkspaceTemplate<LanguageEditorB
 		editor.onFileModified(e -> {
 			if (selectedFileIsModified) return;
 			selectedFileIsModified = true;
+			fileSavedMessage.visible(false);
 			refreshFileEditorToolbar();
 		});
 		editor.onSaveFile(this::saveFile);
@@ -132,6 +134,7 @@ public class WorkspaceTemplate extends AbstractWorkspaceTemplate<LanguageEditorB
 
 	private void open(WorkspaceContainer.File file) {
 		if (selectedFileIsModified) {
+			selectedNewFile = file;
 			fileModifiedDialog.open();
 			return;
 		}

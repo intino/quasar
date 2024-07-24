@@ -87,7 +87,7 @@ Template workspaceTemplate as Relative(height=100%, width=100%)
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addFolderDialog)
             Button(title="Accept", size=Small, highlight=Fill) addFolder as Action Readonly
 
-	Dialog(title="File modified") fileModifiedDialog as Absolute(width=300px, height=200px)
+	Dialog(title="File modified") fileModifiedDialog as Absolute(width=500px, height=180px)
         Block as Relative(height=100%, offsetHeight=40px)
         	Text(value="File have been modified. If continue, you will loss changes in file. Are you want to continue?", translate=true)
 		Divider

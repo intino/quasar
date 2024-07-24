@@ -24,6 +24,7 @@ public class LanguageServerWebSocketHandler {
 	private final ExecutorService executorService = Executors.newCachedThreadPool();
 	private PipedOutputStream clientOutput;
 	private PipedInputStream serverInput;
+	private final Object monitor = new Object();
 
 	public LanguageServerWebSocketHandler() {
 	}
@@ -35,12 +36,14 @@ public class LanguageServerWebSocketHandler {
 	@OnWebSocketConnect
 	public void onConnect(Session session) {
 		try {
-			PipedInputStream clientInput = new PipedInputStream();
-			clientOutput = new PipedOutputStream(clientInput);
-			serverInput = new PipedInputStream();
-//			executorService.submit(() -> notificationThread(session));
-			Launcher<LanguageClient> serverLauncher = LSPLauncher.createServerLauncher(server, clientInput, new PipedOutputStream(serverInput));
-			serverLauncher.startListening();
+			synchronized (monitor) {
+				PipedInputStream clientInput = new PipedInputStream();
+				clientOutput = new PipedOutputStream(clientInput);
+				serverInput = new PipedInputStream();
+				executorService.submit(() -> notificationThread(session));
+				Launcher<LanguageClient> serverLauncher = LSPLauncher.createServerLauncher(server, clientInput, new PipedOutputStream(serverInput));
+				serverLauncher.startListening();
+			}
 		} catch (Exception e) {
 			Logger.error(e);
 		}
@@ -59,20 +62,18 @@ public class LanguageServerWebSocketHandler {
 
 	@OnWebSocketClose
 	public void onClose(int statusCode, String reason) {
-		this.executorService.shutdown();
+		synchronized (monitor) {
+			this.executorService.shutdown();
+		}
 	}
 
 	private void notificationThread(Session session) {
 		try {
 			byte[] buffer = new byte[1024];
-			int bytesRead;
-			StringBuilder builder = new StringBuilder();
-			while ((bytesRead = serverInput.read(buffer)) != -1) {
-				builder.append((char) bytesRead);
+			while (serverInput.read(buffer) != -1) {
+				session.getRemote().sendString(new String(buffer).trim());
 			}
-			System.out.println(builder.toString());
-			session.getRemote().sendBytes(ByteBuffer.wrap(builder.toString().getBytes()));
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			Logger.error(e);
 		}
 	}
