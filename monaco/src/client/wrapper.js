@@ -40,13 +40,14 @@ export const runClient = async () => {
     });
     // create monaco editor
     const editor = monaco.editor.create(document.getElementById('monaco-editor-root'), {
-        value: window.parent.intinoDslEditorParameters().content,
-        language: window.parent.intinoDslEditorParameters().language,
         automaticLayout: true,
         wordBasedSuggestions: 'off'
     });
+    const parameters = window.parent.intinoDslEditorParameters();
+    const model = monaco.editor.createModel(parameters.content, parameters.language, monaco.Uri.parse(parameters.uri));
+    editor.setModel(model);
     window.parent.intinoDslEditorSetup(editor);
-    initWebSocketAndStartClient(window.parent.intinoDslEditorParameters().webSocketUrl);
+    initWebSocketAndStartClient(parameters.webSocketUrl);
 };
 /** parameterized version , support all languageId */
 export const initWebSocketAndStartClient = (url) => {

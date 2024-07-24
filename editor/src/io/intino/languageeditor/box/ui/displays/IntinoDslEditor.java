@@ -55,7 +55,7 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<LanguageEditorBox> 
 	}
 
 	private IntinoDslEditorFile file() {
-		return new IntinoDslEditorFile().name(name).content(content()).language(language);
+		return new IntinoDslEditorFile().name(name).uri("file://" + content.getPath()).content(content()).language(language);
 	}
 
 	private String content() {

@@ -15,7 +15,7 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
 		this.notifier = new IntinoDslEditorNotifier(this);
 		this.requester = new IntinoDslEditorRequester(this);
 		this.state = {
-		    file: { name: "default.tara", content: "", language: "tara" }
+		    file: { name: "default.tara", uri: "default.tara", content: "", language: "tara" }
 		};
 	};
 
@@ -34,6 +34,8 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
 	    //const wsUrl = "ws://localhost:30000/sampleServer";
         return {
             webSocketUrl: wsUrl,
+            name: this.state.file.name,
+            uri: this.state.file.uri,
             content: this.state.file.content,
             language: this.state.file.language,
         }
