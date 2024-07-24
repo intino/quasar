@@ -14,11 +14,9 @@ import org.eclipse.lsp4j.services.LanguageServer;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.io.PrintWriter;
+import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import static java.nio.ByteBuffer.wrap;
 
 @WebSocket
 public class LanguageServerWebSocketHandler {
@@ -68,8 +66,12 @@ public class LanguageServerWebSocketHandler {
 		try {
 			byte[] buffer = new byte[1024];
 			int bytesRead;
-			while ((bytesRead = serverInput.read(buffer)) != -1)
-				session.getRemote().sendBytes(wrap(buffer, 0, bytesRead));
+			StringBuilder builder = new StringBuilder();
+			while ((bytesRead = serverInput.read(buffer)) != -1) {
+				builder.append((char) bytesRead);
+			}
+			System.out.println(builder.toString());
+			session.getRemote().sendBytes(ByteBuffer.wrap(builder.toString().getBytes()));
 		} catch (Exception e) {
 			Logger.error(e);
 		}
