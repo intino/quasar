@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Langium Statemachine Client & Language Server (Worker)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h2>Langium Statemachine Client & Language Server (Worker)</h2>
+    <button type="button" id="button-start">Start</button>
+    <button type="button" id="button-dispose">Dispose</button>
+    <div id="monaco-editor-root" style="height: 40vh;"></div>
+    <div id="monaco-editor-root2" style="height: 40vh;"></div>
+    <script type="module" rel="modulepreload">
+        import { initLocaleLoader } from 'monaco-editor-wrapper/vscode/locale';
+        await initLocaleLoader();
+
+        // production build: ensure local loading is handled before loading the main script
+        const { configureMonacoWorkers, runStatemachineWrapper } = await import ('./src/langium/statemachine/main.ts');
+
+        configureMonacoWorkers();
+        runStatemachineWrapper();
+    </script>
+</body>
+
+</html>

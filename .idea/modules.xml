@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/archetype/archetype.iml" filepath="$PROJECT_DIR$/archetype/archetype.iml" />
       <module fileurl="file://$PROJECT_DIR$/editor/editor.iml" filepath="$PROJECT_DIR$/editor/editor.iml" />
       <module fileurl="file://$PROJECT_DIR$/editor-elements/editor-elements.iml" filepath="$PROJECT_DIR$/editor-elements/editor-elements.iml" />
+      <module fileurl="file://$PROJECT_DIR$/monaco/monaco.iml" filepath="$PROJECT_DIR$/monaco/monaco.iml" />
       <module fileurl="file://$PROJECT_DIR$/language-server/language-server.iml" filepath="$PROJECT_DIR$/language-server/language-server.iml" />
     </modules>
   </component>

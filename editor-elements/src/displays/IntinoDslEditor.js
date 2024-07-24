@@ -5,12 +5,6 @@ import IntinoDslEditorNotifier from "../../gen/displays/notifiers/IntinoDslEdito
 import IntinoDslEditorRequester from "../../gen/displays/requesters/IntinoDslEditorRequester";
 import DisplayFactory from 'alexandria-ui-elements/src/displays/DisplayFactory';
 import { withSnackbar } from 'notistack';
-import AceEditor from 'react-ace';
-import { AceLanguageClient } from "ace-linters/build/ace-language-client";
-import "ace-builds/src-noconflict/theme-xcode";
-
-ace.config.set("modePath", ace.config.get("modePath") + "/res/intino-dsl-editor")
-ace.config.set("themePath", ace.config.get("modePath") + "/res/intino-dsl-editor")
 
 const styles = theme => ({});
 
@@ -25,53 +19,32 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
 		};
 	};
 
-    render() {
+	render() {
+	    const id = this.props.id;
+	    window.intinoDslEditorParameters = this.getParameters.bind(this);
+	    window.intinoDslEditorSetup = this.handleSetup.bind(this);
         return (
-             <AceEditor
-                width="100%"
-                height="100%"
-                placeholder={this.translate("Empty file")}
-                mode={this.state.file.language.toLowerCase()}
-                name={this.props.id + "-editor"}
-                fontSize={12}
-                lineHeight={17}
-                showPrintMargin={true}
-                showGutter={true}
-                highlightActiveLine={true}
-                value={this.state.file.content}
-                onLoad={this.handleMount.bind(this)}
-                onChange={this.handleChange.bind(this)}
-                enableSnippets={true}
-                enableBasicAutocompletion={true}
-                enableLiveAutoComplete={true}
-                setOptions={{showLineNumbers: true, tabSize: 4 }}
-             />
+            <iframe src={Application.configuration.url + "/res/monaco.html?id=" + id + "&m=" + Math.random()}
+                    style={{height:"calc(100% - 4px)",width:"100%",border:0}}/>
         );
     };
 
-    handleMount = (editor) => {
-        this.registerCommands(editor);
-        this.registerLspServer(editor);
+    getParameters = () => {
+	    const wsUrl = Application.configuration.baseUrl.replace("http", "ws") + "/dsl/tara";
+	    //const wsUrl = "ws://localhost:30000/sampleServer";
+        return {
+            webSocketUrl: wsUrl,
+            content: this.state.file.content,
+            language: this.state.file.language,
+        }
     };
 
-    registerCommands = (editor) => {
-        const save = this.handleSave.bind(this);
-        editor.commands.addCommand({
-            name: 'save',
-            bindKey: {win: "Ctrl-S", "mac": "Cmd-S"},
-            exec: function(editor) { save(editor.session.getValue()); }
-        });
-    };
-
-    registerLspServer = (editor) => {
-        const baseUrl = Application.configuration.baseUrl;
-        const taraServerConfig = {
-            module: () => import("ace-linters/build/language-client"),
-            modes: "tara",
-            type: "socket",
-            socket: new WebSocket(baseUrl + "/dsl/tara")
-        };
-        AceLanguageClient.for(taraServerConfig).registerEditor(editor);
+    handleSetup = (editor) => {
+        const handleChange = this.handleChange.bind(this);
+        const CtrlCmd = 2048;
+        const KeyS = 49;
+        editor.getModel().onDidChangeContent(event => handleChange(editor.getValue()));
+        editor.addCommand(CtrlCmd | KeyS, this.handleSave.bind(this));
     };
 
     handleSave = (value) => {
@@ -80,7 +53,6 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
 
     handleChange = (content) => {
         this.state.file.content = content;
-        this.setState({file: this.state.file})
         this.requester.fileModified();
     };
 

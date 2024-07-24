@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>React: Python Language Client & Language Server (Web Socket)</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+
+    <body>
+        <h2>React: Python Language Client & Language Server (Web Socket)</h2>
+        <div id="monaco-editor-root"></div>
+        <script type="module">
+            import { configureMonacoWorkers, runPythonReact } from './src/python/client/reactPython.tsx';
+
+            configureMonacoWorkers();
+            runPythonReact();
+        </script>
+    </body>
+
+</html>

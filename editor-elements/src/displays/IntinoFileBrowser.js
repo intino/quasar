@@ -26,6 +26,7 @@ class IntinoFileBrowser extends AbstractIntinoFileBrowser {
 
     render() {
         const id = this.props.id + "-tree";
+        if (this.state.items.length <= 1) return (<div className="layout vertical flex center-center" style={{height:'100%',fontSize:'10pt'}}>{this.translate("No files")}</div>);
         return (
             <ControlledTreeEnvironment
               getItemTitle={item => item.data}
