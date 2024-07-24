@@ -11,6 +11,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -34,6 +35,10 @@ public class DocumentManager {
 
 	private static TextDocumentItem documentItem(File f) {
 		return new TextDocumentItem(f.toURI().toString(), dslOf(f), (int) f.lastModified(), content(f));
+	}
+
+	public List<URI> all() {
+		return documents.keySet().stream().toList();
 	}
 
 	public void upsertDocument(URI uri, String content) {

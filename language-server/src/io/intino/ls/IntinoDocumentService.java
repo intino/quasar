@@ -72,6 +72,7 @@ public class IntinoDocumentService implements TextDocumentService {
 		var result = new SemanticTokens();
 		try {
 			InputStream content = documentManager.getDocumentText(URI.create(params.getTextDocument().getUri()));
+			if (content == null) return CompletableFuture.completedFuture(result);
 			TaraLexer lexer = new TaraLexer(CharStreams.fromStream(content));
 			lexer.reset();
 			var parser = new TaraGrammar(new CommonTokenStream(lexer));
@@ -143,11 +144,6 @@ public class IntinoDocumentService implements TextDocumentService {
 	}
 
 	@Override
-	public CompletableFuture<List<Either<SymbolInformation, DocumentSymbol>>> documentSymbol(DocumentSymbolParams params) {
-		return TextDocumentService.super.documentSymbol(params);
-	}
-
-	@Override
 	public CompletableFuture<List<Either<Command, CodeAction>>> codeAction(CodeActionParams params) {
 		return TextDocumentService.super.codeAction(params);
 	}
@@ -210,11 +206,6 @@ public class IntinoDocumentService implements TextDocumentService {
 	@Override
 	public CompletableFuture<DocumentLink> documentLinkResolve(DocumentLink params) {
 		return TextDocumentService.super.documentLinkResolve(params);
-	}
-
-	@Override
-	public CompletableFuture<List<ColorInformation>> documentColor(DocumentColorParams params) {
-		return TextDocumentService.super.documentColor(params);
 	}
 
 	@Override
