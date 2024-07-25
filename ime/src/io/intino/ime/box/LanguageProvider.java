@@ -30,7 +30,7 @@ public class LanguageProvider {
 		this.artifactory = artifactory;
 		this.credential = credential;
 		dslsDirectory = new File(localRepository, LANGUAGES_PACKAGE);
-		dslsDirectory.getParentFile().mkdirs();
+		dslsDirectory.mkdirs();
 	}
 
 	public Language get(String dsl) throws IOException {

@@ -14,7 +14,7 @@ Artifact(groupId = "io.intino", version = "1.0.0") ime
 
 		Test("junit", "junit", "4.13")
 		Web(groupId = "io.intino", artifactId = "ime-elements", version = "1.0.0")
-	Package(mode = ModulesAndLibrariesLinkedByManifest) as Runnable(mainClass="io.intino.languageeditor.box.Main")
+	Package(mode = ModulesAndLibrariesLinkedByManifest) as Runnable(mainClass="io.intino.ime.box.Main")
 
 	Parameter("home")
 	Parameter("port")
@@ -25,3 +25,4 @@ RunConfiguration local
 	Argument("home", "./temp")
 	Argument("port", "8080")
 	Argument("title", "Intino Language editor")
+	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
