@@ -3,6 +3,7 @@ package io.intino.languageeditor.box.ui.displays;
 import io.intino.alexandria.logger.Logger;
 import io.intino.languageeditor.box.LanguageEditorBox;
 import io.intino.languageeditor.box.schemas.IntinoDslEditorFile;
+import io.intino.languageeditor.box.workspaces.Workspace;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.nio.file.Files;
 import java.util.function.Consumer;
 
 public class IntinoDslEditor extends AbstractIntinoDslEditor<LanguageEditorBox> {
+	private Workspace workspace;
 	private String name;
 	private String extension;
 	private File content;
@@ -19,6 +21,10 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<LanguageEditorBox> 
 
 	public IntinoDslEditor(LanguageEditorBox box) {
 		super(box);
+	}
+
+	public void workspace(Workspace workspace) {
+		this.workspace = workspace;
 	}
 
 	public void file(String name, String extension, File content, String language) {
@@ -57,7 +63,7 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<LanguageEditorBox> 
 	}
 
 	private IntinoDslEditorFile file() {
-		return new IntinoDslEditorFile().name(name).uri("file://" + content.getPath()).extension(extension).content(content()).language(language);
+		return new IntinoDslEditorFile().workspace(workspace.name()).name(name).uri("file://" + content.getPath()).extension(extension).content(content()).language(language);
 	}
 
 	private String content() {

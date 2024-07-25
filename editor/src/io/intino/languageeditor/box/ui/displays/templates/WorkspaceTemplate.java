@@ -60,6 +60,7 @@ public class WorkspaceTemplate extends AbstractWorkspaceTemplate<LanguageEditorB
 		refreshFileEditorToolbar();
 		if (!validFile) return;
 		IntinoDslEditor display = intinoDslEditor.display();
+		display.workspace(workspace);
 		display.file(selectedFile.name(), selectedFile.extension(), selectedFile.content(), selectedFile.language());
 		display.refresh();
 	}
