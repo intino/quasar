@@ -73,10 +73,10 @@ export const initWebSocketAndStartClient = (url) => {
 };
 export const createLanguageClient = (transports) => {
     return new MonacoLanguageClient({
-        name: window.parent.intinoDslEditorParameters().language + ' client',
+        name: window.parent.intinoDslEditorParameters().file.language + ' client',
         clientOptions: {
             // use a language id as a document selector
-            documentSelector: [window.parent.intinoDslEditorParameters().language],
+            documentSelector: [window.parent.intinoDslEditorParameters().file.language],
             // disable the default error handler
             errorHandler: {
                 error: () => ({ action: ErrorAction.Continue }),
