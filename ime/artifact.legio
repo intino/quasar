@@ -19,6 +19,7 @@ Artifact(groupId = "io.intino", version = "1.0.0") ime
 	Parameter("home")
 	Parameter("port")
 	Parameter("title")
+	Parameter("language-artifactory")
 
 RunConfiguration local
 	Argument("home", "./temp")

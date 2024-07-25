@@ -3,7 +3,7 @@ package io.intino.ls;
 import io.intino.alexandria.logger.Logger;
 import io.intino.builder.CompilerMessage;
 import io.intino.tara.Checker;
-import io.intino.tara.Tara;
+import io.intino.tara.Language;
 import io.intino.tara.builder.TaraCompilerRunner;
 import io.intino.tara.builder.core.CompilerConfiguration;
 import io.intino.tara.language.grammar.TaraGrammar;
@@ -33,13 +33,13 @@ public class IntinoDocumentService implements TextDocumentService {
 	private final Checker checker;
 	private final DocumentSourceProvider documentSourceProvider;
 
-	public IntinoDocumentService(Tara dsl, WorkspaceManager workspaceManager) {
+	public IntinoDocumentService(Language language, WorkspaceManager workspaceManager) {
 		this.documentManager = workspaceManager;
 		documentSourceProvider = new DocumentSourceProvider(workspaceManager);
 		compilerConfiguration = new CompilerConfiguration();
-		compilerConfiguration.language(dsl);
+		compilerConfiguration.language(language);
 		runner = new TaraCompilerRunner(true);
-		checker = new Checker(dsl);
+		checker = new Checker(language);
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package io.intino.ime.box.lsp;
 
 import io.intino.alexandria.logger.Logger;
+import io.intino.ime.box.LanguageProvider;
 import io.intino.ime.box.LanguageServerFactory;
 import io.intino.ime.box.workspaces.Workspace;
 import io.intino.ime.box.workspaces.WorkspaceManager;
@@ -20,14 +21,16 @@ import java.util.concurrent.Executors;
 public class LanguageServerWebSocketHandler {
 	private final LanguageServerFactory serverFactory;
 	private final WorkspaceManager workspaceManager;
+	private final LanguageProvider languageProvider;
 	private ExecutorService executorService;
 	private PipedOutputStream clientOutput;
 	private PipedInputStream serverInput;
 	private final Object monitor = new Object();
 
-	public LanguageServerWebSocketHandler(LanguageServerFactory serverFactory, WorkspaceManager workspaceManager) {
+	public LanguageServerWebSocketHandler(LanguageServerFactory serverFactory, WorkspaceManager workspaceManager, LanguageProvider languageProvider) {
 		this.serverFactory = serverFactory;
 		this.workspaceManager = workspaceManager;
+		this.languageProvider = languageProvider;
 	}
 
 	@OnWebSocketConnect
@@ -40,7 +43,7 @@ public class LanguageServerWebSocketHandler {
 				executorService = Executors.newSingleThreadExecutor();
 				executorService.submit(() -> notificationThread(session));
 				Workspace ws = workspaceOf(session);
-				LSPLauncher.createServerLauncher(serverFactory.create(ws.dsl(), ws.uri()), clientInput, new PipedOutputStream(serverInput)).startListening();
+				LSPLauncher.createServerLauncher(serverFactory.create(languageProvider.get(ws.dsl()), ws.documentRoot()), clientInput, new PipedOutputStream(serverInput)).startListening();
 			}
 		} catch (Exception e) {
 			Logger.error(e);

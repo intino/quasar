@@ -1,6 +1,6 @@
 package io.intino.ls;
 
-import io.intino.tara.Tara;
+import io.intino.tara.Language;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.WorkspaceService;
@@ -16,10 +16,10 @@ import static org.eclipse.lsp4j.jsonrpc.messages.Either.forRight;
 
 class IntinoWorkspaceService implements WorkspaceService {
 
-	private final Tara dsl;
+	private final Language dsl;
 	private final WorkspaceManager documentManager;
 
-	public IntinoWorkspaceService(Tara dsl, WorkspaceManager documentManager) {
+	public IntinoWorkspaceService(Language dsl, WorkspaceManager documentManager) {
 		this.dsl = dsl;
 		this.documentManager = documentManager;
 	}

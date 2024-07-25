@@ -28,11 +28,11 @@ public class WorkspaceManager {
 	}
 
 	public List<Workspace> ownerWorkspaces(String user) {
-		return allWorkspaces(user).stream().filter(w -> w.name.equals("w1")).collect(toList());
+		return allWorkspaces(user).stream().filter(w -> w.name().equals("w1")).collect(toList());
 	}
 
 	public List<Workspace> sharedWorkspaces(String user) {
-		return allWorkspaces(user).stream().filter(w -> w.name.equals("w2") || w.name().equals("w3")).collect(toList());
+		return allWorkspaces(user).stream().filter(w -> w.name().equals("w2") || w.name().equals("w3")).collect(toList());
 	}
 
 	public Workspace workspace(String name) {
@@ -62,7 +62,8 @@ public class WorkspaceManager {
 	private Workspace workspaceOf(String name) {
 		try {
 			File definition = archetype.workspaces().definition(name);
-			return Json.fromJson(Files.readString(definition.toPath()), Workspace.class);
+			Workspace workspace = Json.fromJson(Files.readString(definition.toPath()), Workspace.class);
+			return workspace.documentRoot(archetype.workspaces().documents(name).toURI());
 		} catch (IOException e) {
 			Logger.error(e);
 			return null;

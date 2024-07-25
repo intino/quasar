@@ -1,17 +1,15 @@
 package io.intino.ime.box.workspaces;
 
-import io.intino.tara.Tara;
-import tara.dsl.Proteo;
-
-import java.io.File;
 import java.net.URI;
 import java.time.Instant;
 
-public class Workspace {
-	public String name;
-	public String title;
-	public User owner;
-	public Instant lastModifyDate;
+public final class Workspace {
+	private String name;
+	private String title;
+	private User owner;
+	private Instant lastModifyDate;
+	private URI documentRoot;
+	private String dsl;
 
 	public String name() {
 		return name;
@@ -49,35 +47,25 @@ public class Workspace {
 		return this;
 	}
 
-	public Tara dsl() {
-		return new Proteo(); //TODO
+	public URI documentRoot() {
+		return documentRoot;
 	}
 
-	public URI uri() {
-		return new File("root").toURI();//TODO
+	public Workspace documentRoot(URI documentRoot) {
+		this.documentRoot = documentRoot;
+		return this;
 	}
 
-	public static class User {
-		private String name;
-		private String fullName;
+	public String dsl() {
+		return dsl;
+	}
 
-		public String name() {
-			return name;
-		}
+	public Workspace dsl(String dsl) {
+		this.dsl = dsl;
+		return this;
+	}
 
-		public User name(String name) {
-			this.name = name;
-			return this;
-		}
-
-		public String fullName() {
-			return fullName;
-		}
-
-		public User fullName(String fullName) {
-			this.fullName = fullName;
-			return this;
-		}
+	public record User(String name, String fullName) {
 	}
 
 }

@@ -1,6 +1,6 @@
 package io.intino.ls;
 
-import io.intino.tara.Tara;
+import io.intino.tara.Language;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.services.*;
 
@@ -13,12 +13,12 @@ import static io.intino.ls.IntinoSemanticTokens.tokenTypes;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 public class IntinoLanguageServer implements LanguageServer, LanguageClientAware {
-	private final Tara dsl;
+	private final Language language;
 	private final WorkspaceManager documentManager;
 	public HashMap<Object, Object> expectedRequests = new HashMap<>();
 
-	public IntinoLanguageServer(Tara dsl, WorkspaceManager documentManager) {
-		this.dsl = dsl;
+	public IntinoLanguageServer(Language language, WorkspaceManager documentManager) {
+		this.language = language;
 		this.documentManager = documentManager;
 	}
 
@@ -53,12 +53,12 @@ public class IntinoLanguageServer implements LanguageServer, LanguageClientAware
 
 	@Override
 	public TextDocumentService getTextDocumentService() {
-		return new IntinoDocumentService(dsl, documentManager);
+		return new IntinoDocumentService(language, documentManager);
 	}
 
 	@Override
 	public WorkspaceService getWorkspaceService() {
-		return new IntinoWorkspaceService(dsl, documentManager);
+		return new IntinoWorkspaceService(language, documentManager);
 	}
 
 	public BuildResult build() {
