@@ -35,7 +35,7 @@ const config = {
     },
     output: {
         filename: 'main.js',
-        path: resolve(__dirname, '../editor-elements/res/js', 'monaco-client'),
+        path: resolve(__dirname, '../ime-elements/res/js', 'monaco-client'),
         module: true
     },
     target: 'web',
