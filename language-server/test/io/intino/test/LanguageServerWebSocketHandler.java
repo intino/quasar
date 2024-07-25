@@ -1,7 +1,7 @@
 package io.intino.test;
 
 import io.intino.alexandria.logger.Logger;
-import io.intino.ls.DocumentManager;
+import io.intino.ls.WorkspaceManager;
 import io.intino.ls.IntinoLanguageServer;
 import io.intino.tara.Tara;
 import org.eclipse.jetty.server.Server;
@@ -61,7 +61,7 @@ public class LanguageServerWebSocketHandler {
 	}
 
 	public LanguageServerWebSocketHandler(Tara dsl, File workspace) throws IOException {
-		server = new IntinoLanguageServer(dsl, new DocumentManager(workspace));
+		server = new IntinoLanguageServer(dsl, new WorkspaceManager(workspace));
 	}
 
 	@OnWebSocketConnect

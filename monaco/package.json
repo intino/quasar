@@ -26,7 +26,7 @@
   "scripts": {
     "verify": "npm install && npm run build && npm run start",
     "verify:ci": "npm install && npm run build",
-    "clean": "shx rm -fr ../editor-elements/res/js/monaco-client *.tsbuildinfo",
+    "clean": "shx rm -fr ../ime-elements/res/js/monaco-client *.tsbuildinfo",
     "build:msg": "echo Building client-webpack example:",
     "build": "npm run build:msg && npm run clean && webpack",
     "start": "http-server ./ --port 8081"

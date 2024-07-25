@@ -3,10 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/archetype/archetype.iml" filepath="$PROJECT_DIR$/archetype/archetype.iml" />
-      <module fileurl="file://$PROJECT_DIR$/editor/editor.iml" filepath="$PROJECT_DIR$/editor/editor.iml" />
-      <module fileurl="file://$PROJECT_DIR$/editor-elements/editor-elements.iml" filepath="$PROJECT_DIR$/editor-elements/editor-elements.iml" />
-      <module fileurl="file://$PROJECT_DIR$/monaco/monaco.iml" filepath="$PROJECT_DIR$/monaco/monaco.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ime/ime.iml" filepath="$PROJECT_DIR$/ime/ime.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ime-elements/ime-elements.iml" filepath="$PROJECT_DIR$/ime-elements/ime-elements.iml" />
       <module fileurl="file://$PROJECT_DIR$/language-server/language-server.iml" filepath="$PROJECT_DIR$/language-server/language-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/monaco/monaco.iml" filepath="$PROJECT_DIR$/monaco/monaco.iml" />
     </modules>
   </component>
 </project>

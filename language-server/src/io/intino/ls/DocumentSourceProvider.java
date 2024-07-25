@@ -7,9 +7,9 @@ import java.net.URI;
 import java.util.stream.Stream;
 
 public class DocumentSourceProvider implements SourceProvider {
-	private final DocumentManager documentManager;
+	private final WorkspaceManager documentManager;
 
-	public DocumentSourceProvider(DocumentManager documentManager) {
+	public DocumentSourceProvider(WorkspaceManager documentManager) {
 		this.documentManager = documentManager;
 	}
 
@@ -18,7 +18,6 @@ public class DocumentSourceProvider implements SourceProvider {
 		return Stream.empty();
 	}
 
-	@Override
 	public Source get(URI uri) {
 		return new Source() {
 			@Override

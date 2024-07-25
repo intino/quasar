@@ -5,3 +5,6 @@ TARGETS:{editor}
     - documents(name) in "{name}/documents"
 
 + tmp
+
++ repository
+	+ languages
