@@ -37,7 +37,7 @@ public class ImeBox extends AbstractBox {
 
 	@Override
 	protected void beforeSetupImeElementsUi(io.intino.alexandria.ui.UISpark sparkInstance) {
-		LanguageServerWebSocketHandler handler = new LanguageServerWebSocketHandler(new LanguageServerFactory(), workspaceManager, languageProvider);
+		LanguageServerWebSocketHandler handler = new LanguageServerWebSocketHandler(new LanguageServerFactory(languageProvider), workspaceManager);
 		sparkInstance.service().webSocket("/dsl/tara", handler);
 	}
 
