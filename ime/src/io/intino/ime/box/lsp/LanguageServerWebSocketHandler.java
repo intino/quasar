@@ -40,10 +40,11 @@ public class LanguageServerWebSocketHandler {
 				PipedInputStream clientInput = new PipedInputStream();
 				clientOutput = new PipedOutputStream(clientInput);
 				serverInput = new PipedInputStream();
+				PipedOutputStream out = new PipedOutputStream(serverInput);
 				executorService = Executors.newSingleThreadExecutor();
 				executorService.submit(() -> notificationThread(session));
 				Workspace ws = workspaceOf(session);
-				LSPLauncher.createServerLauncher(serverFactory.create(languageProvider.get(ws.dsl()), ws.documentRoot()), clientInput, new PipedOutputStream(serverInput)).startListening();
+				LSPLauncher.createServerLauncher(serverFactory.create(languageProvider.get(ws.dsl()), ws.documentRoot()), clientInput, out).startListening();
 			}
 		} catch (Exception e) {
 			Logger.error(e);
@@ -54,6 +55,7 @@ public class LanguageServerWebSocketHandler {
 	public void onMessage(String message) {
 		try {
 			var content = "Content-Length: " + message.length() + "\n\n" + message;
+			System.out.println("Request: " + message);
 			clientOutput.write(content.getBytes());
 			clientOutput.flush();
 		} catch (Exception e) {
@@ -74,11 +76,13 @@ public class LanguageServerWebSocketHandler {
 
 	private void notificationThread(Session session) {
 		try {
-			byte[] buffer = new byte[1024];
-			while (serverInput.read(buffer) != -1) {
-				String content = new String(buffer);
+			int bytesRead;
+			byte[] buffer = new byte[2048];
+			while ((bytesRead = serverInput.read(buffer)) != -1) {
+				String content = new String(buffer, 0, bytesRead);
 				content = content.substring(content.indexOf("\n"));
 				session.getRemote().sendString(content.trim());
+				System.out.println("Response: " + content.trim());
 			}
 		} catch (Throwable e) {
 			Logger.error(e);

@@ -50,6 +50,10 @@ public class ImeBox extends AbstractBox {
 	public void afterStop() {
 	}
 
+	public LanguageProvider languageProvider() {
+		return this.languageProvider;
+	}
+
 	public Archetype archetype() {
 		return archetype;
 	}

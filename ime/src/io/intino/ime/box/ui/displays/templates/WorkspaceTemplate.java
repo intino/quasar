@@ -1,5 +1,6 @@
 package io.intino.ime.box.ui.displays.templates;
 
+import io.intino.alexandria.logger.Logger;
 import io.intino.alexandria.ui.utils.DelayerUtil;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.commands.WorkspaceCommands;
@@ -11,6 +12,7 @@ import io.intino.ime.box.util.Formatters;
 import io.intino.ime.box.workspaces.Workspace;
 import io.intino.ime.box.workspaces.WorkspaceContainer;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +30,12 @@ public class WorkspaceTemplate extends AbstractWorkspaceTemplate<ImeBox> {
 	}
 
 	public void workspace(String name) {
-		this.workspace = box().workspaceManager().workspace(name);
+		try {
+			this.workspace = box().workspaceManager().workspace(name);
+			box().languageProvider().get(workspace.dsl());
+		} catch (IOException e) {
+			Logger.error(e);
+		}
 	}
 
 	@Override
@@ -112,20 +119,24 @@ public class WorkspaceTemplate extends AbstractWorkspaceTemplate<ImeBox> {
 
 	private void register(WorkspaceContainer.File file, Map<String, IntinoFileBrowserItem> items) {
 		List<String> parents = file.parents();
-		if (!items.containsKey(file.name())) items.put(file.name(), new IntinoFileBrowserItem().name(file.name()).type(file.content().isFile() ? IntinoFileBrowserItem.Type.File : IntinoFileBrowserItem.Type.Folder).isRoot(parents.isEmpty()));
+		if (!items.containsKey(file.name()))
+			items.put(file.name(), new IntinoFileBrowserItem().name(file.name()).type(file.content().isFile() ? IntinoFileBrowserItem.Type.File : IntinoFileBrowserItem.Type.Folder).isRoot(parents.isEmpty()));
 		for (int i = 0; i < parents.size(); i++) {
-			register(parents.get(i), i > 0 ? parents.get(i-1) : null, items);
-			if (i == parents.size()-1) register(file, parents.get(i), i == 0, items);
+			register(parents.get(i), i > 0 ? parents.get(i - 1) : null, items);
+			if (i == parents.size() - 1) register(file, parents.get(i), i == 0, items);
 		}
 	}
 
 	private void register(String directory, String parent, Map<String, IntinoFileBrowserItem> items) {
-		if (!items.containsKey(directory)) items.put(directory, new IntinoFileBrowserItem().name(directory).type(IntinoFileBrowserItem.Type.Folder).isRoot(parent == null));
-		if (parent != null && !items.get(parent).children().contains(directory)) items.get(parent).children().add(directory);
+		if (!items.containsKey(directory))
+			items.put(directory, new IntinoFileBrowserItem().name(directory).type(IntinoFileBrowserItem.Type.Folder).isRoot(parent == null));
+		if (parent != null && !items.get(parent).children().contains(directory))
+			items.get(parent).children().add(directory);
 	}
 
 	private void register(WorkspaceContainer.File file, String parent, boolean isRoot, Map<String, IntinoFileBrowserItem> items) {
-		if (!items.containsKey(parent)) items.put(parent, new IntinoFileBrowserItem().name(parent).type(IntinoFileBrowserItem.Type.Folder).isRoot(isRoot));
+		if (!items.containsKey(parent))
+			items.put(parent, new IntinoFileBrowserItem().name(parent).type(IntinoFileBrowserItem.Type.Folder).isRoot(isRoot));
 		if (file != null) items.get(parent).children().add(file.name());
 	}
 
@@ -145,10 +156,10 @@ public class WorkspaceTemplate extends AbstractWorkspaceTemplate<ImeBox> {
 
 	private void initFileBrowserToolbar() {
 		addFiles.onExecute(e -> addFiles());
-		fileField.onChange(e -> addFiles.readonly(e.value() == null || ((String)e.value()).isEmpty()));
+		fileField.onChange(e -> addFiles.readonly(e.value() == null || ((String) e.value()).isEmpty()));
 		fileField.onEnterPress(e -> addFiles());
 		addFilesDialog.onOpen(e -> refreshAddFilesDialog());
-		folderField.onChange(e -> addFolder.readonly(e.value() == null || ((String)e.value()).isEmpty()));
+		folderField.onChange(e -> addFolder.readonly(e.value() == null || ((String) e.value()).isEmpty()));
 		folderField.onEnterPress(e -> addFolder());
 		addFolder.onExecute(e -> addFolder());
 		addFolderDialog.onOpen(e -> refreshAddFolderDialog());

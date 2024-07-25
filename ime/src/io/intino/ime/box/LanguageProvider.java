@@ -13,6 +13,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
 
 import static io.intino.itrules.formatters.StringFormatters.firstUpperCase;
 
@@ -21,6 +23,8 @@ public class LanguageProvider {
 	private final URL artifactory;
 	private final Pair<String, String> credential;
 	private final File dslsDirectory;
+	private final Map<String, Language> languages = new HashMap<>();
+
 
 	public LanguageProvider(File localRepository, URL artifactory) {
 		this(localRepository, artifactory, null);
@@ -33,9 +37,12 @@ public class LanguageProvider {
 		dslsDirectory.mkdirs();
 	}
 
-	public Language get(String dsl) throws IOException {
-		File jarFile = download(dsl);
-		return load(dsl, jarFile);
+	public Language get(String name) throws IOException {
+		if (languages.containsKey(name)) return languages.get(name);
+		File jarFile = download(name);
+		Language language = load(name, jarFile);
+		languages.put(name, language);
+		return language;
 	}
 
 	private Language load(String dsl, File jar) throws IOException {
@@ -43,7 +50,7 @@ public class LanguageProvider {
 			String[] parts = dsl.split(":");
 			final ClassLoader classLoader = createClassLoader(jar);
 			if (classLoader == null) return null;
-			Class<?> cls = classLoader.loadClass(LANGUAGES_PACKAGE + "." + firstUpperCase().format(parts[0]).toString());
+			Class<?> cls = classLoader.loadClass(LANGUAGES_PACKAGE.replace("/", ".") + "." + firstUpperCase().format(parts[0]).toString());
 			return (Language) cls.getConstructors()[0].newInstance();
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
 				 InvocationTargetException e) {
