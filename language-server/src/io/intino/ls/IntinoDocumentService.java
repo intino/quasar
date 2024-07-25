@@ -1,6 +1,7 @@
 package io.intino.ls;
 
 import io.intino.alexandria.logger.Logger;
+import io.intino.builder.CompilerMessage;
 import io.intino.tara.Checker;
 import io.intino.tara.Tara;
 import io.intino.tara.builder.TaraCompilerRunner;
@@ -28,13 +29,13 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 public class IntinoDocumentService implements TextDocumentService {
 	private final CompilerConfiguration compilerConfiguration;
 	private final TaraCompilerRunner runner;
-	private final DocumentManager documentManager;
+	private final WorkspaceManager documentManager;
 	private final Checker checker;
 	private final DocumentSourceProvider documentSourceProvider;
 
-	public IntinoDocumentService(Tara dsl, DocumentManager documentManager) {
-		this.documentManager = documentManager;
-		documentSourceProvider = new DocumentSourceProvider(documentManager);
+	public IntinoDocumentService(Tara dsl, WorkspaceManager workspaceManager) {
+		this.documentManager = workspaceManager;
+		documentSourceProvider = new DocumentSourceProvider(workspaceManager);
 		compilerConfiguration = new CompilerConfiguration();
 		compilerConfiguration.language(dsl);
 		runner = new TaraCompilerRunner(true);
@@ -51,11 +52,6 @@ public class IntinoDocumentService implements TextDocumentService {
 		analyzeText(params.getTextDocument().getUri());
 	}
 
-	private void analyzeText(String uri) {
-		runner.run(compilerConfiguration, documentSourceProvider);
-	}
-
-
 	@Override
 	public void didClose(DidCloseTextDocumentParams params) {
 		System.out.println("Document closed: " + params.getTextDocument().getUri());
@@ -64,6 +60,10 @@ public class IntinoDocumentService implements TextDocumentService {
 	@Override
 	public void didSave(DidSaveTextDocumentParams params) {
 		documentManager.upsertDocument(URI.create(params.getTextDocument().getUri()), params.getText());
+	}
+
+	private void analyzeText(String uri) {
+		List<CompilerMessage> run = runner.run(compilerConfiguration, documentSourceProvider);
 	}
 
 	@Override

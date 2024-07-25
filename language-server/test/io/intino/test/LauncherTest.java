@@ -1,6 +1,6 @@
 package io.intino.test;
 
-import io.intino.ls.DocumentManager;
+import io.intino.ls.WorkspaceManager;
 import io.intino.ls.IntinoLanguageServer;
 import org.antlr.v4.runtime.misc.Pair;
 import org.eclipse.lsp4j.*;
@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.net.http.WebSocket;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -55,7 +54,7 @@ public class LauncherTest {
 		File workspace = new File("./workspace");
 		inClient.connect(outServer);
 		outClient.connect(inServer);
-		server = new IntinoLanguageServer(new Proteo(), new DocumentManager(workspace));
+		server = new IntinoLanguageServer(new Proteo(), new WorkspaceManager(workspace));
 		serverLauncher = LSPLauncher.createServerLauncher(server, inServer, outServer);
 		serverListening = serverLauncher.startListening();
 

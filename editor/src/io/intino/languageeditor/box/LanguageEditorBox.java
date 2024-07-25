@@ -1,12 +1,12 @@
 package io.intino.languageeditor.box;
 
 import io.intino.alexandria.logger.Logger;
+import io.intino.alexandria.ui.displays.components.documenteditor.DocumentManager;
 import io.intino.languagearchetype.Archetype;
 import io.intino.languageeditor.box.commands.Commands;
 import io.intino.languageeditor.box.commands.CommandsFactory;
 import io.intino.languageeditor.box.lsp.LanguageServerWebSocketHandler;
 import io.intino.languageeditor.box.workspaces.WorkspaceManager;
-import io.intino.ls.DocumentManager;
 import io.intino.ls.IntinoLanguageServer;
 import tara.dsl.Proteo;
 
@@ -41,13 +41,8 @@ public class LanguageEditorBox extends AbstractBox {
 
 	@Override
 	protected void beforeSetupEditorElementsUi(io.intino.alexandria.ui.UISpark sparkInstance) {
-		try {
-			LanguageServerWebSocketHandler handler = new LanguageServerWebSocketHandler();
-			handler.init(new IntinoLanguageServer(new Proteo(), new DocumentManager(new File("./temp"))));
-			sparkInstance.service().webSocket("/dsl/tara", handler);
-		} catch (IOException e) {
-			Logger.error(e);
-		}
+		LanguageServerWebSocketHandler handler = new LanguageServerWebSocketHandler(new LanguageServerFactory(), this.workspaceManager());
+		sparkInstance.service().webSocket("/dsl/tara", handler);
 	}
 
 	public void afterStart() {

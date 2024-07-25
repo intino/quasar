@@ -1,5 +1,10 @@
 package io.intino.languageeditor.box.workspaces;
 
+import io.intino.tara.Tara;
+import tara.dsl.Proteo;
+
+import java.io.File;
+import java.net.URI;
 import java.time.Instant;
 
 public class Workspace {
@@ -42,6 +47,14 @@ public class Workspace {
 	public Workspace lastModifyDate(Instant lastModifyDate) {
 		this.lastModifyDate = lastModifyDate;
 		return this;
+	}
+
+	public Tara dsl() {
+		return new Proteo(); //TODO
+	}
+
+	public URI uri() {
+		return new File("root").toURI();//TODO
 	}
 
 	public static class User {

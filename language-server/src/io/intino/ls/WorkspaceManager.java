@@ -16,21 +16,21 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class DocumentManager {
+public class WorkspaceManager {
 	private final ConcurrentHashMap<URI, TextDocumentItem> documents;
 	private final File projectRoot;
 
-	public DocumentManager(File projectRoot) throws IOException {
-		this.projectRoot = projectRoot;
+	public WorkspaceManager(File workspaceRoot) throws IOException {
+		this.projectRoot = workspaceRoot;
 		this.documents = new ConcurrentHashMap<>();
-		documents.putAll(collectDocuments(projectRoot));
+		documents.putAll(collectDocuments(workspaceRoot));
 	}
 
 	private static Map<URI, TextDocumentItem> collectDocuments(File projectRoot) throws IOException {
 		return Files.walk(projectRoot.toPath())
 				.filter(p -> p.toFile().isFile() && p.toFile().getName().endsWith(".tara"))
 				.map(Path::toFile)
-				.collect(Collectors.toMap(File::toURI, DocumentManager::documentItem));
+				.collect(Collectors.toMap(File::toURI, WorkspaceManager::documentItem));
 	}
 
 	private static TextDocumentItem documentItem(File f) {
