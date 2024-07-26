@@ -10,6 +10,7 @@ public final class Workspace {
 	private Instant lastModifyDate;
 	private URI documentRoot;
 	private String dsl;
+	private long executionsCount;
 
 	public String name() {
 		return name;
@@ -62,6 +63,15 @@ public final class Workspace {
 
 	public Workspace dsl(String dsl) {
 		this.dsl = dsl;
+		return this;
+	}
+
+	public long executionsCount() {
+		return executionsCount;
+	}
+
+	public Workspace executionsCount(long executionsCount) {
+		this.executionsCount = executionsCount;
 		return this;
 	}
 

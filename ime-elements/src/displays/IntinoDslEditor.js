@@ -30,10 +30,8 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
     };
 
     getParameters = () => {
-	    const wsUrl = Application.configuration.baseUrl.replace("http", "ws") + "/dsl/tara?workspace=" + this.state.file.workspace;
-	    //const wsUrl = "ws://localhost:30000/sampleServer";
-        return {
-            webSocketUrl: wsUrl,
+	    return {
+            webSocketUrl: Application.configuration.baseUrl.replace("http", "ws") + "/dsl/tara?workspace=" + this.state.file.workspace,
             file: this.state.file,
         }
     };

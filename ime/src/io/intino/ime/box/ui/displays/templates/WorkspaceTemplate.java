@@ -79,7 +79,7 @@ public class WorkspaceTemplate extends AbstractWorkspaceTemplate<ImeBox> {
 
 	private void refreshHeader() {
 		header.title(workspace.title());
-		header.description(Formatters.countMessage(workspaceContainer.files().size(), "file", "files", language()));
+		header.description(Formatters.countMessage(workspaceContainer.files().stream().filter(f -> !f.content().isDirectory()).count(), "file", "files", language()));
 		header.refresh();
 	}
 

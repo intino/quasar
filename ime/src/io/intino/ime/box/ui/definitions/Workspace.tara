@@ -1,0 +1,92 @@
+dsl Konos
+
+use UI
+use Theme
+
+Template workspaceTemplate as Relative(height=100%, width=100%)
+	TemplateStamp(template=workspaceHeaderTemplate) header
+
+	Block(layout=Horizontal Flexible)
+		Block(layout=Vertical, format=greyLightBackground) as Relative(width=20%)
+			Block(layout=Horizontal, format=headerPanel leftSpaced rightSpaced rightBordered)
+				Block(layout=Horizontal Flexible) > Text(value="Browser", format=h6, translate=true)
+				Block(layout=Horizontal EndJustified)
+					MaterialIconButton(title="Add file", icon="Description", size=Small) addFilesTrigger as OpenDialog(addFilesDialog)
+					MaterialIconButton(title="Add folder", icon="Folder", size=Small) addFolderTrigger as OpenDialog(addFolderDialog)
+					MaterialIconButton(title="Remove", icon="Delete", size=Small) removeFileTrigger as Action Affirmed("Are you sure to remove?") Readonly
+					MaterialIconButton(title="Upload", icon="CloudUpload", size=Small) uploadFilesTrigger as OpenDialog(addFilesDialog)
+			DisplayStamp(display=intinoFileBrowser, format=displayHeaderPanel) intinoFileBrowser
+
+		Block(layout=Vertical Flexible)
+			Block(layout=Horizontal, format=headerPanel leftSpaced rightSpaced)
+				Block(layout=Horizontal Flexible)
+					Text(value="", format=h6, translate=true) filename
+					Block(layout=Horizontal, visible=false, format=airLeft) fileModifiedMessage > Text(value="modified", translate=true, format=airRight redColor bold)
+					Block(layout=Horizontal, visible=false, format=airLeft) fileSavedMessage > Text(value="saved", translate=true, format=airRight greenColor bold)
+				Block(layout=Horizontal EndJustified)
+					MaterialIconButton(title="Save", icon="Save") saveFile as Action Readonly
+			Block(layout=Vertical Flexible CenterCenter, format=whiteBackground) fileNotSelectedBlock
+				Text(value="Select file on left panel to open it")
+			Block(layout=Vertical Flexible, visible=false) fileSelectedBlock
+				DisplayStamp(display=intinoDslEditor, format=fullHeight) intinoDslEditor
+
+	Dialog(title="Add file") addFilesDialog as Absolute(width=300px, height=200px)
+        Block as Relative(height=100%, offsetHeight=40px)
+        	Text fileField as Editable(placeholder="Indicate file name") Labeled("File name") Focused
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addFilesDialog)
+            Button(title="Accept", size=Small, highlight=Fill) addFiles as Action Readonly
+
+	Dialog(title="Add folder") addFolderDialog as Absolute(width=300px, height=200px)
+        Block as Relative(height=100%, offsetHeight=40px)
+        	Text folderField as Editable(placeholder="Indicate folder name") Labeled("Folder name") Focused
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addFolderDialog)
+            Button(title="Accept", size=Small, highlight=Fill) addFolder as Action Readonly
+
+	Dialog(title="File modified") fileModifiedDialog as Absolute(width=500px, height=180px)
+        Block as Relative(height=100%, offsetHeight=40px)
+        	Text(value="File have been modified. If continue, you will loss changes in file. Are you want to continue?", translate=true)
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(fileModifiedDialog)
+            Button(title="Continue", size=Small, highlight=Fill) continueWithoutSavingFile as Action
+
+Template(format=headerBackground) workspaceHeaderTemplate
+	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)
+		Block(layout=Horizontal Flexible Center, format=airLeft)
+			MaterialIconButton(title="Go workspaces", icon="Home", size=Large, color="white", format=airRight) as OpenPage(ImeElements.workspaces)
+			Block
+				Text(format=h3 appTitleStyle, value="Workspace") title
+				Text(format=whiteColor) description
+		Block(layout=Horizontal Center EndJustified)
+			User(mode=OnlyPhoto) user
+				Block(format=spaced)
+					Link(title="Home") as OpenPage(page=ImeElements.home)
+					Link(title="My workspaces") as OpenPage(page=ImeElements.workspaces)
+
+Display intinoFileBrowser
+	Notification refresh as Object(intinoFileBrowserItem) List
+	Request open as Text
+
+Schema intinoFileBrowserItem
+	Attribute name as Text
+	Attribute type as Word("Folder" "File")
+	Attribute isRoot as Bool
+	Attribute children as Text List
+
+Display intinoDslEditor
+	Notification refresh as Object(intinoDslEditorFile)
+	Notification receiveContent
+	Request fileModified
+	Request fileContent as Text
+
+Schema intinoDslEditorFile
+	Attribute name as Text
+	Attribute workspace as Text
+	Attribute uri as Text
+	Attribute content as Text
+	Attribute language as Text
+	Attribute extension as Text
