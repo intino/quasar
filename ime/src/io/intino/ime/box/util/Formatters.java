@@ -30,4 +30,8 @@ public class Formatters {
 		return NumberFormat.getNumberInstance(locale).format(value);
 	}
 
+	public static String padded(long value, int pad) {
+		return String.format("%0" + pad + "d", value);
+	}
+
 }

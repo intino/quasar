@@ -54,18 +54,25 @@ Template workspaceTemplate as Relative(height=100%, width=100%)
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(fileModifiedDialog)
             Button(title="Continue", size=Small, highlight=Fill) continueWithoutSavingFile as Action
 
-Template(format=headerBackground) workspaceHeaderTemplate
+Template(format=headerBackground middleTopSpaced middleBottomSpaced) workspaceHeaderTemplate
 	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)
 		Block(layout=Horizontal Flexible Center, format=airLeft)
-			MaterialIconButton(title="Go workspaces", icon="Home", size=Large, color="white", format=airRight) as OpenPage(ImeElements.workspaces)
+			Link(title="", format=logoLink) as OpenPage(ImeElements.home)
+			Image(value="/logo-dark.png", format=airLeft doubleAirRight, mobileReduceFactor=75%) as Absolute(width=45px, height=45px)
 			Block
-				Text(format=h3 appTitleStyle, value="Workspace") title
+				Link(format=h3 appTitleStyle, title="Workspace") titleLink
+				Block(visible=false) titleEditor
+					Text(value="Browser", format=h6 whiteBackground) titleField as Editable
+					Link(title="Cancel") cancel as Action
+					Link(title="Save") save as Action
 				Text(format=whiteColor) description
+			Block(layout=Horizontal, format=airLeft)
+				MaterialIconButton(title="Go workspaces", icon="Dns", size=Medium, color="white") as OpenPage(ImeElements.workspaces)
 		Block(layout=Horizontal Center EndJustified)
 			User(mode=OnlyPhoto) user
-				Block(format=spaced)
-					Link(title="Home") as OpenPage(page=ImeElements.home)
-					Link(title="My workspaces") as OpenPage(page=ImeElements.workspaces)
+				Selector as ListBox
+					Block as Option > Link(title="Home") as OpenPage(page=ImeElements.home)
+					Block as Option > Link(title="My workspaces") as OpenPage(page=ImeElements.workspaces)
 
 Display intinoFileBrowser
 	Notification refresh as Object(intinoFileBrowserItem) List

@@ -21,4 +21,11 @@ public class HeaderTemplate extends AbstractHeaderTemplate<ImeBox> {
 		searchField.onChange(e -> searchListener.accept(e.value()));
 		searchField.onEnterPress(e -> searchListener.accept(e.value()));
 	}
+
+	@Override
+	public void refresh() {
+		super.refresh();
+		notLoggedToolbar.visible(session().user() == null);
+		user.visible(session().user() != null);
+	}
 }

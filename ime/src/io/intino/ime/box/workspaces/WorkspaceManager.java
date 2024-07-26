@@ -39,6 +39,16 @@ public class WorkspaceManager {
 		return workspaceOf(name);
 	}
 
+	public Workspace create(Workspace workspace) {
+		try {
+			Files.writeString(archetype.workspaces().definition(workspace.name()).toPath(), Json.toString(workspace));
+			return workspace;
+		} catch (IOException e) {
+			Logger.error(e);
+			return null;
+		}
+	}
+
 	public WorkspaceContainer.File create(Workspace workspace, String filename, WorkspaceContainer.File parent) {
 		return new WorkspaceContainerWriter(archetype.workspaces().documents(workspace.name())).create(filename, parent);
 	}

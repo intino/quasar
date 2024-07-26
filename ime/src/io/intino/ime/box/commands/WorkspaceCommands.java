@@ -1,6 +1,7 @@
 package io.intino.ime.box.commands;
 
 import io.intino.ime.box.ImeBox;
+import io.intino.ime.box.commands.workspace.CreateWorkspaceCommand;
 import io.intino.ime.box.commands.workspace.CreateWorkspaceFileCommand;
 import io.intino.ime.box.commands.workspace.RemoveWorkspaceFileCommand;
 import io.intino.ime.box.commands.workspace.SaveWorkspaceFileCommand;
@@ -11,6 +12,14 @@ public class WorkspaceCommands extends Commands {
 
 	public WorkspaceCommands(ImeBox box) {
 		super(box);
+	}
+
+	public Workspace create(String name, String title, String dsl, String username) {
+		CreateWorkspaceCommand command = setup(new CreateWorkspaceCommand(box), username);
+		command.name = name;
+		command.title = title;
+		command.dsl = dsl;
+		return command.execute();
 	}
 
 	public WorkspaceContainer.File create(Workspace workspace, String filename, WorkspaceContainer.File parent, String username) {

@@ -1,5 +1,9 @@
 TARGETS:{editor}
 
++ configuration
+    - languages() in "languages.tsv"
+    - workspaceSequence() in "workspace-sequence.tsv"
+
 + workspaces in "workspaces"
     - definition(name) in "{name}/definition.json"
     - documents(name) in "{name}/documents"

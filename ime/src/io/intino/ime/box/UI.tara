@@ -5,7 +5,7 @@ use Workspaces
 use Theme
 
 Service ImeElements as UI(port = "{port}", title = "{title}", favicon = "/icons/favicons/favicon.ico")
-	Authentication(by="")
+	Authentication(by="{federation-url}")
 
 	Resource(path = "/") home as Page(homeTemplate) Main
 	Resource(path = "/workspaces") workspaces as Page(workspacesTemplate) Confidential
@@ -19,13 +19,14 @@ Template homeTemplate as Relative(height=100%, width=100%)
 		Text(value="" , translate=true, format=h3 airTop) openingWorkspaceMessage
 
 	Block(layout=Vertical Flexible Center, format=greyBackground) bodyBlock as Relative(width=100%)
-		Block(format=middleTopSpaced middleBottomSpaced autoHeight) as Relative(width=60%)
+		Block(format=middleTopSpaced middleBottomSpaced autoHeight) as Relative(width=70%)
 			Text countModels
-		Block(format=whiteBackground topSpaced leftSpaced) as Relative(width=60%)
+		Block(format=whiteBackground topSpaced leftSpaced) as Relative(width=70%)
 			TemplateStamp(template=workspacesMagazine) workspacesMagazine
 
 Template(layout=Vertical Flexible) workspacesMagazine as Relative(height=100%, width=100%)
 	Magazine(itemClass="io.intino.ime.box.workspaces.Workspace") workspacesMagazineCatalog
+		noItemsMessage = "No workspaces"
 		Mold
 			Item(height=100px) magazineItem
 				Block(format=magazineWorkspace)
@@ -42,15 +43,18 @@ Template(layout=Vertical Flexible) workspacesMagazine as Relative(height=100%, w
 	Block(format=spaced) operationsToolbar as Popover
 		Link(title="Share workspace") as Action
 
-Template(format=headerBackground topSpaced bottomSpaced) headerTemplate
+Template(format=headerBackground middleTopSpaced middleBottomSpaced) headerTemplate
 	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)
 		Block(layout=Horizontal Flexible Center, format=airLeft)
+			Image(value="/logo-dark.png", format=airLeft doubleAirRight, mobileReduceFactor=75%) as Absolute(width=45px, height=45px)
 			Block
 				Text(format=h3 appTitleStyle, value="Quasar")
 				Text(format=whiteColor, value="Design your own DSL models and run them wherever you want")
 			Block(layout=Vertical Flexible)
 				Block(layout=Vertical CenterCenter) > Block(format=searchBox) as Relative(width=60%) > Text(format=whiteBackground) searchField as Editable(placeholder="Search")
 		Block(layout=Horizontal Center EndJustified)
-			User(mode=OnlyPhoto) user
-				Block(format=spaced)
-					Link(title="My workspaces") as OpenPage(page=ImeElements.workspaces)
+			Block(visible=false, format=airRight) notLoggedToolbar
+				Link(title="LOG IN", format=white) login as OpenPage(ImeElements.workspaces)
+			User(mode=OnlyPhoto, visible=false) user
+				Selector as ListBox
+					Block as Option > Link(title="My workspaces") as OpenPage(page=ImeElements.workspaces)

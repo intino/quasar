@@ -9,20 +9,25 @@ Artifact(groupId = "io.intino", version = "1.0.0") ime
 		Compile("io.intino.alexandria", "core-framework", "2.2.0")
 		Compile("io.intino.alexandria", "logger4j", "1.0.1")
 		Compile("io.intino", "language-server", "1.0.0-SNAPSHOT")
+		Compile("io.intino.amidas", "accessor", "4.1.1")
 
-		Web("io.intino.lsp", "ime-elements", "1.0.0")
+		Web("io.intino", "ime-elements", "1.0.0")
 
 		Test("junit", "junit", "4.13")
-		Web(groupId = "io.intino", artifactId = "ime-elements", version = "1.0.0")
+
 	Package(mode = ModulesAndLibrariesLinkedByManifest) as Runnable(mainClass="io.intino.ime.box.Main")
 
 	Parameter("home")
 	Parameter("port")
+	Parameter("url")
 	Parameter("title")
 	Parameter("language-artifactory")
+	Parameter("federation-url")
 
 RunConfiguration local
 	Argument("home", "./temp")
+	Argument("url", "http://localhost:8080")
 	Argument("port", "8080")
+	Argument("federation-url", "https://cosmos.monentia.es/login")
 	Argument("title", "Intino Language editor")
 	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")

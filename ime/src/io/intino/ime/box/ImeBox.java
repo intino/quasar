@@ -1,21 +1,29 @@
 package io.intino.ime.box;
 
+import io.intino.alexandria.logger.Logger;
+import io.intino.alexandria.ui.services.auth.Space;
+import io.intino.amidas.accessor.alexandria.core.AmidasOauthAccessor;
 import io.intino.ime.box.commands.Commands;
 import io.intino.ime.box.commands.CommandsFactory;
 import io.intino.ime.box.lsp.LanguageServerWebSocketHandler;
+import io.intino.ime.box.util.Languages;
+import io.intino.ime.box.util.WorkspaceSequence;
 import io.intino.ime.box.workspaces.WorkspaceManager;
 import io.intino.languagearchetype.Archetype;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class ImeBox extends AbstractBox {
 	private Archetype archetype;
 	private WorkspaceManager workspaceManager;
 	private CommandsFactory commandsFactory;
 	private LanguageProvider languageProvider;
+	private AmidasOauthAccessor amidasOauthAccessor;
 
 	public ImeBox(String[] args) {
 		this(new ImeConfiguration(args));
 		this.archetype = new Archetype(configuration.home());
-
 	}
 
 	public ImeBox(ImeConfiguration configuration) {
@@ -33,6 +41,8 @@ public class ImeBox extends AbstractBox {
 		languageProvider = new LanguageProvider(archetype.repository().languages().root(), url(configuration.languageArtifactory()));
 		commandsFactory = new CommandsFactory(this);
 		workspaceManager = new WorkspaceManager(archetype);
+		Languages.init(archetype.configuration().languages());
+		WorkspaceSequence.init(archetype.configuration().workspaceSequence());
 	}
 
 	@Override
@@ -67,7 +77,8 @@ public class ImeBox extends AbstractBox {
 	}
 
 	protected io.intino.alexandria.ui.services.AuthService authService(java.net.URL authServiceUrl) {
-		//TODO add your authService
-		return null;
+		if (authServiceUrl == null) return null;
+		if (amidasOauthAccessor == null) amidasOauthAccessor = new AmidasOauthAccessor(new Space(url(configuration().url())).name("quasar-ime"), authServiceUrl);
+		return amidasOauthAccessor;
 	}
 }

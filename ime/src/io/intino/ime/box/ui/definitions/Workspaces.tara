@@ -12,15 +12,31 @@ Template workspacesTemplate as Relative(height=100%, width=100%)
 
 	Block(layout=Horizontal Flexible) bodyBlock
 		Block(format=greyBackground) as Relative(width=20%)
-			Block(format=autoHeight) as Relative(width=100%) > Block(layout=Vertical CenterCenter, format=leftPanelBackground topSpaced bottomSpaced) > Button(title="New workspace", highlight=Fill) as Action
+			Block(format=autoHeight) as Relative(width=100%)
+				Block(layout=Vertical CenterCenter, format=leftPanelBackground topSpaced bottomSpaced)
+					Button(title="New workspace", highlight=Fill) as OpenDialog(addWorkspaceDialog)
 
 			Block
 				Selector workspacesGroupSelector as ListBox
-					Text(value="All workspaces") allWorkspacesOption as Option
-					Text(value="Your workspaces") ownerWorkspacesOption as Option
+					Text(value="My workspaces") ownerWorkspacesOption as Option
 					Text(value="Shared with you") sharedWorkspacesOption as Option
 
 		Block(layout=Vertical Flexible, format=spaced) > TemplateStamp(template=workspacesCatalog) workspacesCatalog
+
+	Dialog(title="New workspace") addWorkspaceDialog as Absolute(width=600px, height=500px)
+        Block as Relative(height=100%, offsetHeight=40px)
+        	Block(format=doubleAirBottom)
+        		Text(value="Name", translate=true, format=labelColor)
+        		Text nameField
+			Text(format=doubleAirBottom) titleField as Editable Labeled("Title")
+        	Block
+        		Text(value="DSL", translate=true, format=labelColor)
+	        	Selector(format=doubleAirBottom) dslField as ComboBox(placeholder="Select language")
+			Text(format=doubleAirBottom) dslVersionField as Editable(placeholder="1.0.0") Labeled("DSL Version")
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addWorkspaceDialog)
+            Button(title="Create", size=Small, highlight=Fill) createWorkspace as Action
 
 Template workspacesCatalog as Relative(height=100%, width=100%)
 	Text(format=h4) title
@@ -39,14 +55,16 @@ Template workspacesCatalog as Relative(height=100%, width=100%)
 			Heading operationsHeading > Text(value="Operations", translate=true)
 			Item(height=30px, width=10%) operationsItem
 
-Template(format=headerBackground topSpaced bottomSpaced) workspacesHeaderTemplate
+Template(format=headerBackground middleTopSpaced middleBottomSpaced) workspacesHeaderTemplate
 	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)
 		Block(layout=Horizontal Flexible Center, format=airLeft)
-			MaterialIconButton(title="Goto home", icon="Home", size=Large, color="white", format=airRight) as OpenPage(ImeElements.home)
+			Link(title="", format=logoLink) as OpenPage(ImeElements.home)
+			Image(value="/logo-dark.png", format=airLeft doubleAirRight, mobileReduceFactor=75%) as Absolute(width=45px, height=45px)
 			Block
-				Text(format=h3 appTitleStyle, value="Workspaces") title
+				Text(format=h3 appTitleStyle, value="My workspaces") title
 				Text(format=whiteColor, value="The list of workspaces you designed")
+			Block(layout=Horizontal, format=airLeft)
 		Block(layout=Horizontal Center EndJustified)
 			User(mode=OnlyPhoto) user
-				Block(format=spaced)
-					Link(title="Home") as OpenPage(page=ImeElements.home)
+				Selector as ListBox
+					Block as Option > Link(title="Home") as OpenPage(page=ImeElements.home)

@@ -22,6 +22,7 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
+		header.refresh();
 		AllWorkspacesDatasource source = new AllWorkspacesDatasource(box(), session());
 		countModels.value(Formatters.countMessage(source.itemCount(), "workspace", "workspaces", language()));
 		refreshWorkspaces();

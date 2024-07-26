@@ -181,6 +181,7 @@ Format("color:'white'") white
 Format("bottom:'-10px',textAlign:'center',width:'100%',color:'red',marginLeft:'10px'") loginError
 Format("position:'absolute',bottom:'0',top:'0',width:'100%',height:'100%',zIndex:'0'") backgroundLogin
 Format("filter:'brightness(0) invert(1)',position:'absolute',margin:'30px'") logoLogin
+Format("position:'absolute',zIndex:'10',width:'85px',height:'65px',top:'0',left:'0'") logoLink
 Format("zIndex:'1'") visible
 Format("width:'150px'") openUsersButton
 Format("fontSize:'20pt',textAlign:'center',marginTop:'40px'") userNotGranted
@@ -245,7 +246,7 @@ Format("width:'100px',height:'100px',background:'white',border:'1px solid #ddd'"
 Format("position:'absolute',marginLeft:'60px',bottom:'0',marginBottom:'10px'") footerDateNavigator
 Format("minWidth:'300px',minHeight:'100px'") popoverStyle
 Format("background:'white',borderRadius:'25px',padding:'5px 20px'") searchBox
-Format("width:'380px',minHeight:'170px',background:'#f6f7ff',padding:'10px',margin:'10px 0',borderRadius:'4px'") magazineWorkspace
+Format("minWidth:'275px',minHeight:'225px',background:'#f6f7ff',padding:'10px',margin:'10px 0',borderRadius:'4px'") magazineWorkspace
 
 // Cards
 Format("textAlign:'left',color:'#B71A1C',padding:'10px'") cardTitle

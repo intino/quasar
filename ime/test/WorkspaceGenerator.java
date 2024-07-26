@@ -54,7 +54,7 @@ public class WorkspaceGenerator {
 		"jhernandezgalvez#Jose Juan Hernández Galvez"
 	);
 
-	private static int WorkspaceIndexOffset = 4;
+	private static int WorkspaceIndexOffset = 1;
 
 	public static void main(String[] args) {
 		int index = WorkspaceIndexOffset;

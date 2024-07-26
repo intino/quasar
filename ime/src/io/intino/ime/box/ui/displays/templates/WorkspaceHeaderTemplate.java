@@ -19,9 +19,34 @@ public class WorkspaceHeaderTemplate extends AbstractWorkspaceHeaderTemplate<Ime
 	}
 
 	@Override
+	public void init() {
+		super.init();
+		cancel.onExecute(e -> hideTitleEditor());
+		save.onExecute(e -> saveTitle());
+		titleField.onEnterPress(e -> saveTitle());
+	}
+
+	@Override
 	public void refresh() {
 		super.refresh();
-		title.value(_title);
+		titleLink.title(_title);
+		titleLink.onExecute(e -> showTitleEditor());
 		description.value(_description);
+	}
+
+	private void showTitleEditor() {
+		titleField.value(_title);
+		titleLink.visible(false);
+		titleEditor.visible(true);
+	}
+
+	private void hideTitleEditor() {
+		titleLink.visible(true);
+		titleEditor.visible(false);
+	}
+
+	private void saveTitle() {
+		_title = titleField.value();
+		hideTitleEditor();
 	}
 }

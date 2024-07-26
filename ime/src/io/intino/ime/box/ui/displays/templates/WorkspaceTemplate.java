@@ -33,7 +33,7 @@ public class WorkspaceTemplate extends AbstractWorkspaceTemplate<ImeBox> {
 		try {
 			this.workspace = box().workspaceManager().workspace(name);
 			box().languageProvider().get(workspace.dsl());
-		} catch (IOException e) {
+		} catch (Throwable e) {
 			Logger.error(e);
 		}
 	}
