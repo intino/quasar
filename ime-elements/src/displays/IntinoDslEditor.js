@@ -5,6 +5,9 @@ import IntinoDslEditorNotifier from "../../gen/displays/notifiers/IntinoDslEdito
 import IntinoDslEditorRequester from "../../gen/displays/requesters/IntinoDslEditorRequester";
 import DisplayFactory from 'alexandria-ui-elements/src/displays/DisplayFactory';
 import { withSnackbar } from 'notistack';
+import Theme from "app-elements/gen/Theme";
+import { BarLoader } from "react-spinners";
+import 'alexandria-ui-elements/res/styles/layout.css';
 
 const styles = theme => ({});
 
@@ -14,6 +17,7 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
 		super(props);
 		this.notifier = new IntinoDslEditorNotifier(this);
 		this.requester = new IntinoDslEditorRequester(this);
+		this.loading = React.createRef();
 		this.state = {
 		    file: { name: "default.tara", uri: "default.tara", content: "", language: "tara" }
 		};
@@ -21,27 +25,43 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
 
 	render() {
 	    const id = this.props.id;
+	    const theme = Theme.get();
+	    const backgroundColor = theme.isDark() ? "#1F1F1F" : "white";
 	    window.intinoDslEditorParameters = this.getParameters.bind(this);
 	    window.intinoDslEditorSetup = this.handleSetup.bind(this);
         return (
-            <iframe src={Application.configuration.url + "/res/monaco.html?id=" + id + "&m=" + Math.random()}
+            <div style={{position:'relative',height:"100%",width:"100%"}}>
+                <div className="layout vertical flex center-center" ref={this.loading} style={{height:"100%",width:"100%",position:"absolute",background:backgroundColor,top:'0',display:'block'}}>
+                    <BarLoader color={theme.palette.secondary.main} width={400} loading={true}/>
+                </div>
+                <iframe src={Application.configuration.url + "/res/monaco.html?id=" + id + "&m=" + Math.random()}
                     style={{height:"calc(100% - 4px)",width:"100%",border:0}}/>
+            </div>
         );
     };
 
     getParameters = () => {
+        const theme = Theme.get();
 	    return {
+            darkMode: theme.isDark(),
             webSocketUrl: Application.configuration.baseUrl.replace("http", "ws") + "/dsl/tara?workspace=" + this.state.file.workspace,
             file: this.state.file,
         }
     };
 
-    handleSetup = (editor) => {
+    handleSetup = (editor, monaco) => {
+        const theme = Theme.get();
         const handleChange = this.handleChange.bind(this);
         const CtrlCmd = 2048;
         const KeyS = 49;
         editor.getModel().onDidChangeContent(event => handleChange(editor.getValue()));
         editor.addCommand(CtrlCmd | KeyS, this.handleSave.bind(this));
+        const loading = this.loading;
+        loading.current.style.display = "block";
+        window.setTimeout(() => {
+            monaco.editor.setTheme(theme.isDark() ? "Default Dark Modern" : "Default Light Modern");
+            window.setTimeout(() => loading.current.style.display = "none", 80);
+        }, 80);
     };
 
     handleSave = (value) => {

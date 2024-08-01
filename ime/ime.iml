@@ -95,7 +95,6 @@
     <orderEntry type="library" name="Intino: io.intino.alexandria:http:1.7.10" level="project" />
     <orderEntry type="module" module-name="ime-elements" />
     <orderEntry type="library" name="Intino: io.intino.tara:builder:1.3.1" level="project" />
-    <orderEntry type="library" name="Intino: io.intino.alexandria:ui-framework:5.1.28" level="project" />
     <orderEntry type="library" name="Intino: org.scribe:scribe:1.3.7" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:zif:2.0.0" level="project" />
     <orderEntry type="library" name="Intino: io.intino.amidas:accessor:4.1.1" level="project" />

@@ -1,12 +1,12 @@
 dsl konos
 
 Theme theme1
-	type = Normal
+	type = Auto
 
 	Typography
 		fontSize = 11px
 
-	Primary("#005b9f")
+	Primary("#005b9f", "#6595f4")
 	Secondary("#ff9100")
 	Error("#f44336")
 
@@ -52,10 +52,11 @@ Format("background:'#efefef',padding:'1px 7px',borderTop:'1px solid #aaa'") foot
 Format("padding:'10px 30px',borderTop:'1px solid #aaa'") sliderFormat
 Format("color:'white',position:'absolute',top:0,left:0,marginLeft:'180px',marginTop:'6px',textTransform:'uppercase',fontSize:'9pt'") headerSubtitle
 Format("color:'white',background:'#272C34'") footerStyle
-Format("background:'white'") whiteBackground
+Format("background:'white'", darkContent="background:'#1F1F1F'") whiteBackground
+Format("background:'white',color:'black'") searchBoxBackground
 Format("background:'#1B222C'") headerBackground
-Format("background:'#b9d1e3'") leftPanelBackground
-Format("background:'#b9d1e3',height:'39px'") headerPanel
+Format("background:'#b9d1e3'", darkContent="background:'#2a3443'") leftPanelBackground
+Format("background:'#b9d1e3',height:'39px'", darkContent="background:'#2a3443'") headerPanel
 Format("height:'calc(100% - 39px)'") displayHeaderPanel
 Format("background:'#000'") blackBackground
 Format("background:'transparent'") noBackground
@@ -162,7 +163,7 @@ Format("position:'relative'") relative
 Format("position:'absolute',right:'0',marginRight:'40px',marginTop:'3px'") clearLinkField
 Format("textAlign:'end'") endJustified
 Format("padding:'10px 35px'") riskSliderStyle
-Format("background:'#efefef'") greyBackground
+Format("background:'#efefef'", darkContent="background:'#404348'") greyBackground
 Format("boxShadow:'rgb(0 0 0 / 5%) 0px 0px 0px 1px, black 0px 0px 0px 1px inset'") blackOutlineBackground
 Format("background:'#F68A1C'") orangeBackground
 Format("boxShadow:'rgb(0 0 0 / 5%) 0px 0px 0px 1px, #F68A1C 0px 0px 0px 1px inset'") orangeOutlineBackground
@@ -174,7 +175,7 @@ Format("background:'#D74545'") redBackground
 Format("boxShadow:'rgb(0 0 0 / 5%) 0px 0px 0px 1px, #D74545 0px 0px 0px 1px inset'") redOutlineBackground
 Format("boxShadow:'rgba(215, 69, 69, 0.4) 0px 5px, rgba(215, 69, 69, 0.3) 0px 10px, rgba(215, 69, 69, 0.2) 0px 15px, rgba(215, 69, 69, 0.1) 0px 20px, rgba(215, 69, 69, 0.05) 0px 25px'") redAlertBackground
 Format("background:'#D9D9D9'") mainBackground
-Format("background:'#fafafa'") greyLightBackground
+Format("background:'#fafafa'", darkContent="background:'#404348'") greyLightBackground
 Format("background:'#aaa'") greyHardBackground
 Format("color:'#777'") grey
 Format("color:'white'") white
@@ -246,7 +247,7 @@ Format("width:'100px',height:'100px',background:'white',border:'1px solid #ddd'"
 Format("position:'absolute',marginLeft:'60px',bottom:'0',marginBottom:'10px'") footerDateNavigator
 Format("minWidth:'300px',minHeight:'100px'") popoverStyle
 Format("background:'white',borderRadius:'25px',padding:'5px 20px'") searchBox
-Format("minWidth:'275px',minHeight:'225px',background:'#f6f7ff',padding:'10px',margin:'10px 0',borderRadius:'4px'") magazineWorkspace
+Format("minWidth:'275px',minHeight:'225px',background:'#f6f7ff',padding:'10px',margin:'10px 0',borderRadius:'4px'", darkContent="background:'#333'") magazineWorkspace
 
 // Cards
 Format("textAlign:'left',color:'#B71A1C',padding:'10px'") cardTitle

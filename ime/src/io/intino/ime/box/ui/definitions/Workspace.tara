@@ -69,6 +69,9 @@ Template(format=headerBackground middleTopSpaced middleBottomSpaced) workspaceHe
 			Block(layout=Horizontal, format=airLeft)
 				MaterialIconButton(title="Go workspaces", icon="Dns", size=Medium, color="white") as OpenPage(ImeElements.workspaces)
 		Block(layout=Horizontal Center EndJustified)
+			Block(format=airRight)
+				MaterialIconButton(title="set dark mode", icon="Brightness4") as SetDarkMode
+				MaterialIconButton(title="set light mode", icon="Brightness7") as SetLightMode
 			User(mode=OnlyPhoto) user
 				Selector as ListBox
 					Block as Option > Link(title="Home") as OpenPage(page=ImeElements.home)

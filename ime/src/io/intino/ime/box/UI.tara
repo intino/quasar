@@ -51,10 +51,13 @@ Template(format=headerBackground middleTopSpaced middleBottomSpaced) headerTempl
 				Text(format=h3 appTitleStyle, value="Quasar")
 				Text(format=whiteColor, value="Design your own DSL models and run them wherever you want")
 			Block(layout=Vertical Flexible)
-				Block(layout=Vertical CenterCenter) > Block(format=searchBox) as Relative(width=60%) > Text(format=whiteBackground) searchField as Editable(placeholder="Search")
+				Block(layout=Vertical CenterCenter) > Block(format=searchBox) as Relative(width=60%) > Text(format=searchBoxBackground) searchField as Editable(placeholder="Search")
 		Block(layout=Horizontal Center EndJustified)
 			Block(visible=false, format=airRight) notLoggedToolbar
 				Link(title="LOG IN", format=white) login as OpenPage(ImeElements.workspaces)
+			Block(format=airRight)
+				MaterialIconButton(title="set dark mode", icon="Brightness4") as SetDarkMode
+				MaterialIconButton(title="set light mode", icon="Brightness7") as SetLightMode
 			User(mode=OnlyPhoto, visible=false) user
 				Selector as ListBox
 					Block as Option > Link(title="My workspaces") as OpenPage(page=ImeElements.workspaces)

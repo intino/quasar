@@ -43,14 +43,14 @@ export const runClient = async () => {
         extensions: ['.' + file.extension],
         aliases: [file.language.toUpperCase(), file.language],
     });
-    // create monaco editor
     const editor = monaco.editor.create(document.getElementById('monaco-editor-root'), {
         automaticLayout: true,
-        wordBasedSuggestions: 'off'
+        wordBasedSuggestions: 'off',
+        theme: "vs-dark",
     });
     const model = monaco.editor.createModel(file.content, file.language.toLowerCase(), monaco.Uri.parse(file.uri));
     editor.setModel(model);
-    window.parent.intinoDslEditorSetup(editor);
+    window.parent.intinoDslEditorSetup(editor, monaco);
     initWebSocketAndStartClient(parameters.webSocketUrl);
 };
 /** parameterized version , support all languageId */

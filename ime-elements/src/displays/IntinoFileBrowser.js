@@ -7,6 +7,7 @@ import DisplayFactory from 'alexandria-ui-elements/src/displays/DisplayFactory';
 import { withSnackbar } from 'notistack';
 import { ControlledTreeEnvironment, Tree } from 'react-complex-tree';
 import 'react-complex-tree/lib/style-modern.css';
+import Theme from "app-elements/gen/Theme";
 
 const styles = theme => ({});
 
@@ -26,6 +27,8 @@ class IntinoFileBrowser extends AbstractIntinoFileBrowser {
 
     render() {
         const id = this.props.id + "-tree";
+        const theme = Theme.get();
+        const style = theme.isDark() ? { backgroundColor:'#404348', color:'#e3e3e3'} : {};
         if (this.state.items.length <= 1) return (<div className="layout vertical flex center-center" style={{height:'100%',fontSize:'10pt'}}>{this.translate("No files")}</div>);
         return (
             <ControlledTreeEnvironment
@@ -38,7 +41,9 @@ class IntinoFileBrowser extends AbstractIntinoFileBrowser {
               onExpandItem={this.handleExpandItem.bind(this)}
               onCollapseItem={this.handleCollapseItem.bind(this)}
               items={this._itemsOf(this.state.items)}>
-              <Tree treeId={id} rootItem="root" treeLabel={this.translate("Files")} />
+                <div className={theme.isDark() ? "rct-dark" : "rct"} style={style}>
+                    <Tree className="rct-dark" treeId={id} rootItem="root" treeLabel={this.translate("Files")} />
+                </div>
             </ControlledTreeEnvironment>
         )
     };
