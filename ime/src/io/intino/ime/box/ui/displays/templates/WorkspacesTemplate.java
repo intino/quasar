@@ -1,21 +1,21 @@
 package io.intino.ime.box.ui.displays.templates;
 
 import io.intino.alexandria.ui.displays.UserMessage;
+import io.intino.alexandria.ui.displays.events.AddItemEvent;
 import io.intino.alexandria.ui.displays.events.SelectionEvent;
 import io.intino.alexandria.ui.utils.DelayerUtil;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.commands.WorkspaceCommands;
 import io.intino.ime.box.ui.DisplayHelper;
 import io.intino.ime.box.ui.PathHelper;
-import io.intino.ime.box.ui.datasources.OwnerWorkspacesDatasource;
-import io.intino.ime.box.ui.datasources.SharedWorkspacesDatasource;
+import io.intino.ime.box.ui.datasources.LanguagesDatasource;
 import io.intino.ime.box.ui.datasources.WorkspacesDatasource;
-import io.intino.ime.box.util.Languages;
+import io.intino.ime.box.ui.displays.rows.LanguageTableRow;
 import io.intino.ime.box.util.WorkspaceHelper;
-import io.intino.ime.box.workspaces.Workspace;
+import io.intino.ime.model.Language;
+import io.intino.ime.model.Workspace;
 
 public class WorkspacesTemplate extends AbstractWorkspacesTemplate<ImeBox> {
-	private String workspaceProposedName;
 
 	public WorkspacesTemplate(ImeBox box) {
 		super(box);
@@ -26,19 +26,21 @@ public class WorkspacesTemplate extends AbstractWorkspacesTemplate<ImeBox> {
 		super.init();
 		initAddWorkspaceDialog();
 		workspacesGroupSelector.onSelect(this::selectWorkspacesGroup);
-		workspacesGroupSelector.select("ownerWorkspacesOption");
+		workspacesGroupSelector.select("allWorkspacesOption");
 		workspacesCatalog.onOpenWorkspace(this::notifyOpeningWorkspace);
 	}
 
 	private void initAddWorkspaceDialog() {
 		addWorkspaceDialog.onOpen(e -> refreshAddWorkspaceDialog());
+		nameField.onChange(e -> DisplayHelper.checkWorkspaceName(nameField, this::translate, box()));
 		createWorkspace.onExecute(e -> createWorkspace());
 	}
 
 	private void selectWorkspacesGroup(SelectionEvent event) {
-		String selected = event.selection().isEmpty() ? "ownerWorkspacesOption" : (String) event.selection().getFirst();
-		if (selected.equals("sharedWorkspacesOption")) refreshWorkspaces("Shared with you", new SharedWorkspacesDatasource(box(), session()));
-		else refreshWorkspaces("My workspaces", new OwnerWorkspacesDatasource(box(), session()));
+		String selected = event.selection().isEmpty() ? "allWorkspacesOption" : (String) event.selection().getFirst();
+		if (selected.equals("publicWorkspacesOption")) refreshWorkspaces("Public workspaces", new WorkspacesDatasource(box(), session(), false));
+		else if (selected.equals("privateWorkspacesOption")) refreshWorkspaces("Private workspaces", new WorkspacesDatasource(box(), session(), true));
+		else refreshWorkspaces("All workspaces", new WorkspacesDatasource(box(), session(), null));
 	}
 
 	private void refreshWorkspaces(String title, WorkspacesDatasource source) {
@@ -54,25 +56,32 @@ public class WorkspacesTemplate extends AbstractWorkspacesTemplate<ImeBox> {
 	}
 
 	private void refreshAddWorkspaceDialog() {
-		workspaceProposedName = WorkspaceHelper.proposeName(box());
-		nameField.value(workspaceProposedName);
-		dslField.clear();
-		dslField.addAll(Languages.all());
-		dslVersionField.value(null);
+		nameField.value(WorkspaceHelper.proposeName());
+		languageField.valueProvider(l -> ((Language)l).id());
+		languageField.source(new LanguagesDatasource(box(), session()));
+		languageTable.onAddItem(this::refreshLanguage);
+	}
+
+	private void refreshLanguage(AddItemEvent event) {
+		Language language = event.item();
+		LanguageTableRow row = event.component();
+		row.ltNameItem.name.value(language.name());
+		row.ltVersionItem.version.value(language.version());
+		row.ltOwnerItem.owner.value(language.owner());
 	}
 
 	private void createWorkspace() {
+		if (!DisplayHelper.checkWorkspaceName(nameField, this::translate, box())) return;
 		if (!DisplayHelper.check(titleField, this::translate)) return;
-		if (!DisplayHelper.check(dslField)) {
-			notifyUser("DSL field is required", UserMessage.Type.Warning);
+		if (!DisplayHelper.check(languageField)) {
+			notifyUser("Language field is required", UserMessage.Type.Warning);
 			return;
 		}
-		if (!DisplayHelper.check(dslVersionField, this::translate)) return;
 		addWorkspaceDialog.close();
-		String dsl = dslField.selection().getFirst() + ":" + dslVersionField.value();
-		Workspace workspace = box().commands(WorkspaceCommands.class).create(workspaceProposedName, titleField.value(), dsl, username());
+		String languageId = ((Language)languageField.selection().getFirst()).id();
+		Workspace workspace = box().commands(WorkspaceCommands.class).create(nameField.value(), titleField.value(), languageId, DisplayHelper.user(session()), username());
 		notifyOpeningWorkspace(workspace);
-		DelayerUtil.execute(this, v -> notifier.redirect(PathHelper.workspacePath(session(), workspace)), 600);
+		DelayerUtil.execute(this, v -> notifier.redirect(PathHelper.workspaceUrl(session(), workspace)), 600);
 		workspacesCatalog.refresh();
 	}
 

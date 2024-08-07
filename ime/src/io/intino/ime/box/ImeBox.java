@@ -1,24 +1,23 @@
 package io.intino.ime.box;
 
-import io.intino.alexandria.logger.Logger;
 import io.intino.alexandria.ui.services.auth.Space;
 import io.intino.amidas.accessor.alexandria.core.AmidasOauthAccessor;
 import io.intino.ime.box.commands.Commands;
 import io.intino.ime.box.commands.CommandsFactory;
+import io.intino.ime.box.dsls.LanguageLoader;
+import io.intino.ime.box.dsls.LanguageManager;
+import io.intino.ime.box.dsls.LanguageServerFactory;
 import io.intino.ime.box.lsp.LanguageServerWebSocketHandler;
-import io.intino.ime.box.util.Languages;
 import io.intino.ime.box.util.WorkspaceSequence;
 import io.intino.ime.box.workspaces.WorkspaceManager;
 import io.intino.languagearchetype.Archetype;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 public class ImeBox extends AbstractBox {
 	private Archetype archetype;
+	private LanguageLoader languageLoader;
+	private LanguageManager languageManager;
 	private WorkspaceManager workspaceManager;
 	private CommandsFactory commandsFactory;
-	private LanguageProvider languageProvider;
 	private AmidasOauthAccessor amidasOauthAccessor;
 
 	public ImeBox(String[] args) {
@@ -38,16 +37,16 @@ public class ImeBox extends AbstractBox {
 	}
 
 	public void beforeStart() {
-		languageProvider = new LanguageProvider(archetype.repository().languages().root(), url(configuration.languageArtifactory()));
 		commandsFactory = new CommandsFactory(this);
+		languageLoader = new LanguageLoader(archetype.repository().languages().root(), url(configuration.languageArtifactory()));
+		languageManager = new LanguageManager(archetype);
 		workspaceManager = new WorkspaceManager(archetype);
-		Languages.init(archetype.configuration().languages());
 		WorkspaceSequence.init(archetype.configuration().workspaceSequence());
 	}
 
 	@Override
 	protected void beforeSetupImeElementsUi(io.intino.alexandria.ui.UISpark sparkInstance) {
-		LanguageServerWebSocketHandler handler = new LanguageServerWebSocketHandler(new LanguageServerFactory(languageProvider), workspaceManager);
+		LanguageServerWebSocketHandler handler = new LanguageServerWebSocketHandler(new LanguageServerFactory(languageLoader), workspaceManager);
 		sparkInstance.service().webSocket("/dsl/tara", handler);
 	}
 
@@ -60,8 +59,12 @@ public class ImeBox extends AbstractBox {
 	public void afterStop() {
 	}
 
-	public LanguageProvider languageProvider() {
-		return this.languageProvider;
+	public LanguageLoader languageProvider() {
+		return this.languageLoader;
+	}
+
+	public LanguageManager languageManager() {
+		return languageManager;
 	}
 
 	public Archetype archetype() {
@@ -79,6 +82,10 @@ public class ImeBox extends AbstractBox {
 	protected io.intino.alexandria.ui.services.AuthService authService(java.net.URL authServiceUrl) {
 		if (authServiceUrl == null) return null;
 		if (amidasOauthAccessor == null) amidasOauthAccessor = new AmidasOauthAccessor(new Space(url(configuration().url())).name("quasar-ime"), authServiceUrl);
+		return amidasOauthAccessor;
+	}
+
+	public AmidasOauthAccessor authService() {
 		return amidasOauthAccessor;
 	}
 }

@@ -8,40 +8,55 @@ Service ImeElements as UI(port = "{port}", title = "{title}", favicon = "/icons/
 	Authentication(by="{federation-url}")
 
 	Resource(path = "/") home as Page(homeTemplate) Main
-	Resource(path = "/workspaces") workspaces as Page(workspacesTemplate) Confidential
-	Resource(path = "/workspaces/:name") workspace as Page(workspaceTemplate) Confidential
+	Resource(path = "/:user/workspaces/:workspace") workspace as Page(workspaceTemplate) > Parameter file
+	Resource(path = "/:user/workspaces") workspaces as Page(workspacesTemplate) Confidential
+	Resource(path = "/home") userHome as Page(workspacesTemplate) Confidential
+	Resource(path = "/not-found") notFound as Page(permissionsTemplate) > Parameter workspace
+	Resource(path = "/permissions") permissions as Page(permissionsTemplate) > Parameter workspace
 
 Template homeTemplate as Relative(height=100%, width=100%)
 	TemplateStamp(template=headerTemplate) header
 
 	Block(layout=Vertical Flexible CenterCenter, visible=false) searchingWorkspacesBlock
-		Spinner(mode=Ring)
+		Spinner(mode=Ring, color="secondary")
 		Text(value="" , translate=true, format=h3 airTop) openingWorkspaceMessage
 
 	Block(layout=Vertical Flexible Center, format=greyBackground) bodyBlock as Relative(width=100%)
 		Block(format=middleTopSpaced middleBottomSpaced autoHeight) as Relative(width=70%)
-			Text countModels
+			Text countLanguages
 		Block(format=whiteBackground topSpaced leftSpaced) as Relative(width=70%)
-			TemplateStamp(template=workspacesMagazine) workspacesMagazine
+			TemplateStamp(template=languagesCatalog) languagesCatalog
 
-Template(layout=Vertical Flexible) workspacesMagazine as Relative(height=100%, width=100%)
-	Magazine(itemClass="io.intino.ime.box.workspaces.Workspace") workspacesMagazineCatalog
-		noItemsMessage = "No workspaces"
+Template(layout=Vertical Flexible) languagesCatalog as Relative(height=100%, width=100%)
+	Magazine(itemClass="io.intino.ime.model.Language") languagesMagazine
+		noItemsMessage = "No languages"
 		Mold
-			Item(height=100px) magazineItem
-				Block(format=magazineWorkspace)
+			Item(height=100px) languageMagazineItem
+				Block(format=languageMagazine)
 					Block(layout=Vertical Flexible)
-						Text(format=orange) owner
-						Link(title="", format=h5) title as Action
+						Block(layout=Horizontal)
+							Block(layout=Vertical Flexible) > Text(format=orange) owner
+							Block(layout=Horizontal EndJustified) > Text(visible=false) privatePill as Highlighted(textColor="white", backgroundColor="#777")
+						Text(format=h5) title
 					Block(layout=Horizontal Start, format=airTop)
 						Block(layout=Vertical Flexible)
-							Date(pattern="DD/MM/YYYY HH:mm") lastModifiedDate as Labeled("Last modified date")
-							Number executionsCount as Labeled("Executions count")
-							Text language as Labeled("DSL")
-						Block(layout=Vertical StartJustified) > MaterialIconButton(title="Operations...", icon="MoreHoriz", size=Small) as OpenPopover(popover=empty)
+							Date(pattern="DD/MM/YYYY HH:mm") createDate as Labeled("Creation date")
+							Text metaLanguage as Labeled("Created using")
+						Block(layout=Vertical StartJustified)
+							MaterialIconButton(title="Add workspace", icon="Add", size=Small, visible=false) addWorkspace as Action
+							MaterialIconButton(title="Add workspace", icon="Add", size=Small, visible=false) addPrivateWorkspace as OpenDialog(empty)
 
-	Block(format=spaced) operationsToolbar as Popover
-		Link(title="Share workspace") as Action
+	Dialog(title="Add workspace") addPrivateWorkspaceDialog as Absolute(height=260px, width=400px)
+        Block as Relative(height=100%, offsetHeight=40px)
+        	Block(format=doubleAirBottom)
+        		Text(value="Language", translate=true, format=labelColor)
+        		Text languageField
+        	Text(format=doubleAirBottom) nameField as Editable(helperText="Only alphanumeric characters are allowed") Labeled("Name") Focused
+        	Text(format=doubleAirBottom) titleField as Editable Labeled("Title")
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addPrivateWorkspaceDialog)
+            Button(title="Add", size=Small, highlight=Fill) createWorkspace as Action
 
 Template(format=headerBackground middleTopSpaced middleBottomSpaced) headerTemplate
 	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)
@@ -54,10 +69,22 @@ Template(format=headerBackground middleTopSpaced middleBottomSpaced) headerTempl
 				Block(layout=Vertical CenterCenter) > Block(format=searchBox) as Relative(width=60%) > Text(format=searchBoxBackground) searchField as Editable(placeholder="Search")
 		Block(layout=Horizontal Center EndJustified)
 			Block(visible=false, format=airRight) notLoggedToolbar
-				Link(title="LOG IN", format=white) login as OpenPage(ImeElements.workspaces)
+				Link(title="LOG IN", format=white) login as OpenPage(ImeElements.userHome)
 			Block(format=airRight)
 				MaterialIconButton(title="set dark mode", icon="Brightness4") as SetDarkMode
 				MaterialIconButton(title="set light mode", icon="Brightness7") as SetLightMode
 			User(mode=OnlyPhoto, visible=false) user
 				Selector as ListBox
-					Block as Option > Link(title="My workspaces") as OpenPage(page=ImeElements.workspaces)
+					Block as Option > Link(title="My workspaces") workspaces as OpenPage(page=ImeElements.workspaces)
+
+Template(layout=Vertical Flexible) permissionsTemplate as Relative(height=100%,width=100%)
+	Block(layout=Vertical CenterCenter, format=grey) as Relative(height=100%,width=100%)
+		Block(format=visible) as Absolute(width=400px, height=400px) Paper
+			Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
+				Block(layout=Vertical CenterCenter)
+					Image(value="/logo.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=181px, height=200px)
+					Text(value="You dont have access permissions", format=h4 airTop textCentered, translate=true) message
+			Block
+				Divider
+				Button(title="Home", visible=false) gotoHome as OpenPage(ImeElements.home)
+				Button(title="Logout", visible=false) logoutButton as Action

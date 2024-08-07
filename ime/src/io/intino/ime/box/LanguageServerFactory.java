@@ -1,6 +1,6 @@
 package io.intino.ime.box;
 
-import io.intino.ime.box.workspaces.Workspace;
+import io.intino.ime.model.Workspace;
 import io.intino.ls.IntinoLanguageServer;
 import io.intino.ls.WorkspaceManager;
 import io.intino.tara.Language;
@@ -26,7 +26,7 @@ public class LanguageServerFactory {
 
 	public LanguageServer get(Workspace workspace) throws IOException {
 		if (!servers.containsKey(workspace.name()))
-			servers.put(workspace.name(), create(languageProvider.get(workspace.dsl()), workspace.documentRoot()));
+			servers.put(workspace.name(), create(languageProvider.get(workspace.language()), workspace.documentRoot()));
 		return servers.get(workspace.name());
 	}
 }

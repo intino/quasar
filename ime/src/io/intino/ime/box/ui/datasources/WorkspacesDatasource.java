@@ -5,21 +5,24 @@ import io.intino.alexandria.ui.model.datasource.Group;
 import io.intino.alexandria.ui.model.datasource.PageDatasource;
 import io.intino.alexandria.ui.services.push.UISession;
 import io.intino.ime.box.ImeBox;
-import io.intino.ime.box.workspaces.Workspace;
+import io.intino.ime.box.workspaces.WorkspaceManager;
+import io.intino.ime.model.Workspace;
 
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-public abstract class WorkspacesDatasource extends PageDatasource<Workspace> {
+public class WorkspacesDatasource extends PageDatasource<Workspace> {
 	protected final ImeBox box;
 	protected final UISession session;
+	private final Boolean onlyPrivate;
 	private String condition;
 	private List<Filter> filters;
 
-	public WorkspacesDatasource(ImeBox box, UISession session) {
+	public WorkspacesDatasource(ImeBox box, UISession session, Boolean onlyPrivate) {
 		this.box = box;
 		this.session = session;
+		this.onlyPrivate = onlyPrivate;
 	}
 
 	public long itemCount() {
@@ -45,7 +48,12 @@ public abstract class WorkspacesDatasource extends PageDatasource<Workspace> {
 		return List.of();
 	}
 
-	protected abstract List<Workspace> load();
+	protected List<Workspace> load() {
+		WorkspaceManager manager = box.workspaceManager();
+		String username = username();
+		if (onlyPrivate == null) return manager.ownerWorkspaces(username);
+		return onlyPrivate ? manager.privateWorkspaces(username) : manager.publicWorkspaces(username);
+	}
 
 	protected String username() {
 		return session.user() != null ? session.user().username() : "Anonymous";
@@ -65,7 +73,7 @@ public abstract class WorkspacesDatasource extends PageDatasource<Workspace> {
 				DatasourceHelper.matches(w.title(), conditions) ||
 				DatasourceHelper.matches(w.owner().name(), conditions) ||
 				DatasourceHelper.matches(w.owner().fullName(), conditions) ||
-				DatasourceHelper.matches(w.dsl(), conditions)
+				DatasourceHelper.matches(w.language(), conditions)
 		).collect(toList());
 	}
 

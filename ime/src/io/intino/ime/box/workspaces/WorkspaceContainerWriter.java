@@ -2,6 +2,7 @@ package io.intino.ime.box.workspaces;
 
 import io.intino.alexandria.logger.Logger;
 import io.intino.ime.box.util.WorkspaceHelper;
+import io.intino.ime.model.Workspace;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -13,6 +14,27 @@ public class WorkspaceContainerWriter {
 
 	public WorkspaceContainerWriter(File root) {
 		this.root = root;
+	}
+
+	public void clone(File destiny) {
+		try {
+			FileUtils.copyDirectory(root, destiny);
+		} catch (IOException e) {
+			Logger.error(e);
+		}
+	}
+
+	public WorkspaceContainer.File copy(String filename, WorkspaceContainer.File source) {
+		try {
+			if (!root.exists()) root.mkdirs();
+			File file = new File(source.content().getParentFile(), filename);
+			if (source.content().isDirectory()) createDirectory(file);
+			else createFile(file, Files.readString(source.content().toPath()));
+			return WorkspaceHelper.fileOf(root, file.toPath());
+		} catch (IOException e) {
+			Logger.error(e);
+			return null;
+		}
 	}
 
 	public WorkspaceContainer.File create(String filename, WorkspaceContainer.File parent) {
@@ -43,8 +65,12 @@ public class WorkspaceContainerWriter {
 	}
 
 	private static void createEmptyFile(File file) throws IOException {
+		createFile(file, "");
+	}
+
+	private static void createFile(File file, String content) throws IOException {
 		file.getParentFile().mkdirs();
-		Files.writeString(file.toPath(), "");
+		Files.writeString(file.toPath(), content);
 	}
 
 	public void remove(WorkspaceContainer.File file) {

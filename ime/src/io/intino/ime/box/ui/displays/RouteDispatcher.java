@@ -8,10 +8,23 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	}
 
 	@Override
-	public void dispatchWorkspaces(Soul soul) {
+	public void dispatchWorkspace(Soul soul, String user, String workspace, String file) {
 	}
 
 	@Override
-	public void dispatchWorkspace(Soul soul, String name) {
+	public void dispatchWorkspaces(Soul soul, String user) {
 	}
+
+	@Override
+	public void dispatchUserHome(Soul soul) {
+	}
+
+	@Override
+	public void dispatchNotFound(Soul soul, String workspace) {
+	}
+
+	@Override
+	public void dispatchPermissions(Soul soul, String workspace) {
+	}
+
 }

@@ -1,5 +1,6 @@
 dsl Konos
 
+use Editors
 use UI
 use Theme
 
@@ -7,7 +8,7 @@ Template workspacesTemplate as Relative(height=100%, width=100%)
 	TemplateStamp(template=workspacesHeaderTemplate) header
 
 	Block(layout=Vertical Flexible CenterCenter, visible=false) openingWorkspaceBlock
-		Spinner(mode=Ring)
+		Spinner(mode=Ring, color="secondary")
 		Text(value="" , translate=true, format=h3 airTop) openingWorkspaceMessage
 
 	Block(layout=Horizontal Flexible) bodyBlock
@@ -18,21 +19,30 @@ Template workspacesTemplate as Relative(height=100%, width=100%)
 
 			Block
 				Selector workspacesGroupSelector as ListBox
-					Text(value="My workspaces") ownerWorkspacesOption as Option
-					Text(value="Shared with you") sharedWorkspacesOption as Option
+					Text(value="All workspaces") allWorkspacesOption as Option
+					Text(value="Private workspaces") privateWorkspacesOption as Option
+					Text(value="Public workspaces") publicWorkspacesOption as Option
 
 		Block(layout=Vertical Flexible, format=spaced) > TemplateStamp(template=workspacesCatalog) workspacesCatalog
 
-	Dialog(title="New workspace") addWorkspaceDialog as Absolute(width=600px, height=500px)
+	Dialog(title="New workspace") addWorkspaceDialog as Absolute(width=800px, height=800px)
         Block as Relative(height=100%, offsetHeight=40px)
-        	Block(format=doubleAirBottom)
-        		Text(value="Name", translate=true, format=labelColor)
-        		Text nameField
+			Text(format=doubleAirBottom) nameField as Editable Labeled("Name") Focused
 			Text(format=doubleAirBottom) titleField as Editable Labeled("Title")
         	Block
-        		Text(value="DSL", translate=true, format=labelColor)
-	        	Selector(format=doubleAirBottom) dslField as ComboBox(placeholder="Select language")
-			Text(format=doubleAirBottom) dslVersionField as Editable(placeholder="1.0.0") Labeled("DSL Version")
+        		Text(value="Language", translate=true, format=labelColor)
+	        	Selector(format=doubleAirBottom) languageField as CollectionBox(placeholder="Select language")
+	        		Table(itemClass="io.intino.ime.model.Language") languageTable as Selectable
+	        			noItemsMessage = "No languages"
+	        			Mold
+	        				Heading ltNameHeading > Text(value="Name", translate=true)
+	        				Item(height=20px, width=25%) ltNameItem > Text name
+	        			Mold
+	        				Heading ltVersionHeading > Text(value="Version", translate=true)
+	        				Item(height=20px, width=25%) ltVersionItem > Text version
+	        			Mold
+	        				Heading ltOwnerHeading > Text(value="Owner", translate=true)
+	        				Item(height=20px, width=50%) ltOwnerItem > Text owner
 		Divider
         Block(layout=Horizontal EndJustified)
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addWorkspaceDialog)
@@ -40,7 +50,7 @@ Template workspacesTemplate as Relative(height=100%, width=100%)
 
 Template workspacesCatalog as Relative(height=100%, width=100%)
 	Text(format=h4) title
-	Table(itemClass="io.intino.ime.box.workspaces.Workspace") workspaceTable
+	Table(itemClass="io.intino.ime.model.Workspace") workspaceTable
 		noItemsMessage = "No workspaces"
 		Mold
 			Heading workspaceTitleHeading > Sorting(collections=workspaceTable) titleSorting as OrderBy Labeled("Title")
@@ -54,6 +64,19 @@ Template workspacesCatalog as Relative(height=100%, width=100%)
 		Mold
 			Heading operationsHeading > Text(value="Operations", translate=true)
 			Item(height=30px, width=10%) operationsItem
+				Block(layout=Horizontal)
+					MaterialIconButton(title="Clone workspace", icon="FileCopy", size=Small) cloneWorkspaceTrigger as OpenDialog(empty)
+					MaterialIconButton(title="Remove workspace", icon="Delete", size=Small) removeWorkspace as Action Affirmed("Are you sure to remove workspace?")
+					TemplateStamp(template=workspaceSettingsEditor) settingsEditor
+
+	Dialog(title="Clone workspace") workspaceDialog as Absolute(width=400px, height=260px)
+        Block as Relative(height=100%, offsetHeight=40px)
+        	Text workspaceNameField as Editable(placeholder="Indicate new name", helperText="Only alphanumeric characters are allowed") Labeled("New name") Focused
+        	Text workspaceTitleField as Editable(placeholder="Indicate title") Labeled("Title")
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(workspaceDialog)
+            Button(title="Accept", size=Small, highlight=Fill) cloneWorkspace as Action
 
 Template(format=headerBackground middleTopSpaced middleBottomSpaced) workspacesHeaderTemplate
 	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)

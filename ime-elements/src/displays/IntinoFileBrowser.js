@@ -8,6 +8,7 @@ import { withSnackbar } from 'notistack';
 import { ControlledTreeEnvironment, Tree } from 'react-complex-tree';
 import 'react-complex-tree/lib/style-modern.css';
 import Theme from "app-elements/gen/Theme";
+import history from "alexandria-ui-elements/src/util/History";
 
 const styles = theme => ({});
 
@@ -18,6 +19,7 @@ class IntinoFileBrowser extends AbstractIntinoFileBrowser {
 		this.notifier = new IntinoFileBrowserNotifier(this);
 		this.requester = new IntinoFileBrowserRequester(this);
 		this.state = {
+		    itemAddress : "",
 		    items: [],
 		    focusedItem: null,
 		    expandedItems: [],
@@ -48,8 +50,12 @@ class IntinoFileBrowser extends AbstractIntinoFileBrowser {
         )
     };
 
-    refresh = (items) => {
-        this.setState({items: items});
+    refresh = (info) => {
+        this.setState({itemAddress: info.itemAddress, items: info.items});
+    };
+
+    select = (item) => {
+        this.setState({selectedItems: [item.name]});
     };
 
     _itemsOf = (items) => {
@@ -83,6 +89,7 @@ class IntinoFileBrowser extends AbstractIntinoFileBrowser {
 
     handleSelectItems = (items, treeId) => {
         if (items.length <= 0) return;
+        history.push(this.state.itemAddress.replace(/:file/, items[0]), {});
         this.requester.open(items[0]);
         this.setState({selectedItems: items});
     };

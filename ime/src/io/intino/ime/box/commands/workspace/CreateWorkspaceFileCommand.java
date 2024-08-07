@@ -2,7 +2,7 @@ package io.intino.ime.box.commands.workspace;
 
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.commands.Command;
-import io.intino.ime.box.workspaces.Workspace;
+import io.intino.ime.model.Workspace;
 import io.intino.ime.box.workspaces.WorkspaceContainer;
 
 public class CreateWorkspaceFileCommand extends Command<WorkspaceContainer.File> {

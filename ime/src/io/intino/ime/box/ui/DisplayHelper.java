@@ -4,6 +4,10 @@ import io.intino.alexandria.ui.displays.components.DateEditable;
 import io.intino.alexandria.ui.displays.components.NumberEditable;
 import io.intino.alexandria.ui.displays.components.TextEditable;
 import io.intino.alexandria.ui.displays.components.selector.Selector;
+import io.intino.alexandria.ui.services.push.UISession;
+import io.intino.alexandria.ui.services.push.User;
+import io.intino.ime.box.ImeBox;
+import io.intino.ime.box.util.WorkspaceHelper;
 
 import java.util.function.Function;
 
@@ -15,6 +19,13 @@ public class DisplayHelper {
 			field.error(translator.apply("Field required"));
 			return false;
 		}
+		return true;
+	}
+
+	public static boolean checkWorkspaceName(TextEditable<?, ?> field, Function<String, String> translator, ImeBox box) {
+		if (!check(field, translator)) return false;
+		if (WorkspaceHelper.validName(field.value())) field.error("Name contains non alphanumeric characters");
+		if (WorkspaceHelper.nameInUse(field.value(), box)) field.error("Workspace name in use");
 		return true;
 	}
 
@@ -30,4 +41,13 @@ public class DisplayHelper {
 		return field.value() != null;
 	}
 
+	public static io.intino.ime.model.User user(UISession session) {
+		User user = session.user();
+		return user != null ? new io.intino.ime.model.User(user.username(), user.fullName()) : defaultUser();
 	}
+
+	private static io.intino.ime.model.User defaultUser() {
+		return new io.intino.ime.model.User("anonymous", "Anonymous");
+	}
+
+}

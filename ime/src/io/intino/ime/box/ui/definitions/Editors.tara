@@ -1,0 +1,18 @@
+dsl Konos
+
+use UI
+use Theme
+
+Template(layout=Horizontal) workspaceSettingsEditor as Relative(height=100%, width=100%)
+	MaterialIconButton(title="Settings", icon="Settings", size=Small, visible=false) smallIcon as OpenDialog(settingsDialog)
+	MaterialIconButton(title="Settings", icon="Settings", visible=false) largeIcon as OpenDialog(settingsDialog)
+
+	Dialog(title="Settings") settingsDialog as Absolute(width=500px, height=400px)
+        Block as Relative(height=100%, offsetHeight=40px)
+        	Text(format=doubleAirBottom) settingsTitleField as Editable Labeled("Title")
+        	Switch(title = "Workspace is private", format=doubleAirBottom) accessTypeField
+        	Text(visible=false) accessTokenField as Editable Labeled("Access token")
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Close", size=Small, format=airRight) as CloseDialog(settingsDialog)
+            Button(title="Save", size=Small, highlight=Fill) saveSettings as Action

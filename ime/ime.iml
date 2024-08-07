@@ -100,5 +100,6 @@
     <orderEntry type="library" name="Intino: io.intino.amidas:accessor:4.1.1" level="project" />
     <orderEntry type="library" name="Intino: io.intino.amidas:shared:4.0.5" level="project" />
     <orderEntry type="library" name="Intino: org.java-websocket:Java-WebSocket:1.5.3" level="project" />
+    <orderEntry type="library" name="Intino: io.intino.alexandria:ui-framework:5.2.7" level="project" />
   </component>
 </module>

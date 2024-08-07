@@ -1,5 +1,6 @@
 dsl Konos
 
+use Editors
 use UI
 use Theme
 
@@ -11,10 +12,11 @@ Template workspaceTemplate as Relative(height=100%, width=100%)
 			Block(layout=Horizontal, format=headerPanel leftSpaced rightSpaced rightBordered)
 				Block(layout=Horizontal Flexible) > Text(value="Browser", format=h6, translate=true)
 				Block(layout=Horizontal EndJustified)
-					MaterialIconButton(title="Add file", icon="Description", size=Small) addFilesTrigger as OpenDialog(addFilesDialog)
-					MaterialIconButton(title="Add folder", icon="Folder", size=Small) addFolderTrigger as OpenDialog(addFolderDialog)
+					MaterialIconButton(title="Add file", icon="Description", size=Small) addFileTrigger as OpenDialog(fileDialog)
+					MaterialIconButton(title="Add folder", icon="Folder", size=Small) addFolderTrigger as OpenDialog(fileDialog)
+					MaterialIconButton(title="Clone file", icon="FileCopy", size=Small) copyFileTrigger as OpenDialog(fileDialog) Readonly
 					MaterialIconButton(title="Remove", icon="Delete", size=Small) removeFileTrigger as Action Affirmed("Are you sure to remove?") Readonly
-					MaterialIconButton(title="Upload", icon="CloudUpload", size=Small) uploadFilesTrigger as OpenDialog(addFilesDialog)
+					MaterialIconButton(title="Upload", icon="CloudUpload", size=Small) uploadFilesTrigger as OpenDialog(fileDialog)
 			DisplayStamp(display=intinoFileBrowser, format=displayHeaderPanel) intinoFileBrowser
 
 		Block(layout=Vertical Flexible)
@@ -30,29 +32,24 @@ Template workspaceTemplate as Relative(height=100%, width=100%)
 			Block(layout=Vertical Flexible, visible=false) fileSelectedBlock
 				DisplayStamp(display=intinoDslEditor, format=fullHeight) intinoDslEditor
 
-	Dialog(title="Add file") addFilesDialog as Absolute(width=300px, height=200px)
+	Dialog(title="") fileDialog as Absolute(width=300px, height=200px)
         Block as Relative(height=100%, offsetHeight=40px)
-        	Text fileField as Editable(placeholder="Indicate file name") Labeled("File name") Focused
+        	Text fileField as Editable(placeholder="Indicate name") Labeled("Name") Focused
 		Divider
         Block(layout=Horizontal EndJustified)
-            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addFilesDialog)
-            Button(title="Accept", size=Small, highlight=Fill) addFiles as Action Readonly
-
-	Dialog(title="Add folder") addFolderDialog as Absolute(width=300px, height=200px)
-        Block as Relative(height=100%, offsetHeight=40px)
-        	Text folderField as Editable(placeholder="Indicate folder name") Labeled("Folder name") Focused
-		Divider
-        Block(layout=Horizontal EndJustified)
-            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addFolderDialog)
-            Button(title="Accept", size=Small, highlight=Fill) addFolder as Action Readonly
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(fileDialog)
+            Button(title="Accept", size=Small, highlight=Fill) addFile as Action Readonly
 
 	Dialog(title="File modified") fileModifiedDialog as Absolute(width=500px, height=180px)
         Block as Relative(height=100%, offsetHeight=40px)
-        	Text(value="File have been modified. If continue, you will loss changes in file. Are you want to continue?", translate=true)
+        	Text(value="File have been modified. What do you want to do?", translate=true)
 		Divider
-        Block(layout=Horizontal EndJustified)
-            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(fileModifiedDialog)
-            Button(title="Continue", size=Small, highlight=Fill) continueWithoutSavingFile as Action
+		Block(layout=Horizontal)
+			Block(layout=Horizontal Flexible StartJustified)
+				Button(title="Cancel", size=Small, format=airRight) cancelSavingFile as Action
+			Block(layout=Horizontal EndJustified)
+				Button(title="Don't save", size=Small, format=airRight) continueWithoutSavingFile as Action
+				Button(title="Save", size=Small, highlight=Fill) continueSavingFile as Action
 
 Template(format=headerBackground middleTopSpaced middleBottomSpaced) workspaceHeaderTemplate
 	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)
@@ -61,25 +58,31 @@ Template(format=headerBackground middleTopSpaced middleBottomSpaced) workspaceHe
 			Image(value="/logo-dark.png", format=airLeft doubleAirRight, mobileReduceFactor=75%) as Absolute(width=45px, height=45px)
 			Block
 				Link(format=h3 appTitleStyle, title="Workspace") titleLink
-				Block(visible=false) titleEditor
-					Text(value="Browser", format=h6 whiteBackground) titleField as Editable
-					Link(title="Cancel") cancel as Action
+				Block(layout=Horizontal Center, visible=false) titleEditor
+					Text(value="Browser", format=h6 whiteBackground airRight minTitleEditorWidth) titleField as Editable
+					Link(title="Cancel", format=airRight) cancel as Action
 					Link(title="Save") save as Action
 				Text(format=whiteColor) description
 			Block(layout=Horizontal, format=airLeft)
-				MaterialIconButton(title="Go workspaces", icon="Dns", size=Medium, color="white") as OpenPage(ImeElements.workspaces)
+				MaterialIconButton(title="Go workspaces", icon="Dns", size=Medium, visible=false) workspaces as OpenPage(ImeElements.workspaces)
 		Block(layout=Horizontal Center EndJustified)
-			Block(format=airRight)
-				MaterialIconButton(title="set dark mode", icon="Brightness4") as SetDarkMode
-				MaterialIconButton(title="set light mode", icon="Brightness7") as SetLightMode
-			User(mode=OnlyPhoto) user
+			Block(layout=Horizontal, format=airRight)
+				MaterialIconButton(title="Set dark mode", icon="Brightness4") as SetDarkMode
+				MaterialIconButton(title="Set light mode", icon="Brightness7") as SetLightMode
+				TemplateStamp(template=workspaceSettingsEditor) settingsEditor
+			User(mode=OnlyPhoto, visible=false) user
 				Selector as ListBox
 					Block as Option > Link(title="Home") as OpenPage(page=ImeElements.home)
-					Block as Option > Link(title="My workspaces") as OpenPage(page=ImeElements.workspaces)
+					Block as Option > Link(title="My workspaces") myWorkspaces as OpenPage(page=ImeElements.workspaces)
 
 Display intinoFileBrowser
-	Notification refresh as Object(intinoFileBrowserItem) List
+	Notification refresh as Object(intinoFileBrowserInfo)
+	Notification select as Object(intinoFileBrowserItem)
 	Request open as Text
+
+Schema intinoFileBrowserInfo
+	Attribute itemAddress as Text
+	Attribute items as Object(intinoFileBrowserItem) List
 
 Schema intinoFileBrowserItem
 	Attribute name as Text

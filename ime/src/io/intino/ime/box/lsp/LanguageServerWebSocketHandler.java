@@ -1,9 +1,8 @@
 package io.intino.ime.box.lsp;
 
 import io.intino.alexandria.logger.Logger;
-import io.intino.ime.box.LanguageProvider;
-import io.intino.ime.box.LanguageServerFactory;
-import io.intino.ime.box.workspaces.Workspace;
+import io.intino.ime.box.dsls.LanguageServerFactory;
+import io.intino.ime.model.Workspace;
 import io.intino.ime.box.workspaces.WorkspaceManager;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;

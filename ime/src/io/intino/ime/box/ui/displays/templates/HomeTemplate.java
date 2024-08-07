@@ -1,9 +1,9 @@
 package io.intino.ime.box.ui.displays.templates;
 
 import io.intino.ime.box.ImeBox;
-import io.intino.ime.box.ui.datasources.AllWorkspacesDatasource;
+import io.intino.ime.box.ui.datasources.LanguagesDatasource;
 import io.intino.ime.box.util.Formatters;
-import io.intino.ime.box.workspaces.Workspace;
+import io.intino.ime.model.Workspace;
 
 public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 
@@ -15,7 +15,7 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 	public void init() {
 		super.init();
 		header.onSearch(this::filter);
-		workspacesMagazine.onOpenWorkspace(this::notifyOpeningWorkspace);
+		languagesCatalog.onOpenWorkspace(this::notifyOpeningWorkspace);
 		refresh();
 	}
 
@@ -23,14 +23,14 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 	public void refresh() {
 		super.refresh();
 		header.refresh();
-		AllWorkspacesDatasource source = new AllWorkspacesDatasource(box(), session());
-		countModels.value(Formatters.countMessage(source.itemCount(), "workspace", "workspaces", language()));
-		refreshWorkspaces();
+		LanguagesDatasource source = new LanguagesDatasource(box(), session());
+		countLanguages.value(Formatters.countMessage(source.itemCount(), "language", "languages", language()));
+		refreshWorkspaces(source);
 	}
 
-	private void refreshWorkspaces() {
-		workspacesMagazine.source(new AllWorkspacesDatasource(box(), session()));
-		workspacesMagazine.refresh();
+	private void refreshWorkspaces(LanguagesDatasource source) {
+		languagesCatalog.source(source);
+		languagesCatalog.refresh();
 	}
 
 	private void notifyOpeningWorkspace(Workspace workspace) {
@@ -40,7 +40,7 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 	}
 
 	private void filter(String condition) {
-		workspacesMagazine.filter(condition);
+		languagesCatalog.filter(condition);
 	}
 
 }
