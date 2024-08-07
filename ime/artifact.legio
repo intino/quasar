@@ -29,6 +29,7 @@ RunConfiguration local
 	Argument("url", "http://localhost:8080")
 	Argument("port", "8080")
 	//Argument("federation-url", "https://cosmos.monentia.es/login")
-	Argument("federation-url", "http://localhost:8000")
+	//Argument("federation-url", "http://localhost:8000")
+	Argument("federation-url", "")
 	Argument("title", "Intino Language editor")
 	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")

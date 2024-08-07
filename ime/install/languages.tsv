@@ -1,0 +1,13 @@
+Id	Level	Owner	Public	CreateDate
+proteo:1.0.4	L3	Intino	true	1722608511
+wool:1.0.0-SNAPSHOT	L2(proteo:1.0.4)	Monentia SL	true	1722608511
+despachia:1.0.0-SNAPSHOT	L1(wool:1.0.0-SNAPSHOT)	Monentia SL	true	1722608511
+solicita:1.0.0-SNAPSHOT	L1(wool:1.0.0-SNAPSHOT)	Monentia SL	true	1722608511
+amidas:12.2.4	L2(proteo:1.0.4)	Intino	true	1722608511
+monentia-federation:1.0.0-SNAPSHOT	L1(amidas:12.2.4)	Intino	true	1722608511
+flogo:1.0.0-SNAPSHOT	L2(proteo:1.0.4)	Intino	true	1722608511
+woven-context-extractor:1.0.0-SNAPSHOT	L1(flogo:1.0.0-SNAPSHOT)	Monentia SL	true	1722608511
+despachia-x-y-translator:1.0.0-SNAPSHOT	L1(flogo:1.0.0-SNAPSHOT)	Monentia SL	true	1722608511
+despachia-message-classifier:1.0.0-SNAPSHOT	L1(flogo:1.0.0-SNAPSHOT)	Monentia SL	true	1722608511
+despachia-hydrator:1.0.0-SNAPSHOT	L1(flogo:1.0.0-SNAPSHOT)	Monentia SL	true	1722608511
+despachia-speaker:1.0.0-SNAPSHOT	L1(flogo:1.0.0-SNAPSHOT)	Monentia SL	false	1722608511
