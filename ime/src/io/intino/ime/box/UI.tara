@@ -49,10 +49,10 @@ Template(format=headerBackground middleTopSpaced middleBottomSpaced) headerTempl
 
 Template(layout=Vertical Flexible) permissionsTemplate as Relative(height=100%,width=100%)
 	Block(layout=Vertical CenterCenter, format=grey) as Relative(height=100%,width=100%)
-		Block(format=visible) as Absolute(width=400px, height=400px) Paper
+		Block(format=visible headerBackground) as Absolute(width=400px, height=400px) Paper
 			Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
 				Block(layout=Vertical CenterCenter)
-					Image(value="/logo.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=181px, height=200px)
+					Image(value="/logo-dark.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=181px, height=200px)
 					Text(value="You dont have access permissions", format=h4 airTop textCentered, translate=true) message
 			Block
 				Divider
@@ -63,10 +63,10 @@ Template(layout=Vertical Flexible) permissionsTemplate as Relative(height=100%,w
 
 Template(layout=Vertical Flexible) notFoundTemplate as Relative(height=100%,width=100%)
 	Block(layout=Vertical CenterCenter, format=grey) as Relative(height=100%,width=100%)
-		Block(format=visible) as Absolute(width=400px, height=400px) Paper
+		Block(format=visible headerBackground) as Absolute(width=400px, height=400px) Paper
 			Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
 				Block(layout=Vertical CenterCenter)
-					Image(value="/logo.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=181px, height=200px)
+					Image(value="/logo-dark.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=181px, height=200px)
 					Text(value="Workspace not found", format=h4 airTop textCentered, translate=true) message
 			Block
 				Divider
