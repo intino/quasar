@@ -5,6 +5,9 @@ import io.intino.ime.box.ui.PathHelper;
 import io.intino.ime.box.ui.displays.templates.WorkspaceTemplate;
 import io.intino.ime.model.Workspace;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 public class WorkspacePage extends AbstractWorkspacePage {
 	public String user;
 	public String workspace;
@@ -23,7 +26,7 @@ public class WorkspacePage extends AbstractWorkspacePage {
 	@Override
 	public String redirectUrl() {
 		Workspace workspace = box.workspaceManager().workspace(this.workspace);
-		return session.browser().baseUrl() + (workspace != null ? "/permissions" : "/not-found") + "?workspace=" + this.workspace;
+		return session.browser().baseUrl() + (workspace != null ? "/permissions" : "/not-found") + "?workspace=" + this.workspace + "&callback=" + URLEncoder.encode(session.browser().requestUrl(), StandardCharsets.UTF_8);
 	}
 
 	public io.intino.alexandria.ui.Soul prepareSoul(io.intino.alexandria.ui.services.push.UIClient client) {

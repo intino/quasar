@@ -8,6 +8,10 @@ public class PathHelper {
 
 	public static final String PublicUser = "public";
 
+	public static String homeUrl(UISession session) {
+		return session.browser().baseUrl() + "/" + (session.isLogged() ? "home" : "");
+	}
+
 	public static String workspacesUrl(UISession session) {
 		return session.browser().baseUrl() + "/" + userOf(session) + "/workspaces";
 	}

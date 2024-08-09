@@ -1,5 +1,6 @@
 dsl Konos
 
+use Languages
 use Workspace
 use Workspaces
 use Theme
@@ -11,7 +12,7 @@ Service ImeElements as UI(port = "{port}", title = "{title}", favicon = "/icons/
 	Resource(path = "/:user/workspaces/:workspace") workspace as Page(workspaceTemplate) > Parameter file
 	Resource(path = "/:user/workspaces") workspaces as Page(workspacesTemplate) Confidential
 	Resource(path = "/home") userHome as Page(workspacesTemplate) Confidential
-	Resource(path = "/not-found") notFound as Page(permissionsTemplate) > Parameter workspace
+	Resource(path = "/not-found") notFound as Page(notFoundTemplate) > Parameter workspace
 	Resource(path = "/permissions") permissions as Page(permissionsTemplate) > Parameter workspace
 
 Template homeTemplate as Relative(height=100%, width=100%)
@@ -26,37 +27,6 @@ Template homeTemplate as Relative(height=100%, width=100%)
 			Text countLanguages
 		Block(format=whiteBackground topSpaced leftSpaced) as Relative(width=70%)
 			TemplateStamp(template=languagesCatalog) languagesCatalog
-
-Template(layout=Vertical Flexible) languagesCatalog as Relative(height=100%, width=100%)
-	Magazine(itemClass="io.intino.ime.model.Language") languagesMagazine
-		noItemsMessage = "No languages"
-		Mold
-			Item(height=100px) languageMagazineItem
-				Block(format=languageMagazine)
-					Block(layout=Vertical Flexible)
-						Block(layout=Horizontal)
-							Block(layout=Vertical Flexible) > Text(format=orange) owner
-							Block(layout=Horizontal EndJustified) > Text(visible=false) privatePill as Highlighted(textColor="white", backgroundColor="#777")
-						Text(format=h5) title
-					Block(layout=Horizontal Start, format=airTop)
-						Block(layout=Vertical Flexible)
-							Date(pattern="DD/MM/YYYY HH:mm") createDate as Labeled("Creation date")
-							Text metaLanguage as Labeled("Created using")
-						Block(layout=Vertical StartJustified)
-							MaterialIconButton(title="Add workspace", icon="Add", size=Small, visible=false) addWorkspace as Action
-							MaterialIconButton(title="Add workspace", icon="Add", size=Small, visible=false) addPrivateWorkspace as OpenDialog(empty)
-
-	Dialog(title="Add workspace") addPrivateWorkspaceDialog as Absolute(height=260px, width=400px)
-        Block as Relative(height=100%, offsetHeight=40px)
-        	Block(format=doubleAirBottom)
-        		Text(value="Language", translate=true, format=labelColor)
-        		Text languageField
-        	Text(format=doubleAirBottom) nameField as Editable(helperText="Only alphanumeric characters are allowed") Labeled("Name") Focused
-        	Text(format=doubleAirBottom) titleField as Editable Labeled("Title")
-		Divider
-        Block(layout=Horizontal EndJustified)
-            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addPrivateWorkspaceDialog)
-            Button(title="Add", size=Small, highlight=Fill) createWorkspace as Action
 
 Template(format=headerBackground middleTopSpaced middleBottomSpaced) headerTemplate
 	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)
@@ -86,5 +56,20 @@ Template(layout=Vertical Flexible) permissionsTemplate as Relative(height=100%,w
 					Text(value="You dont have access permissions", format=h4 airTop textCentered, translate=true) message
 			Block
 				Divider
-				Button(title="Home", visible=false) gotoHome as OpenPage(ImeElements.home)
-				Button(title="Logout", visible=false) logoutButton as Action
+				Block(layout=Horizontal CenterJustified, format=middleAirTop)
+					Button(title="Home", highlight=Outline, format=airRight) gotoHome as OpenPage(ImeElements.home)
+					Button(title="My workspaces", visible=false, highlight=Outline, format=airRight) myWorkspaces as OpenPage(ImeElements.workspaces)
+					Button(title="Logout", highlight=Outline, visible=false) logoutButton as Action
+
+Template(layout=Vertical Flexible) notFoundTemplate as Relative(height=100%,width=100%)
+	Block(layout=Vertical CenterCenter, format=grey) as Relative(height=100%,width=100%)
+		Block(format=visible) as Absolute(width=400px, height=400px) Paper
+			Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
+				Block(layout=Vertical CenterCenter)
+					Image(value="/logo.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=181px, height=200px)
+					Text(value="Workspace not found", format=h4 airTop textCentered, translate=true) message
+			Block
+				Divider
+				Block(layout=Horizontal CenterJustified, format=middleAirTop)
+					Button(title="Home", highlight=Outline, format=airRight) gotoHome as OpenPage(ImeElements.home)
+					Button(title="My workspaces", highlight=Outline, visible=false) myWorkspaces as OpenPage(ImeElements.workspaces)

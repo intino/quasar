@@ -2,7 +2,6 @@ package io.intino.ime.box.workspaces;
 
 import io.intino.alexandria.logger.Logger;
 import io.intino.ime.box.util.WorkspaceHelper;
-import io.intino.ime.model.Workspace;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -37,17 +36,23 @@ public class WorkspaceContainerWriter {
 		}
 	}
 
-	public WorkspaceContainer.File create(String filename, WorkspaceContainer.File parent) {
+	public WorkspaceContainer.File createFile(String filename, String content, WorkspaceContainer.File parent) {
 		try {
 			if (!root.exists()) root.mkdirs();
 			File file = new File(parent != null && parent.content().isDirectory() ? parent.content() : root, filename);
-			if (!filename.contains(".")) createDirectory(file);
-			else createEmptyFile(file);
+			createFile(file, content);
 			return WorkspaceHelper.fileOf(root, file.toPath());
 		} catch (IOException e) {
 			Logger.error(e);
 			return null;
 		}
+	}
+
+	public WorkspaceContainer.File createFolder(String name, WorkspaceContainer.File parent) {
+		if (!root.exists()) root.mkdirs();
+		File file = new File(parent != null && parent.content().isDirectory() ? parent.content() : root, name);
+		createDirectory(file);
+		return WorkspaceHelper.fileOf(root, file.toPath());
 	}
 
 	public void save(WorkspaceContainer.File file, String content) {
@@ -60,12 +65,23 @@ public class WorkspaceContainerWriter {
 		}
 	}
 
-	private static void createDirectory(File file) {
-		file.mkdir();
+	public WorkspaceContainer.File rename(WorkspaceContainer.File file, String newName) {
+		File systemFile = file.content();
+		File destiny = new File(systemFile.getParentFile(), newName);
+		systemFile.renameTo(destiny);
+		return WorkspaceHelper.fileOf(root, destiny.toPath());
 	}
 
-	private static void createEmptyFile(File file) throws IOException {
-		createFile(file, "");
+	public WorkspaceContainer.File move(WorkspaceContainer.File file, WorkspaceContainer.File directory) {
+		File systemFile = file.content();
+		File systemDirectory = directory != null ? directory.content() : root;
+		File destiny = new File(systemDirectory, systemFile.getName());
+		systemFile.renameTo(destiny);
+		return WorkspaceHelper.fileOf(root, destiny.toPath());
+	}
+
+	private static void createDirectory(File file) {
+		file.mkdir();
 	}
 
 	private static void createFile(File file, String content) throws IOException {

@@ -4,10 +4,10 @@ import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.ui.PathHelper;
 import io.intino.ime.model.Workspace;
 
-public class PermissionsTemplate extends AbstractPermissionsTemplate<ImeBox> {
+public class NotFoundTemplate extends AbstractNotFoundTemplate<ImeBox> {
 	private Workspace workspace;
 
-	public PermissionsTemplate(ImeBox box) {
+	public NotFoundTemplate(ImeBox box) {
 		super(box);
 	}
 
@@ -16,20 +16,11 @@ public class PermissionsTemplate extends AbstractPermissionsTemplate<ImeBox> {
 	}
 
 	@Override
-	public void init() {
-		super.init();
-		logoutButton.onExecute(e -> {
-			session().logout();
-			notifier.redirect(session().browser().baseUrl());
-		});
-	}
-
-	@Override
 	public void refresh() {
 		super.refresh();
-		message.value(String.format(translate("You dont have access permissions for %s"), workspace.title()));
+		message.value(translate("Workspace was not found"));
 		myWorkspaces.visible(session().user() != null);
 		myWorkspaces.path(PathHelper.workspacesPath(session()));
-		logoutButton.visible(session().user() != null);
 	}
+
 }

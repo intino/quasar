@@ -37,11 +37,15 @@ class IntinoFileBrowser extends AbstractIntinoFileBrowser {
               getItemTitle={item => item.data}
               viewState={{ [id]: { focusedItem: this.state.focusedItem, expandedItems: this.state.expandedItems, selectedItems: this.state.selectedItems } }}
               canDragAndDrop={true}
+              canDropOnFolder={true}
               canReorderItems={true}
+              canDropAt={e => { return true }}
               onSelectItems={this.handleSelectItems.bind(this)}
               onFocusItem={this.handleFocusItem.bind(this)}
               onExpandItem={this.handleExpandItem.bind(this)}
               onCollapseItem={this.handleCollapseItem.bind(this)}
+              onRenameItem={this.handleRenameItem.bind(this)}
+              onDrop={this.handleDrop.bind(this)}
               items={this._itemsOf(this.state.items)}>
                 <div className={theme.isDark() ? "rct-dark" : "rct"} style={style}>
                     <Tree className="rct-dark" treeId={id} rootItem="root" treeLabel={this.translate("Files")} />
@@ -55,7 +59,9 @@ class IntinoFileBrowser extends AbstractIntinoFileBrowser {
     };
 
     select = (item) => {
-        this.setState({selectedItems: [item.name]});
+        const items = this._itemsOf(this.state.items);
+        const parents = items[item.name] != null ? items[item.name].parents : [];
+        this.setState({selectedItems: [item.name], expandedItems: [...this.state.expandedItems, ...parents]});
     };
 
     _itemsOf = (items) => {
@@ -68,7 +74,9 @@ class IntinoFileBrowser extends AbstractIntinoFileBrowser {
         return {
             index: item.name,
             data: item.name,
+            id: item.id,
             isFolder: item.type == "Folder",
+            parents: item.parents,
             children: item.children,
             canMove: true,
             canRename: true
@@ -85,6 +93,14 @@ class IntinoFileBrowser extends AbstractIntinoFileBrowser {
 
     handleCollapseItem = (item) => {
         this.setState({expandedItems: this.state.expandedItems.filter(expandedItemIndex => expandedItemIndex !== item.index)});
+    };
+
+    handleRenameItem = (item, name, treeId) => {
+        this.requester.rename({id: item.id, newName: name});
+    };
+
+    handleDrop = (items, target) => {
+        this.requester.move({file: items[0].id, directory: target.targetItem != null ? target.targetItem : target.parentItem});
     };
 
     handleSelectItems = (items, treeId) => {

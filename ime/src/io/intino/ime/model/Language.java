@@ -5,7 +5,7 @@ import java.time.Instant;
 public class Language {
 	private String name;
 	private String version;
-	private LanguageLevel level;
+	private LanguageInfo info;
 	private String owner;
 	private boolean isPrivate = true;
 	private Instant createDate;
@@ -13,6 +13,10 @@ public class Language {
 	public Language(String id) {
 		this.name = Language.nameOf(id);
 		this.version = Language.versionOf(id);
+	}
+
+	public static String id(String name, String version) {
+		return name + ":" + version;
 	}
 
 	public static String nameOf(String id) {
@@ -45,12 +49,16 @@ public class Language {
 		return this;
 	}
 
-	public LanguageLevel level() {
-		return level;
+	public LanguageInfo info() {
+		return info;
 	}
 
-	public Language level(LanguageLevel level) {
-		this.level = level;
+	public LanguageInfo.Level level() {
+		return info.level();
+	}
+
+	public Language info(LanguageInfo value) {
+		this.info = value;
 		return this;
 	}
 

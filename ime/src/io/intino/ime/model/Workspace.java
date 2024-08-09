@@ -67,6 +67,10 @@ public final class Workspace {
 		return this;
 	}
 
+	public boolean isTemporal() {
+		return isPublic() && (owner == null || owner.name().equals("anonymous"));
+	}
+
 	public boolean isPublic() {
 		return !isPrivate;
 	}
@@ -100,4 +104,5 @@ public final class Workspace {
 		result.token = null;
 		return result;
 	}
+
 }

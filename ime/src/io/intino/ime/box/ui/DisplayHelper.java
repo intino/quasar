@@ -24,8 +24,8 @@ public class DisplayHelper {
 
 	public static boolean checkWorkspaceName(TextEditable<?, ?> field, Function<String, String> translator, ImeBox box) {
 		if (!check(field, translator)) return false;
-		if (WorkspaceHelper.validName(field.value())) field.error("Name contains non alphanumeric characters");
-		if (WorkspaceHelper.nameInUse(field.value(), box)) field.error("Workspace name in use");
+		if (!WorkspaceHelper.validName(field.value())) { field.error("Name contains non alphanumeric characters"); return false; }
+		if (WorkspaceHelper.nameInUse(field.value(), box)) { field.error("Workspace name in use"); return false; }
 		return true;
 	}
 

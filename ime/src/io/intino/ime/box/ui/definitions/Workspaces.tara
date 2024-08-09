@@ -65,18 +65,9 @@ Template workspacesCatalog as Relative(height=100%, width=100%)
 			Heading operationsHeading > Text(value="Operations", translate=true)
 			Item(height=30px, width=10%) operationsItem
 				Block(layout=Horizontal)
-					MaterialIconButton(title="Clone workspace", icon="FileCopy", size=Small) cloneWorkspaceTrigger as OpenDialog(empty)
+					TemplateStamp(template=cloneWorkspaceEditor) cloneWorkspaceEditor
 					MaterialIconButton(title="Remove workspace", icon="Delete", size=Small) removeWorkspace as Action Affirmed("Are you sure to remove workspace?")
 					TemplateStamp(template=workspaceSettingsEditor) settingsEditor
-
-	Dialog(title="Clone workspace") workspaceDialog as Absolute(width=400px, height=260px)
-        Block as Relative(height=100%, offsetHeight=40px)
-        	Text workspaceNameField as Editable(placeholder="Indicate new name", helperText="Only alphanumeric characters are allowed") Labeled("New name") Focused
-        	Text workspaceTitleField as Editable(placeholder="Indicate title") Labeled("Title")
-		Divider
-        Block(layout=Horizontal EndJustified)
-            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(workspaceDialog)
-            Button(title="Accept", size=Small, highlight=Fill) cloneWorkspace as Action
 
 Template(format=headerBackground middleTopSpaced middleBottomSpaced) workspacesHeaderTemplate
 	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)

@@ -29,10 +29,19 @@ public class WorkspaceCommands extends Commands {
 		return command.execute();
 	}
 
-	public WorkspaceContainer.File create(Workspace workspace, String filename, WorkspaceContainer.File parent, String username) {
+	public WorkspaceContainer.File createFile(Workspace workspace, String name, String content, WorkspaceContainer.File parent, String username) {
 		CreateWorkspaceFileCommand command = setup(new CreateWorkspaceFileCommand(box), username);
 		command.workspace = workspace;
-		command.filename = filename;
+		command.name = name;
+		command.content = content;
+		command.parent = parent;
+		return command.execute();
+	}
+
+	public WorkspaceContainer.File createFolder(Workspace workspace, String name, WorkspaceContainer.File parent, String username) {
+		CreateWorkspaceFolderCommand command = setup(new CreateWorkspaceFolderCommand(box), username);
+		command.workspace = workspace;
+		command.name = name;
 		command.parent = parent;
 		return command.execute();
 	}
@@ -51,6 +60,22 @@ public class WorkspaceCommands extends Commands {
 		command.file = file;
 		command.content = content;
 		command.execute();
+	}
+
+	public WorkspaceContainer.File rename(Workspace workspace, String newName, WorkspaceContainer.File file, String username) {
+		RenameWorkspaceFileCommand command = setup(new RenameWorkspaceFileCommand(box), username);
+		command.workspace = workspace;
+		command.file = file;
+		command.newName = newName;
+		return command.execute();
+	}
+
+	public WorkspaceContainer.File move(Workspace workspace, WorkspaceContainer.File file, WorkspaceContainer.File directory, String username) {
+		MoveWorkspaceFileCommand command = setup(new MoveWorkspaceFileCommand(box), username);
+		command.workspace = workspace;
+		command.file = file;
+		command.directory = directory;
+		return command.execute();
 	}
 
 	public void makePrivate(Workspace workspace, String token, String username) {
@@ -85,4 +110,5 @@ public class WorkspaceCommands extends Commands {
 		command.file = file;
 		command.execute();
 	}
+
 }

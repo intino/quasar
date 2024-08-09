@@ -11,15 +11,17 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-public class LanguagesDatasource extends PageDatasource<Language> {
+public class LanguageVersionsDatasource extends PageDatasource<Language> {
 	protected final ImeBox box;
 	protected final UISession session;
+	private final String name;
 	private String condition;
 	private List<Filter> filters;
 
-	public LanguagesDatasource(ImeBox box, UISession session) {
+	public LanguageVersionsDatasource(ImeBox box, UISession session, String name) {
 		this.box = box;
 		this.session = session;
+		this.name = name;
 	}
 
 	public long itemCount() {
@@ -46,7 +48,7 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 	}
 
 	private List<Language> load() {
-		return box.languageManager().publicLanguages(username());
+		return box.languageManager().versions(name);
 	}
 
 	protected String username() {

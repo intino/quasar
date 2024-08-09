@@ -57,7 +57,7 @@ public class LanguagesCatalog extends AbstractLanguagesCatalog<ImeBox> {
 		item.owner.value(language.owner());
 		item.privatePill.visible(language.isPrivate());
 		item.createDate.value(language.createDate());
-		item.metaLanguage.value(language.level().metaLanguage());
+		item.metaLanguage.value(language.info().metaLanguage());
 		item.addWorkspace.onExecute(e -> createWorkspace(language));
 		item.addWorkspace.visible(user() == null);
 		item.addPrivateWorkspace.bindTo(addPrivateWorkspaceDialog);
@@ -80,6 +80,7 @@ public class LanguagesCatalog extends AbstractLanguagesCatalog<ImeBox> {
 	private void createWorkspace() {
 		if (!DisplayHelper.checkWorkspaceName(nameField, this::translate, box())) return;
 		if (!DisplayHelper.check(titleField, this::translate)) return;
+		addPrivateWorkspaceDialog.close();
 		createWorkspace(selectedLanguage, nameField.value(), titleField.value());
 	}
 

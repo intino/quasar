@@ -4,12 +4,13 @@ import io.intino.alexandria.Scale;
 import io.intino.alexandria.Timetag;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.workspaces.WorkspaceContainer;
+import io.intino.ime.model.Language;
+import io.intino.ime.model.Workspace;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.time.Year;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -35,4 +36,9 @@ public class WorkspaceHelper {
 	public static boolean nameInUse(String value, ImeBox box) {
 		return box.workspaceManager().exists(value);
 	}
+
+	public static Language language(Workspace workspace, ImeBox box) {
+		return box.languageManager().get(workspace.language());
+	}
+
 }

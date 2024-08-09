@@ -1,9 +1,6 @@
 package io.intino.ime.box.ui.pages;
 
-import io.intino.alexandria.exceptions.*;
-import java.time.*;
-import java.util.*;
-import io.intino.ime.box.ui.displays.templates.*;
+import io.intino.ime.box.ui.displays.templates.NotFoundTemplate;
 
 public class NotFoundPage extends AbstractNotFoundPage {
 	public String workspace;
@@ -12,9 +9,11 @@ public class NotFoundPage extends AbstractNotFoundPage {
 		return new io.intino.alexandria.ui.Soul(session) {
 			@Override
 			public void personify() {
-				PermissionsTemplate component = new PermissionsTemplate(box);
+				NotFoundTemplate component = new NotFoundTemplate(box);
+				component.workspace(workspace);
 				register(component);
 				component.init();
+				component.refresh();
 			}
 		};
 	}

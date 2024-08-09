@@ -62,12 +62,24 @@ public class WorkspaceManager {
 		return new WorkspaceContainerWriter(archetype.workspaces().documents(workspace.name())).copy(filename, source);
 	}
 
-	public WorkspaceContainer.File create(Workspace workspace, String filename, WorkspaceContainer.File parent) {
-		return new WorkspaceContainerWriter(archetype.workspaces().documents(workspace.name())).create(filename, parent);
+	public WorkspaceContainer.File createFile(Workspace workspace, String name, String content, WorkspaceContainer.File parent) {
+		return new WorkspaceContainerWriter(archetype.workspaces().documents(workspace.name())).createFile(name, content, parent);
+	}
+
+	public WorkspaceContainer.File createFolder(Workspace workspace, String name, WorkspaceContainer.File parent) {
+		return new WorkspaceContainerWriter(archetype.workspaces().documents(workspace.name())).createFolder(name, parent);
 	}
 
 	public void save(Workspace workspace, WorkspaceContainer.File file, String content) {
 		new WorkspaceContainerWriter(archetype.workspaces().documents(workspace.name())).save(file, content);
+	}
+
+	public WorkspaceContainer.File rename(Workspace workspace, WorkspaceContainer.File file, String newName) {
+		return new WorkspaceContainerWriter(archetype.workspaces().documents(workspace.name())).rename(file, newName);
+	}
+
+	public WorkspaceContainer.File move(Workspace workspace, WorkspaceContainer.File file, WorkspaceContainer.File directory) {
+		return new WorkspaceContainerWriter(archetype.workspaces().documents(workspace.name())).move(file, directory);
 	}
 
 	public void saveTitle(Workspace workspace, String title) {

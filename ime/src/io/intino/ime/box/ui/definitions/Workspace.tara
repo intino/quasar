@@ -1,5 +1,6 @@
 dsl Konos
 
+use Languages
 use Editors
 use UI
 use Theme
@@ -7,16 +8,20 @@ use Theme
 Template workspaceTemplate as Relative(height=100%, width=100%)
 	TemplateStamp(template=workspaceHeaderTemplate) header
 
-	Block(layout=Horizontal Flexible)
+	Block(layout=Vertical Flexible CenterCenter, visible=false) openingWorkspaceBlock
+		Spinner(mode=Ring, color="secondary")
+		Text(value="" , translate=true, format=h3 airTop) openingWorkspaceMessage
+
+	Block(layout=Horizontal Flexible) bodyBlock
 		Block(layout=Vertical, format=greyLightBackground) as Relative(width=20%)
 			Block(layout=Horizontal, format=headerPanel leftSpaced rightSpaced rightBordered)
 				Block(layout=Horizontal Flexible) > Text(value="Browser", format=h6, translate=true)
 				Block(layout=Horizontal EndJustified)
 					MaterialIconButton(title="Add file", icon="Description", size=Small) addFileTrigger as OpenDialog(fileDialog)
-					MaterialIconButton(title="Add folder", icon="Folder", size=Small) addFolderTrigger as OpenDialog(fileDialog)
 					MaterialIconButton(title="Clone file", icon="FileCopy", size=Small) copyFileTrigger as OpenDialog(fileDialog) Readonly
+					MaterialIconButton(title="Add folder", icon="Folder", size=Small) addFolderTrigger as OpenDialog(fileDialog)
+					MaterialIconButton(title="Edit name", icon="Edit", size=Small) editFilenameTrigger as OpenDialog(fileDialog) Readonly
 					MaterialIconButton(title="Remove", icon="Delete", size=Small) removeFileTrigger as Action Affirmed("Are you sure to remove?") Readonly
-					MaterialIconButton(title="Upload", icon="CloudUpload", size=Small) uploadFilesTrigger as OpenDialog(fileDialog)
 			DisplayStamp(display=intinoFileBrowser, format=displayHeaderPanel) intinoFileBrowser
 
 		Block(layout=Vertical Flexible)
@@ -32,9 +37,17 @@ Template workspaceTemplate as Relative(height=100%, width=100%)
 			Block(layout=Vertical Flexible, visible=false) fileSelectedBlock
 				DisplayStamp(display=intinoDslEditor, format=fullHeight) intinoDslEditor
 
-	Dialog(title="") fileDialog as Absolute(width=300px, height=200px)
-        Block as Relative(height=100%, offsetHeight=40px)
-        	Text fileField as Editable(placeholder="Indicate name") Labeled("Name") Focused
+	Dialog(title="") fileDialog as Absolute(width=600px, height=350px)
+        Block(layout=Horizontal) as Relative(height=100%, offsetHeight=40px)
+        	Block(format=greyLightBackground) selectorBlock as Absolute(width=150px)
+				Selector fileDialogSelector as ListBox
+					Text(value="New file") newFileOption as Option
+					Text(value="Upload file") uploadFileOption as Option
+			Block(layout=Vertical Flexible, format=airLeft)
+				Block(format=airTop) fileFieldBlock as Conditional(selectorBlock.fileDialogSelector.newFileOption)
+					Text fileField as Editable(placeholder="Indicate name") Labeled("Name") Focused
+				Block(format=airTop airBottom) fileUploadBlock as Conditional(selectorBlock.fileDialogSelector.uploadFileOption)
+					File fileUploadField as Editable(showDropZone=true)
 		Divider
         Block(layout=Horizontal EndJustified)
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(fileDialog)
@@ -67,27 +80,49 @@ Template(format=headerBackground middleTopSpaced middleBottomSpaced) workspaceHe
 				MaterialIconButton(title="Go workspaces", icon="Dns", size=Medium, visible=false) workspaces as OpenPage(ImeElements.workspaces)
 		Block(layout=Horizontal Center EndJustified)
 			Block(layout=Horizontal, format=airRight)
+				MaterialIconButton(title="Versions", icon="Category", visible=false) languageVersions as Action OpenDialog(dialog=versionsDialog)
+				TemplateStamp(template=cloneWorkspaceEditor) cloneWorkspaceEditor
+				MaterialIconButton(title="Remove workspace", icon="Delete", visible=false) removeWorkspace as Action Affirmed("Are you sure to remove workspace?")
+				TemplateStamp(template=workspaceSettingsEditor) settingsEditor
 				MaterialIconButton(title="Set dark mode", icon="Brightness4") as SetDarkMode
 				MaterialIconButton(title="Set light mode", icon="Brightness7") as SetLightMode
-				TemplateStamp(template=workspaceSettingsEditor) settingsEditor
 			User(mode=OnlyPhoto, visible=false) user
 				Selector as ListBox
 					Block as Option > Link(title="Home") as OpenPage(page=ImeElements.home)
 					Block as Option > Link(title="My workspaces") myWorkspaces as OpenPage(page=ImeElements.workspaces)
 
+	Dialog(title="Versions") versionsDialog as Relative(width=80%, height=70%)
+        Block as Relative(height=100%, offsetHeight=40px)
+        	TemplateStamp(template=languageVersionsCatalog) versionsCatalog
+		Divider
+		Block(layout=Horizontal EndJustified)
+			Button(title="Close", size=Small, highlight=Outline) as CloseDialog(versionsDialog)
+
 Display intinoFileBrowser
 	Notification refresh as Object(intinoFileBrowserInfo)
 	Notification select as Object(intinoFileBrowserItem)
 	Request open as Text
+	Request rename as Object(intinoFileBrowserRenameInfo)
+	Request move as Object(intinoFileBrowserMoveInfo)
 
 Schema intinoFileBrowserInfo
 	Attribute itemAddress as Text
 	Attribute items as Object(intinoFileBrowserItem) List
 
+Schema intinoFileBrowserRenameInfo
+	Attribute id as Integer
+	Attribute newName as Text
+
+Schema intinoFileBrowserMoveInfo
+	Attribute file as Integer
+	Attribute directory as Text
+
 Schema intinoFileBrowserItem
+	Attribute id as Integer
 	Attribute name as Text
 	Attribute type as Word("Folder" "File")
 	Attribute isRoot as Bool
+	Attribute parents as Text List
 	Attribute children as Text List
 
 Display intinoDslEditor

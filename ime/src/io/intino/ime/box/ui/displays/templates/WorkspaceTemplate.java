@@ -1,6 +1,8 @@
 package io.intino.ime.box.ui.displays.templates;
 
+import io.intino.alexandria.Resource;
 import io.intino.alexandria.logger.Logger;
+import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.utils.DelayerUtil;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.commands.WorkspaceCommands;
@@ -13,10 +15,8 @@ import io.intino.ime.box.util.Formatters;
 import io.intino.ime.box.workspaces.WorkspaceContainer;
 import io.intino.ime.model.Workspace;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 
 public class WorkspaceTemplate extends AbstractWorkspaceTemplate<ImeBox> {
 	private String user;
@@ -27,8 +27,9 @@ public class WorkspaceTemplate extends AbstractWorkspaceTemplate<ImeBox> {
 	private boolean selectedFileIsModified = false;
 	private boolean openNewFile = false;
 	private FileDialogOperation fileDialogOperation;
+	private Resource uploadedFile;
 
-	private enum FileDialogOperation { CopyFile, AddFile, AddFolder }
+	private enum FileDialogOperation { CopyFile, AddFile, AddFolder, EditFilename }
 
 	public WorkspaceTemplate(ImeBox box) {
 		super(box);
@@ -57,6 +58,7 @@ public class WorkspaceTemplate extends AbstractWorkspaceTemplate<ImeBox> {
 	@Override
 	public void init() {
 		super.init();
+		header.onOpenWorkspace(this::notifyOpeningWorkspace);
 		initFileBrowser();
 		initFileEditor();
 		initFileModifiedDialog();
@@ -67,6 +69,7 @@ public class WorkspaceTemplate extends AbstractWorkspaceTemplate<ImeBox> {
 		cancelSavingFile.onExecute(e -> {
 			fileModifiedDialog.close();
 			intinoFileBrowser.<IntinoFileBrowser>display().select(itemOf(selectedFile));
+			intinoFileBrowser.<IntinoFileBrowser>display().refresh();
 		});
 		continueSavingFile.onExecute(e -> {
 			fileModifiedDialog.close();
@@ -117,6 +120,8 @@ public class WorkspaceTemplate extends AbstractWorkspaceTemplate<ImeBox> {
 		initFileBrowserToolbar();
 		IntinoFileBrowser browser = new IntinoFileBrowser(box());
 		browser.onOpen(this::open);
+		browser.onRename(this::rename);
+		browser.onMove(this::move);
 		intinoFileBrowser.display(browser);
 	}
 
@@ -136,6 +141,7 @@ public class WorkspaceTemplate extends AbstractWorkspaceTemplate<ImeBox> {
 	private void refreshFileBrowser() {
 		copyFileTrigger.readonly(selectedFile == null);
 		removeFileTrigger.readonly(selectedFile == null);
+		editFilenameTrigger.readonly(selectedFile == null);
 		IntinoFileBrowser browser = intinoFileBrowser.display();
 		browser.itemAddress(PathHelper.workspacePath(session(), workspace) + "?file=:file");
 		browser.items(fileBrowserItems());
@@ -152,7 +158,7 @@ public class WorkspaceTemplate extends AbstractWorkspaceTemplate<ImeBox> {
 
 	private void register(WorkspaceContainer.File file, Map<String, IntinoFileBrowserItem> items) {
 		List<String> parents = file.parents();
-		if (!items.containsKey(file.name())) items.put(file.name(), itemOf(file));
+		if (!items.containsKey(file.name())) items.put(file.name(), itemOf(file).id(items.size()));
 		for (int i = 0; i < parents.size(); i++) {
 			register(parents.get(i), i > 0 ? parents.get(i - 1) : null, items);
 			if (i == parents.size() - 1) register(file, parents.get(i), i == 0, items);
@@ -161,28 +167,43 @@ public class WorkspaceTemplate extends AbstractWorkspaceTemplate<ImeBox> {
 
 	private void register(String directory, String parent, Map<String, IntinoFileBrowserItem> items) {
 		if (!items.containsKey(directory))
-			items.put(directory, itemOf(directory, IntinoFileBrowserItem.Type.Folder, parent == null));
+			items.put(directory, itemOf(directory, parent != null ? List.of(parent) : Collections.emptyList(), IntinoFileBrowserItem.Type.Folder, parent == null).id(items.size()));
 		if (parent != null && !items.get(parent).children().contains(directory))
 			items.get(parent).children().add(directory);
 	}
 
 	private void register(WorkspaceContainer.File file, String parent, boolean isRoot, Map<String, IntinoFileBrowserItem> items) {
 		if (!items.containsKey(parent))
-			items.put(parent, itemOf(parent, IntinoFileBrowserItem.Type.Folder, isRoot));
+			items.put(parent, itemOf(parent, Collections.emptyList(), IntinoFileBrowserItem.Type.Folder, isRoot).id(items.size()));
 		if (file != null) items.get(parent).children().add(file.name());
 	}
 
 	private IntinoFileBrowserItem itemOf(WorkspaceContainer.File file) {
 		IntinoFileBrowserItem.Type type = file.content().isFile() ? IntinoFileBrowserItem.Type.File : IntinoFileBrowserItem.Type.Folder;
-		return itemOf(file.name(), type, file.parents().isEmpty());
+		return itemOf(file.name(), file.parents(), type, file.parents().isEmpty());
 	}
 
-	private IntinoFileBrowserItem itemOf(String name, IntinoFileBrowserItem.Type type, boolean isRoot) {
-		return new IntinoFileBrowserItem().name(name).type(type).isRoot(isRoot);
+	private IntinoFileBrowserItem itemOf(String name, List<String> parents, IntinoFileBrowserItem.Type type, boolean isRoot) {
+		return new IntinoFileBrowserItem().name(name).parents(parents).type(type).isRoot(isRoot);
 	}
 
 	private void open(String name) {
 		open(workspaceContainer.file(name));
+	}
+
+	private void rename(IntinoFileBrowserItem item, String newName) {
+		WorkspaceContainer.File file = workspaceContainer.file(item.name());
+		file = box().commands(WorkspaceCommands.class).rename(workspace, newName, file, username());
+		reload();
+		open(file);
+	}
+
+	private void move(IntinoFileBrowserItem item, IntinoFileBrowserItem directoryItem) {
+		WorkspaceContainer.File file = workspaceContainer.file(item.name());
+		WorkspaceContainer.File directory = workspaceContainer.file(directoryItem.name());
+		file = box().commands(WorkspaceCommands.class).move(workspace, file, directory, username());
+		reload();
+		open(file);
 	}
 
 	private void open(WorkspaceContainer.File file) {
@@ -200,9 +221,16 @@ public class WorkspaceTemplate extends AbstractWorkspaceTemplate<ImeBox> {
 		copyFileTrigger.onOpen(e -> refreshFileDialog(FileDialogOperation.CopyFile));
 		addFileTrigger.onOpen(e -> refreshFileDialog(FileDialogOperation.AddFile));
 		addFolderTrigger.onOpen(e -> refreshFileDialog(FileDialogOperation.AddFolder));
+		editFilenameTrigger.onOpen(e -> refreshFileDialog(FileDialogOperation.EditFilename));
 		addFile.onExecute(e -> executeFileDialogOperation());
-		fileField.onChange(e -> addFile.readonly(e.value() == null || ((String) e.value()).isEmpty()));
-		fileField.onEnterPress(e -> executeFileDialogOperation());
+		fileUploadBlock.onInit(v -> fileUploadField.onChange(e -> {
+			uploadedFile = e.value();
+			addFile.readonly(uploadedFile == null);
+		}));
+		fileFieldBlock.onInit(v -> {
+			fileField.onChange(e -> addFile.readonly(e.value() == null || ((String) e.value()).isEmpty()));
+			fileField.onEnterPress(e -> executeFileDialogOperation());
+		});
 		fileDialog.onOpen(e -> refreshFileDialog());
 		removeFileTrigger.onExecute(e -> removeFile());
 	}
@@ -219,21 +247,40 @@ public class WorkspaceTemplate extends AbstractWorkspaceTemplate<ImeBox> {
 	private void refreshFileDialog() {
 		if (fileDialogOperation == null) return;
 		fileDialog.title(fileDialogTitle());
-		fileField.value(null);
+		fileDialogSelector.select("newFileOption");
+		selectorBlock.visible(fileDialogOperation == FileDialogOperation.AddFile);
+		fileField.value(fileDialogOperation == FileDialogOperation.EditFilename ? selectedFile.name() : null);
 	}
 
 	private String fileDialogTitle() {
 		if (fileDialogOperation == FileDialogOperation.CopyFile) return translate("Copy file");
 		if (fileDialogOperation == FileDialogOperation.AddFolder) return translate("Add folder");
+		if (fileDialogOperation == FileDialogOperation.EditFilename) return translate("Edit name");
 		return translate("Add file");
 	}
 
 	private void executeFileDialogOperation() {
-		if (!DisplayHelper.check(fileField, this::translate)) return;
+		if (!isUploadOperation() && !DisplayHelper.check(fileField, this::translate)) return;
+		if (isUploadOperation() && uploadedFile == null) {
+			notifyUser(translate("Select file to upload"), UserMessage.Type.Warning);
+			return;
+		}
 		fileDialog.close();
-		if (fileDialogOperation == FileDialogOperation.AddFile) addFile();
+		if (fileDialogOperation == FileDialogOperation.AddFile && fileDialogSelector.selection().getFirst().equals("newFileOption")) addFile();
+		else if (fileDialogOperation == FileDialogOperation.AddFile) uploadFile();
 		else if (fileDialogOperation == FileDialogOperation.CopyFile) copyFile();
+		else if (fileDialogOperation == FileDialogOperation.EditFilename) rename();
 		else if (fileDialogOperation == FileDialogOperation.AddFolder) addFolder();
+	}
+
+	private boolean isUploadOperation() {
+		return fileDialogOperation == FileDialogOperation.AddFile && fileDialogSelector.selection().get(0).equals("uploadFileOption");
+	}
+
+	private void addFile() {
+		WorkspaceContainer.File file = box().commands(WorkspaceCommands.class).createFile(workspace, fileField.value(), "", selectedFile, username());
+		reload();
+		open(file);
 	}
 
 	private void copyFile() {
@@ -242,14 +289,24 @@ public class WorkspaceTemplate extends AbstractWorkspaceTemplate<ImeBox> {
 		open(file);
 	}
 
-	private void addFile() {
-		WorkspaceContainer.File file = box().commands(WorkspaceCommands.class).create(workspace, fileField.value(), selectedFile, username());
+	private void uploadFile() {
+		try {
+			WorkspaceContainer.File file = box().commands(WorkspaceCommands.class).createFile(workspace, uploadedFile.name(), uploadedFile.readAsString(), selectedFile, username());
+			reload();
+			open(file);
+		} catch (IOException e) {
+			Logger.error(e);
+		}
+	}
+
+	private void rename() {
+		WorkspaceContainer.File file = box().commands(WorkspaceCommands.class).rename(workspace, fileField.value(), selectedFile, username());
 		reload();
 		open(file);
 	}
 
 	private void addFolder() {
-		box().commands(WorkspaceCommands.class).create(workspace, fileField.value(), selectedFile, username());
+		box().commands(WorkspaceCommands.class).createFolder(workspace, fileField.value(), selectedFile, username());
 		reload();
 	}
 
@@ -271,6 +328,12 @@ public class WorkspaceTemplate extends AbstractWorkspaceTemplate<ImeBox> {
 	private void reload() {
 		workspaceContainer = box().workspaceManager().workspaceContainer(workspace);
 		refresh();
+	}
+
+	private void notifyOpeningWorkspace(Workspace workspace) {
+		bodyBlock.hide();
+		openingWorkspaceMessage.value(String.format(translate("Opening %s"), workspace.title()));
+		openingWorkspaceBlock.show();
 	}
 
 }

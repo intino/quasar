@@ -18,6 +18,7 @@ public class CommandsFactory {
 
 	private void buildCommands() {
 		builder.put(WorkspaceCommands.class, WorkspaceCommands::new);
+		builder.put(LanguageCommands.class, LanguageCommands::new);
 	}
 
 	public <T extends Commands> T command(Class<T> clazz) {
