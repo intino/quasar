@@ -89,4 +89,8 @@ public class IntinoLanguageServer implements LanguageServer, LanguageClientAware
 
 	}
 
+	@Override
+	public void setTrace(SetTraceParams params) {
+
+	}
 }

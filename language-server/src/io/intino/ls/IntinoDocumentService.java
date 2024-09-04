@@ -1,55 +1,65 @@
 package io.intino.ls;
 
 import io.intino.alexandria.logger.Logger;
-import io.intino.builder.CompilerMessage;
-import io.intino.tara.Checker;
 import io.intino.tara.Language;
-import io.intino.tara.builder.TaraCompilerRunner;
-import io.intino.tara.builder.core.CompilerConfiguration;
-import io.intino.tara.language.grammar.TaraGrammar;
-import io.intino.tara.language.grammar.TaraLexer;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
+import io.intino.tara.Source;
+import io.intino.tara.Source.StringSource;
+import io.intino.tara.language.grammar.SyntaxException;
+import io.intino.tara.language.grammar.TaraGrammar.RootContext;
+import io.intino.tara.language.semantics.errorcollector.SemanticFatalException;
+import io.intino.tara.processors.SemanticAnalyzer;
+import io.intino.tara.processors.dependencyresolution.DependencyResolver;
+import io.intino.tara.processors.model.Model;
+import io.intino.tara.processors.parser.Parser;
+import io.intino.tara.processors.parser.antlr.TaraErrorStrategy;
+import org.antlr.v4.runtime.DefaultErrorStrategy;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.jsonrpc.messages.Either3;
 import org.eclipse.lsp4j.services.TextDocumentService;
+import tara.dsl.Meta;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 public class IntinoDocumentService implements TextDocumentService {
-	private final CompilerConfiguration compilerConfiguration;
-	private final TaraCompilerRunner runner;
-	private final WorkspaceManager documentManager;
-	private final Checker checker;
+	private final Language language;
+	private final WorkspaceManager workspaceManager;
 	private final DocumentSourceProvider documentSourceProvider;
+	private final Map<URI, Model> models = new HashMap<>();
+	private final Map<URI, RootContext> trees = new HashMap<>();
 
 	public IntinoDocumentService(Language language, WorkspaceManager workspaceManager) {
-		this.documentManager = workspaceManager;
-		documentSourceProvider = new DocumentSourceProvider(workspaceManager);
-		compilerConfiguration = new CompilerConfiguration();
-		compilerConfiguration.language(language);
-		runner = new TaraCompilerRunner(true);
-		checker = new Checker(language);
+		this.language = language;
+		this.workspaceManager = workspaceManager;
+		this.documentSourceProvider = new DocumentSourceProvider(workspaceManager);
 	}
 
 	@Override
 	public void didOpen(DidOpenTextDocumentParams params) {
-		analyzeText(params.getTextDocument().getUri());
+		URI uri = URI.create(params.getTextDocument().getUri());
+		workspaceManager.upsertDocument(uri, language.languageName(), "");
+		analyzeText(new StringSource(uri.getPath(), params.getTextDocument().getText()));
 	}
 
 	@Override
 	public void didChange(DidChangeTextDocumentParams params) {
-		analyzeText(params.getTextDocument().getUri());
+		URI uri = URI.create(params.getTextDocument().getUri());
+		try {
+			InputStream doc = workspaceManager.getDocumentText(uri);
+			String content = applyChanges(doc != null ? new String(doc.readAllBytes()) : "", params.getContentChanges());
+			workspaceManager.upsertDocument(uri, language.languageName(), content == null ? "" : content);
+			analyzeText(new StringSource(uri.getPath(), content));
+		} catch (IOException e) {
+			Logger.error(e);
+		}
 	}
 
 	@Override
@@ -59,11 +69,60 @@ public class IntinoDocumentService implements TextDocumentService {
 
 	@Override
 	public void didSave(DidSaveTextDocumentParams params) {
-		documentManager.upsertDocument(URI.create(params.getTextDocument().getUri()), params.getText());
+		String uri = params.getTextDocument().getUri();
+		workspaceManager.upsertDocument(URI.create(uri), language.languageName(), params.getText());
 	}
 
-	private void analyzeText(String uri) {
-		List<CompilerMessage> run = runner.run(compilerConfiguration, documentSourceProvider);
+	private String applyChanges(String content, List<TextDocumentContentChangeEvent> contentChanges) {
+		StringBuilder sb = new StringBuilder(content);
+		for (TextDocumentContentChangeEvent change : contentChanges) {
+			if (change.getRange() != null) {
+				int startOffset = getOffset(change.getRange().getStart(), content);
+				int endOffset = getOffset(change.getRange().getEnd(), content);
+				sb.replace(startOffset, endOffset, change.getText());
+			} else sb = new StringBuilder(change.getText());
+		}
+		return sb.toString();
+	}
+
+	private void analyzeText(Source source) {
+		try {
+			RootContext tree = parse(source, new TaraErrorStrategy());
+			Model model = new Parser(source).convert(tree);
+			models.put(source.uri(), model);
+			DependencyResolver resolver = dependencyResolver(model);
+			new SemanticAnalyzer(model, new Meta()).analyze();
+		} catch (IOException e) {
+			Logger.error(e);
+		} catch (SyntaxException e) {
+		} catch (SemanticFatalException e) {
+		}
+	}
+
+	private int getOffset(Position position, String content) {
+		int offset = 0;
+		int line = 0;
+		int column = 0;
+		for (char c : content.toCharArray()) {
+			if (line == position.getLine() && column == position.getCharacter()) break;
+			if (c == '\n') {
+				line++;
+				column = 0;
+			} else column++;
+			offset++;
+		}
+		return offset;
+	}
+
+	private synchronized RootContext parse(Source source, DefaultErrorStrategy strategy) throws IOException, SyntaxException {
+		Parser parser = new io.intino.tara.processors.parser.Parser(source, strategy);
+		RootContext tree = parser.parse();
+		trees.put(source.uri(), tree);
+		return tree;
+	}
+
+	private static DependencyResolver dependencyResolver(io.intino.tara.processors.model.Model model) {
+		return new DependencyResolver(model, new Meta(), "io.intino.test", new File("temp/src/io/intino/test/model/rules"), new File(Language.class.getProtectionDomain().getCodeSource().getLocation().getFile()), new File("temp"));
 	}
 
 	@Override
@@ -71,16 +130,15 @@ public class IntinoDocumentService implements TextDocumentService {
 		var data = new ArrayList<Integer>();
 		var result = new SemanticTokens();
 		try {
-			InputStream content = documentManager.getDocumentText(URI.create(params.getTextDocument().getUri()));
-			if (content == null) return CompletableFuture.completedFuture(result);
-			TaraLexer lexer = new TaraLexer(CharStreams.fromStream(content));
-			lexer.reset();
-			var parser = new TaraGrammar(new CommonTokenStream(lexer));
-			SemanticTokenVisitor listener = new SemanticTokenVisitor(parser, data);
-			new ParseTreeWalker().walk(listener, parser.root());
+			String uri = params.getTextDocument().getUri();
+			InputStream content = workspaceManager.getDocumentText(URI.create(uri));
+			RootContext tree = parse(new StringSource(uri, new String(content.readAllBytes())), new ParserErrorStrategy());
+			SemanticTokenVisitor listener = new SemanticTokenVisitor(data);
+			new ParseTreeWalker().walk(listener, tree);
 			result.setData(data.stream().mapToInt(i -> i).boxed().toList());
 		} catch (IOException e) {
 			Logger.error(e);
+		} catch (SyntaxException e) {
 		}
 		return completedFuture(result);
 	}
@@ -100,12 +158,13 @@ public class IntinoDocumentService implements TextDocumentService {
 
 	@Override
 	public CompletableFuture<CompletionItem> resolveCompletionItem(CompletionItem unresolved) {
-		return TextDocumentService.super.resolveCompletionItem(unresolved);
+		//TODO
+		return completedFuture(unresolved);
 	}
 
 	@Override
 	public CompletableFuture<Hover> hover(HoverParams params) {
-		return TextDocumentService.super.hover(params);
+		return completedFuture(new Hover());
 	}
 
 	@Override
@@ -140,7 +199,7 @@ public class IntinoDocumentService implements TextDocumentService {
 
 	@Override
 	public CompletableFuture<List<? extends DocumentHighlight>> documentHighlight(DocumentHighlightParams params) {
-		return TextDocumentService.super.documentHighlight(params);
+		return completedFuture(List.of());
 	}
 
 	@Override
@@ -291,5 +350,9 @@ public class IntinoDocumentService implements TextDocumentService {
 	@Override
 	public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
 		return TextDocumentService.super.diagnostic(params);
+	}
+
+	public void setTrace(SetTraceParams params) {
+
 	}
 }

@@ -52,7 +52,6 @@ public class LanguageServerWebSocketHandler {
 	public void onMessage(String message) {
 		try {
 			var content = "Content-Length: " + message.length() + "\n\n" + message;
-			System.out.println("Request: " + message);
 			clientOutput.write(content.getBytes());
 			clientOutput.flush();
 		} catch (Exception e) {
@@ -79,7 +78,6 @@ public class LanguageServerWebSocketHandler {
 				String content = new String(buffer, 0, bytesRead);
 				content = content.substring(content.indexOf("\n"));
 				session.getRemote().sendString(content.trim());
-				System.out.println("Response: " + content.trim());
 			}
 		} catch (Throwable e) {
 			Logger.error(e);
