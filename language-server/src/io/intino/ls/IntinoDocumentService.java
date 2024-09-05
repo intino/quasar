@@ -11,8 +11,8 @@ import io.intino.tara.processors.SemanticAnalyzer;
 import io.intino.tara.processors.dependencyresolution.DependencyResolver;
 import io.intino.tara.processors.model.Model;
 import io.intino.tara.processors.parser.Parser;
-import io.intino.tara.processors.parser.antlr.TaraErrorStrategy;
 import org.antlr.v4.runtime.DefaultErrorStrategy;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
@@ -87,16 +87,23 @@ public class IntinoDocumentService implements TextDocumentService {
 
 	private void analyzeText(Source source) {
 		try {
-			RootContext tree = parse(source, new TaraErrorStrategy());
-			Model model = new Parser(source).convert(tree);
-			models.put(source.uri(), model);
-			DependencyResolver resolver = dependencyResolver(model);
+			RootContext tree = parse(source, new ParserErrorStrategy());
+			Model model = transform(source, tree);
+			dependencyResolver(model).resolve();
 			new SemanticAnalyzer(model, new Meta()).analyze();
 		} catch (IOException e) {
 			Logger.error(e);
 		} catch (SyntaxException e) {
 		} catch (SemanticFatalException e) {
+		} catch (Exception e) {
+
 		}
+	}
+
+	private Model transform(Source source, RootContext tree) throws SyntaxException {
+		Model model = new Parser(source).convert(tree);
+		models.put(source.uri(), model);
+		return model;
 	}
 
 	private int getOffset(Position position, String content) {
@@ -127,20 +134,26 @@ public class IntinoDocumentService implements TextDocumentService {
 
 	@Override
 	public CompletableFuture<SemanticTokens> semanticTokensFull(SemanticTokensParams params) {
-		var data = new ArrayList<Integer>();
-		var result = new SemanticTokens();
 		try {
-			String uri = params.getTextDocument().getUri();
-			InputStream content = workspaceManager.getDocumentText(URI.create(uri));
-			RootContext tree = parse(new StringSource(uri, new String(content.readAllBytes())), new ParserErrorStrategy());
-			SemanticTokenVisitor listener = new SemanticTokenVisitor(data);
-			new ParseTreeWalker().walk(listener, tree);
-			result.setData(data.stream().mapToInt(i -> i).boxed().toList());
+			completedFuture(semanticTokens(URI.create(params.getTextDocument().getUri())));
 		} catch (IOException e) {
 			Logger.error(e);
 		} catch (SyntaxException e) {
 		}
-		return completedFuture(result);
+		return completedFuture(new SemanticTokens());
+	}
+
+	private SemanticTokens semanticTokens(URI uri) throws IOException, SyntaxException {
+		var data = new ArrayList<Integer>();
+		var tokens = new SemanticTokens();
+		InputStream content = workspaceManager.getDocumentText(uri);
+		RootContext tree = trees.get(URI.create(uri.getPath()));
+		if (tree == null)
+			tree = parse(new StringSource(uri.getPath(), new String(content.readAllBytes())), new ParserErrorStrategy());
+		SemanticTokenVisitor listener = new SemanticTokenVisitor(data);
+		new ParseTreeWalker().walk(listener, tree);
+		tokens.setData(data);
+		return tokens;
 	}
 
 	@Override
@@ -324,7 +337,14 @@ public class IntinoDocumentService implements TextDocumentService {
 
 	@Override
 	public CompletableFuture<SemanticTokens> semanticTokensRange(SemanticTokensRangeParams params) {
-		return TextDocumentService.super.semanticTokensRange(params);
+		System.out.println("semanticTokensRange");
+		try {
+			completedFuture(semanticTokens(URI.create(params.getTextDocument().getUri())));
+		} catch (IOException e) {
+			Logger.error(e);
+		} catch (SyntaxException e) {
+		}
+		return completedFuture(new SemanticTokens());
 	}
 
 	@Override

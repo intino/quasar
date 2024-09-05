@@ -8,7 +8,7 @@ Artifact("io.intino", "1.0.0") language-server
         Compile("io.intino.alexandria", "logger", "2.1.0")
         Compile("io.intino.tara", "language", "2.0.0")
         Compile("tara.dsl", "meta", "2.0.0")
-        Test("io.intino.alexandria", "ui-framework", "5.1.27")
+        Test("io.intino.alexandria", "ui-framework", "5.2.9")
 		Test("junit", "junit", "4.13.2")
 	Package(mode = ModulesAndLibrariesLinkedByManifest)
 

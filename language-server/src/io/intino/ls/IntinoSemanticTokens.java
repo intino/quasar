@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IntinoSemanticTokens {
-	static List<String> tokenTypes = new ArrayList<>();
-	static List<String> tokenModifiers = new ArrayList<>();
+	static final List<String> tokenTypes = new ArrayList<>();
+	static final List<String> tokenModifiers = new ArrayList<>();
 
 	static {
 		tokenTypes.add(SemanticTokenTypes.Class);

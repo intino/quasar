@@ -29,7 +29,7 @@ public class IntinoLanguageServer implements LanguageServer, LanguageClientAware
 		capabilities.setDocumentHighlightProvider(new DocumentHighlightOptions());
 		capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
 		capabilities.setCompletionProvider(new CompletionOptions(true, List.of()));
-		capabilities.setHoverProvider(true);
+//		capabilities.setHoverProvider(true);
 //		capabilities.setCodeActionProvider(true);
 //		capabilities.setDocumentSymbolProvider(true);
 		WorkspaceServerCapabilities workspaceCaps = new WorkspaceServerCapabilities();
@@ -48,7 +48,8 @@ public class IntinoLanguageServer implements LanguageServer, LanguageClientAware
 	}
 
 	private static SemanticTokensWithRegistrationOptions semanticTokensWithRegistrationOptions() {
-		return new SemanticTokensWithRegistrationOptions(new SemanticTokensLegend(tokenTypes, tokenModifiers), true);
+		SemanticTokensLegend legend = new SemanticTokensLegend(tokenTypes, tokenModifiers);
+		return new SemanticTokensWithRegistrationOptions(legend, true);
 	}
 
 	@Override
