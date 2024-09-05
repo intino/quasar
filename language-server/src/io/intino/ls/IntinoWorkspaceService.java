@@ -33,7 +33,7 @@ class IntinoWorkspaceService implements WorkspaceService {
 	@Override
 	public void didCreateFiles(CreateFilesParams params) {
 		params.getFiles().forEach(f -> {
-			documentManager.upsertDocument(URI.create(f.getUri()), "dsl " + dsl.languageName() + "\n\n");
+			documentManager.upsertDocument(URI.create(f.getUri()), dsl.languageName(), "dsl " + dsl.languageName() + "\n\n");
 		});
 	}
 

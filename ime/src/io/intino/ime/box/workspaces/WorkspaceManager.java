@@ -134,7 +134,7 @@ public class WorkspaceManager {
 			File definition = archetype.workspaces().definition(name);
 			if (!definition.exists()) return null;
 			Workspace workspace = Json.fromJson(Files.readString(definition.toPath()), Workspace.class);
-			return workspace.documentRoot(archetype.workspaces().documents(name).toURI());
+			return workspace.documentRoot(archetype.workspaces().documents(name).getAbsoluteFile().getCanonicalFile().toURI());
 		} catch (IOException e) {
 			Logger.error(e);
 			return null;

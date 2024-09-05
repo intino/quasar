@@ -1,9 +1,11 @@
 package io.intino.ls;
 
-import io.intino.tara.builder.SourceProvider;
+
+import io.intino.tara.Source;
 
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.stream.Stream;
 
 public class DocumentSourceProvider implements SourceProvider {
@@ -15,7 +17,7 @@ public class DocumentSourceProvider implements SourceProvider {
 
 	@Override
 	public Stream<Source> all() {
-		return Stream.empty();
+		return documentManager.all().stream().map(u -> get(u));
 	}
 
 	public Source get(URI uri) {
@@ -23,6 +25,11 @@ public class DocumentSourceProvider implements SourceProvider {
 			@Override
 			public URI uri() {
 				return uri;
+			}
+
+			@Override
+			public Charset charset() {
+				return Charset.defaultCharset();
 			}
 
 			@Override

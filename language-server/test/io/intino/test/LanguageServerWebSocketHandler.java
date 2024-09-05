@@ -17,7 +17,7 @@ import org.eclipse.lsp4j.jsonrpc.Launcher;
 import org.eclipse.lsp4j.launch.LSPLauncher;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageServer;
-import tara.dsl.Proteo;
+import tara.dsl.Meta;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,7 +46,7 @@ public class LanguageServerWebSocketHandler {
 			public void configure(WebSocketServletFactory factory) {
 				factory.setCreator((req, resp) -> {
 					try {
-						return new LanguageServerWebSocketHandler(new Proteo(), new File("./workspace"));
+						return new LanguageServerWebSocketHandler(new Meta(), new File("./workspace"));
 					} catch (IOException e) {
 						Logger.error(e);
 						return null;

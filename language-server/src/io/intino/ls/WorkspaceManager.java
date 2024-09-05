@@ -17,13 +17,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class WorkspaceManager {
+	private final Object lock = new Object();
 	private final ConcurrentHashMap<URI, TextDocumentItem> documents;
-	private final File projectRoot;
+	private final File root;
 
-	public WorkspaceManager(File workspaceRoot) throws IOException {
-		this.projectRoot = workspaceRoot;
+	public WorkspaceManager(File root) throws IOException {
+		this.root = root;
 		this.documents = new ConcurrentHashMap<>();
-		documents.putAll(collectDocuments(workspaceRoot));
+		documents.putAll(collectDocuments(root));
 	}
 
 	private static Map<URI, TextDocumentItem> collectDocuments(File projectRoot) throws IOException {
@@ -41,20 +42,25 @@ public class WorkspaceManager {
 		return documents.keySet().stream().toList();
 	}
 
-	public void upsertDocument(URI uri, String content) {
-		try {
-			File file = new File(projectRoot, uri.getPath());
-			documents.put(uri, new TextDocumentItem(uri.toString(), dslOf(file), (int) Instant.now().toEpochMilli(), content));
-			file.getParentFile().mkdirs();
-			Files.writeString(file.toPath(), content);
-		} catch (IOException e) {
-			Logger.error(e);
+	public void upsertDocument(URI uri, String dsl, String content) {
+		synchronized (lock) {
+			try {
+				File file = new File(root, uri.getPath());
+				documents.put(uri, new TextDocumentItem(uri.toString(), dslOf(file), (int) Instant.now().toEpochMilli(), content));
+				file.getParentFile().mkdirs();
+				Files.writeString(file.toPath(), content);
+			} catch (IOException e) {
+				Logger.error(e);
+			}
+
 		}
 	}
 
 	public InputStream getDocumentText(URI uri) {
-		TextDocumentItem document = documents.get(uri);
-		return document != null ? new ByteArrayInputStream(document.getText().getBytes()) : null;
+		synchronized (lock) {
+			TextDocumentItem document = documents.get(uri);
+			return document != null ? new ByteArrayInputStream(document.getText().getBytes()) : null;
+		}
 	}
 
 	public void removeDocument(URI uri) {
@@ -72,7 +78,8 @@ public class WorkspaceManager {
 
 	private static String dslOf(File f) {
 		try {
-			return Files.lines(f.toPath()).filter(l -> !l.trim().isEmpty()).findFirst().get();
+			if (!f.exists()) return "";
+			return Files.lines(f.toPath()).filter(l -> !l.trim().isEmpty()).findFirst().orElse("");
 		} catch (IOException e) {
 			Logger.error(e);
 			return "";
