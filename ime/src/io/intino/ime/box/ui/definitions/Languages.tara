@@ -51,8 +51,10 @@ Template(layout=Vertical Flexible) languageVersionsCatalog as Relative(height=10
 		Mold
 			Heading lvtOperationsHeading > Text(value="Operations", translate=true)
 			Item(height=30px, width=25%) lvtOperationsItem
-				Link(title="Publish") publishVersion as Action
-				Link(title="Unpublish") unpublishVersion as Action
+				Block(layout=Horizontal)
+					Link(title="Publish", format=airRight, visible=false) publishVersion as Action
+					Link(title="Unpublish", format=airRight, visible=false) unpublishVersion as Action
+					Link(title="Remove", format=airRight) removeVersion as Action Affirmed("Are you sure to remove version?")
 
 	Dialog(title="Create version") createVersionDialog as Absolute(height=360px, width=400px)
         Block as Relative(height=100%, offsetHeight=40px)

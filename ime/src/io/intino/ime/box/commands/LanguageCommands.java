@@ -3,6 +3,7 @@ package io.intino.ime.box.commands;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.commands.language.CreateLanguageCommand;
 import io.intino.ime.box.commands.language.PublishLanguageCommand;
+import io.intino.ime.box.commands.language.RemoveLanguageCommand;
 import io.intino.ime.box.commands.language.UnPublishLanguageCommand;
 import io.intino.ime.model.Language;
 import io.intino.ime.model.Workspace;
@@ -28,6 +29,12 @@ public class LanguageCommands extends Commands {
 
 	public Language unPublish(Language language, String username) {
 		UnPublishLanguageCommand command = setup(new UnPublishLanguageCommand(box), username);
+		command.language = language;
+		return command.execute();
+	}
+
+	public Boolean remove(Language language, String username) {
+		RemoveLanguageCommand command = setup(new RemoveLanguageCommand(box), username);
 		command.language = language;
 		return command.execute();
 	}

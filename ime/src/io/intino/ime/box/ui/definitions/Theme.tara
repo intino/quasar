@@ -248,7 +248,7 @@ Format("width:'100px',height:'100px',background:'white',border:'1px solid #ddd'"
 Format("position:'absolute',marginLeft:'60px',bottom:'0',marginBottom:'10px'") footerDateNavigator
 Format("minWidth:'300px',minHeight:'100px'") popoverStyle
 Format("background:'white',borderRadius:'25px',padding:'5px 20px'") searchBox
-Format("minWidth:'275px',minHeight:'225px',background:'#f6f7ff',padding:'10px',margin:'10px 0',borderRadius:'4px'", darkContent="background:'#333'") languageMagazine
+Format("width:'275px',height:'225px',background:'#f6f7ff',padding:'10px',margin:'10px 0',borderRadius:'4px'", darkContent="background:'#333'") languageMagazine
 
 // Cards
 Format("textAlign:'left',color:'#B71A1C',padding:'10px'") cardTitle

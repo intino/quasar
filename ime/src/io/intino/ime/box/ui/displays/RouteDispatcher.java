@@ -8,7 +8,7 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	}
 
 	@Override
-	public void dispatchWorkspace(Soul soul, String user, String workspace, String file) {
+	public void dispatchWorkspace(Soul soul, String user, String workspace, String file, String accessToken) {
 	}
 
 	@Override

@@ -40,7 +40,7 @@ public class ImeBox extends AbstractBox {
 		commandsFactory = new CommandsFactory(this);
 		languageLoader = new LanguageLoader(archetype.repository().languages().root(), url(configuration.languageArtifactory()));
 		languageManager = new LanguageManager(archetype);
-		workspaceManager = new WorkspaceManager(archetype);
+		workspaceManager = new WorkspaceManager(archetype, languageManager);
 		WorkspaceSequence.init(archetype.configuration().workspaceSequence());
 	}
 

@@ -9,7 +9,9 @@ Service ImeElements as UI(port = "{port}", title = "{title}", favicon = "/icons/
 	Authentication(by="{federation-url}")
 
 	Resource(path = "/") home as Page(homeTemplate) Main
-	Resource(path = "/:user/workspaces/:workspace") workspace as Page(workspaceTemplate) > Parameter file
+	Resource(path = "/:user/workspaces/:workspace") workspace as Page(workspaceTemplate)
+		Parameter file
+		Parameter accessToken
 	Resource(path = "/:user/workspaces") workspaces as Page(workspacesTemplate) Confidential
 	Resource(path = "/home") userHome as Page(workspacesTemplate) Confidential
 	Resource(path = "/not-found") notFound as Page(notFoundTemplate) > Parameter workspace

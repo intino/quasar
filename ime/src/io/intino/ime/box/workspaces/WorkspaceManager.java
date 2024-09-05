@@ -2,6 +2,7 @@ package io.intino.ime.box.workspaces;
 
 import io.intino.alexandria.Json;
 import io.intino.alexandria.logger.Logger;
+import io.intino.ime.box.dsls.LanguageManager;
 import io.intino.ime.model.Workspace;
 import io.intino.languagearchetype.Archetype;
 import org.apache.commons.io.FileUtils;
@@ -12,20 +13,27 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
 
 public class WorkspaceManager {
 	private final Archetype archetype;
+	private final LanguageManager languageManager;
 
-	public WorkspaceManager(Archetype archetype) {
+	public WorkspaceManager(Archetype archetype, LanguageManager languageManager) {
 		this.archetype = archetype;
+		this.languageManager = languageManager;
+	}
+
+	public List<Workspace> allWorkspaces() {
+		File[] root = archetype.workspaces().root().listFiles();
+		if (root == null) return Collections.emptyList();
+		return Arrays.stream(root).filter(File::isDirectory).map(this::workspaceOf).filter(Objects::nonNull).collect(toList());
 	}
 
 	public List<Workspace> ownerWorkspaces(String user) {
-		File[] root = archetype.workspaces().root().listFiles();
-		if (root == null) return Collections.emptyList();
-		return Arrays.stream(root).filter(File::isDirectory).map(this::workspaceOf).filter(w -> belongsTo(w, user)).collect(toList());
+		return allWorkspaces().stream().filter(w -> belongsTo(w, user)).collect(toList());
 	}
 
 	public List<Workspace> publicWorkspaces(String user) {
@@ -37,7 +45,8 @@ public class WorkspaceManager {
 	}
 
 	public boolean exists(String name) {
-		return archetype.workspaces().definition(name).exists();
+		if (languageManager.exists(name)) return true;
+		return allWorkspaces().stream().anyMatch(w -> w.name().equals(name));
 	}
 
 	public Workspace workspace(String name) {

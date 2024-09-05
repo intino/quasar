@@ -39,7 +39,7 @@ public class LanguageManager {
 
 	public List<Language> proprietaryLanguages(String user) {
 		if (user == null) return emptyList();
-		return languageMap.values().stream().filter(l -> user.equals(l.owner())).collect(toList());
+		return languageMap.values().stream().filter(l -> l.isPrivate() && user.equals(l.owner())).collect(toList());
 	}
 
 	public List<Language> versions(String language) {
@@ -64,8 +64,14 @@ public class LanguageManager {
 		return languageMap.containsKey(id) ? languageMap.get(id) : defaultLanguage();
 	}
 
+	public void remove(Language language) {
+		if (!languageMap.containsKey(language.id())) return;
+		languageMap.remove(language.id());
+		save();
+	}
+
 	private Language defaultLanguage() {
-		return new Language("none").info(LanguageInfo.from("L1(none:1.0.0-SNAPSHOT)"));
+		return new Language("none:1.0.0").info(LanguageInfo.from("L1(none:1.0.0-SNAPSHOT)"));
 	}
 
 	private Map<String, Language> load() {
@@ -100,6 +106,10 @@ public class LanguageManager {
 		boolean isPrivate = !Boolean.parseBoolean(split[3]);
 		Instant createDate = Instant.ofEpochMilli(Long.parseLong(split[4]));
 		return new Language(split[0]).info(level).owner(split[2]).isPrivate(isPrivate).createDate(createDate);
+	}
+
+	public boolean exists(String name) {
+		return languageMap.keySet().stream().anyMatch(l -> l.startsWith(name + ":"));
 	}
 
 }

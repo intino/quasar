@@ -1,16 +1,11 @@
 package io.intino.ime.box.ui.displays.templates;
 
-import io.intino.alexandria.exceptions.*;
-import io.intino.alexandria.ui.displays.Component;
 import io.intino.alexandria.ui.displays.events.AddItemEvent;
-import io.intino.ime.box.*;
-import io.intino.ime.box.commands.LanguageCommands;
-import io.intino.ime.box.schemas.*;
 import io.intino.ime.box.ImeBox;
+import io.intino.ime.box.commands.LanguageCommands;
 import io.intino.ime.box.ui.DisplayHelper;
 import io.intino.ime.box.ui.datasources.LanguageVersionsDatasource;
 import io.intino.ime.box.ui.displays.rows.LanguageVersionsTableRow;
-import io.intino.ime.box.ui.displays.templates.AbstractLanguageVersionsCatalog;
 import io.intino.ime.model.Language;
 import io.intino.ime.model.Workspace;
 
@@ -52,6 +47,7 @@ public class LanguageVersionsCatalog extends AbstractLanguageVersionsCatalog<Ime
 		row.lvtOperationsItem.publishVersion.onExecute(e -> publishVersion(language, row));
 		row.lvtOperationsItem.unpublishVersion.visible(language.isPublic());
 		row.lvtOperationsItem.unpublishVersion.onExecute(e -> unpublishVersion(language, row));
+		row.lvtOperationsItem.removeVersion.onExecute(e -> removeVersion(language, row));
 	}
 
 	private void createVersion() {
@@ -69,6 +65,11 @@ public class LanguageVersionsCatalog extends AbstractLanguageVersionsCatalog<Ime
 	private void unpublishVersion(Language language, LanguageVersionsTableRow row) {
 		language = box().commands(LanguageCommands.class).unPublish(language, username());
 		refresh(language, row);
+	}
+
+	private void removeVersion(Language language, LanguageVersionsTableRow row) {
+		box().commands(LanguageCommands.class).remove(language, username());
+		refresh();
 	}
 
 	private void refreshCreateVersionDialog() {

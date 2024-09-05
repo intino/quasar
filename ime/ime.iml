@@ -43,21 +43,9 @@
     <orderEntry type="library" name="Intino: eu.medsea.mimeutil:mime-util:2.1.3" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:json:1.2.3" level="project" />
     <orderEntry type="library" name="Intino: com.google.code.gson:gson:2.10.1" level="project" />
-    <orderEntry type="library" name="Intino: io.intino.alexandria:rest-accessor:3.1.4" level="project" />
     <orderEntry type="library" name="Intino: org.apache.httpcomponents:httpcore:4.4.16" level="project" />
     <orderEntry type="library" name="Intino: org.apache.httpcomponents:httpclient:4.5.14" level="project" />
     <orderEntry type="library" name="Intino: commons-logging:commons-logging:1.2" level="project" />
-    <orderEntry type="library" name="Intino: org.apache.commons:commons-lang3:3.13.0" level="project" />
-    <orderEntry type="library" name="Intino: commons-io:commons-io:2.14.0" level="project" />
-    <orderEntry type="library" name="Intino: org.glassfish.tyrus:tyrus-client:2.1.3" level="project" />
-    <orderEntry type="library" name="Intino: org.glassfish.tyrus:tyrus-core:2.1.3" level="project" />
-    <orderEntry type="library" name="Intino: org.glassfish.tyrus:tyrus-spi:2.1.3" level="project" />
-    <orderEntry type="library" name="Intino: jakarta.websocket:jakarta.websocket-client-api:2.1.0" level="project" />
-    <orderEntry type="library" name="Intino: jakarta.websocket:jakarta.websocket-api:2.1.0" level="project" />
-    <orderEntry type="library" name="Intino: org.glassfish.tyrus:tyrus-container-grizzly-client:2.1.3" level="project" />
-    <orderEntry type="library" name="Intino: org.glassfish.grizzly:grizzly-framework:4.0.0" level="project" />
-    <orderEntry type="library" name="Intino: org.glassfish.grizzly:grizzly-http-server:4.0.0" level="project" />
-    <orderEntry type="library" name="Intino: org.glassfish.grizzly:grizzly-http:4.0.0" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:zip:1.0.5" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:totp:1.0.2" level="project" />
     <orderEntry type="library" name="Intino: de.taimos:totp:1.0" level="project" />
@@ -92,7 +80,6 @@
     <orderEntry type="library" name="Intino: org.antlr:antlr4-runtime:4.13.1" level="project" />
     <orderEntry type="library" name="Intino: io.intino.itrules:engine:1.0.0" level="project" />
     <orderEntry type="library" name="Intino: tara.dsl:proteo:1.0.4" level="project" />
-    <orderEntry type="library" name="Intino: io.intino.alexandria:http:1.7.10" level="project" />
     <orderEntry type="module" module-name="ime-elements" />
     <orderEntry type="library" name="Intino: io.intino.tara:builder:1.3.1" level="project" />
     <orderEntry type="library" name="Intino: org.scribe:scribe:1.3.7" level="project" />
@@ -100,6 +87,19 @@
     <orderEntry type="library" name="Intino: io.intino.amidas:accessor:4.1.1" level="project" />
     <orderEntry type="library" name="Intino: io.intino.amidas:shared:4.0.5" level="project" />
     <orderEntry type="library" name="Intino: org.java-websocket:Java-WebSocket:1.5.3" level="project" />
-    <orderEntry type="library" name="Intino: io.intino.alexandria:ui-framework:5.2.7" level="project" />
+    <orderEntry type="library" name="Intino: io.intino.alexandria:ui-framework:5.2.9" level="project" />
+    <orderEntry type="library" name="Intino: io.intino.alexandria:http:1.7.11" level="project" />
+    <orderEntry type="library" name="Intino: io.intino.alexandria:rest-accessor:3.1.6" level="project" />
+    <orderEntry type="library" name="Intino: org.apache.commons:commons-lang3:3.14.0" level="project" />
+    <orderEntry type="library" name="Intino: commons-io:commons-io:2.16.1" level="project" />
+    <orderEntry type="library" name="Intino: org.glassfish.tyrus:tyrus-client:2.1.5" level="project" />
+    <orderEntry type="library" name="Intino: org.glassfish.tyrus:tyrus-core:2.1.5" level="project" />
+    <orderEntry type="library" name="Intino: org.glassfish.tyrus:tyrus-spi:2.1.5" level="project" />
+    <orderEntry type="library" name="Intino: jakarta.websocket:jakarta.websocket-client-api:2.1.1" level="project" />
+    <orderEntry type="library" name="Intino: jakarta.websocket:jakarta.websocket-api:2.1.1" level="project" />
+    <orderEntry type="library" name="Intino: org.glassfish.tyrus:tyrus-container-grizzly-client:2.1.5" level="project" />
+    <orderEntry type="library" name="Intino: org.glassfish.grizzly:grizzly-framework:4.0.2" level="project" />
+    <orderEntry type="library" name="Intino: org.glassfish.grizzly:grizzly-http-server:4.0.2" level="project" />
+    <orderEntry type="library" name="Intino: org.glassfish.grizzly:grizzly-http:4.0.2" level="project" />
   </component>
 </module>

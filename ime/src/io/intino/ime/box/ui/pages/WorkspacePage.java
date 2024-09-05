@@ -12,6 +12,7 @@ public class WorkspacePage extends AbstractWorkspacePage {
 	public String user;
 	public String workspace;
 	public String file;
+	public String accessToken;
 
 	@Override
 	public boolean hasPermissions() {
@@ -19,6 +20,8 @@ public class WorkspacePage extends AbstractWorkspacePage {
 		Workspace workspace = box.workspaceManager().workspace(this.workspace);
 		if (workspace == null) return false;
 		if (workspace.isPublic()) return true;
+		String token = workspace.token();
+		if (accessToken != null && accessToken.equals(token)) return true;
 		User loggedUser = session.user();
 		return loggedUser != null && loggedUser.username().equals(user);
 	}
