@@ -48,7 +48,7 @@ export const getEditorUri = (id: string, original: boolean, code: CodePlusUri | 
     if (Object.hasOwn(code, 'uri')) {
         return vscode.Uri.parse((code as CodePlusUri).uri);
     } else {
-        return vscode.Uri.parse(`${basePath ?? '/workspace'}/model${original ? 'Original' : ''}${id}.${(code as CodePlusFileExt).fileExt}`);
+        return vscode.Uri.parse(`${basePath ?? '/model'}/model${original ? 'Original' : ''}${id}.${(code as CodePlusFileExt).fileExt}`);
     }
 };
 

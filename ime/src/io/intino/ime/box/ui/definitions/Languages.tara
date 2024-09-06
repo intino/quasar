@@ -18,10 +18,10 @@ Template(layout=Vertical Flexible) languagesCatalog as Relative(height=100%, wid
 							Date(pattern="DD/MM/YYYY HH:mm") createDate as Labeled("Creation date")
 							Text metaLanguage as Labeled("Created using")
 						Block(layout=Vertical StartJustified)
-							MaterialIconButton(title="Add workspace", icon="Add", size=Small, visible=false) addWorkspace as Action
-							MaterialIconButton(title="Add workspace", icon="Add", size=Small, visible=false) addPrivateWorkspace as OpenDialog(empty)
+							MaterialIconButton(title="Add model", icon="Add", size=Small, visible=false) addModel as Action
+							MaterialIconButton(title="Add model", icon="Add", size=Small, visible=false) addPrivateModel as OpenDialog(empty)
 
-	Dialog(title="Add workspace") addPrivateWorkspaceDialog as Absolute(height=360px, width=400px)
+	Dialog(title="Add model") addPrivateModelDialog as Absolute(height=360px, width=400px)
         Block as Relative(height=100%, offsetHeight=40px)
         	Block(format=doubleAirBottom)
         		Text(value="Language", translate=true, format=labelColor)
@@ -30,8 +30,8 @@ Template(layout=Vertical Flexible) languagesCatalog as Relative(height=100%, wid
         	Text(format=doubleAirBottom) titleField as Editable Labeled("Title") Focused
 		Divider
         Block(layout=Horizontal EndJustified)
-            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addPrivateWorkspaceDialog)
-            Button(title="Add", size=Small, highlight=Fill) createWorkspace as Action
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addPrivateModelDialog)
+            Button(title="Add", size=Small, highlight=Fill) createModel as Action
 
 Template(layout=Vertical Flexible) languageVersionsCatalog as Relative(height=100%, width=100%)
 	Toolbar

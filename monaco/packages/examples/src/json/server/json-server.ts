@@ -161,7 +161,7 @@ export class JsonServer {
             const versionedTextDocumentIdentifier = params.arguments[0];
             const document = this.documents.get(versionedTextDocumentIdentifier.uri);
             if (document) {
-                this.connection.workspace.applyEdit({
+                this.connection.model.applyEdit({
                     documentChanges: [{
                         textDocument: versionedTextDocumentIdentifier,
                         edits: [{

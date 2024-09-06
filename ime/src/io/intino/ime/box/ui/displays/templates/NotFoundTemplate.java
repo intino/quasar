@@ -2,25 +2,25 @@ package io.intino.ime.box.ui.displays.templates;
 
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.ui.PathHelper;
-import io.intino.ime.model.Workspace;
+import io.intino.ime.model.Model;
 
 public class NotFoundTemplate extends AbstractNotFoundTemplate<ImeBox> {
-	private Workspace workspace;
+	private Model model;
 
 	public NotFoundTemplate(ImeBox box) {
 		super(box);
 	}
 
-	public void workspace(String name) {
-		this.workspace = box().workspaceManager().workspace(name);
+	public void model(String name) {
+		this.model = box().modelManager().model(name);
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
-		message.value(translate("Workspace was not found"));
-		myWorkspaces.visible(session().user() != null);
-		myWorkspaces.path(PathHelper.workspacesPath(session()));
+		message.value(translate("Model was not found"));
+		myModels.visible(session().user() != null);
+		myModels.path(PathHelper.modelsPath(session()));
 	}
 
 }

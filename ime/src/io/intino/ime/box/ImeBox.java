@@ -4,19 +4,19 @@ import io.intino.alexandria.ui.services.auth.Space;
 import io.intino.amidas.accessor.alexandria.core.AmidasOauthAccessor;
 import io.intino.ime.box.commands.Commands;
 import io.intino.ime.box.commands.CommandsFactory;
-import io.intino.ime.box.dsls.LanguageLoader;
-import io.intino.ime.box.dsls.LanguageManager;
-import io.intino.ime.box.dsls.LanguageServerFactory;
+import io.intino.ime.box.languages.LanguageLoader;
+import io.intino.ime.box.languages.LanguageManager;
+import io.intino.ime.box.languages.LanguageServerFactory;
 import io.intino.ime.box.lsp.LanguageServerWebSocketHandler;
-import io.intino.ime.box.util.WorkspaceSequence;
-import io.intino.ime.box.workspaces.WorkspaceManager;
+import io.intino.ime.box.util.ModelSequence;
+import io.intino.ime.box.models.ModelManager;
 import io.intino.languagearchetype.Archetype;
 
 public class ImeBox extends AbstractBox {
 	private Archetype archetype;
 	private LanguageLoader languageLoader;
 	private LanguageManager languageManager;
-	private WorkspaceManager workspaceManager;
+	private ModelManager modelManager;
 	private CommandsFactory commandsFactory;
 	private AmidasOauthAccessor amidasOauthAccessor;
 
@@ -40,13 +40,13 @@ public class ImeBox extends AbstractBox {
 		commandsFactory = new CommandsFactory(this);
 		languageLoader = new LanguageLoader(archetype.repository().languages().root(), url(configuration.languageArtifactory()));
 		languageManager = new LanguageManager(archetype);
-		workspaceManager = new WorkspaceManager(archetype, languageManager);
-		WorkspaceSequence.init(archetype.configuration().workspaceSequence());
+		modelManager = new ModelManager(archetype, languageManager);
+		ModelSequence.init(archetype.configuration().modelSequence());
 	}
 
 	@Override
 	protected void beforeSetupImeElementsUi(io.intino.alexandria.ui.UISpark sparkInstance) {
-		LanguageServerWebSocketHandler handler = new LanguageServerWebSocketHandler(new LanguageServerFactory(languageLoader), workspaceManager);
+		LanguageServerWebSocketHandler handler = new LanguageServerWebSocketHandler(new LanguageServerFactory(languageLoader), modelManager);
 		sparkInstance.service().webSocket("/dsl/tara", handler);
 	}
 
@@ -71,8 +71,8 @@ public class ImeBox extends AbstractBox {
 		return archetype;
 	}
 
-	public WorkspaceManager workspaceManager() {
-		return workspaceManager;
+	public ModelManager modelManager() {
+		return modelManager;
 	}
 
 	public <F extends Commands> F commands(Class<F> clazz) {

@@ -23,15 +23,15 @@ export const configureMonacoWorkers = () => {
 };
 
 export const runPythonWrapper = async () => {
-    const helloPyUri = vscode.Uri.file('/workspace/hello.py');
-    const hello2PyUri = vscode.Uri.file('/workspace/hello2.py');
+    const helloPyUri = vscode.Uri.file('/model/hello.py');
+    const hello2PyUri = vscode.Uri.file('/model/hello2.py');
 
     const fileSystemProvider = new RegisteredFileSystemProvider(false);
     fileSystemProvider.registerFile(new RegisteredMemoryFile(helloPyUri, helloPyCode));
     fileSystemProvider.registerFile(new RegisteredMemoryFile(hello2PyUri, hello2PyCode));
 
     registerFileSystemOverlay(1, fileSystemProvider);
-    const userConfig = createUserConfig('/workspace', helloPyCode, '/workspace/hello.py');
+    const userConfig = createUserConfig('/model', helloPyCode, '/model/hello.py');
     const htmlElement = document.getElementById('monaco-editor-root');
     const wrapper = new MonacoEditorLanguageClientWrapper();
 
@@ -43,8 +43,8 @@ export const runPythonWrapper = async () => {
                 await wrapper.init(userConfig);
 
                 // open files, so the LS can pick it up
-                await vscode.workspace.openTextDocument(hello2PyUri);
-                await vscode.workspace.openTextDocument(helloPyUri);
+                await vscode.model.openTextDocument(hello2PyUri);
+                await vscode.model.openTextDocument(helloPyUri);
 
                 await wrapper.start(htmlElement);
             }

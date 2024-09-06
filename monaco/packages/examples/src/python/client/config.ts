@@ -30,7 +30,7 @@ export const createUserConfig = (workspaceRoot: string, code: string, codeUri: s
                         setTimeout(() => {
                             ['pyright.restartserver', 'pyright.organizeimports'].forEach((cmdName) => {
                                 vscode.commands.registerCommand(cmdName, (...args: unknown[]) => {
-                                    languageClient?.sendRequest('workspace/executeCommand', { command: cmdName, arguments: args });
+                                    languageClient?.sendRequest('model/executeCommand', { command: cmdName, arguments: args });
                                 });
                             });
                         }, 250);
@@ -42,7 +42,7 @@ export const createUserConfig = (workspaceRoot: string, code: string, codeUri: s
                 documentSelector: ['python'],
                 workspaceFolder: {
                     index: 0,
-                    name: 'workspace',
+                    name: 'model',
                     uri: vscode.Uri.parse(workspaceRoot)
                 },
             },

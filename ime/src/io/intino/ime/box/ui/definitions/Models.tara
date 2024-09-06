@@ -1,0 +1,87 @@
+dsl Konos
+
+use Editors
+use UI
+use Theme
+
+Template modelsTemplate as Relative(height=100%, width=100%)
+	TemplateStamp(template=modelsHeaderTemplate) header
+
+	Block(layout=Vertical Flexible CenterCenter, visible=false) openingModelBlock
+		Spinner(mode=Ring, color="secondary")
+		Text(value="" , translate=true, format=h3 airTop) openingModelMessage
+
+	Block(layout=Horizontal Flexible) bodyBlock
+		Block(format=greyBackground) as Relative(width=20%)
+			Block(format=autoHeight) as Relative(width=100%)
+				Block(layout=Vertical CenterCenter, format=leftPanelBackground topSpaced bottomSpaced)
+					Button(title="New model", highlight=Fill) as OpenDialog(addModelDialog)
+
+			Block
+				Selector modelsGroupSelector as ListBox
+					Text(value="All models") allModelsOption as Option
+					Text(value="Private models") privateModelsOption as Option
+					Text(value="Public models") publicModelsOption as Option
+
+		Block(layout=Vertical Flexible, format=spaced) > TemplateStamp(template=modelsCatalog) modelsCatalog
+
+	Dialog(title="New model") addModelDialog as Absolute(width=800px, height=800px)
+        Block as Relative(height=100%, offsetHeight=40px)
+			Text(format=doubleAirBottom) nameField as Editable Labeled("Name") Focused
+			Text(format=doubleAirBottom) titleField as Editable Labeled("Title")
+        	Block
+        		Text(value="Language", translate=true, format=labelColor)
+	        	Selector(format=doubleAirBottom) languageField as CollectionBox(placeholder="Select language")
+	        		Table(itemClass="io.intino.ime.model.Language") languageTable as Selectable
+	        			noItemsMessage = "No languages"
+	        			Mold
+	        				Heading ltNameHeading > Text(value="Name", translate=true)
+	        				Item(height=20px, width=25%) ltNameItem > Text name
+	        			Mold
+	        				Heading ltVersionHeading > Text(value="Version", translate=true)
+	        				Item(height=20px, width=25%) ltVersionItem > Text version
+	        			Mold
+	        				Heading ltOwnerHeading > Text(value="Owner", translate=true)
+	        				Item(height=20px, width=50%) ltOwnerItem > Text owner
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addModelDialog)
+            Button(title="Create", size=Small, highlight=Fill) createModel as Action
+
+Template modelsCatalog as Relative(height=100%, width=100%)
+	Text(format=h4) title
+	Table(itemClass="io.intino.ime.model.Model") modelTable
+		noItemsMessage = "No models"
+		Mold
+			Heading modelTitleHeading > Sorting(collections=modelTable) titleSorting as OrderBy Labeled("Title")
+			Item(height=30px, width=60%) modelTitleItem > Link(title="") title as Action
+		Mold
+			Heading modelOwnerHeading > Sorting(collections=modelTable) ownerSorting as OrderBy Labeled("Owner")
+			Item(height=30px, width=20%) modelOwnerItem > Text owner
+		Mold
+			Heading lastModifiedDateHeading > Sorting(collections=modelTable) lastModifiedSorting as OrderBy Labeled("Last modified")
+			Item(height=30px, width=10%) lastModifiedDateItem > Date lastModifiedDate
+		Mold
+			Heading operationsHeading > Text(value="Operations", translate=true)
+			Item(height=30px, width=10%) operationsItem
+				Block(layout=Horizontal)
+					TemplateStamp(template=cloneModelEditor) cloneModelEditor
+					MaterialIconButton(title="Remove model", icon="Delete", size=Small) removeModel as Action Affirmed("Are you sure to remove model?")
+					TemplateStamp(template=modelSettingsEditor) settingsEditor
+
+Template(format=headerBackground middleTopSpaced middleBottomSpaced) modelsHeaderTemplate
+	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)
+		Block(layout=Horizontal Flexible Center, format=airLeft)
+			Link(title="", format=logoLink) as OpenPage(ImeElements.home)
+			Image(value="/logo-dark.png", format=airLeft doubleAirRight, mobileReduceFactor=75%) as Absolute(width=45px, height=45px)
+			Block
+				Text(format=h3 appTitleStyle, value="My models") title
+				Text(format=whiteColor, value="The list of models you designed")
+			Block(layout=Horizontal, format=airLeft)
+		Block(layout=Horizontal Center EndJustified)
+			Block(format=airRight)
+				MaterialIconButton(title="set dark mode", icon="Brightness4") as SetDarkMode
+				MaterialIconButton(title="set light mode", icon="Brightness7") as SetLightMode
+			User(mode=OnlyPhoto) user
+				Selector as ListBox
+					Block as Option > Link(title="Home") as OpenPage(page=ImeElements.home)

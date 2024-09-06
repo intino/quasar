@@ -21,12 +21,12 @@ export const configureMonacoWorkers = () => {
 };
 
 export const runTsWrapper = async () => {
-    const codeUri = '/workspace/hello.ts';
+    const codeUri = '/model/hello.ts';
     const code = `function sayHello(): string {
     return "Hello";
 };`;
 
-    const codeOriginalUri = '/workspace/goodbye.ts';
+    const codeOriginalUri = '/model/goodbye.ts';
     const codeOriginal = `function sayGoodbye(): string {
     return "Goodbye";
 };`;

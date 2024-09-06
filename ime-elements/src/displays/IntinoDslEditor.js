@@ -63,7 +63,7 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
         const theme = Theme.get();
 	    return {
             darkMode: theme.isDark(),
-            webSocketUrl: Application.configuration.baseUrl.replace("http", "ws") + "/dsl/tara?workspace=" + this.state.file.workspace,
+            webSocketUrl: Application.configuration.baseUrl.replace("http", "ws") + "/dsl/tara?model=" + this.state.file.model,
             file: this.state.file,
         }
     };

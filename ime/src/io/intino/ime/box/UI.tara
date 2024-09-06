@@ -1,28 +1,28 @@
 dsl Konos
 
+use Models
+use Model
 use Languages
-use Workspace
-use Workspaces
 use Theme
 
 Service ImeElements as UI(port = "{port}", title = "{title}", favicon = "/icons/favicons/favicon.ico")
 	Authentication(by="{federation-url}")
 
 	Resource(path = "/") home as Page(homeTemplate) Main
-	Resource(path = "/:user/workspaces/:workspace") workspace as Page(workspaceTemplate)
+	Resource(path = "/:user/models/:model") model as Page(modelTemplate)
 		Parameter file
 		Parameter accessToken
-	Resource(path = "/:user/workspaces") workspaces as Page(workspacesTemplate) Confidential
-	Resource(path = "/home") userHome as Page(workspacesTemplate) Confidential
-	Resource(path = "/not-found") notFound as Page(notFoundTemplate) > Parameter workspace
-	Resource(path = "/permissions") permissions as Page(permissionsTemplate) > Parameter workspace
+	Resource(path = "/:user/models") models as Page(modelsTemplate) Confidential
+	Resource(path = "/home") userHome as Page(modelsTemplate) Confidential
+	Resource(path = "/not-found") notFound as Page(notFoundTemplate) > Parameter model
+	Resource(path = "/permissions") permissions as Page(permissionsTemplate) > Parameter model
 
 Template homeTemplate as Relative(height=100%, width=100%)
 	TemplateStamp(template=headerTemplate) header
 
-	Block(layout=Vertical Flexible CenterCenter, visible=false) searchingWorkspacesBlock
+	Block(layout=Vertical Flexible CenterCenter, visible=false) searchingModelsBlock
 		Spinner(mode=Ring, color="secondary")
-		Text(value="" , translate=true, format=h3 airTop) openingWorkspaceMessage
+		Text(value="" , translate=true, format=h3 airTop) openingModelMessage
 
 	Block(layout=Vertical Flexible Center, format=greyBackground) bodyBlock as Relative(width=100%)
 		Block(format=middleTopSpaced middleBottomSpaced autoHeight) as Relative(width=70%)
@@ -47,7 +47,7 @@ Template(format=headerBackground middleTopSpaced middleBottomSpaced) headerTempl
 				MaterialIconButton(title="set light mode", icon="Brightness7") as SetLightMode
 			User(mode=OnlyPhoto, visible=false) user
 				Selector as ListBox
-					Block as Option > Link(title="My workspaces") workspaces as OpenPage(page=ImeElements.workspaces)
+					Block as Option > Link(title="My models") models as OpenPage(page=ImeElements.models)
 
 Template(layout=Vertical Flexible) permissionsTemplate as Relative(height=100%,width=100%)
 	Block(layout=Vertical CenterCenter, format=grey) as Relative(height=100%,width=100%)
@@ -60,7 +60,7 @@ Template(layout=Vertical Flexible) permissionsTemplate as Relative(height=100%,w
 				Divider
 				Block(layout=Horizontal CenterJustified, format=middleAirTop)
 					Button(title="Home", highlight=Outline, format=airRight) gotoHome as OpenPage(ImeElements.home)
-					Button(title="My workspaces", visible=false, highlight=Outline, format=airRight) myWorkspaces as OpenPage(ImeElements.workspaces)
+					Button(title="My models", visible=false, highlight=Outline, format=airRight) myModels as OpenPage(ImeElements.models)
 					Button(title="Logout", highlight=Outline, visible=false) logoutButton as Action
 
 Template(layout=Vertical Flexible) notFoundTemplate as Relative(height=100%,width=100%)
@@ -69,9 +69,9 @@ Template(layout=Vertical Flexible) notFoundTemplate as Relative(height=100%,widt
 			Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
 				Block(layout=Vertical CenterCenter)
 					Image(value="/logo-dark.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=181px, height=200px)
-					Text(value="Workspace not found", format=h4 airTop textCentered, translate=true) message
+					Text(value="Model not found", format=h4 airTop textCentered, translate=true) message
 			Block
 				Divider
 				Block(layout=Horizontal CenterJustified, format=middleAirTop)
 					Button(title="Home", highlight=Outline, format=airRight) gotoHome as OpenPage(ImeElements.home)
-					Button(title="My workspaces", highlight=Outline, visible=false) myWorkspaces as OpenPage(ImeElements.workspaces)
+					Button(title="My models", highlight=Outline, visible=false) myModels as OpenPage(ImeElements.models)

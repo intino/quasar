@@ -62,7 +62,7 @@ const startEditor = async () => {
     await wrapper.initAndStart(langiumGlobalConfig, document.getElementById('monaco-editor-root'));
 
     // here the modelReference is created manually and given to the updateEditorModels of the wrapper
-    const uri = vscode.Uri.parse('/workspace/statemachine-mod.statemachine');
+    const uri = vscode.Uri.parse('/model/statemachine-mod.statemachine');
     const modelRef = await createModelReference(uri, text);
     wrapper.updateEditorModels({
         modelRef

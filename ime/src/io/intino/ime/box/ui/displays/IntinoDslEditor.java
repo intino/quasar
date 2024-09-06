@@ -3,7 +3,7 @@ package io.intino.ime.box.ui.displays;
 import io.intino.alexandria.logger.Logger;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.schemas.IntinoDslEditorFile;
-import io.intino.ime.model.Workspace;
+import io.intino.ime.model.Model;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.util.function.Consumer;
 
 public class IntinoDslEditor extends AbstractIntinoDslEditor<ImeBox> {
-	private Workspace workspace;
+	private Model model;
 	private String name;
 	private String extension;
 	private File content;
@@ -23,8 +23,8 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<ImeBox> {
 		super(box);
 	}
 
-	public void workspace(Workspace workspace) {
-		this.workspace = workspace;
+	public void model(Model model) {
+		this.model = model;
 	}
 
 	public void file(String name, String extension, File content, String language) {
@@ -63,7 +63,7 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<ImeBox> {
 	}
 
 	private IntinoDslEditorFile file() {
-		return new IntinoDslEditorFile().workspace(workspace.name()).name(name).uri("file://" + content.getPath()).extension(extension).content(content()).language(language);
+		return new IntinoDslEditorFile().model(model.name()).name(name).uri("file://" + content.getPath()).extension(extension).content(content()).language(language);
 	}
 
 	private String content() {

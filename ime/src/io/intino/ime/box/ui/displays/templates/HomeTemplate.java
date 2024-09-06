@@ -3,7 +3,7 @@ package io.intino.ime.box.ui.displays.templates;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.ui.datasources.LanguagesDatasource;
 import io.intino.ime.box.util.Formatters;
-import io.intino.ime.model.Workspace;
+import io.intino.ime.model.Model;
 
 public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 
@@ -15,7 +15,7 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 	public void init() {
 		super.init();
 		header.onSearch(this::filter);
-		languagesCatalog.onOpenWorkspace(this::notifyOpeningWorkspace);
+		languagesCatalog.onOpenModel(this::notifyOpeningModel);
 		refresh();
 	}
 
@@ -25,18 +25,18 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 		header.refresh();
 		LanguagesDatasource source = new LanguagesDatasource(box(), session());
 		countLanguages.value(Formatters.countMessage(source.itemCount(), "language", "languages", language()));
-		refreshWorkspaces(source);
+		refreshModels(source);
 	}
 
-	private void refreshWorkspaces(LanguagesDatasource source) {
+	private void refreshModels(LanguagesDatasource source) {
 		languagesCatalog.source(source);
 		languagesCatalog.refresh();
 	}
 
-	private void notifyOpeningWorkspace(Workspace workspace) {
+	private void notifyOpeningModel(Model model) {
 		bodyBlock.hide();
-		openingWorkspaceMessage.value(String.format(translate("Opening %s"), workspace.title()));
-		searchingWorkspacesBlock.show();
+		openingModelMessage.value(String.format(translate("Opening %s"), model.title()));
+		searchingModelsBlock.show();
 	}
 
 	private void filter(String condition) {

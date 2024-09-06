@@ -61,7 +61,7 @@ const run = async () => {
         codeResources: {
           main: {
             text: 'print("Hello, World!")',
-            uri: '/workspace/hello.py'
+            uri: '/model/hello.py'
           }
         }
       }

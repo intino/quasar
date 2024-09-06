@@ -33,7 +33,7 @@ export const runBrowserEditor = async () => {
     "$schema": "http://json.schemastore.org/coffeelint",
     "line_endings": "unix"
 }`;
-    const codeUri = '/workspace/model.json';
+    const codeUri = '/model/model.json';
 
     const wrapper = new MonacoEditorLanguageClientWrapper();
     const jsonClientUserConfig: UserConfig = {
@@ -65,7 +65,7 @@ export const runBrowserEditor = async () => {
     };
     await wrapper.init(jsonClientUserConfig);
 
-    vscode.workspace.onDidOpenTextDocument((_event) => {
+    vscode.model.onDidOpenTextDocument((_event) => {
         mainVscodeDocument = _event;
     });
 

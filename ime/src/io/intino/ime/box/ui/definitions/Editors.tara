@@ -3,29 +3,29 @@ dsl Konos
 use UI
 use Theme
 
-Template(layout=Horizontal) workspaceSettingsEditor
+Template(layout=Horizontal) modelSettingsEditor
 	MaterialIconButton(title="Settings", icon="Settings", size=Small, visible=false) smallIcon as OpenDialog(settingsDialog)
 	MaterialIconButton(title="Settings", icon="Settings", visible=false) largeIcon as OpenDialog(settingsDialog)
 
 	Dialog(title="Settings") settingsDialog as Absolute(width=500px, height=400px)
         Block as Relative(height=100%, offsetHeight=40px)
         	Text(format=doubleAirBottom) settingsTitleField as Editable Labeled("Title")
-        	Switch(title = "Workspace is private", format=doubleAirBottom) accessTypeField
+        	Switch(title = "Model is private", format=doubleAirBottom) accessTypeField
         	Text(visible=false) accessTokenField as Editable Labeled("Access token")
 		Divider
         Block(layout=Horizontal EndJustified)
             Button(title="Close", size=Small, format=airRight) as CloseDialog(settingsDialog)
             Button(title="Save", size=Small, highlight=Fill) saveSettings as Action
 
-Template(layout=Horizontal) cloneWorkspaceEditor
-	MaterialIconButton(title="Clone workspace", icon="FileCopy", size=Small, visible=false) smallIcon as OpenDialog(workspaceDialog)
-	MaterialIconButton(title="Clone workspace", icon="FileCopy", visible=false) largeIcon as OpenDialog(workspaceDialog)
+Template(layout=Horizontal) cloneModelEditor
+	MaterialIconButton(title="Clone model", icon="FileCopy", size=Small, visible=false) smallIcon as OpenDialog(modelDialog)
+	MaterialIconButton(title="Clone model", icon="FileCopy", visible=false) largeIcon as OpenDialog(modelDialog)
 
-	Dialog(title="Clone workspace") workspaceDialog as Absolute(width=400px, height=260px)
+	Dialog(title="Clone model") modelDialog as Absolute(width=400px, height=260px)
         Block as Relative(height=100%, offsetHeight=40px)
-        	Text workspaceNameField as Editable(placeholder="Indicate new name", helperText="Only alphanumeric characters are allowed") Labeled("New name") Focused
-        	Text workspaceTitleField as Editable(placeholder="Indicate title") Labeled("Title")
+        	Text modelNameField as Editable(placeholder="Indicate new name", helperText="Only alphanumeric characters are allowed") Labeled("New name") Focused
+        	Text modelTitleField as Editable(placeholder="Indicate title") Labeled("Title")
 		Divider
         Block(layout=Horizontal EndJustified)
-            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(workspaceDialog)
-            Button(title="Accept", size=Small, highlight=Fill) cloneWorkspace as Action
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(modelDialog)
+            Button(title="Accept", size=Small, highlight=Fill) cloneModel as Action

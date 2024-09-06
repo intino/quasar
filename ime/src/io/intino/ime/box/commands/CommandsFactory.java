@@ -17,7 +17,7 @@ public class CommandsFactory {
 	}
 
 	private void buildCommands() {
-		builder.put(WorkspaceCommands.class, WorkspaceCommands::new);
+		builder.put(ModelCommands.class, ModelCommands::new);
 		builder.put(LanguageCommands.class, LanguageCommands::new);
 	}
 

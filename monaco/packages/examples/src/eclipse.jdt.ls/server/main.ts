@@ -29,7 +29,7 @@ export const runEclipseJdtLs = () => {
             '-configuration',
             `${eclipseJdtLsConfig.basePath}/ls/config_linux`,
             '-data',
-            `${eclipseJdtLsConfig.basePath}/workspace`
+            `${eclipseJdtLsConfig.basePath}/model`
         ],
         wsServerOptions: {
             noServer: true,

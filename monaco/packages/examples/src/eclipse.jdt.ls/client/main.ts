@@ -11,7 +11,7 @@ import { MonacoEditorLanguageClientWrapper, UserConfig } from 'monaco-editor-wra
 import { useWorkerFactory } from 'monaco-editor-wrapper/workerFactory';
 import { RegisteredFileSystemProvider, RegisteredMemoryFile, registerFileSystemOverlay } from '@codingame/monaco-vscode-files-service-override';
 import { eclipseJdtLsConfig } from '../config';
-import helloJavaCode from '../../../resources/eclipse.jdt.ls/workspace/hello.java?raw';
+import helloJavaCode from '../../../resources/eclipse.jdt.ls/model/hello.java?raw';
 
 export const configureMonacoWorkers = () => {
     useWorkerFactory({
@@ -23,7 +23,7 @@ export const configureMonacoWorkers = () => {
 };
 
 export const runEclipseJdtLsClient = () => {
-    const helloJavaUri = vscode.Uri.file(`${eclipseJdtLsConfig.basePath}/workspace/hello.java`);
+    const helloJavaUri = vscode.Uri.file(`${eclipseJdtLsConfig.basePath}/model/hello.java`);
     const fileSystemProvider = new RegisteredFileSystemProvider(false);
     fileSystemProvider.registerFile(new RegisteredMemoryFile(helloJavaUri, helloJavaCode));
     registerFileSystemOverlay(1, fileSystemProvider);
@@ -41,7 +41,7 @@ export const runEclipseJdtLsClient = () => {
                 codeResources: {
                     main: {
                         text: helloJavaCode,
-                        uri: `${eclipseJdtLsConfig.basePath}/workspace/hello.java`
+                        uri: `${eclipseJdtLsConfig.basePath}/model/hello.java`
                     }
                 },
                 useDiffEditor: false,
@@ -64,8 +64,8 @@ export const runEclipseJdtLsClient = () => {
                 documentSelector: ['java'],
                 workspaceFolder: {
                     index: 0,
-                    name: 'workspace',
-                    uri: vscode.Uri.parse(`${eclipseJdtLsConfig.basePath}/workspace`)
+                    name: 'model',
+                    uri: vscode.Uri.parse(`${eclipseJdtLsConfig.basePath}/model`)
                 },
             },
         }
@@ -80,7 +80,7 @@ export const runEclipseJdtLsClient = () => {
             await wrapper.init(userConfig);
 
             // open files, so the LS can pick it up
-            await vscode.workspace.openTextDocument(helloJavaUri);
+            await vscode.model.openTextDocument(helloJavaUri);
 
             await wrapper.start(htmlElement);
         });

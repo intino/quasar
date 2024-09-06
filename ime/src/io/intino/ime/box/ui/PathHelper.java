@@ -2,7 +2,7 @@ package io.intino.ime.box.ui;
 
 import io.intino.alexandria.ui.services.push.UISession;
 import io.intino.alexandria.ui.services.push.User;
-import io.intino.ime.model.Workspace;
+import io.intino.ime.model.Model;
 
 public class PathHelper {
 
@@ -12,20 +12,20 @@ public class PathHelper {
 		return session.browser().baseUrl() + "/" + (session.isLogged() ? "home" : "");
 	}
 
-	public static String workspacesUrl(UISession session) {
-		return session.browser().baseUrl() + "/" + userOf(session) + "/workspaces";
+	public static String modelsUrl(UISession session) {
+		return session.browser().baseUrl() + "/" + userOf(session) + "/models";
 	}
 
-	public static String workspacesPath(UISession session) {
-		return "/" + userOf(session) + "/workspaces";
+	public static String modelsPath(UISession session) {
+		return "/" + userOf(session) + "/models";
 	}
 
-	public static String workspacePath(UISession session, Workspace workspace) {
-		return "/" + userOf(session) + "/workspaces/" + workspace.name();
+	public static String modelPath(UISession session, Model model) {
+		return "/" + userOf(session) + "/models/" + model.name();
 	}
 
-	public static String workspaceUrl(UISession session, Workspace workspace) {
-		return session.browser().baseUrl() + "/" + userOf(session) + "/workspaces/" + workspace.name();
+	public static String modelUrl(UISession session, Model model) {
+		return session.browser().baseUrl() + "/" + userOf(session) + "/models/" + model.name();
 	}
 
 	private static String userOf(UISession session) {

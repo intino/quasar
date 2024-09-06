@@ -6,7 +6,7 @@ import io.intino.ime.box.commands.language.PublishLanguageCommand;
 import io.intino.ime.box.commands.language.RemoveLanguageCommand;
 import io.intino.ime.box.commands.language.UnPublishLanguageCommand;
 import io.intino.ime.model.Language;
-import io.intino.ime.model.Workspace;
+import io.intino.ime.model.Model;
 
 public class LanguageCommands extends Commands {
 
@@ -14,9 +14,9 @@ public class LanguageCommands extends Commands {
 		super(box);
 	}
 
-	public Language create(Workspace workspace, String version, String username) {
+	public Language create(Model model, String version, String username) {
 		CreateLanguageCommand command = setup(new CreateLanguageCommand(box), username);
-		command.workspace = workspace;
+		command.model = model;
 		command.version = version;
 		return command.execute();
 	}

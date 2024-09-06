@@ -7,18 +7,18 @@ import io.intino.ime.box.ui.DisplayHelper;
 import io.intino.ime.box.ui.datasources.LanguageVersionsDatasource;
 import io.intino.ime.box.ui.displays.rows.LanguageVersionsTableRow;
 import io.intino.ime.model.Language;
-import io.intino.ime.model.Workspace;
+import io.intino.ime.model.Model;
 
 public class LanguageVersionsCatalog extends AbstractLanguageVersionsCatalog<ImeBox> {
-	private Workspace workspace;
+	private Model model;
 
 	public LanguageVersionsCatalog(ImeBox box) {
 		super(box);
 	}
 
-	public void workspace(Workspace workspace) {
-		this.workspace = workspace;
-		this.languageVersionsTable.source(new LanguageVersionsDatasource(box(), session(), workspace.name()));
+	public void model(Model model) {
+		this.model = model;
+		this.languageVersionsTable.source(new LanguageVersionsDatasource(box(), session(), model.name()));
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class LanguageVersionsCatalog extends AbstractLanguageVersionsCatalog<Ime
 	private void createVersion() {
 		if (!DisplayHelper.check(versionField, this::translate)) return;
 		createVersionDialog.close();
-		box().commands(LanguageCommands.class).create(workspace, versionField.value(), username());
+		box().commands(LanguageCommands.class).create(model, versionField.value(), username());
 		refresh();
 	}
 

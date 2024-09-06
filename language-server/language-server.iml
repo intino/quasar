@@ -17,9 +17,6 @@
     <orderEntry type="library" name="Intino: com.google.code.gson:gson:2.11.0" level="project" />
     <orderEntry type="library" name="Intino: com.google.errorprone:error_prone_annotations:2.27.0" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:logger:2.1.0" level="project" />
-    <orderEntry type="library" name="Intino: tara.dsl:meta:2.0.0" level="project" />
-    <orderEntry type="library" name="Intino: io.intino.tara:language:2.0.0" level="project" />
-    <orderEntry type="library" name="Intino: org.antlr:antlr4-runtime:4.13.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Intino: io.intino.magritte:framework:5.2.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Intino: io.intino.magritte:io:5.0.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Intino: com.esotericsoftware:kryo:5.4.0" level="project" />
@@ -90,5 +87,8 @@
     <orderEntry type="library" scope="TEST" name="Intino: org.glassfish.grizzly:grizzly-framework:4.0.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Intino: org.glassfish.grizzly:grizzly-http-server:4.0.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Intino: org.glassfish.grizzly:grizzly-http:4.0.2" level="project" />
+    <orderEntry type="library" name="Intino: tara.dsl:meta:2.0.0" level="project" />
+    <orderEntry type="library" name="Intino: io.intino.tara:language:2.0.0" level="project" />
+    <orderEntry type="library" name="Intino: org.antlr:antlr4-runtime:4.13.1" level="project" />
   </component>
 </module>

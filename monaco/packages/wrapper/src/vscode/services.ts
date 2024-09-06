@@ -39,13 +39,13 @@ export const configureServices = async (config: VscodeServicesConfig): Promise<I
         mergeServices(mlcDefautServices, serviceConfig.userServices);
     }
 
-    // adding the default workspace config if not provided
+    // adding the default model config if not provided
     if (!workspaceConfig) {
         serviceConfig.workspaceConfig = {
             workspaceProvider: {
                 trusted: true,
-                workspace: {
-                    workspaceUri: vscode.Uri.file('/workspace')
+                model: {
+                    workspaceUri: vscode.Uri.file('/model')
                 },
                 async open() {
                     window.open(window.location.href);

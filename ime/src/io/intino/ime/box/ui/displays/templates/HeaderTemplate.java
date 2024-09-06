@@ -2,7 +2,6 @@ package io.intino.ime.box.ui.displays.templates;
 
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.ui.PathHelper;
-import io.intino.ime.box.util.WorkspaceHelper;
 
 import java.util.function.Consumer;
 
@@ -30,6 +29,6 @@ public class HeaderTemplate extends AbstractHeaderTemplate<ImeBox> {
 		notLoggedToolbar.visible(session().user() == null);
 		user.visible(session().user() != null);
 		if (session().user() == null) return;
-		workspaces.path(PathHelper.workspacesPath(session()));
+		models.path(PathHelper.modelsPath(session()));
 	}
 }

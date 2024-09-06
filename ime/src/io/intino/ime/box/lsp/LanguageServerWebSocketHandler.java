@@ -1,9 +1,9 @@
 package io.intino.ime.box.lsp;
 
 import io.intino.alexandria.logger.Logger;
-import io.intino.ime.box.dsls.LanguageServerFactory;
-import io.intino.ime.model.Workspace;
-import io.intino.ime.box.workspaces.WorkspaceManager;
+import io.intino.ime.box.languages.LanguageServerFactory;
+import io.intino.ime.model.Model;
+import io.intino.ime.box.models.ModelManager;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -19,15 +19,15 @@ import java.util.concurrent.Executors;
 @WebSocket
 public class LanguageServerWebSocketHandler {
 	private final LanguageServerFactory serverFactory;
-	private final WorkspaceManager workspaceManager;
+	private final ModelManager modelManager;
 	private ExecutorService executorService;
 	private PipedOutputStream clientOutput;
 	private PipedInputStream serverInput;
 	private final Object monitor = new Object();
 
-	public LanguageServerWebSocketHandler(LanguageServerFactory serverFactory, WorkspaceManager workspaceManager) {
+	public LanguageServerWebSocketHandler(LanguageServerFactory serverFactory, ModelManager modelManager) {
 		this.serverFactory = serverFactory;
-		this.workspaceManager = workspaceManager;
+		this.modelManager = modelManager;
 	}
 
 	@OnWebSocketConnect
@@ -40,7 +40,7 @@ public class LanguageServerWebSocketHandler {
 				PipedOutputStream out = new PipedOutputStream(serverInput);
 				executorService = Executors.newSingleThreadExecutor();
 				executorService.submit(() -> notificationThread(session));
-				Workspace ws = workspaceOf(session);
+				Model ws = workspaceOf(session);
 				LSPLauncher.createServerLauncher(serverFactory.get(ws), clientInput, out).startListening();
 			}
 		} catch (Exception e) {
@@ -66,8 +66,8 @@ public class LanguageServerWebSocketHandler {
 		}
 	}
 
-	private Workspace workspaceOf(Session session) {
-		return workspaceManager.workspace(session.getUpgradeRequest().getParameterMap().get("workspace").getFirst());
+	private Model workspaceOf(Session session) {
+		return modelManager.model(session.getUpgradeRequest().getParameterMap().get("workspace").getFirst());
 	}
 
 	private void notificationThread(Session session) {

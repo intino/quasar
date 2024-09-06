@@ -24,7 +24,7 @@ export const configureMonacoWorkers = () => {
 };
 
 export const runPythonReact = async () => {
-    const badPyUri = vscode.Uri.file('/workspace/bad.py');
+    const badPyUri = vscode.Uri.file('/model/bad.py');
     const fileSystemProvider = new RegisteredFileSystemProvider(false);
     fileSystemProvider.registerFile(new RegisteredMemoryFile(badPyUri, badPyCode));
     registerFileSystemOverlay(1, fileSystemProvider);
@@ -35,7 +35,7 @@ export const runPythonReact = async () => {
 
     const htmlElement = document.getElementById('monaco-editor-root');
     const comp = <MonacoEditorReactComp
-        userConfig={createUserConfig('/workspace', badPyCode, '/workspace/bad.py')}
+        userConfig={createUserConfig('/model', badPyCode, '/model/bad.py')}
         style={{
             'paddingTop': '5px',
             'height': '80vh'

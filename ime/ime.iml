@@ -18,8 +18,6 @@
     <orderEntry type="library" name="Intino: com.esotericsoftware:minlog:1.3.1" level="project" />
     <orderEntry type="library" name="Intino: io.intino:editor-archetype:1.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:primitives:1.1.2" level="project" />
-    <orderEntry type="library" name="Intino: io.intino.alexandria:ui-framework:5.2.8" level="project" />
-    <orderEntry type="library" name="Intino: io.intino.alexandria:http:1.7.10" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:exceptions:2.1.1" level="project" />
     <orderEntry type="library" name="Intino: com.sparkjava:spark-core:2.9.4" level="project" />
     <orderEntry type="library" name="Intino: org.eclipse.jetty:jetty-server:9.4.48.v20220622" level="project" />
@@ -82,10 +80,7 @@
     <orderEntry type="library" name="Intino: org.slf4j:slf4j-reload4j:2.0.12" level="project" />
     <orderEntry type="library" name="Intino: org.slf4j:slf4j-api:2.0.12" level="project" />
     <orderEntry type="library" name="Intino: ch.qos.reload4j:reload4j:1.2.22" level="project" />
-    <orderEntry type="library" name="Intino: org.eclipse.lsp4j:org.eclipse.lsp4j:0.23.1" level="project" />
-    <orderEntry type="library" name="Intino: org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc:0.23.1" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:logger:2.1.0" level="project" />
-    <orderEntry type="library" name="Intino: tara.dsl:meta:2.0.0" level="project" />
     <orderEntry type="library" name="Intino: io.intino.amidas:accessor:4.1.1" level="project" />
     <orderEntry type="library" name="Intino: org.scribe:scribe:1.3.7" level="project" />
     <orderEntry type="library" name="Intino: io.intino.amidas:shared:4.0.5" level="project" />
@@ -94,8 +89,12 @@
     <orderEntry type="library" scope="TEST" name="Intino: junit:junit:4.13.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Intino: org.hamcrest:hamcrest-core:1.3" level="project" />
     <orderEntry type="module" module-name="ime-elements" />
-    <orderEntry type="library" name="Intino: org.antlr:antlr4-runtime:4.13.1" level="project" />
-    <orderEntry type="module" module-name="language-server" />
-    <orderEntry type="library" name="Intino: io.intino.tara:language:2.0.0" level="project" />
+    <orderEntry type="library" name="Intino: io.intino.tara:language:1.6.1" level="project" />
+    <orderEntry type="library" name="Intino: io.intino.alexandria:ui-framework:5.2.9" level="project" />
+    <orderEntry type="library" name="Intino: io.intino.alexandria:http:1.7.11" level="project" />
+    <orderEntry type="library" name="Intino: io.intino:language-server:1.0.0" level="project" />
+    <orderEntry type="library" name="Intino: org.eclipse.lsp4j:org.eclipse.lsp4j:0.23.1" level="project" />
+    <orderEntry type="library" name="Intino: org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc:0.23.1" level="project" />
+    <orderEntry type="library" name="Intino: tara.dsl:meta:2.0.0" level="project" />
   </component>
 </module>

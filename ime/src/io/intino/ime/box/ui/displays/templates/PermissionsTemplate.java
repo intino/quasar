@@ -2,17 +2,17 @@ package io.intino.ime.box.ui.displays.templates;
 
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.ui.PathHelper;
-import io.intino.ime.model.Workspace;
+import io.intino.ime.model.Model;
 
 public class PermissionsTemplate extends AbstractPermissionsTemplate<ImeBox> {
-	private Workspace workspace;
+	private Model model;
 
 	public PermissionsTemplate(ImeBox box) {
 		super(box);
 	}
 
-	public void workspace(String name) {
-		this.workspace = box().workspaceManager().workspace(name);
+	public void model(String name) {
+		this.model = box().modelManager().model(name);
 	}
 
 	@Override
@@ -27,9 +27,9 @@ public class PermissionsTemplate extends AbstractPermissionsTemplate<ImeBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
-		message.value(String.format(translate("You dont have access permissions for %s"), workspace.title()));
-		myWorkspaces.visible(session().user() != null);
-		myWorkspaces.path(PathHelper.workspacesPath(session()));
+		message.value(String.format(translate("You dont have access permissions for %s"), model.title()));
+		myModels.visible(session().user() != null);
+		myModels.path(PathHelper.modelsPath(session()));
 		logoutButton.visible(session().user() != null);
 	}
 }

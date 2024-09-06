@@ -7,7 +7,7 @@ import io.intino.alexandria.ui.displays.components.selector.Selector;
 import io.intino.alexandria.ui.services.push.UISession;
 import io.intino.alexandria.ui.services.push.User;
 import io.intino.ime.box.ImeBox;
-import io.intino.ime.box.util.WorkspaceHelper;
+import io.intino.ime.box.util.ModelHelper;
 
 import java.util.function.Function;
 
@@ -22,10 +22,10 @@ public class DisplayHelper {
 		return true;
 	}
 
-	public static boolean checkWorkspaceName(TextEditable<?, ?> field, Function<String, String> translator, ImeBox box) {
+	public static boolean checkModelName(TextEditable<?, ?> field, Function<String, String> translator, ImeBox box) {
 		if (!check(field, translator)) return false;
-		if (!WorkspaceHelper.validName(field.value())) { field.error("Name contains non alphanumeric characters"); return false; }
-		if (WorkspaceHelper.nameInUse(field.value(), box)) { field.error("Workspace name in use"); return false; }
+		if (!ModelHelper.validName(field.value())) { field.error("Name contains non alphanumeric characters"); return false; }
+		if (ModelHelper.nameInUse(field.value(), box)) { field.error("Model name in use"); return false; }
 		return true;
 	}
 
