@@ -14,12 +14,12 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 
 public class IntinoLanguageServer implements LanguageServer, LanguageClientAware {
 	private final Language language;
-	private final WorkspaceManager documentManager;
+	private final WorkspaceManager workspaceManager;
 	public HashMap<Object, Object> expectedRequests = new HashMap<>();
 
-	public IntinoLanguageServer(Language language, WorkspaceManager documentManager) {
+	public IntinoLanguageServer(Language language, WorkspaceManager workspaceManager) {
 		this.language = language;
-		this.documentManager = documentManager;
+		this.workspaceManager = workspaceManager;
 	}
 
 	@Override
@@ -54,12 +54,12 @@ public class IntinoLanguageServer implements LanguageServer, LanguageClientAware
 
 	@Override
 	public TextDocumentService getTextDocumentService() {
-		return new IntinoDocumentService(language, documentManager);
+		return new IntinoDocumentService(language, workspaceManager);
 	}
 
 	@Override
 	public WorkspaceService getWorkspaceService() {
-		return new IntinoWorkspaceService(language, documentManager);
+		return new IntinoWorkspaceService(language, workspaceManager);
 	}
 
 	public BuildResult build() {

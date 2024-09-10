@@ -1,7 +1,7 @@
 package io.intino.ime.box.lsp;
 
 import io.intino.alexandria.logger.Logger;
-import io.intino.ime.box.languages.LanguageServerFactory;
+import io.intino.ime.box.languages.LanguageServerManager;
 import io.intino.ime.model.Model;
 import io.intino.ime.box.models.ModelManager;
 import org.eclipse.jetty.websocket.api.Session;
@@ -10,24 +10,24 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.lsp4j.launch.LSPLauncher;
+import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Function;
 
 @WebSocket
 public class LanguageServerWebSocketHandler {
-	private final LanguageServerFactory serverFactory;
-	private final ModelManager modelManager;
+	private final Function<Session, LanguageServer> provider;
 	private ExecutorService executorService;
 	private PipedOutputStream clientOutput;
 	private PipedInputStream serverInput;
 	private final Object monitor = new Object();
 
-	public LanguageServerWebSocketHandler(LanguageServerFactory serverFactory, ModelManager modelManager) {
-		this.serverFactory = serverFactory;
-		this.modelManager = modelManager;
+	public LanguageServerWebSocketHandler(Function<Session, LanguageServer> provider) {
+		this.provider = provider;
 	}
 
 	@OnWebSocketConnect
@@ -40,8 +40,7 @@ public class LanguageServerWebSocketHandler {
 				PipedOutputStream out = new PipedOutputStream(serverInput);
 				executorService = Executors.newSingleThreadExecutor();
 				executorService.submit(() -> notificationThread(session));
-				Model ws = workspaceOf(session);
-				LSPLauncher.createServerLauncher(serverFactory.get(ws), clientInput, out).startListening();
+				LSPLauncher.createServerLauncher(provider.apply(session), clientInput, out).startListening();
 			}
 		} catch (Exception e) {
 			Logger.error(e);
@@ -64,10 +63,6 @@ public class LanguageServerWebSocketHandler {
 		synchronized (monitor) {
 			this.executorService.shutdown();
 		}
-	}
-
-	private Model workspaceOf(Session session) {
-		return modelManager.model(session.getUpgradeRequest().getParameterMap().get("workspace").getFirst());
 	}
 
 	private void notificationThread(Session session) {

@@ -12,11 +12,11 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LanguageServerFactory {
+public class LanguageServerManager {
 	private final LanguageLoader languageLoader;
 	private final Map<String, LanguageServer> servers = new HashMap<>();
 
-	public LanguageServerFactory(LanguageLoader languageLoader) {
+	public LanguageServerManager(LanguageLoader languageLoader) {
 		this.languageLoader = languageLoader;
 	}
 

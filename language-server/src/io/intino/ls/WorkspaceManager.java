@@ -46,13 +46,12 @@ public class WorkspaceManager {
 		synchronized (lock) {
 			try {
 				File file = new File(root, uri.getPath());
-				documents.put(uri, new TextDocumentItem(uri.toString(), dslOf(file), (int) Instant.now().toEpochMilli(), content));
+				documents.put(uri, new TextDocumentItem(uri.toString(), dsl, (int) Instant.now().toEpochMilli(), content));
 				file.getParentFile().mkdirs();
 				Files.writeString(file.toPath(), content);
 			} catch (IOException e) {
 				Logger.error(e);
 			}
-
 		}
 	}
 
