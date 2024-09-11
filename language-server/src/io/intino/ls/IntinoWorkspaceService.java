@@ -87,6 +87,11 @@ public class IntinoWorkspaceService implements WorkspaceService {
 	}
 
 	@Override
+	public void didRenameFiles(RenameFilesParams params) {
+		params.getFiles().forEach(f -> documentManager.move(URI.create(f.getOldUri()), URI.create(f.getNewUri())));
+	}
+
+	@Override
 	public CompletableFuture<WorkspaceDiagnosticReport> diagnostic(WorkspaceDiagnosticParams params) {
 		Map<String, List<Diagnostic>> result = diagnosticService.analyzeWorkspace().stream().collect(Collectors.groupingBy(Diagnostic::getSource));
 		List<WorkspaceDocumentDiagnosticReport> reports = result.keySet().stream().map(k -> new WorkspaceDocumentDiagnosticReport(new WorkspaceFullDocumentDiagnosticReport(result.get(k), k, 1))).toList();
@@ -106,11 +111,6 @@ public class IntinoWorkspaceService implements WorkspaceService {
 	@Override
 	public CompletableFuture<WorkspaceEdit> willRenameFiles(RenameFilesParams params) {
 		return WorkspaceService.super.willRenameFiles(params);
-	}
-
-	@Override
-	public void didRenameFiles(RenameFilesParams params) {
-		WorkspaceService.super.didRenameFiles(params);
 	}
 
 }

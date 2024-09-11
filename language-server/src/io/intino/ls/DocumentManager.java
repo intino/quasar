@@ -48,7 +48,7 @@ public class DocumentManager {
 		synchronized (lock) {
 			try {
 				content = content.isEmpty() ? "dsl " + dsl + "\n\n" : content;
-				File file = new File(root, uri.getPath());
+				File file = fileOf(uri);
 				documents.put(uri, new TextDocumentItem(uri.toString(), dsl, (int) Instant.now().toEpochMilli(), content));
 				file.getParentFile().mkdirs();
 				Files.writeString(file.toPath(), content);
@@ -65,6 +65,17 @@ public class DocumentManager {
 		}
 	}
 
+	public void move(URI oldUri, URI newUri) {
+		TextDocumentItem textDocumentItem = documents.get(oldUri);
+		if (textDocumentItem != null) try {
+			removeDocument(oldUri);
+			documents.put(newUri, textDocumentItem);
+			Files.move(fileOf(oldUri).toPath(), fileOf(newUri).toPath());
+		} catch (IOException e) {
+			Logger.error(e);
+		}
+	}
+
 	public void removeDocument(URI uri) {
 		documents.remove(uri);
 	}
@@ -76,6 +87,10 @@ public class DocumentManager {
 			Logger.error(e);
 			return "";
 		}
+	}
+
+	private File fileOf(URI uri) {
+		return new File(root, uri.getPath());
 	}
 
 	private String dslOf(File f) {
