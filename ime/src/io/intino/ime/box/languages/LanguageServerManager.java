@@ -21,7 +21,9 @@ public class LanguageServerManager {
 	}
 
 	public LanguageServer create(Language language, URI workspaceRoot) throws IOException {
-		return new IntinoLanguageServer(language, new DocumentManager(new File(workspaceRoot)));
+		File root = new File(workspaceRoot);
+		root.mkdirs();
+		return new IntinoLanguageServer(language, new DocumentManager(root));
 	}
 
 	public LanguageServer get(Model model) throws IOException {

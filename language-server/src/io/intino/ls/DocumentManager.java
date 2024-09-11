@@ -24,7 +24,6 @@ public class DocumentManager {
 	public DocumentManager(File root) throws IOException {
 		this.root = root;
 		this.documents = loadDocuments(root);
-		root.mkdirs();
 	}
 
 	public File root() {
@@ -32,7 +31,7 @@ public class DocumentManager {
 	}
 
 	private TextDocumentItem documentItem(File f) {
-		return new TextDocumentItem(f.toURI().toString(), dslOf(f), (int) f.lastModified(), content(f));
+		return new TextDocumentItem(relativePath(f).getPath(), dslOf(f), (int) f.lastModified(), content(f));
 	}
 
 	public List<URI> all() {
@@ -66,7 +65,7 @@ public class DocumentManager {
 
 	private String content(File f) {
 		try {
-			return Files.readString(new File(root, f.getPath()).toPath());
+			return Files.readString(f.toPath());
 		} catch (IOException e) {
 			Logger.error(e);
 			return "";
@@ -84,7 +83,6 @@ public class DocumentManager {
 	}
 
 	private Map<URI, TextDocumentItem> loadDocuments(File projectRoot) throws IOException {
-		ConcurrentHashMap<Object, Object> map = new ConcurrentHashMap<>();
 		return Files.walk(projectRoot.toPath())
 				.filter(p -> p.toFile().isFile() && p.toFile().getName().endsWith(".tara"))
 				.map(Path::toFile)

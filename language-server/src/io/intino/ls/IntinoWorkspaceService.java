@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -23,10 +22,12 @@ import static org.eclipse.lsp4j.jsonrpc.messages.Either.forRight;
 public class IntinoWorkspaceService implements WorkspaceService {
 	private final Language language;
 	private final DocumentManager documentManager;
+	private final DiagnosticService diagnosticService;
 
-	public IntinoWorkspaceService(Language language, DocumentManager documentManager) {
+	public IntinoWorkspaceService(Language language, DocumentManager documentManager, DiagnosticService diagnosticService) {
 		this.language = language;
 		this.documentManager = documentManager;
+		this.diagnosticService = diagnosticService;
 	}
 
 	@Override
@@ -75,7 +76,15 @@ public class IntinoWorkspaceService implements WorkspaceService {
 
 	@Override
 	public void didDeleteFiles(DeleteFilesParams params) {
-		WorkspaceService.super.didDeleteFiles(params);
+		params.getFiles().forEach(f -> documentManager.removeDocument(URI.create(f.getUri())));
+	}
+
+	@Override
+	public CompletableFuture<WorkspaceDiagnosticReport> diagnostic(WorkspaceDiagnosticParams params) {
+		List<WorkspaceDocumentDiagnosticReport> diagnostics = documentManager.all().stream()
+				.map(u -> new WorkspaceDocumentDiagnosticReport(new WorkspaceFullDocumentDiagnosticReport(diagnosticService.analyze(u), u.getPath(), 1)))
+				.toList();
+		return completedFuture(new WorkspaceDiagnosticReport(diagnostics));
 	}
 
 	@Override

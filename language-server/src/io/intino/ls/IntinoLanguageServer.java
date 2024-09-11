@@ -2,10 +2,15 @@ package io.intino.ls;
 
 import io.intino.tara.Language;
 import org.eclipse.lsp4j.*;
-import org.eclipse.lsp4j.services.*;
+import org.eclipse.lsp4j.services.LanguageClient;
+import org.eclipse.lsp4j.services.LanguageClientAware;
+import org.eclipse.lsp4j.services.LanguageServer;
+import org.eclipse.lsp4j.services.TextDocumentService;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static io.intino.ls.IntinoSemanticTokens.tokenModifiers;
@@ -13,13 +18,15 @@ import static io.intino.ls.IntinoSemanticTokens.tokenTypes;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 public class IntinoLanguageServer implements LanguageServer, LanguageClientAware {
-	private final Language language;
-	private final DocumentManager workspaceManager;
 	public HashMap<Object, Object> expectedRequests = new HashMap<>();
+	private final IntinoDocumentService documentService;
+	private final IntinoWorkspaceService workspaceService;
 
-	public IntinoLanguageServer(Language language, DocumentManager workspaceManager) {
-		this.language = language;
-		this.workspaceManager = workspaceManager;
+	public IntinoLanguageServer(Language language, DocumentManager documentManager) {
+		Map<URI, ModelContext> models = new HashMap<>();
+		DiagnosticService diagnosticService = new DiagnosticService(documentManager, models);
+		this.documentService = new IntinoDocumentService(language, documentManager, diagnosticService, models);
+		this.workspaceService = new IntinoWorkspaceService(language, documentManager, diagnosticService);
 	}
 
 	@Override
@@ -29,6 +36,7 @@ public class IntinoLanguageServer implements LanguageServer, LanguageClientAware
 		capabilities.setDocumentHighlightProvider(new DocumentHighlightOptions());
 		capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
 		capabilities.setCompletionProvider(new CompletionOptions(true, List.of()));
+		capabilities.setDiagnosticProvider(new DiagnosticRegistrationOptions(true, true));
 //		capabilities.setHoverProvider(true);
 //		capabilities.setCodeActionProvider(true);
 //		capabilities.setDocumentSymbolProvider(true);
@@ -54,12 +62,12 @@ public class IntinoLanguageServer implements LanguageServer, LanguageClientAware
 
 	@Override
 	public TextDocumentService getTextDocumentService() {
-		return new IntinoDocumentService(language, workspaceManager);
+		return documentService;
 	}
 
 	@Override
 	public IntinoWorkspaceService getWorkspaceService() {
-		return new IntinoWorkspaceService(language, workspaceManager);
+		return workspaceService;
 	}
 
 	public BuildResult build() {

@@ -8,8 +8,10 @@ import io.intino.tara.Source.StringSource;
 import io.intino.tara.language.grammar.SyntaxException;
 import io.intino.tara.language.grammar.TaraGrammar.RootContext;
 import io.intino.tara.language.grammar.TaraLexer;
+import io.intino.tara.language.semantics.errorcollector.SemanticException;
 import io.intino.tara.language.semantics.errorcollector.SemanticFatalException;
 import io.intino.tara.processors.SemanticAnalyzer;
+import io.intino.tara.processors.dependencyresolution.DependencyException;
 import io.intino.tara.processors.dependencyresolution.DependencyResolver;
 import io.intino.tara.processors.model.Model;
 import io.intino.tara.processors.parser.Parser;
@@ -35,19 +37,33 @@ public class IntinoDocumentService implements TextDocumentService {
 	private final Language language;
 	private final DocumentManager workspaceManager;
 	private final DocumentSourceProvider documentSourceProvider;
-	private final Map<URI, Model> models = new HashMap<>();
+	private final DiagnosticService diagnosticService;
+	private final Map<URI, ModelContext> models;
 	private final Map<URI, RootContext> trees = new HashMap<>();
 
-	public IntinoDocumentService(Language language, DocumentManager workspaceManager) {
+	public IntinoDocumentService(Language language, DocumentManager workspaceManager, DiagnosticService diagnosticService, Map<URI, ModelContext> models) {
 		this.language = language;
 		this.workspaceManager = workspaceManager;
 		this.documentSourceProvider = new DocumentSourceProvider(workspaceManager);
+		this.diagnosticService = diagnosticService;
+		this.models = models;
+		laodModels();
+	}
+
+	private void laodModels() {
+		documentSourceProvider.all().forEach(u-> {
+			try {
+				analyzeDocument(new StringSource(u.uri().getPath(),new String(u.content().readAllBytes())));
+			} catch (IOException e) {
+				Logger.error(e);
+			}
+		});
 	}
 
 	@Override
 	public void didOpen(DidOpenTextDocumentParams params) {
 		URI uri = URI.create(normalize(params.getTextDocument().getUri()));
-		analyzeText(new StringSource(uri.getPath(), params.getTextDocument().getText()));
+		analyzeDocument(new StringSource(uri.getPath(), params.getTextDocument().getText()));
 	}
 
 	@Override
@@ -57,7 +73,7 @@ public class IntinoDocumentService implements TextDocumentService {
 			InputStream doc = workspaceManager.getDocumentText(uri);
 			String content = applyChanges(doc != null ? new String(doc.readAllBytes()) : "", params.getContentChanges());
 			workspaceManager.upsertDocument(uri, language.languageName(), content == null ? "" : content);
-			analyzeText(new StringSource(uri.getPath(), content));
+			analyzeDocument(new StringSource(uri.getPath(), content));
 		} catch (IOException e) {
 			Logger.error(e);
 		}
@@ -86,25 +102,34 @@ public class IntinoDocumentService implements TextDocumentService {
 		return sb.toString();
 	}
 
-	private void analyzeText(Source source) {
+	@Override
+	public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
+		List<Diagnostic> diagnostics = diagnosticService.analyze(URI.create(normalize(params.getTextDocument().getUri())));
+		return completedFuture(new DocumentDiagnosticReport(new RelatedFullDocumentDiagnosticReport(diagnostics)));
+	}
+
+	private void analyzeDocument(Source source) {
+		Model model = null;
+		List<SyntaxException> syntaxErrors = new ArrayList<>();
+		List<DependencyException> dependencyErrors = new ArrayList<>();
+		List<SemanticException> semanticErrors = new ArrayList<>();
 		try {
 			RootContext tree = parse(source, new ParserErrorStrategy());
-			Model model = transform(source, tree);
+			model = new Parser(source).convert(tree);
 			dependencyResolver(model).resolve();
 			new SemanticAnalyzer(model, new Meta()).analyze();
 		} catch (IOException e) {
 			Logger.error(e);
 		} catch (SyntaxException e) {
+			syntaxErrors.add(e);
+		} catch (DependencyException e) {
+			dependencyErrors.add(e);
 		} catch (SemanticFatalException e) {
+			semanticErrors.addAll(e.exceptions());
 		} catch (Exception e) {
-
+			Logger.error(e);
 		}
-	}
-
-	private Model transform(Source source, RootContext tree) throws SyntaxException {
-		Model model = new Parser(source).convert(tree);
-		models.put(source.uri(), model);
-		return model;
+		models.put(source.uri(), new ModelContext(model, syntaxErrors, dependencyErrors, semanticErrors));
 	}
 
 	private int getOffset(Position position, String content) {
@@ -351,16 +376,10 @@ public class IntinoDocumentService implements TextDocumentService {
 		return TextDocumentService.super.inlineValue(params);
 	}
 
-	@Override
-	public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
-		return TextDocumentService.super.diagnostic(params);
-	}
-
 	public void setTrace(SetTraceParams params) {
 	}
 
 	private String normalize(String uri) {
 		return uri.replace("file:///", "");
 	}
-
 }
