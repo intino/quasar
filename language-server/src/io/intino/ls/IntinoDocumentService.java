@@ -6,7 +6,6 @@ import io.intino.tara.Language;
 import io.intino.tara.Source;
 import io.intino.tara.Source.StringSource;
 import io.intino.tara.language.grammar.SyntaxException;
-import io.intino.tara.language.grammar.TaraGrammar;
 import io.intino.tara.language.grammar.TaraGrammar.RootContext;
 import io.intino.tara.language.grammar.TaraLexer;
 import io.intino.tara.language.semantics.errorcollector.SemanticFatalException;
@@ -16,7 +15,6 @@ import io.intino.tara.processors.model.Model;
 import io.intino.tara.processors.parser.Parser;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.DefaultErrorStrategy;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.jsonrpc.messages.Either3;
@@ -35,12 +33,12 @@ import static org.antlr.v4.runtime.CharStreams.fromString;
 
 public class IntinoDocumentService implements TextDocumentService {
 	private final Language language;
-	private final WorkspaceManager workspaceManager;
+	private final DocumentManager workspaceManager;
 	private final DocumentSourceProvider documentSourceProvider;
 	private final Map<URI, Model> models = new HashMap<>();
 	private final Map<URI, RootContext> trees = new HashMap<>();
 
-	public IntinoDocumentService(Language language, WorkspaceManager workspaceManager) {
+	public IntinoDocumentService(Language language, DocumentManager workspaceManager) {
 		this.language = language;
 		this.workspaceManager = workspaceManager;
 		this.documentSourceProvider = new DocumentSourceProvider(workspaceManager);

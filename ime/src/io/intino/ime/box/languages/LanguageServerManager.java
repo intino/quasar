@@ -2,7 +2,7 @@ package io.intino.ime.box.languages;
 
 import io.intino.ime.model.Model;
 import io.intino.ls.IntinoLanguageServer;
-import io.intino.ls.WorkspaceManager;
+import io.intino.ls.DocumentManager;
 import io.intino.tara.Language;
 import org.eclipse.lsp4j.services.LanguageServer;
 
@@ -21,7 +21,7 @@ public class LanguageServerManager {
 	}
 
 	public LanguageServer create(Language language, URI workspaceRoot) throws IOException {
-		return new IntinoLanguageServer(language, new WorkspaceManager(new File(workspaceRoot)));
+		return new IntinoLanguageServer(language, new DocumentManager(new File(workspaceRoot)));
 	}
 
 	public LanguageServer get(Model model) throws IOException {

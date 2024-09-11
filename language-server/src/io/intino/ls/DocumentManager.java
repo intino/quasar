@@ -16,23 +16,19 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class WorkspaceManager {
+public class DocumentManager {
 	private final Object lock = new Object();
-	private final ConcurrentHashMap<URI, TextDocumentItem> documents;
+	private final Map<URI, TextDocumentItem> documents;
 	private final File root;
 
-	public WorkspaceManager(File root) throws IOException {
+	public DocumentManager(File root) throws IOException {
 		this.root = root;
-		this.documents = new ConcurrentHashMap<>();
+		this.documents = loadDocuments(root);
 		root.mkdirs();
-		documents.putAll(collectDocuments(root));
 	}
 
-	private Map<URI, TextDocumentItem> collectDocuments(File projectRoot) throws IOException {
-		return Files.walk(projectRoot.toPath())
-				.filter(p -> p.toFile().isFile() && p.toFile().getName().endsWith(".tara"))
-				.map(Path::toFile)
-				.collect(Collectors.toMap(this::relativePath, this::documentItem));
+	public File root() {
+		return root;
 	}
 
 	private TextDocumentItem documentItem(File f) {
@@ -77,7 +73,7 @@ public class WorkspaceManager {
 		}
 	}
 
-	private static String dslOf(File f) {
+	private String dslOf(File f) {
 		try {
 			if (!f.exists()) return "";
 			return Files.lines(f.toPath()).filter(l -> !l.trim().isEmpty()).findFirst().orElse("");
@@ -87,8 +83,15 @@ public class WorkspaceManager {
 		}
 	}
 
+	private Map<URI, TextDocumentItem> loadDocuments(File projectRoot) throws IOException {
+		ConcurrentHashMap<Object, Object> map = new ConcurrentHashMap<>();
+		return Files.walk(projectRoot.toPath())
+				.filter(p -> p.toFile().isFile() && p.toFile().getName().endsWith(".tara"))
+				.map(Path::toFile)
+				.collect(Collectors.toMap(this::relativePath, this::documentItem, (a, b) -> a, ConcurrentHashMap::new));
+	}
+
 	private URI relativePath(File f) {
 		return URI.create(root.toPath().relativize(f.toPath()).toFile().getPath());
 	}
-
 }

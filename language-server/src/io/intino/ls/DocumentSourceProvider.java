@@ -9,9 +9,9 @@ import java.nio.charset.Charset;
 import java.util.stream.Stream;
 
 public class DocumentSourceProvider implements SourceProvider {
-	private final WorkspaceManager documentManager;
+	private final DocumentManager documentManager;
 
-	public DocumentSourceProvider(WorkspaceManager documentManager) {
+	public DocumentSourceProvider(DocumentManager documentManager) {
 		this.documentManager = documentManager;
 	}
 

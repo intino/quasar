@@ -14,10 +14,10 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 
 public class IntinoLanguageServer implements LanguageServer, LanguageClientAware {
 	private final Language language;
-	private final WorkspaceManager workspaceManager;
+	private final DocumentManager workspaceManager;
 	public HashMap<Object, Object> expectedRequests = new HashMap<>();
 
-	public IntinoLanguageServer(Language language, WorkspaceManager workspaceManager) {
+	public IntinoLanguageServer(Language language, DocumentManager workspaceManager) {
 		this.language = language;
 		this.workspaceManager = workspaceManager;
 	}
