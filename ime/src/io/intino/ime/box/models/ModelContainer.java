@@ -3,19 +3,12 @@ package io.intino.ime.box.models;
 import io.intino.alexandria.logger.Logger;
 import io.intino.ime.model.Model;
 import org.apache.commons.io.IOUtils;
-import org.eclipse.lsp4j.CreateFilesParams;
-import org.eclipse.lsp4j.SymbolInformation;
-import org.eclipse.lsp4j.WorkspaceSymbol;
-import org.eclipse.lsp4j.WorkspaceSymbolParams;
-import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class ModelContainer {
@@ -40,11 +33,13 @@ public class ModelContainer {
 	public static class File {
 		private final String name;
 		private final String uri;
+		private final boolean isDirectory;
 		private final List<String> parents;
 
-		public File(String name, String uri, List<String> parents) {
+		public File(String name, String uri, boolean isDirectory, List<String> parents) {
 			this.name = name;
 			this.uri = uri;
+			this.isDirectory = isDirectory;
 			this.parents = parents;
 		}
 
@@ -76,9 +71,7 @@ public class ModelContainer {
 		}
 
 		public boolean isDirectory() {
-			if (!name.contains("/")) return !name.contains(".");
-			String filename = name.substring(name.lastIndexOf("/"));
-			return !filename.contains(".");
+			return isDirectory;
 		}
 	}
 

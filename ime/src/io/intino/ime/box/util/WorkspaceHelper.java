@@ -22,7 +22,8 @@ public class WorkspaceHelper {
 
 	public static ModelContainer.File fileOf(WorkspaceSymbol symbol) {
 		String uri = uriOf(symbol.getLocation().getRight());
-		return new ModelContainer.File(nameOf(symbol.getName()), uri, WorkspaceHelper.parents(uri));
+		boolean isDirectory = symbol.getKind() != SymbolKind.File;
+		return new ModelContainer.File(nameOf(symbol.getName()), uri, isDirectory, WorkspaceHelper.parents(uri));
 	}
 
 	public static String nameOf(String relativePath) {

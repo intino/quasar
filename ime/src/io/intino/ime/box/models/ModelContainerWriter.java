@@ -41,21 +41,21 @@ public class ModelContainerWriter {
 		String content = content(source.uri());
 		server.getWorkspaceService().didCreateFiles(new CreateFilesParams(List.of(new FileCreate(uri))));
 		server.getTextDocumentService().didSave(new DidSaveTextDocumentParams(new TextDocumentIdentifier(uri), content));
-		return new ModelContainer.File(filename, uri, new ArrayList<>());
+		return new ModelContainer.File(filename, uri, source.isDirectory(), new ArrayList<>());
 	}
 
 	public ModelContainer.File createFile(String filename, String content, ModelContainer.File parent) {
 		String uri = (parent != null && parent.isDirectory() ? parent.uri() + "/" : "") + filename;
 		server.getWorkspaceService().didCreateFiles(new CreateFilesParams(List.of(new FileCreate(uri))));
 		if (content != null) server.getTextDocumentService().didSave(new DidSaveTextDocumentParams(new TextDocumentIdentifier(uri), content));
-		return new ModelContainer.File(filename, uri, new ArrayList<>());
+		return new ModelContainer.File(filename, uri, false, new ArrayList<>());
 	}
 
 	public ModelContainer.File createFolder(String name, ModelContainer.File parent) {
 		String uri = (parent != null && parent.isDirectory() ? parent.uri() + "/" : "") + name;
 		DidChangeWorkspaceFoldersParams params = new DidChangeWorkspaceFoldersParams(new WorkspaceFoldersChangeEvent(List.of(new WorkspaceFolder(uri, name)), emptyList()));
 		server.getWorkspaceService().didChangeWorkspaceFolders(params);
-		return new ModelContainer.File(name, uri, new ArrayList<>());
+		return new ModelContainer.File(name, uri, true, new ArrayList<>());
 	}
 
 	public void save(ModelContainer.File file, String content) {
@@ -66,13 +66,13 @@ public class ModelContainerWriter {
 		String parent = WorkspaceHelper.parent(file.uri());
 		String newUri = (!parent.isEmpty() ? parent + "/" : "") + newName;
 		server.getWorkspaceService().didRenameFiles(new RenameFilesParams(List.of(new FileRename(file.uri(), newUri))));
-		return new ModelContainer.File(newName, newUri, file.parents());
+		return new ModelContainer.File(newName, newUri, file.isDirectory(), file.parents());
 	}
 
 	public ModelContainer.File move(ModelContainer.File file, ModelContainer.File directory) {
 		String newUri = directory.uri() + "/" + file.name();
 		server.getWorkspaceService().didRenameFiles(new RenameFilesParams(List.of(new FileRename(file.uri(), newUri))));
-		return new ModelContainer.File(file.name(), newUri, new ArrayList<>());
+		return new ModelContainer.File(file.name(), newUri, file.isDirectory(), new ArrayList<>());
 	}
 
 	private void createFile(ModelContainer.File file, String content) throws IOException {
