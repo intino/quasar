@@ -7,7 +7,7 @@ TARGETS:{editor}
 
 + models in "models"
     - definition(name) in "{name}/definition.json"
-    - documents(name) in "{name}/documents"
+    - workspace(name) in "{name}/workspace"
 
 + tmp
 

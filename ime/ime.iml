@@ -48,7 +48,6 @@
     <orderEntry type="library" name="Intino: org.apache.httpcomponents:httpclient:4.5.14" level="project" />
     <orderEntry type="library" name="Intino: commons-logging:commons-logging:1.2" level="project" />
     <orderEntry type="library" name="Intino: org.apache.commons:commons-lang3:3.14.0" level="project" />
-    <orderEntry type="library" name="Intino: commons-io:commons-io:2.16.1" level="project" />
     <orderEntry type="library" name="Intino: org.glassfish.tyrus:tyrus-client:2.1.5" level="project" />
     <orderEntry type="library" name="Intino: org.glassfish.tyrus:tyrus-core:2.1.5" level="project" />
     <orderEntry type="library" name="Intino: org.glassfish.tyrus:tyrus-spi:2.1.5" level="project" />
@@ -95,7 +94,7 @@
     <orderEntry type="library" name="Intino: org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc:0.23.1" level="project" />
     <orderEntry type="library" name="Intino: tara.dsl:meta:2.0.0" level="project" />
     <orderEntry type="module" module-name="language-server" />
-    <orderEntry type="library" name="Intino: io.intino.tara:language:2.0.0" level="project" />
-    <orderEntry type="library" name="Intino: org.antlr:antlr4-runtime:4.13.1" level="project" />
+    <orderEntry type="library" name="Intino: io.intino.tara:language:1.6.1" level="project" />
+    <orderEntry type="library" name="Intino: commons-io:commons-io:2.16.0" level="project" />
   </component>
 </module>

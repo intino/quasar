@@ -36,7 +36,8 @@ public class ModelContainerWriter {
 	}
 
 	public ModelContainer.File copy(String filename, ModelContainer.File source) {
-		String uri = WorkspaceHelper.parent(source.uri()) + "/" + filename;
+		String parent = WorkspaceHelper.parent(source.uri());
+		String uri = (!parent.isEmpty() ? parent + "/" : "") + filename;
 		String content = content(source.uri());
 		server.getWorkspaceService().didCreateFiles(new CreateFilesParams(List.of(new FileCreate(uri))));
 		server.getTextDocumentService().didSave(new DidSaveTextDocumentParams(new TextDocumentIdentifier(uri), content));
@@ -62,7 +63,8 @@ public class ModelContainerWriter {
 	}
 
 	public ModelContainer.File rename(ModelContainer.File file, String newName) {
-		String newUri = WorkspaceHelper.parent(file.uri()) + "/" + newName;
+		String parent = WorkspaceHelper.parent(file.uri());
+		String newUri = (!parent.isEmpty() ? parent + "/" : "") + newName;
 		server.getWorkspaceService().didRenameFiles(new RenameFilesParams(List.of(new FileRename(file.uri(), newUri))));
 		return new ModelContainer.File(newName, newUri, file.parents());
 	}

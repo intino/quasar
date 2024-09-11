@@ -105,7 +105,7 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 	}
 
 	private void refreshFileEditorToolbar() {
-		fileModifiedMessage.visible(selectedFile != null && selectedFileIsModified);
+		//fileModifiedMessage.visible(selectedFile != null && selectedFileIsModified);
 		saveFile.readonly(selectedFile == null || !selectedFileIsModified);
 	}
 
@@ -175,7 +175,7 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 	private void register(ModelContainer.File file, String parent, boolean isRoot, Map<String, IntinoFileBrowserItem> items) {
 		if (!items.containsKey(parent))
 			items.put(parent, itemOf(parent, Collections.emptyList(), IntinoFileBrowserItem.Type.Folder, isRoot).id(items.size()));
-		if (file != null) items.get(parent).children().add(file.name());
+		if (file != null && !items.get(parent).children().contains(file.name())) items.get(parent).children().add(file.name());
 	}
 
 	private IntinoFileBrowserItem itemOf(ModelContainer.File file) {
@@ -208,11 +208,12 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 
 	private void open(ModelContainer.File file) {
 		openNewFile = false;
+		/*
 		if (selectedFileIsModified) {
 			selectedNewFile = file;
 			fileModifiedDialog.open();
 			return;
-		}
+		}*/
 		selectedFile = file;
 		refresh();
 	}

@@ -189,7 +189,7 @@ public class ModelManager {
 			File definition = archetype.models().definition(name);
 			if (!definition.exists()) return null;
 			Model model = Json.fromJson(Files.readString(definition.toPath()), Model.class);
-			return model.documentRoot(archetype.models().documents(name).getAbsoluteFile().getCanonicalFile().toURI());
+			return model.documentRoot(archetype.models().workspace(name).getAbsoluteFile().getCanonicalFile().toURI());
 		} catch (IOException e) {
 			Logger.error(e);
 			return null;
