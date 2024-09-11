@@ -94,8 +94,7 @@
     <orderEntry type="library" name="Intino: org.eclipse.lsp4j:org.eclipse.lsp4j:0.23.1" level="project" />
     <orderEntry type="library" name="Intino: org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc:0.23.1" level="project" />
     <orderEntry type="library" name="Intino: tara.dsl:meta:2.0.0" level="project" />
-    <orderEntry type="library" name="Intino: io.intino.tara:language:2.0.0" level="project" />
-    <orderEntry type="library" name="Intino: org.antlr:antlr4-runtime:4.13.1" level="project" />
     <orderEntry type="module" module-name="language-server" />
+    <orderEntry type="library" name="Intino: io.intino.tara:language:1.6.1" level="project" />
   </component>
 </module>

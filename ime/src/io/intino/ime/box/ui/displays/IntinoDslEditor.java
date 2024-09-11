@@ -13,8 +13,8 @@ import java.util.function.Consumer;
 public class IntinoDslEditor extends AbstractIntinoDslEditor<ImeBox> {
 	private Model model;
 	private String name;
+	private String uri;
 	private String extension;
-	private File content;
 	private String language;
 	private Consumer<Boolean> fileModifiedListener;
 	private Consumer<String> saveFileListener;
@@ -27,10 +27,10 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<ImeBox> {
 		this.model = model;
 	}
 
-	public void file(String name, String extension, File content, String language) {
+	public void file(String name, String uri, String extension, String language) {
 		this.name = name;
+		this.uri = uri;
 		this.extension = extension;
-		this.content = content;
 		this.language = language;
 	}
 
@@ -63,16 +63,11 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<ImeBox> {
 	}
 
 	private IntinoDslEditorFile file() {
-		return new IntinoDslEditorFile().model(model.name()).name(name).uri("file://" + content.getPath()).extension(extension).content(content()).language(language);
+		return new IntinoDslEditorFile().model(model.name()).name(name).uri(uri).extension(extension).content(content()).language(language);
 	}
 
 	private String content() {
-		try {
-			return Files.readString(content.toPath());
-		} catch (IOException e) {
-			Logger.error(e);
-			return "";
-		}
+		return box().modelManager().content(model, uri);
 	}
 
 }

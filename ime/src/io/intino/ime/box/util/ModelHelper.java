@@ -17,13 +17,6 @@ import java.util.UUID;
 
 public class ModelHelper {
 
-	public static ModelContainer.File fileOf(File rootContainer, Path path) {
-		File file = path.toFile();
-		String relativePath = file.getAbsolutePath().replace(rootContainer.getAbsolutePath(), "").replace("/" + file.getName(), "").replace(file.getName(), "");
-		if (relativePath.startsWith("/")) relativePath = relativePath.substring(1);
-		return new ModelContainer.File(file.getName(), relativePath.isEmpty() ? Collections.emptyList() : List.of(relativePath.split("/")), file);
-	}
-
 	public static String proposeName() {
 		String uuid = UUID.randomUUID().toString();
 		return uuid.substring(uuid.lastIndexOf("-")+1) + new Timetag(Instant.now(), Scale.Month).value();

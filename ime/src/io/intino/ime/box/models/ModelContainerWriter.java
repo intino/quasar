@@ -1,103 +1,96 @@
 package io.intino.ime.box.models;
 
 import io.intino.alexandria.logger.Logger;
-import io.intino.ime.box.util.ModelHelper;
-import org.apache.commons.io.FileUtils;
+import io.intino.ime.box.util.WorkspaceHelper;
+import io.intino.ime.model.Model;
+import org.eclipse.lsp4j.*;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import org.eclipse.lsp4j.services.LanguageServer;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
+import static java.util.Collections.emptyList;
 
 public class ModelContainerWriter {
-	private final File root;
+	private final Model model;
+	private final LanguageServer server;
 
-	public ModelContainerWriter(File root) {
-		this.root = root;
+	public ModelContainerWriter(Model model, LanguageServer server) {
+		this.model = model;
+		this.server = server;
 	}
 
-	public void clone(File destiny) {
+	public void clone(Model destinyModel, LanguageServer destinyServer) {
 		try {
-			FileUtils.copyDirectory(root, destiny);
-		} catch (IOException e) {
+			Either<List<? extends SymbolInformation>, List<? extends WorkspaceSymbol>> symbols = server.getWorkspaceService().symbol(new WorkspaceSymbolParams()).get();
+			List<ModelContainer.File> files = WorkspaceHelper.filesOf(symbols.getRight());
+			CreateFilesParams params = new CreateFilesParams();
+			params.setFiles(files.stream().map(WorkspaceHelper::fileCreateOf).toList());
+			server.getWorkspaceService().didCreateFiles(params);
+		} catch (InterruptedException | ExecutionException e) {
 			Logger.error(e);
 		}
 	}
 
 	public ModelContainer.File copy(String filename, ModelContainer.File source) {
-		try {
-			if (!root.exists()) root.mkdirs();
-			File file = new File(source.content().getParentFile(), filename);
-			if (source.content().isDirectory()) createDirectory(file);
-			else createFile(file, Files.readString(source.content().toPath()));
-			return ModelHelper.fileOf(root, file.toPath());
-		} catch (IOException e) {
-			Logger.error(e);
-			return null;
-		}
+		String uri = WorkspaceHelper.parent(source.uri()) + "/" + filename;
+		String content = content(source.uri());
+		server.getWorkspaceService().didCreateFiles(new CreateFilesParams(List.of(new FileCreate(uri))));
+		server.getTextDocumentService().didSave(new DidSaveTextDocumentParams(new TextDocumentIdentifier(uri), content));
+		return new ModelContainer.File(filename, uri, new ArrayList<>());
 	}
 
 	public ModelContainer.File createFile(String filename, String content, ModelContainer.File parent) {
-		try {
-			if (!root.exists()) root.mkdirs();
-			File file = new File(parent != null && parent.content().isDirectory() ? parent.content() : root, filename);
-			createFile(file, content);
-			return ModelHelper.fileOf(root, file.toPath());
-		} catch (IOException e) {
-			Logger.error(e);
-			return null;
-		}
+		String uri = (parent != null && parent.isDirectory() ? parent.uri() + "/" : "") + filename;
+		server.getWorkspaceService().didCreateFiles(new CreateFilesParams(List.of(new FileCreate(uri))));
+		if (content != null) server.getTextDocumentService().didSave(new DidSaveTextDocumentParams(new TextDocumentIdentifier(uri), content));
+		return new ModelContainer.File(filename, uri, new ArrayList<>());
 	}
 
 	public ModelContainer.File createFolder(String name, ModelContainer.File parent) {
-		if (!root.exists()) root.mkdirs();
-		File file = new File(parent != null && parent.content().isDirectory() ? parent.content() : root, name);
-		createDirectory(file);
-		return ModelHelper.fileOf(root, file.toPath());
+		String uri = (parent != null && parent.isDirectory() ? parent.uri() + "/" : "") + name;
+		DidChangeWorkspaceFoldersParams params = new DidChangeWorkspaceFoldersParams(new WorkspaceFoldersChangeEvent(List.of(new WorkspaceFolder(uri, name)), emptyList()));
+		server.getWorkspaceService().didChangeWorkspaceFolders(params);
+		return new ModelContainer.File(name, uri, new ArrayList<>());
 	}
 
 	public void save(ModelContainer.File file, String content) {
-		try {
-			if (!root.exists()) root.mkdirs();
-			File destination = file.content();
-			Files.writeString(destination.toPath(), content);
-		} catch (IOException e) {
-			Logger.error(e);
-		}
+		server.getTextDocumentService().didSave(new DidSaveTextDocumentParams(new TextDocumentIdentifier(file.uri()), content));
 	}
 
 	public ModelContainer.File rename(ModelContainer.File file, String newName) {
-		File systemFile = file.content();
-		File destiny = new File(systemFile.getParentFile(), newName);
-		systemFile.renameTo(destiny);
-		return ModelHelper.fileOf(root, destiny.toPath());
+		String newUri = WorkspaceHelper.parent(file.uri()) + "/" + newName;
+		server.getWorkspaceService().didRenameFiles(new RenameFilesParams(List.of(new FileRename(file.uri(), newUri))));
+		return new ModelContainer.File(newName, newUri, file.parents());
 	}
 
 	public ModelContainer.File move(ModelContainer.File file, ModelContainer.File directory) {
-		File systemFile = file.content();
-		File systemDirectory = directory != null ? directory.content() : root;
-		File destiny = new File(systemDirectory, systemFile.getName());
-		systemFile.renameTo(destiny);
-		return ModelHelper.fileOf(root, destiny.toPath());
+		String newUri = directory.uri() + "/" + file.name();
+		server.getWorkspaceService().didRenameFiles(new RenameFilesParams(List.of(new FileRename(file.uri(), newUri))));
+		return new ModelContainer.File(file.name(), newUri, new ArrayList<>());
 	}
 
-	private static void createDirectory(File file) {
-		file.mkdir();
-	}
-
-	private static void createFile(File file, String content) throws IOException {
-		file.getParentFile().mkdirs();
-		Files.writeString(file.toPath(), content);
+	private void createFile(ModelContainer.File file, String content) throws IOException {
+		CreateFilesParams params = new CreateFilesParams(List.of(new FileCreate(file.uri())));
+		server.getWorkspaceService().didCreateFiles(params);
+		server.getTextDocumentService().didSave(new DidSaveTextDocumentParams(new TextDocumentIdentifier(file.uri()), content));
 	}
 
 	public void remove(ModelContainer.File file) {
-		try {
-			File content = file.content();
-			if (!content.exists()) return;
-			if (content.isDirectory()) FileUtils.deleteDirectory(content);
-			else file.content().delete();
-		} catch (IOException e) {
-			Logger.error(e);
+		if (file.isDirectory()) {
+			DidChangeWorkspaceFoldersParams params = new DidChangeWorkspaceFoldersParams(new WorkspaceFoldersChangeEvent(emptyList(), List.of(new WorkspaceFolder(file.uri(), file.name()))));
+			server.getWorkspaceService().didChangeWorkspaceFolders(params);
+		} else {
+			DeleteFilesParams params = new DeleteFilesParams(List.of(new FileDelete(file.uri())));
+			server.getWorkspaceService().didDeleteFiles(params);
 		}
+	}
+
+	private String content(String uri) {
+		return new ModelContainerReader(model, server).content(uri);
 	}
 
 }

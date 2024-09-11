@@ -1,36 +1,51 @@
 package io.intino.ime.box.models;
 
 import io.intino.alexandria.logger.Logger;
-import io.intino.ime.box.util.ModelHelper;
+import io.intino.ime.box.util.WorkspaceHelper;
+import io.intino.ime.model.Model;
+import io.intino.ls.IntinoLanguageServer;
+import org.eclipse.lsp4j.SymbolInformation;
+import org.eclipse.lsp4j.WorkspaceSymbol;
+import org.eclipse.lsp4j.WorkspaceSymbolParams;
+import org.eclipse.lsp4j.jsonrpc.messages.Either;
+import org.eclipse.lsp4j.services.LanguageServer;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.concurrent.ExecutionException;
 
 public class ModelContainerReader {
-	private final File root;
+	private final Model model;
+	private final LanguageServer server;
 
-	public ModelContainerReader(File root) {
-		this.root = root;
+	public ModelContainerReader(Model model, LanguageServer server) {
+		this.model = model;
+		this.server = server;
 	}
 
-	public ModelContainer read() {
-		ModelContainer result = new ModelContainer();
-		if (!root.exists()) return result;
-		try (Stream<Path> walk = Files.walk(root.toPath())) {
-			register(walk.filter(f -> !f.toFile().getAbsolutePath().equals(root.getAbsolutePath()) && !f.toFile().getName().equals(".DS_Store")).collect(Collectors.toList()), result);
-		} catch (IOException e) {
+	public List<ModelContainer.File> files() {
+		try {
+			Either<List<? extends SymbolInformation>, List<? extends WorkspaceSymbol>> symbols = server.getWorkspaceService().symbol(new WorkspaceSymbolParams()).get();
+			return WorkspaceHelper.filesOf(symbols.getRight());
+		} catch (InterruptedException | ExecutionException e) {
 			Logger.error(e);
+			return Collections.emptyList();
 		}
-		return result;
 	}
 
-	private void register(List<Path> pathList, ModelContainer structure) {
-		structure.add(pathList.stream().map(p -> ModelHelper.fileOf(root, p)).toList());
+	public String content(String uri) {
+		try(InputStream content = ((IntinoLanguageServer) server).getWorkspaceService().content(URI.create(uri))) {
+			return new String(content.readAllBytes(), Charset.defaultCharset());
+		} catch (Exception e) {
+			Logger.error(e);
+			return "";
+		}
 	}
 
 }

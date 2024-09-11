@@ -3,6 +3,7 @@ package io.intino.ime.box.models;
 import io.intino.alexandria.Json;
 import io.intino.alexandria.logger.Logger;
 import io.intino.ime.box.languages.LanguageManager;
+import io.intino.ime.box.languages.LanguageServerManager;
 import io.intino.ime.model.Model;
 import io.intino.languagearchetype.Archetype;
 import org.apache.commons.io.FileUtils;
@@ -20,10 +21,12 @@ import static java.util.stream.Collectors.toList;
 public class ModelManager {
 	private final Archetype archetype;
 	private final LanguageManager languageManager;
+	private final LanguageServerManager serverManager;
 
-	public ModelManager(Archetype archetype, LanguageManager languageManager) {
+	public ModelManager(Archetype archetype, LanguageManager languageManager, LanguageServerManager serverManager) {
 		this.archetype = archetype;
 		this.languageManager = languageManager;
+		this.serverManager = serverManager;
 	}
 
 	public List<Model> allModels() {
@@ -59,36 +62,70 @@ public class ModelManager {
 	}
 
 	public Model clone(Model model, String name, String title) {
-		Model result = Model.clone(model);
-		result.name(name);
-		result.title(title);
-		save(result);
-		new ModelContainerWriter(archetype.models().documents(model.name())).clone(archetype.models().documents(name));
-		return modelOf(name);
+		try {
+			Model result = Model.clone(model);
+			result.name(name);
+			result.title(title);
+			save(result);
+			new ModelContainerWriter(model, serverManager.get(model)).clone(result, serverManager.get(result));
+			return modelOf(name);
+		} catch (IOException e) {
+			Logger.error(e);
+			return null;
+		}
 	}
 
 	public ModelContainer.File copy(Model model, String filename, ModelContainer.File source) {
-		return new ModelContainerWriter(archetype.models().documents(model.name())).copy(filename, source);
+		try {
+			return new ModelContainerWriter(model, serverManager.get(model)).copy(filename, source);
+		} catch (IOException e) {
+			Logger.error(e);
+			return null;
+		}
 	}
 
 	public ModelContainer.File createFile(Model model, String name, String content, ModelContainer.File parent) {
-		return new ModelContainerWriter(archetype.models().documents(model.name())).createFile(name, content, parent);
+		try {
+			return new ModelContainerWriter(model, serverManager.get(model)).createFile(name, content, parent);
+		} catch (IOException e) {
+			Logger.error(e);
+			return null;
+		}
 	}
 
 	public ModelContainer.File createFolder(Model model, String name, ModelContainer.File parent) {
-		return new ModelContainerWriter(archetype.models().documents(model.name())).createFolder(name, parent);
+		try {
+			return new ModelContainerWriter(model, serverManager.get(model)).createFolder(name, parent);
+		} catch (IOException e) {
+			Logger.error(e);
+			return null;
+		}
 	}
 
 	public void save(Model model, ModelContainer.File file, String content) {
-		new ModelContainerWriter(archetype.models().documents(model.name())).save(file, content);
+		try {
+			new ModelContainerWriter(model, serverManager.get(model)).save(file, content);
+		} catch (IOException e) {
+			Logger.error(e);
+		}
 	}
 
 	public ModelContainer.File rename(Model model, ModelContainer.File file, String newName) {
-		return new ModelContainerWriter(archetype.models().documents(model.name())).rename(file, newName);
+		try {
+			return new ModelContainerWriter(model, serverManager.get(model)).rename(file, newName);
+		} catch (IOException e) {
+			Logger.error(e);
+			return null;
+		}
 	}
 
 	public ModelContainer.File move(Model model, ModelContainer.File file, ModelContainer.File directory) {
-		return new ModelContainerWriter(archetype.models().documents(model.name())).move(file, directory);
+		try {
+			return new ModelContainerWriter(model, serverManager.get(model)).move(file, directory);
+		} catch (Exception e) {
+			Logger.error(e);
+			return null;
+		}
 	}
 
 	public void saveTitle(Model model, String title) {
@@ -108,7 +145,11 @@ public class ModelManager {
 	}
 
 	public void remove(Model model, ModelContainer.File file) {
-		new ModelContainerWriter(archetype.models().documents(model.name())).remove(file);
+		try {
+			new ModelContainerWriter(model, serverManager.get(model)).remove(file);
+		} catch (IOException e) {
+			Logger.error(e);
+		}
 	}
 
 	public void remove(Model model) {
@@ -122,7 +163,21 @@ public class ModelManager {
 	}
 
 	public ModelContainer modelContainer(Model model) {
-		return new ModelContainerReader(archetype.models().documents(model.name())).read();
+		try {
+			return new ModelContainer(model, serverManager.get(model));
+		} catch (IOException e) {
+			Logger.error(e);
+			return null;
+		}
+	}
+
+	public String content(Model model, String uri) {
+		try {
+			return new ModelContainerReader(model, serverManager.get(model)).content(uri);
+		} catch (IOException e) {
+			Logger.error(e);
+			return null;
+		}
 	}
 
 	private Model modelOf(File file) {
@@ -159,5 +214,4 @@ public class ModelManager {
 		if (model == null) return false;
 		return user != null && model.owner() != null && user.equals(model.owner().name());
 	}
-
 }

@@ -92,7 +92,7 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 	}
 
 	private void refreshFileEditor() {
-		boolean validFile = selectedFile != null && !selectedFile.content().isDirectory();
+		boolean validFile = selectedFile != null && !selectedFile.isDirectory();
 		fileNotSelectedBlock.visible(!validFile);
 		fileSelectedBlock.visible(validFile);
 		filename.value(validFile ? selectedFile.name() : "");
@@ -100,7 +100,7 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 		if (!validFile) return;
 		IntinoDslEditor display = intinoDslEditor.display();
 		display.model(model);
-		display.file(selectedFile.name(), selectedFile.extension(), selectedFile.content(), selectedFile.language());
+		display.file(selectedFile.name(), selectedFile.uri(), selectedFile.extension(), selectedFile.language());
 		display.refresh();
 	}
 
@@ -112,7 +112,7 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 	private void refreshHeader() {
 		header.model(model);
 		header.title(model.title());
-		header.description(Formatters.countMessage(modelContainer.files().stream().filter(f -> !f.content().isDirectory()).count(), "file", "files", language()));
+		header.description(Formatters.countMessage(modelContainer.files().stream().filter(f -> !f.isDirectory()).count(), "file", "files", language()));
 		header.refresh();
 	}
 
@@ -179,7 +179,7 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 	}
 
 	private IntinoFileBrowserItem itemOf(ModelContainer.File file) {
-		IntinoFileBrowserItem.Type type = file.content().isFile() ? IntinoFileBrowserItem.Type.File : IntinoFileBrowserItem.Type.Folder;
+		IntinoFileBrowserItem.Type type = file.isDirectory() ? IntinoFileBrowserItem.Type.Folder : IntinoFileBrowserItem.Type.File;
 		return itemOf(file.name(), file.parents(), type, file.parents().isEmpty());
 	}
 

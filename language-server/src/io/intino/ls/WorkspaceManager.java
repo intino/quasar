@@ -24,17 +24,18 @@ public class WorkspaceManager {
 	public WorkspaceManager(File root) throws IOException {
 		this.root = root;
 		this.documents = new ConcurrentHashMap<>();
+		root.mkdirs();
 		documents.putAll(collectDocuments(root));
 	}
 
-	private static Map<URI, TextDocumentItem> collectDocuments(File projectRoot) throws IOException {
+	private Map<URI, TextDocumentItem> collectDocuments(File projectRoot) throws IOException {
 		return Files.walk(projectRoot.toPath())
 				.filter(p -> p.toFile().isFile() && p.toFile().getName().endsWith(".tara"))
 				.map(Path::toFile)
-				.collect(Collectors.toMap(File::toURI, WorkspaceManager::documentItem));
+				.collect(Collectors.toMap(this::relativePath, this::documentItem));
 	}
 
-	private static TextDocumentItem documentItem(File f) {
+	private TextDocumentItem documentItem(File f) {
 		return new TextDocumentItem(f.toURI().toString(), dslOf(f), (int) f.lastModified(), content(f));
 	}
 
@@ -45,6 +46,7 @@ public class WorkspaceManager {
 	public void upsertDocument(URI uri, String dsl, String content) {
 		synchronized (lock) {
 			try {
+				content = content.isEmpty() ? "dsl " + dsl + "\n\n" : content;
 				File file = new File(root, uri.getPath());
 				documents.put(uri, new TextDocumentItem(uri.toString(), dsl, (int) Instant.now().toEpochMilli(), content));
 				file.getParentFile().mkdirs();
@@ -66,9 +68,9 @@ public class WorkspaceManager {
 		documents.remove(uri);
 	}
 
-	private static String content(File f) {
+	private String content(File f) {
 		try {
-			return Files.readString(f.toPath());
+			return Files.readString(new File(root, f.getPath()).toPath());
 		} catch (IOException e) {
 			Logger.error(e);
 			return "";
@@ -84,4 +86,9 @@ public class WorkspaceManager {
 			return "";
 		}
 	}
+
+	private URI relativePath(File f) {
+		return URI.create(root.toPath().relativize(f.toPath()).toFile().getPath());
+	}
+
 }

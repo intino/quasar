@@ -48,14 +48,13 @@ public class IntinoDocumentService implements TextDocumentService {
 
 	@Override
 	public void didOpen(DidOpenTextDocumentParams params) {
-		URI uri = URI.create(params.getTextDocument().getUri());
-		workspaceManager.upsertDocument(uri, language.languageName(), "");
+		URI uri = URI.create(normalize(params.getTextDocument().getUri()));
 		analyzeText(new StringSource(uri.getPath(), params.getTextDocument().getText()));
 	}
 
 	@Override
 	public void didChange(DidChangeTextDocumentParams params) {
-		URI uri = URI.create(params.getTextDocument().getUri());
+		URI uri = URI.create(normalize(params.getTextDocument().getUri()));
 		try {
 			InputStream doc = workspaceManager.getDocumentText(uri);
 			String content = applyChanges(doc != null ? new String(doc.readAllBytes()) : "", params.getContentChanges());
@@ -68,12 +67,12 @@ public class IntinoDocumentService implements TextDocumentService {
 
 	@Override
 	public void didClose(DidCloseTextDocumentParams params) {
-		System.out.println("Document closed: " + params.getTextDocument().getUri());
+		System.out.println("Document closed: " + normalize(params.getTextDocument().getUri()));
 	}
 
 	@Override
 	public void didSave(DidSaveTextDocumentParams params) {
-		String uri = params.getTextDocument().getUri();
+		String uri = normalize(params.getTextDocument().getUri());
 		workspaceManager.upsertDocument(URI.create(uri), language.languageName(), params.getText());
 	}
 
@@ -139,7 +138,7 @@ public class IntinoDocumentService implements TextDocumentService {
 	@Override
 	public CompletableFuture<SemanticTokens> semanticTokensFull(SemanticTokensParams params) {
 		try {
-			return completedFuture(semanticTokens(URI.create(params.getTextDocument().getUri())));
+			return completedFuture(semanticTokens(URI.create(normalize(params.getTextDocument().getUri()))));
 		} catch (IOException e) {
 			Logger.error(e);
 		}
@@ -360,6 +359,10 @@ public class IntinoDocumentService implements TextDocumentService {
 	}
 
 	public void setTrace(SetTraceParams params) {
-
 	}
+
+	private String normalize(String uri) {
+		return uri.replace("file:///", "");
+	}
+
 }

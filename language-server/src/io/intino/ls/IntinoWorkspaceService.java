@@ -15,7 +15,7 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.lsp4j.SymbolKind.File;
 import static org.eclipse.lsp4j.jsonrpc.messages.Either.forRight;
 
-class IntinoWorkspaceService implements WorkspaceService {
+public class IntinoWorkspaceService implements WorkspaceService {
 	private final Language language;
 	private final WorkspaceManager documentManager;
 
@@ -77,4 +77,10 @@ class IntinoWorkspaceService implements WorkspaceService {
 	public void didRenameFiles(RenameFilesParams params) {
 		WorkspaceService.super.didRenameFiles(params);
 	}
+
+	@Override
+	public void didChangeWorkspaceFolders(DidChangeWorkspaceFoldersParams params) {
+		// TODO
+	}
+
 }
