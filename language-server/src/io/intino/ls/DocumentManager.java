@@ -1,6 +1,8 @@
 package io.intino.ls;
 
 import io.intino.alexandria.logger.Logger;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
 import org.eclipse.lsp4j.TextDocumentItem;
 
 import java.io.ByteArrayInputStream;
@@ -36,6 +38,10 @@ public class DocumentManager {
 
 	public List<URI> all() {
 		return documents.keySet().stream().toList();
+	}
+
+	public List<URI> folders() {
+		return FileUtils.listFilesAndDirs(root, fileFilter(), fileFilter()).stream().filter(f -> !f.getPath().equals(root.getPath())).map(this::relativePath).toList();
 	}
 
 	public void upsertDocument(URI uri, String dsl, String content) {
@@ -87,6 +93,20 @@ public class DocumentManager {
 				.filter(p -> p.toFile().isFile() && p.toFile().getName().endsWith(".tara"))
 				.map(Path::toFile)
 				.collect(Collectors.toMap(this::relativePath, this::documentItem, (a, b) -> a, ConcurrentHashMap::new));
+	}
+
+	private IOFileFilter fileFilter() {
+		return new IOFileFilter() {
+			@Override
+			public boolean accept(File file) {
+				return file.isDirectory() && !file.getPath().equals(root.getPath());
+			}
+
+			@Override
+			public boolean accept(File file, String s) {
+				return true;
+			}
+		};
 	}
 
 	private URI relativePath(File f) {

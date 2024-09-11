@@ -32,8 +32,11 @@ public class IntinoWorkspaceService implements WorkspaceService {
 
 	@Override
 	public CompletableFuture<Either<List<? extends SymbolInformation>, List<? extends WorkspaceSymbol>>> symbol(WorkspaceSymbolParams params) {
-		return completedFuture(forRight(documentManager.all().stream()
-				.map(u -> new WorkspaceSymbol(u.getPath(), File, forRight(new WorkspaceSymbolLocation(u.toString())))).toList()));
+		List<WorkspaceSymbol> list = documentManager.all().stream()
+				.map(u -> new WorkspaceSymbol(u.getPath(), File, forRight(new WorkspaceSymbolLocation(u.toString())))).collect(Collectors.toList());
+		list.addAll(documentManager.folders().stream()
+				.map(u -> new WorkspaceSymbol(u.getPath(), SymbolKind.Package, forRight(new WorkspaceSymbolLocation(u.toString())))).toList());
+		return completedFuture(forRight(list));
 	}
 
 	@Override
@@ -58,13 +61,9 @@ public class IntinoWorkspaceService implements WorkspaceService {
 	@Override
 	public void didChangeWorkspaceFolders(DidChangeWorkspaceFoldersParams params) {
 		try {
-			for (WorkspaceFolder folder : params.getEvent().getAdded()) {
-				new File(documentManager.root(), folder.getUri()).mkdirs();
-			}
-
-			for (WorkspaceFolder folder : params.getEvent().getRemoved()) {
+			params.getEvent().getAdded().forEach(folder -> new File(documentManager.root(), folder.getUri()).mkdirs());
+			for (WorkspaceFolder folder : params.getEvent().getRemoved())
 				FileUtils.deleteDirectory(new File(documentManager.root(), folder.getUri()));
-			}
 		} catch (IOException e) {
 			Logger.error(e);
 		}
