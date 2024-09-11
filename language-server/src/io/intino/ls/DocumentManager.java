@@ -78,6 +78,7 @@ public class DocumentManager {
 
 	public void removeDocument(URI uri) {
 		documents.remove(uri);
+		fileOf(uri).delete();
 	}
 
 	private String content(File f) {
