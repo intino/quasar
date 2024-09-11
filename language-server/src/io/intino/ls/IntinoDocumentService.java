@@ -5,6 +5,7 @@ import io.intino.ls.IntinoSemanticTokens.SemanticToken;
 import io.intino.tara.Language;
 import io.intino.tara.Source.StringSource;
 import io.intino.tara.language.grammar.TaraLexer;
+import io.intino.tara.language.model.Element;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
@@ -14,7 +15,10 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
@@ -25,6 +29,7 @@ public class IntinoDocumentService implements TextDocumentService {
 	private final DocumentManager workspaceManager;
 	private final DocumentSourceProvider documentSourceProvider;
 	private final DiagnosticService diagnosticService;
+	private final ReferenceResolver referenceResolver;
 	private final Map<URI, ModelUnit> models;
 
 	public IntinoDocumentService(Language language, DocumentManager workspaceManager, DiagnosticService diagnosticService, Map<URI, ModelUnit> models) {
@@ -32,6 +37,7 @@ public class IntinoDocumentService implements TextDocumentService {
 		this.workspaceManager = workspaceManager;
 		this.documentSourceProvider = new DocumentSourceProvider(workspaceManager);
 		this.diagnosticService = diagnosticService;
+		referenceResolver = new ReferenceResolver(models);
 		this.models = models;
 		laodModels();
 	}
@@ -92,7 +98,6 @@ public class IntinoDocumentService implements TextDocumentService {
 	public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
 		return completedFuture(new DocumentDiagnosticReport(new RelatedFullDocumentDiagnosticReport(diagnosticService.analyzeWorkspace())));
 	}
-
 
 	private int getOffset(Position position, String content) {
 		int offset = 0;
@@ -164,12 +169,29 @@ public class IntinoDocumentService implements TextDocumentService {
 
 	@Override
 	public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> declaration(DeclarationParams params) {
-		return TextDocumentService.super.declaration(params);
+		URI uri = URI.create(normalize(params.getTextDocument().getUri()));
+		Position position = params.getPosition();
+		position.setLine(position.getLine() + 1);
+		Element element = referenceResolver.resolveToDeclaration(uri, position);
+		return completedFuture(Either.forRight(List.of(new LocationLink())));
 	}
 
 	@Override
 	public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> definition(DefinitionParams params) {
-		return TextDocumentService.super.definition(params);
+		URI uri = URI.create(normalize(params.getTextDocument().getUri()));
+		Position position = params.getPosition();
+		position.setLine(position.getLine() + 1);
+		Element element = referenceResolver.resolveToDeclaration(uri, position);
+		if (element == null) return completedFuture(Either.forLeft(List.of()));
+		Range targetRange = rangeOf(element);
+		position.setLine(position.getLine() - 1);
+		return completedFuture(Either.forLeft(List.of(new Location(element.source().getPath(), targetRange))));
+	}
+
+	private Range rangeOf(Element element) {
+		Element.TextRange textRange = element.textRange();
+		return new Range(new Position(element.textRange().startLine() - 1, textRange.startColumn()),
+				new Position(textRange.endLine() - 1, textRange.endColumn()));
 	}
 
 	@Override
@@ -185,11 +207,6 @@ public class IntinoDocumentService implements TextDocumentService {
 	@Override
 	public CompletableFuture<List<? extends Location>> references(ReferenceParams params) {
 		return TextDocumentService.super.references(params);
-	}
-
-	@Override
-	public CompletableFuture<List<? extends DocumentHighlight>> documentHighlight(DocumentHighlightParams params) {
-		return completedFuture(List.of());
 	}
 
 	@Override

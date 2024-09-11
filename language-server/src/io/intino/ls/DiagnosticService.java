@@ -73,7 +73,7 @@ public class DiagnosticService {
 		units.forEach(unit -> unit.model().mograms()
 				.forEach(c -> model.add(c, unit.model().rulesOf(c))));
 		for (Mogram mogram : model.mograms()) mogram.container(model);
-		return new ModelUnit(model,new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+		return new ModelUnit(model, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 	}
 
 	private static void analyzeWorkspace(ModelUnit context) {
@@ -94,13 +94,13 @@ public class DiagnosticService {
 
 	private static Diagnostic diagnosticOf(DependencyException e) {
 		Element.TextRange textRange = e.getElement().textRange();
-		Range range = new Range(new Position(textRange.line() - 1, textRange.startColumn()), new Position(textRange.line(), textRange.startColumn()));
+		Range range = new Range(new Position(textRange.startLine() - 1, textRange.startColumn()), new Position(textRange.endLine() - 1, textRange.endColumn()));
 		return new Diagnostic(range, e.getMessage(), DiagnosticSeverity.Error, e.getElement().source().getPath());
 	}
 
 	private static Diagnostic diagnosticOf(SemanticException e) {
 		Element.TextRange textRange = e.origin()[0].textRange();
-		Range range = new Range(new Position(textRange.line() - 1, textRange.startColumn()), new Position(textRange.line() - 1, textRange.startColumn() + 1));
+		Range range = new Range(new Position(textRange.startLine() - 1, textRange.startColumn()), new Position(textRange.endLine() - 1, textRange.endColumn()));
 		DiagnosticSeverity level = e.level() == SemanticIssue.Level.ERROR ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning;
 		return new Diagnostic(range, e.getMessage(), level, e.getIssue().origin()[0].source().getPath());
 	}

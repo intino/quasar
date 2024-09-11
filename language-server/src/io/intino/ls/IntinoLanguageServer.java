@@ -33,13 +33,14 @@ public class IntinoLanguageServer implements LanguageServer, LanguageClientAware
 	public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
 		ServerCapabilities capabilities = new ServerCapabilities();
 		capabilities.setSemanticTokensProvider(semanticTokensWithRegistrationOptions());
-		capabilities.setDocumentHighlightProvider(new DocumentHighlightOptions());
+//		capabilities.setDocumentHighlightProvider(new DocumentHighlightOptions());
 		capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
 		capabilities.setCompletionProvider(new CompletionOptions(true, List.of()));
 		capabilities.setDiagnosticProvider(new DiagnosticRegistrationOptions(true, true));
 //		capabilities.setHoverProvider(true);
 //		capabilities.setCodeActionProvider(true);
 //		capabilities.setDocumentSymbolProvider(true);
+		capabilities.setDefinitionProvider(true);
 		WorkspaceServerCapabilities workspaceCaps = new WorkspaceServerCapabilities();
 		WorkspaceFoldersOptions workspaceFolders = new WorkspaceFoldersOptions();
 		workspaceFolders.setChangeNotifications(true);
