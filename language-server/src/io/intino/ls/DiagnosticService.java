@@ -6,6 +6,7 @@ import io.intino.tara.Source;
 import io.intino.tara.language.grammar.SyntaxException;
 import io.intino.tara.language.grammar.TaraGrammar;
 import io.intino.tara.language.model.Element;
+import io.intino.tara.language.model.Mogram;
 import io.intino.tara.language.semantics.errorcollector.SemanticException;
 import io.intino.tara.language.semantics.errorcollector.SemanticFatalException;
 import io.intino.tara.language.semantics.errorcollector.SemanticIssue;
@@ -31,11 +32,11 @@ import java.util.Map;
 
 public class DiagnosticService {
 	private final DocumentManager documentManager;
-	private final Map<URI, ModelContext> models;
+	private final Map<URI, ModelUnit> models;
 	private final Map<URI, TaraGrammar.RootContext> trees = new HashMap<>();
 
 
-	public DiagnosticService(DocumentManager documentManager, Map<URI, ModelContext> models) {
+	public DiagnosticService(DocumentManager documentManager, Map<URI, ModelUnit> models) {
 		this.documentManager = documentManager;
 		this.models = models;
 	}
@@ -44,33 +45,46 @@ public class DiagnosticService {
 	public void updateModel(Source source) {
 		Model model = null;
 		List<SyntaxException> syntaxErrors = new ArrayList<>();
-		List<DependencyException> dependencyErrors = new ArrayList<>();
-		List<SemanticException> semanticErrors = new ArrayList<>();
 		try {
 			TaraGrammar.RootContext tree = parse(source, new ParserErrorStrategy());
 			model = new Parser(source).convert(tree);
-			dependencyResolver(model).resolve();
-			new SemanticAnalyzer(model, new Meta()).analyze();
 		} catch (SyntaxException e) {
 			syntaxErrors.add(e);
-		} catch (DependencyException e) {
-			dependencyErrors.add(e);
-		} catch (SemanticFatalException e) {
-			semanticErrors.addAll(e.exceptions());
 		} catch (Exception e) {
 			Logger.error(e);
 		}
-		models.put(source.uri(), new ModelContext(model, syntaxErrors, dependencyErrors, semanticErrors));
+		models.put(source.uri(), new ModelUnit(model, syntaxErrors, new ArrayList<>(), new ArrayList<>()));
 	}
 
-	public List<Diagnostic> analyze(URI uri) {
-		ModelContext model = models.get(uri);
-		if (model == null) return List.of();
+	public List<Diagnostic> analyzeWorkspace() {
+		ModelUnit model = merge(new ArrayList<>(models.values()));
+		analyzeWorkspace(model);
 		List<Diagnostic> diagnostics = new ArrayList<>();
 		model.syntaxErrors().stream().map(DiagnosticService::diagnosticOf).forEach(diagnostics::add);
 		model.dependencyErrors().stream().map(DiagnosticService::diagnosticOf).forEach(diagnostics::add);
 		model.semanticErrors().stream().map(DiagnosticService::diagnosticOf).forEach(diagnostics::add);
 		return diagnostics;
+	}
+
+	private ModelUnit merge(List<ModelUnit> units) {
+		Model model = new Model(documentManager.root().getParentFile().toURI());
+		Model ref = units.get(0).model();
+		model.languageName(ref.languageName());
+		units.forEach(unit -> unit.model().mograms()
+				.forEach(c -> model.add(c, unit.model().rulesOf(c))));
+		for (Mogram mogram : model.mograms()) mogram.container(model);
+		return new ModelUnit(model,new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+	}
+
+	private static void analyzeWorkspace(ModelUnit context) {
+		try {
+			dependencyResolver(context.model()).resolve();
+			new SemanticAnalyzer(context.model(), new Meta()).analyze();
+		} catch (DependencyException e) {
+			context.dependencyErrors().add(e);
+		} catch (SemanticFatalException e) {
+			context.semanticErrors().addAll(e.exceptions());
+		}
 	}
 
 	private static Diagnostic diagnosticOf(SyntaxException e) {

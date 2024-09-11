@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -62,11 +63,18 @@ public class IntinoWorkspaceService implements WorkspaceService {
 	public void didChangeWorkspaceFolders(DidChangeWorkspaceFoldersParams params) {
 		try {
 			params.getEvent().getAdded().forEach(folder -> new File(documentManager.root(), folder.getUri()).mkdirs());
-			for (WorkspaceFolder folder : params.getEvent().getRemoved())
+			for (WorkspaceFolder folder : params.getEvent().getRemoved()) {
 				FileUtils.deleteDirectory(new File(documentManager.root(), folder.getUri()));
+				removeContainedDocuments(folder.getUri());
+			}
 		} catch (IOException e) {
 			Logger.error(e);
 		}
+	}
+
+	private void removeContainedDocuments(String uri) {
+		documentManager.all().stream().filter(u -> u.getPath().startsWith(uri))
+				.forEach(u -> documentManager.removeDocument(URI.create(u.getPath())));
 	}
 
 	public InputStream content(URI uri) {
@@ -80,10 +88,9 @@ public class IntinoWorkspaceService implements WorkspaceService {
 
 	@Override
 	public CompletableFuture<WorkspaceDiagnosticReport> diagnostic(WorkspaceDiagnosticParams params) {
-		List<WorkspaceDocumentDiagnosticReport> diagnostics = documentManager.all().stream()
-				.map(u -> new WorkspaceDocumentDiagnosticReport(new WorkspaceFullDocumentDiagnosticReport(diagnosticService.analyze(u), u.getPath(), 1)))
-				.toList();
-		return completedFuture(new WorkspaceDiagnosticReport(diagnostics));
+		Map<String, List<Diagnostic>> result = diagnosticService.analyzeWorkspace().stream().collect(Collectors.groupingBy(Diagnostic::getSource));
+		List<WorkspaceDocumentDiagnosticReport> reports = result.keySet().stream().map(k -> new WorkspaceDocumentDiagnosticReport(new WorkspaceFullDocumentDiagnosticReport(result.get(k), k, 1))).toList();
+		return completedFuture(new WorkspaceDiagnosticReport(reports));
 	}
 
 	@Override

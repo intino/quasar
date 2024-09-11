@@ -23,7 +23,7 @@ public class IntinoLanguageServer implements LanguageServer, LanguageClientAware
 	private final IntinoWorkspaceService workspaceService;
 
 	public IntinoLanguageServer(Language language, DocumentManager documentManager) {
-		Map<URI, ModelContext> models = new HashMap<>();
+		Map<URI, ModelUnit> models = new HashMap<>();
 		DiagnosticService diagnosticService = new DiagnosticService(documentManager, models);
 		this.documentService = new IntinoDocumentService(language, documentManager, diagnosticService, models);
 		this.workspaceService = new IntinoWorkspaceService(language, documentManager, diagnosticService);
