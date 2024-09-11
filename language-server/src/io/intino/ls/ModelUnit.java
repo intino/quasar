@@ -8,8 +8,8 @@ import io.intino.tara.processors.model.Model;
 import java.io.Serializable;
 import java.util.List;
 
-public record ModelContext(Model model,
-						   List<SyntaxException> syntaxErrors,
-						   List<DependencyException> dependencyErrors,
-						   List<SemanticException> semanticErrors) implements Serializable {
+public record ModelUnit(Model model,
+						List<SyntaxException> syntaxErrors,
+						List<DependencyException> dependencyErrors,
+						List<SemanticException> semanticErrors) implements Serializable {
 }

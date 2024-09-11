@@ -25,9 +25,9 @@ public class IntinoDocumentService implements TextDocumentService {
 	private final DocumentManager workspaceManager;
 	private final DocumentSourceProvider documentSourceProvider;
 	private final DiagnosticService diagnosticService;
-	private final Map<URI, ModelContext> models;
+	private final Map<URI, ModelUnit> models;
 
-	public IntinoDocumentService(Language language, DocumentManager workspaceManager, DiagnosticService diagnosticService, Map<URI, ModelContext> models) {
+	public IntinoDocumentService(Language language, DocumentManager workspaceManager, DiagnosticService diagnosticService, Map<URI, ModelUnit> models) {
 		this.language = language;
 		this.workspaceManager = workspaceManager;
 		this.documentSourceProvider = new DocumentSourceProvider(workspaceManager);
@@ -90,8 +90,7 @@ public class IntinoDocumentService implements TextDocumentService {
 
 	@Override
 	public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
-		List<Diagnostic> diagnostics = diagnosticService.analyze(URI.create(normalize(params.getTextDocument().getUri())));
-		return completedFuture(new DocumentDiagnosticReport(new RelatedFullDocumentDiagnosticReport(diagnostics)));
+		return completedFuture(new DocumentDiagnosticReport(new RelatedFullDocumentDiagnosticReport(diagnosticService.analyzeWorkspace())));
 	}
 
 
