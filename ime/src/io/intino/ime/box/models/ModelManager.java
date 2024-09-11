@@ -64,6 +64,7 @@ public class ModelManager {
 	public Model clone(Model model, String name, String title) {
 		try {
 			Model result = Model.clone(model);
+			result.workspaceRootDirectory(archetype.models().workspace(name).getAbsoluteFile().getCanonicalFile().toURI());
 			result.name(name);
 			result.title(title);
 			save(result);
@@ -189,7 +190,7 @@ public class ModelManager {
 			File definition = archetype.models().definition(name);
 			if (!definition.exists()) return null;
 			Model model = Json.fromJson(Files.readString(definition.toPath()), Model.class);
-			return model.documentRoot(archetype.models().workspace(name).getAbsoluteFile().getCanonicalFile().toURI());
+			return model.workspaceRootDirectory(archetype.models().workspace(name).getAbsoluteFile().getCanonicalFile().toURI());
 		} catch (IOException e) {
 			Logger.error(e);
 			return null;

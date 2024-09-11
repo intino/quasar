@@ -28,7 +28,7 @@ public class LanguageServerManager {
 
 	public LanguageServer get(Model model) throws IOException {
 		if (!servers.containsKey(model.name()))
-			servers.put(model.name(), create(languageLoader.get(model.language()), model.documentRoot()));
+			servers.put(model.name(), create(languageLoader.get(model.language()), model.workspaceRootDirectory()));
 		return servers.get(model.name());
 	}
 }

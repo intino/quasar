@@ -8,7 +8,7 @@ public final class Model {
 	private String title;
 	private User owner;
 	private Instant lastModifyDate;
-	private URI documentRoot;
+	private URI workspaceDirectory;
 	private String language;
 	private boolean isPrivate = true;
 	private String token;
@@ -49,12 +49,12 @@ public final class Model {
 		return this;
 	}
 
-	public URI documentRoot() {
-		return documentRoot;
+	public URI workspaceRootDirectory() {
+		return workspaceDirectory;
 	}
 
-	public Model documentRoot(URI documentRoot) {
-		this.documentRoot = documentRoot;
+	public Model workspaceRootDirectory(URI root) {
+		this.workspaceDirectory = root;
 		return this;
 	}
 

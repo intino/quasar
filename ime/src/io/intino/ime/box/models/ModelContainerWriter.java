@@ -29,7 +29,8 @@ public class ModelContainerWriter {
 			List<ModelContainer.File> files = WorkspaceHelper.filesOf(symbols.getRight());
 			CreateFilesParams params = new CreateFilesParams();
 			params.setFiles(files.stream().map(WorkspaceHelper::fileCreateOf).toList());
-			server.getWorkspaceService().didCreateFiles(params);
+			destinyServer.getWorkspaceService().didCreateFiles(params);
+			files.stream().filter(f -> !f.isDirectory()).forEach(f -> destinyServer.getTextDocumentService().didSave(new DidSaveTextDocumentParams(new TextDocumentIdentifier(f.uri()), content(f.uri()))));
 		} catch (InterruptedException | ExecutionException e) {
 			Logger.error(e);
 		}

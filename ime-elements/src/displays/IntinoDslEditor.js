@@ -73,6 +73,7 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
         const handleChange = this.handleChange.bind(this);
         const CtrlCmd = 2048;
         const KeyS = 49;
+        const KeyF = 70;
         const self = this;
         editor.getModel().onDidChangeContent(event => handleChange(editor.getValue()));
         editor.getModel().updateOptions({ insertSpaces: false, tabSize: 4 });
