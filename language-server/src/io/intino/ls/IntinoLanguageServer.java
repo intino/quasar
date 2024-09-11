@@ -58,7 +58,7 @@ public class IntinoLanguageServer implements LanguageServer, LanguageClientAware
 	}
 
 	@Override
-	public WorkspaceService getWorkspaceService() {
+	public IntinoWorkspaceService getWorkspaceService() {
 		return new IntinoWorkspaceService(language, workspaceManager);
 	}
 

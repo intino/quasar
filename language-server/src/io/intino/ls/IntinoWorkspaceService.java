@@ -5,6 +5,7 @@ import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.WorkspaceService;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -36,9 +37,11 @@ class IntinoWorkspaceService implements WorkspaceService {
 
 	@Override
 	public void didCreateFiles(CreateFilesParams params) {
-		params.getFiles().forEach(f -> {
-			documentManager.upsertDocument(URI.create(f.getUri()), language.languageName(), "dsl " + language.languageName() + "\n\n");
-		});
+		params.getFiles().forEach(f -> documentManager.upsertDocument(URI.create(f.getUri()), language.languageName(), "dsl " + language.languageName() + "\n\n"));
+	}
+
+	public InputStream content(URI uri) {
+		return documentManager.getDocumentText(uri);
 	}
 
 	@Override
