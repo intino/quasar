@@ -2,6 +2,8 @@ package io.intino.ls;
 
 import io.intino.alexandria.logger.Logger;
 import io.intino.ls.IntinoSemanticTokens.SemanticToken;
+import io.intino.ls.codeinsight.DiagnosticService;
+import io.intino.ls.codeinsight.ReferenceResolver;
 import io.intino.tara.Language;
 import io.intino.tara.Source.StringSource;
 import io.intino.tara.language.grammar.TaraLexer;

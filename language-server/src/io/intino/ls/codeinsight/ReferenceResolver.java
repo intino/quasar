@@ -1,5 +1,6 @@
-package io.intino.ls;
+package io.intino.ls.codeinsight;
 
+import io.intino.ls.ModelUnit;
 import io.intino.tara.language.model.Element;
 import io.intino.tara.language.model.ElementContainer;
 import io.intino.tara.language.model.MogramReference;

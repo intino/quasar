@@ -1,6 +1,9 @@
-package io.intino.ls;
+package io.intino.ls.codeinsight;
 
 import io.intino.alexandria.logger.Logger;
+import io.intino.ls.DocumentManager;
+import io.intino.ls.ModelUnit;
+import io.intino.ls.ParserErrorStrategy;
 import io.intino.tara.Language;
 import io.intino.tara.Source;
 import io.intino.tara.language.grammar.SyntaxException;

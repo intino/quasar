@@ -1,5 +1,6 @@
 package io.intino.ls;
 
+import io.intino.ls.codeinsight.DiagnosticService;
 import io.intino.tara.Language;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.services.LanguageClient;
@@ -39,7 +40,7 @@ public class IntinoLanguageServer implements LanguageServer, LanguageClientAware
 		capabilities.setDiagnosticProvider(new DiagnosticRegistrationOptions(true, true));
 //		capabilities.setHoverProvider(true);
 //		capabilities.setCodeActionProvider(true);
-//		capabilities.setDocumentSymbolProvider(true);
+		capabilities.setDocumentSymbolProvider(true);
 		capabilities.setDefinitionProvider(true);
 		WorkspaceServerCapabilities workspaceCaps = new WorkspaceServerCapabilities();
 		WorkspaceFoldersOptions workspaceFolders = new WorkspaceFoldersOptions();
@@ -53,6 +54,7 @@ public class IntinoLanguageServer implements LanguageServer, LanguageClientAware
 		fileOptions.setFilters(List.of(fileFilter));
 		fileCaps.setDidCreate(fileOptions);
 		capabilities.setWorkspace(workspaceCaps);
+		capabilities.setWorkspaceSymbolProvider(true);
 		return completedFuture(new InitializeResult(capabilities));
 	}
 

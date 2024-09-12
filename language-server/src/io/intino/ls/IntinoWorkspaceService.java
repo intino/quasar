@@ -1,6 +1,7 @@
 package io.intino.ls;
 
 import io.intino.alexandria.logger.Logger;
+import io.intino.ls.codeinsight.DiagnosticService;
 import io.intino.tara.Language;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.lsp4j.*;
