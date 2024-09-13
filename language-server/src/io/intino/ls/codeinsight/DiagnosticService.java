@@ -45,7 +45,7 @@ public class DiagnosticService {
 	}
 
 
-	public void updateModel(Source source) {
+	public synchronized void updateModel(Source source) {
 		Model model = null;
 		List<SyntaxException> syntaxErrors = new ArrayList<>();
 		try {
@@ -72,6 +72,7 @@ public class DiagnosticService {
 	private ModelUnit merge(List<ModelUnit> units) {
 		Model model = new Model(documentManager.root().getParentFile().toURI());
 		Model ref = units.get(0).model();
+		if (ref == null) return new ModelUnit(model, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 		model.languageName(ref.languageName());
 		units.forEach(unit -> unit.model().mograms()
 				.forEach(c -> model.add(c, unit.model().rulesOf(c))));

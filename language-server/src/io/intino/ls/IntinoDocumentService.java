@@ -62,8 +62,8 @@ public class IntinoDocumentService implements TextDocumentService {
 
 	@Override
 	public void didChange(DidChangeTextDocumentParams params) {
-		URI uri = URI.create(normalize(params.getTextDocument().getUri()));
 		try {
+			URI uri = URI.create(normalize(params.getTextDocument().getUri()));
 			InputStream doc = workspaceManager.getDocumentText(uri);
 			String content = applyChanges(doc != null ? new String(doc.readAllBytes()) : "", params.getContentChanges());
 			workspaceManager.upsertDocument(uri, language.languageName(), content == null ? "" : content);
@@ -197,16 +197,6 @@ public class IntinoDocumentService implements TextDocumentService {
 	}
 
 	@Override
-	public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> typeDefinition(TypeDefinitionParams params) {
-		return TextDocumentService.super.typeDefinition(params);
-	}
-
-	@Override
-	public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> implementation(ImplementationParams params) {
-		return TextDocumentService.super.implementation(params);
-	}
-
-	@Override
 	public CompletableFuture<List<? extends Location>> references(ReferenceParams params) {
 		return TextDocumentService.super.references(params);
 	}
@@ -232,58 +222,8 @@ public class IntinoDocumentService implements TextDocumentService {
 	}
 
 	@Override
-	public CompletableFuture<List<? extends TextEdit>> formatting(DocumentFormattingParams params) {
-		return TextDocumentService.super.formatting(params);
-	}
-
-	@Override
-	public CompletableFuture<List<? extends TextEdit>> rangeFormatting(DocumentRangeFormattingParams params) {
-		return TextDocumentService.super.rangeFormatting(params);
-	}
-
-	@Override
-	public CompletableFuture<List<? extends TextEdit>> onTypeFormatting(DocumentOnTypeFormattingParams params) {
-		return TextDocumentService.super.onTypeFormatting(params);
-	}
-
-	@Override
 	public CompletableFuture<WorkspaceEdit> rename(RenameParams params) {
-		return TextDocumentService.super.rename(params);
-	}
-
-	@Override
-	public CompletableFuture<LinkedEditingRanges> linkedEditingRange(LinkedEditingRangeParams params) {
-		return TextDocumentService.super.linkedEditingRange(params);
-	}
-
-	@Override
-	public void willSave(WillSaveTextDocumentParams params) {
-		TextDocumentService.super.willSave(params);
-	}
-
-	@Override
-	public CompletableFuture<List<TextEdit>> willSaveWaitUntil(WillSaveTextDocumentParams params) {
-		return TextDocumentService.super.willSaveWaitUntil(params);
-	}
-
-	@Override
-	public CompletableFuture<List<DocumentLink>> documentLink(DocumentLinkParams params) {
-		return TextDocumentService.super.documentLink(params);
-	}
-
-	@Override
-	public CompletableFuture<DocumentLink> documentLinkResolve(DocumentLink params) {
-		return TextDocumentService.super.documentLinkResolve(params);
-	}
-
-	@Override
-	public CompletableFuture<List<ColorPresentation>> colorPresentation(ColorPresentationParams params) {
-		return TextDocumentService.super.colorPresentation(params);
-	}
-
-	@Override
-	public CompletableFuture<List<FoldingRange>> foldingRange(FoldingRangeRequestParams params) {
-		return TextDocumentService.super.foldingRange(params);
+		return TextDocumentService.super.rename(params);//TODO
 	}
 
 	@Override
@@ -322,18 +262,8 @@ public class IntinoDocumentService implements TextDocumentService {
 	}
 
 	@Override
-	public CompletableFuture<List<SelectionRange>> selectionRange(SelectionRangeParams params) {
-		return TextDocumentService.super.selectionRange(params);
-	}
-
-	@Override
-	public CompletableFuture<List<Moniker>> moniker(MonikerParams params) {
-		return TextDocumentService.super.moniker(params);
-	}
-
-	@Override
 	public CompletableFuture<List<InlayHint>> inlayHint(InlayHintParams params) {
-		return TextDocumentService.super.inlayHint(params);
+		return TextDocumentService.super.inlayHint(params);//TODO nombres de parametros
 	}
 
 	@Override

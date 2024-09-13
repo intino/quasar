@@ -41,7 +41,9 @@ public class IntinoLanguageServer implements LanguageServer, LanguageClientAware
 //		capabilities.setHoverProvider(true);
 //		capabilities.setCodeActionProvider(true);
 //		capabilities.setDocumentSymbolProvider(true);
+		capabilities.setTypeHierarchyProvider(true);
 		capabilities.setDefinitionProvider(true);
+		capabilities.setRenameProvider(true);
 		WorkspaceServerCapabilities workspaceCaps = new WorkspaceServerCapabilities();
 		WorkspaceFoldersOptions workspaceFolders = new WorkspaceFoldersOptions();
 		workspaceFolders.setChangeNotifications(true);
