@@ -25,11 +25,13 @@ public class IntinoWorkspaceService implements WorkspaceService {
 	private final Language language;
 	private final DocumentManager documentManager;
 	private final DiagnosticService diagnosticService;
+	private Integer version;
 
 	public IntinoWorkspaceService(Language language, DocumentManager documentManager, DiagnosticService diagnosticService) {
 		this.language = language;
 		this.documentManager = documentManager;
 		this.diagnosticService = diagnosticService;
+		version = 0;
 	}
 
 	@Override
@@ -95,7 +97,7 @@ public class IntinoWorkspaceService implements WorkspaceService {
 	@Override
 	public CompletableFuture<WorkspaceDiagnosticReport> diagnostic(WorkspaceDiagnosticParams params) {
 		Map<String, List<Diagnostic>> result = diagnosticService.analyzeWorkspace().stream().collect(Collectors.groupingBy(Diagnostic::getSource));
-		List<WorkspaceDocumentDiagnosticReport> reports = result.keySet().stream().map(k -> new WorkspaceDocumentDiagnosticReport(new WorkspaceFullDocumentDiagnosticReport(result.get(k), k, 1))).toList();
+		List<WorkspaceDocumentDiagnosticReport> reports = result.keySet().stream().map(k -> new WorkspaceDocumentDiagnosticReport(new WorkspaceFullDocumentDiagnosticReport(result.get(k), k, version = version + 1))).toList();
 		return completedFuture(new WorkspaceDiagnosticReport(reports));
 	}
 
