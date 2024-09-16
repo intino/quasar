@@ -5,8 +5,10 @@ import io.intino.alexandria.ui.model.datasource.Group;
 import io.intino.alexandria.ui.model.datasource.PageDatasource;
 import io.intino.alexandria.ui.services.push.UISession;
 import io.intino.ime.box.ImeBox;
+import io.intino.ime.box.util.VersionNumberComparator;
 import io.intino.ime.model.Language;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -73,7 +75,7 @@ public class LanguageVersionsDatasource extends PageDatasource<Language> {
 	}
 
 	private List<Language> sort(List<Language> languages, List<String> sortings) {
-		return languages.stream().sorted((o1, o2) -> o2.createDate().compareTo(o1.createDate())).toList();
+		return languages.stream().sorted((o1, o2) -> VersionNumberComparator.getInstance().compare(o2.version(), o1.version())).toList();
 	}
 
 	private void saveParameters(String condition, List<Filter> filters) {

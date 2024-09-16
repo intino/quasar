@@ -15,7 +15,7 @@ Template modelsTemplate as Relative(height=100%, width=100%)
 		Block(format=greyBackground) as Relative(width=20%)
 			Block(format=autoHeight) as Relative(width=100%)
 				Block(layout=Vertical CenterCenter, format=leftPanelBackground topSpaced bottomSpaced)
-					Button(title="New model", highlight=Fill) as OpenDialog(addModelDialog)
+					Button(title="Create model", highlight=Fill) as OpenDialog(addModelDialog)
 
 			Block
 				Selector modelsGroupSelector as ListBox
@@ -25,7 +25,7 @@ Template modelsTemplate as Relative(height=100%, width=100%)
 
 		Block(layout=Vertical Flexible, format=spaced) > TemplateStamp(template=modelsCatalog) modelsCatalog
 
-	Dialog(title="New model") addModelDialog as Absolute(width=800px, height=800px)
+	Dialog(title="Create model") addModelDialog as Absolute(width=800px, height=800px)
         Block as Relative(height=100%, offsetHeight=40px)
 			Text(format=doubleAirBottom) nameField as Editable Labeled("Name") Focused
 			Text(format=doubleAirBottom) titleField as Editable Labeled("Title")
@@ -36,25 +36,36 @@ Template modelsTemplate as Relative(height=100%, width=100%)
 	        			noItemsMessage = "No languages"
 	        			Mold
 	        				Heading ltNameHeading > Text(value="Name", translate=true)
-	        				Item(height=20px, width=25%) ltNameItem > Text name
+	        				Item(height=20px, width=40%) ltNameItem > Text name
 	        			Mold
 	        				Heading ltVersionHeading > Text(value="Version", translate=true)
-	        				Item(height=20px, width=25%) ltVersionItem > Text version
+	        				Item(height=20px, width=20%) ltVersionItem > Text version
 	        			Mold
 	        				Heading ltOwnerHeading > Text(value="Owner", translate=true)
-	        				Item(height=20px, width=50%) ltOwnerItem > Text owner
+	        				Item(height=20px, width=40%) ltOwnerItem > Text owner
 		Divider
         Block(layout=Horizontal EndJustified)
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addModelDialog)
             Button(title="Create", size=Small, highlight=Fill) createModel as Action
 
 Template modelsCatalog as Relative(height=100%, width=100%)
-	Text(format=h4) title
-	Table(itemClass="io.intino.ime.model.Model") modelTable
+	Text(format=h4 middleAirBottom) title
+
+	Toolbar(format=dialog greyBackground) as Linked(to=modelTable)
+		Button(title="Remove selection", highlight=Outline, size=Small, format=airRight) removeSelection as Action(context=Selection) Affirmed("Are you sure to remove selected models?")
+		SearchBox(collections=modelTable) modelSearch
+
+	Table(itemClass="io.intino.ime.model.Model") modelTable as Selectable(multiple=true)
 		noItemsMessage = "No models"
 		Mold
-			Heading modelTitleHeading > Sorting(collections=modelTable) titleSorting as OrderBy Labeled("Title")
-			Item(height=30px, width=60%) modelTitleItem > Link(title="") title as Action
+			Heading modelTitleHeading > Text(value="Title") titleSorting
+			Item(height=30px, width=45%) modelTitleItem
+				Block(layout=Horizontal)
+					Link(title="") title as Action
+					Text(value="public", format=pill airLeft, visible=false) accessType as Highlighted(textColor="white", backgroundColor="#777")
+		Mold
+			Heading modelLanguageHeading > Sorting(collections=modelTable) languageSorting as OrderBy Labeled("Language")
+			Item(height=30px, width=15%) modelLanguageItem > Text language
 		Mold
 			Heading modelOwnerHeading > Sorting(collections=modelTable) ownerSorting as OrderBy Labeled("Owner")
 			Item(height=30px, width=20%) modelOwnerItem > Text owner

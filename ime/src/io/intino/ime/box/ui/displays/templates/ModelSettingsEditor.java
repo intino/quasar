@@ -12,6 +12,7 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<ImeBox> {
 	private Model model;
 	private Mode mode = Mode.Large;
 	private Consumer<String> saveTitleListener;
+	private Consumer<Boolean> saveAccessTypeListener;
 
 	public ModelSettingsEditor(ImeBox box) {
 		super(box);
@@ -28,6 +29,10 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<ImeBox> {
 
 	public void onSaveTitle(Consumer<String> listener) {
 		this.saveTitleListener = listener;
+	}
+
+	public void onSaveAccessType(Consumer<Boolean> listener) {
+		this.saveAccessTypeListener = listener;
 	}
 
 	@Override
@@ -50,15 +55,20 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<ImeBox> {
 		accessTokenField.visible(model.isPrivate());
 		if (accessTokenField.isVisible()) accessTokenField.value(model.token());
 		accessTypeField.onToggle(e -> accessTokenField.visible(e.state() == ToggleEvent.State.On));
+		versionEditor.model(model);
+		versionEditor.refresh();
 	}
 
 	private void saveSettings() {
 		if (!DisplayHelper.check(settingsTitleField, this::translate)) return;
+		if (!versionEditor.check()) return;
 		boolean isPrivate = accessTypeField.state() == ToggleEvent.State.On;
 		settingsDialog.close();
 		box().commands(ModelCommands.class).saveTitle(model, settingsTitleField.value(), username());
 		saveAccessType(isPrivate);
-		saveTitleListener.accept(settingsTitleField.value());
+		box().commands(ModelCommands.class).saveVersion(model, versionEditor.version(), username());
+		if (saveTitleListener != null) saveTitleListener.accept(settingsTitleField.value());
+		if (saveAccessTypeListener != null) saveAccessTypeListener.accept(isPrivate);
 	}
 
 	private void saveAccessType(boolean isPrivate) {

@@ -2,9 +2,9 @@ package io.intino.ime.box.commands;
 
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.commands.model.*;
+import io.intino.ime.box.models.ModelContainer;
 import io.intino.ime.model.Model;
 import io.intino.ime.model.User;
-import io.intino.ime.box.models.ModelContainer;
 
 public class ModelCommands extends Commands {
 
@@ -21,11 +21,19 @@ public class ModelCommands extends Commands {
 		return command.execute();
 	}
 
-	public Model clone(Model model, String name, String title, String username) {
+	public Model createVersion(Model model, Model.Version version, String username) {
+		CreateModelVersionCommand command = setup(new CreateModelVersionCommand(box), username);
+		command.model = model;
+		command.version = version;
+		return command.execute();
+	}
+
+	public Model clone(Model model, String name, String title, User owner, String username) {
 		CloneModelCommand command = setup(new CloneModelCommand(box), username);
 		command.model = model;
 		command.name = name;
 		command.title = title;
+		command.owner = owner;
 		return command.execute();
 	}
 
@@ -98,6 +106,13 @@ public class ModelCommands extends Commands {
 		command.execute();
 	}
 
+	public Model saveVersion(Model model, Model.Version version, String username) {
+		SaveModelVersionCommand command = setup(new SaveModelVersionCommand(box), username);
+		command.model = model;
+		command.version = version;
+		return command.execute();
+	}
+
 	public void remove(Model model, String username) {
 		RemoveModelCommand command = setup(new RemoveModelCommand(box), username);
 		command.model = model;
@@ -110,5 +125,4 @@ public class ModelCommands extends Commands {
 		command.file = file;
 		command.execute();
 	}
-
 }

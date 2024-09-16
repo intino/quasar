@@ -45,18 +45,26 @@ public class LanguageManager {
 		return languageMap.values().stream().filter(l -> l.name().equals(language)).collect(toList());
 	}
 
-	public Language create(Model model, String name, String version, String owner, Instant createDate) {
+	public Language create(Model model, String name, Model.Version version, String owner, Instant createDate) {
 		Language metaLanguage = get(model.language());
-		String id = Language.id(name, version);
+		String id = Language.id(name, version.id());
 		LanguageInfo.Level level = metaLanguage.info().level() == LanguageInfo.Level.L3 ? LanguageInfo.Level.L2 : LanguageInfo.Level.L1;
 		LanguageInfo info = new LanguageInfo().level(level).metaLanguage(metaLanguage.id());
-		return save(new Language(id).info(info).isPrivate(true).createDate(createDate).owner(owner));
+		return save(new Language(id).info(info).isPrivate(true).builderUrl(version.builderUrl()).createDate(createDate).owner(owner));
 	}
 
 	public Language save(Language language) {
 		languageMap.put(language.id(), language);
 		save();
 		return language;
+	}
+
+	public boolean exists(String id) {
+		return languageMap.containsKey(id);
+	}
+
+	public boolean existsWithName(String name) {
+		return languageMap.keySet().stream().anyMatch(l -> l.startsWith(name + ":"));
 	}
 
 	public Language get(String id) {
@@ -86,7 +94,7 @@ public class LanguageManager {
 	private void save() {
 		try {
 			File languages = archetype.languages();
-			String header = "Id\tLevel\tOwner\tPublic\tCreateDate";
+			String header = "Id\tLevel\tBuilder url\tOwner\tPublic\tModelsCount\tCreate date";
 			String content = languageMap.values().stream().map(this::serialize).collect(joining("\n"));
 			Files.writeString(languages.toPath(), header + "\n" + content);
 		} catch (IOException e) {
@@ -95,20 +103,17 @@ public class LanguageManager {
 	}
 
 	private String serialize(Language language) {
-		return language.id() + "\t" + language.info().toString() + "\t" + language.owner() + "\t" +
-				language.isPublic() + "\t" + language.createDate().toEpochMilli();
+		return language.id() + "\t" + language.info().toString() + "\t" + language.builderUrl() + "\t" +
+				language.owner() + "\t" + language.isPublic() + "\t" + language.modelsCount() + "\t" + language.createDate().toString();
 	}
 
 	private Language languageFrom(String line) {
 		String[] split = line.split("\t");
 		LanguageInfo level = LanguageInfo.from(split[1]);
-		boolean isPrivate = !Boolean.parseBoolean(split[3]);
-		Instant createDate = Instant.ofEpochMilli(Long.parseLong(split[4]));
-		return new Language(split[0]).info(level).owner(split[2]).isPrivate(isPrivate).createDate(createDate);
-	}
-
-	public boolean exists(String name) {
-		return languageMap.keySet().stream().anyMatch(l -> l.startsWith(name + ":"));
+		boolean isPrivate = !Boolean.parseBoolean(split[4]);
+		int modelsCount = Integer.parseInt(split[5]);
+		Instant createDate = Instant.parse(split[6]);
+		return new Language(split[0]).info(level).builderUrl(split[2]).owner(split[3]).isPrivate(isPrivate).modelsCount(modelsCount).createDate(createDate);
 	}
 
 }

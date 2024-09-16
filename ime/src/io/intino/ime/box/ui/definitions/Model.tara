@@ -75,13 +75,18 @@ Template(format=headerBackground middleTopSpaced middleBottomSpaced) modelHeader
 					Text(value="Browser", format=h6 whiteBackground airRight minTitleEditorWidth) titleField as Editable
 					Link(title="Cancel", format=airRight) cancel as Action
 					Link(title="Save") save as Action
-				Text(format=whiteColor) description
+				Text(format=orange) description
 			Block(layout=Horizontal, format=airLeft)
 				MaterialIconButton(title="Go model", icon="Dns", size=Medium, visible=false) models as OpenPage(ImeElements.models)
 		Block(layout=Horizontal Center EndJustified)
-			Block(layout=Horizontal, format=airRight)
-				MaterialIconButton(title="Versions", icon="Category", visible=false) languageVersions as Action OpenDialog(dialog=versionsDialog)
+			Link(title="LOG IN", format=white airRight, visible=false) login as Action
+			Block(layout=Horizontal Center, format=airRight)
+				Block(layout=Horizontal Center, visible=false) versionBlock
+					Block(format=airRight) as Absolute(width=160px) > Selector versionSelector as ComboBox(placeholder="Available versions")
+					Button(title="Create version", size=Small, format=airRight) createVersionTrigger as OpenDialog(createVersionDialog)
 				TemplateStamp(template=cloneModelEditor) cloneModelEditor
+				MaterialIconButton(title="Create language", icon="CloudUpload", visible=false) createLanguage as Action Affirmed("Are you sure to create language for this model?")
+				MaterialIconButton(title="Remove language", icon="CloudDownload", visible=false) removeLanguage as Action Affirmed("Are you sure to remove language of this model?")
 				MaterialIconButton(title="Remove model", icon="Delete", visible=false) removeModel as Action Affirmed("Are you sure to remove model?")
 				TemplateStamp(template=modelSettingsEditor) settingsEditor
 				MaterialIconButton(title="Set dark mode", icon="Brightness4") as SetDarkMode
@@ -91,12 +96,13 @@ Template(format=headerBackground middleTopSpaced middleBottomSpaced) modelHeader
 					Block as Option > Link(title="Home") as OpenPage(page=ImeElements.home)
 					Block as Option > Link(title="My models") myModels as OpenPage(page=ImeElements.models)
 
-	Dialog(title="Versions") versionsDialog as Relative(width=80%, height=70%)
+	Dialog(title="Create version") createVersionDialog as Absolute(width=300px, height=400px)
         Block as Relative(height=100%, offsetHeight=40px)
-        	TemplateStamp(template=languageVersionsCatalog) versionsCatalog
+        	TemplateStamp(template=versionEditor) versionEditor
 		Divider
 		Block(layout=Horizontal EndJustified)
-			Button(title="Close", size=Small, highlight=Outline) as CloseDialog(versionsDialog)
+			Button(title="Cancel", size=Small, highlight=Outline, format=airRight) as CloseDialog(createVersionDialog)
+			Button(title="Create", size=Small, highlight=Fill) createVersion as Action
 
 Display intinoFileBrowser
 	Notification refresh as Object(intinoFileBrowserInfo)

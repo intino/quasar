@@ -10,14 +10,15 @@ import java.nio.charset.StandardCharsets;
 
 public class ModelPage extends AbstractModelPage {
 	public String user;
-	public String model;
+	public String name;
+	public String version;
 	public String file;
 	public String accessToken;
 
 	@Override
 	public boolean hasPermissions() {
 		if (PathHelper.PublicUser.equals(user)) return true;
-		Model model = box.modelManager().model(this.model);
+		Model model = box.modelManager().model(Model.id(name, version));
 		if (model == null) return false;
 		if (model.isPublic()) return true;
 		String token = model.token();
@@ -28,8 +29,10 @@ public class ModelPage extends AbstractModelPage {
 
 	@Override
 	public String redirectUrl() {
-		Model model = box.modelManager().model(this.model);
-		return session.browser().baseUrl() + (model != null ? "/permissions" : "/not-found") + "?workspace=" + this.model + "&callback=" + URLEncoder.encode(session.browser().requestUrl(), StandardCharsets.UTF_8);
+		String callbackUrl = URLEncoder.encode(session.browser().requestUrl(), StandardCharsets.UTF_8);
+		Model model = box.modelManager().model(this.name);
+		//if (session.user() == null) return box.configuration().federationUrl() + "?authenticate-callback=" + callbackUrl;
+		return session.browser().baseUrl() + (model != null ? "/permissions" : "/not-found") + "?model=" + Model.id(this.name, version) + "&username=" + user + "&callback=" + callbackUrl;
 	}
 
 	public io.intino.alexandria.ui.Soul prepareSoul(io.intino.alexandria.ui.services.push.UIClient client) {
@@ -38,7 +41,7 @@ public class ModelPage extends AbstractModelPage {
 			public void personify() {
 				ModelTemplate component = new ModelTemplate(box);
 				component.user(ModelPage.this.user);
-				component.model(model);
+				component.model(Model.id(name, version));
 				component.file(file);
 				register(component);
 				component.init();

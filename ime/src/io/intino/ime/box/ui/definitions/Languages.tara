@@ -10,16 +10,20 @@ Template(layout=Vertical Flexible) languagesCatalog as Relative(height=100%, wid
 				Block(format=languageMagazine)
 					Block(layout=Vertical Flexible)
 						Block(layout=Horizontal)
-							Block(layout=Vertical Flexible) > Text(format=orange) owner
+							Block(layout=Vertical Flexible) > Link(title="", format=orange) owner as Action
 							Block(layout=Horizontal EndJustified) > Text(visible=false) privatePill as Highlighted(textColor="white", backgroundColor="#777")
 						Text(format=h5) title
-					Block(layout=Horizontal Start, format=airTop)
+					Block(layout=Horizontal Start, format=airTop bottomSpaced)
 						Block(layout=Vertical Flexible)
 							Date(pattern="DD/MM/YYYY HH:mm") createDate as Labeled("Creation date")
-							Text metaLanguage as Labeled("Created using")
-						Block(layout=Vertical StartJustified)
-							MaterialIconButton(title="Add model", icon="Add", size=Small, visible=false) addModel as Action
-							MaterialIconButton(title="Add model", icon="Add", size=Small, visible=false) addPrivateModel as OpenDialog(empty)
+							Text metaLanguage as Labeled("Created with")
+							Number modelsCount as Labeled("Models count")
+					Block(layout=Horizontal Wrap, format=topBordered topSpaced)
+						Block(layout=Horizontal Flexible)
+							Link(title="Versions", format=airRight) versionsDialogTrigger as OpenDialog(dialog=empty)
+						Block(layout=Horizontal EndJustified)
+							Link(title="Create model", size=Small, visible=false, format=airRight) addModel as Action
+							Link(title="Create model", size=Small, visible=false, format=airRight) addPrivateModel as OpenDialog(empty)
 
 	Dialog(title="Add model") addPrivateModelDialog as Absolute(height=360px, width=400px)
         Block as Relative(height=100%, offsetHeight=40px)
@@ -33,33 +37,25 @@ Template(layout=Vertical Flexible) languagesCatalog as Relative(height=100%, wid
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addPrivateModelDialog)
             Button(title="Add", size=Small, highlight=Fill) createModel as Action
 
-Template(layout=Vertical Flexible) languageVersionsCatalog as Relative(height=100%, width=100%)
-	Toolbar
-		Button(title="Create version...", size=Small, highlight=Outline) as OpenDialog(createVersionDialog)
+	Dialog(title="Versions") versionsDialog as Absolute(width=500px, height=600px)
+        Block as Relative(height=100%, offsetHeight=40px)
+        	TemplateStamp(template=languageAvailableVersionsCatalog) versionsCatalog
+		Divider
+		Block(layout=Horizontal EndJustified)
+			Button(title="Close", size=Small, highlight=Outline) as CloseDialog(versionsDialog)
 
-	Table(itemClass="io.intino.ime.model.Language") languageVersionsTable as Selectable
+Template(layout=Vertical Flexible) languageAvailableVersionsCatalog as Relative(height=100%, width=100%)
+
+	Table(itemClass="io.intino.ime.model.Language") languageAvailableVersionsTable
 		noItemsMessage = "No versions"
 		Mold
-			Heading lvtVersionHeading > Text(value="Version", translate=true)
-			Item(height=30px, width=25%) lvtVersionItem > Text version
+			Heading lavtVersionHeading > Text(value="Version", translate=true)
+			Item(height=30px, width=30%) lavtVersionItem > Text version
 		Mold
-			Heading lvtAccessTypeHeading > Text(value="Access", translate=true)
-			Item(height=30px, width=25%) lvtAccessTypeItem > Text(format=airRight) accessType as Highlighted(textColor="white", backgroundColor="#aaa")
+			Heading lavtUpdateDateHeading > Text(value="Update date", translate=true)
+			Item(height=30px, width=20%) lavtUpdateDateItem > Date updateDate
 		Mold
-			Heading lvtUpdateDateHeading > Text(value="Update date", translate=true)
-			Item(height=30px, width=25%) lvtUpdateDateItem > Date updateDate
-		Mold
-			Heading lvtOperationsHeading > Text(value="Operations", translate=true)
-			Item(height=30px, width=25%) lvtOperationsItem
-				Block(layout=Horizontal)
-					Link(title="Publish", format=airRight, visible=false) publishVersion as Action
-					Link(title="Unpublish", format=airRight, visible=false) unpublishVersion as Action
-					Link(title="Remove", format=airRight) removeVersion as Action Affirmed("Are you sure to remove version?")
-
-	Dialog(title="Create version") createVersionDialog as Absolute(height=360px, width=400px)
-        Block as Relative(height=100%, offsetHeight=40px)
-        	Text(format=doubleAirBottom) versionField as Editable(placeholder="1.0.0") Labeled("Version") Focused
-		Divider
-        Block(layout=Horizontal EndJustified)
-            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(createVersionDialog)
-            Button(title="Create", size=Small, highlight=Fill) createVersion as Action
+			Heading lavtOperationsHeading
+			Item(height=30px, width=50%) lavtOperationsItem
+				Block(layout=Horizontal EndJustified)
+					Link(title="Create model", format=airRight) addModelWithVersion as Action

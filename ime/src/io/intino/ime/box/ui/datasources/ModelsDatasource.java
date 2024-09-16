@@ -8,6 +8,7 @@ import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.models.ModelManager;
 import io.intino.ime.model.Model;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -78,7 +79,10 @@ public class ModelsDatasource extends PageDatasource<Model> {
 	}
 
 	private List<Model> sort(List<Model> models, List<String> sortings) {
-		return models.stream().sorted((o1, o2) -> o2.lastModifyDate().compareTo(o1.lastModifyDate())).toList();
+		if (sortings.contains("Language")) return models.stream().sorted(Comparator.comparing(m -> m.language() != null ? m.language() : "z")).toList();
+		else if (sortings.contains("Owner")) return models.stream().sorted(Comparator.comparing(m -> m.owner() != null ? m.owner().fullName() : "z")).toList();
+		else if (sortings.contains("Last modified")) return models.stream().sorted(Comparator.comparing(Model::lastModifyDate)).toList();
+		return models.stream().sorted(Comparator.comparing(m -> m.title().toLowerCase())).toList();
 	}
 
 	private void saveParameters(String condition, List<Filter> filters) {

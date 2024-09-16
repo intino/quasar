@@ -6,6 +6,8 @@ public class Language {
 	private String name;
 	private String version;
 	private LanguageInfo info;
+	private String builderUrl;
+	private int modelsCount;
 	private String owner;
 	private boolean isPrivate = true;
 	private Instant createDate;
@@ -59,6 +61,24 @@ public class Language {
 
 	public Language info(LanguageInfo value) {
 		this.info = value;
+		return this;
+	}
+
+	public String builderUrl() {
+		return builderUrl;
+	}
+
+	public Language builderUrl(String builderUrl) {
+		this.builderUrl = builderUrl;
+		return this;
+	}
+
+	public int modelsCount() {
+		return modelsCount;
+	}
+
+	public Language modelsCount(int modelsCount) {
+		this.modelsCount = modelsCount;
 		return this;
 	}
 

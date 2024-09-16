@@ -7,11 +7,12 @@ Template(layout=Horizontal) modelSettingsEditor
 	MaterialIconButton(title="Settings", icon="Settings", size=Small, visible=false) smallIcon as OpenDialog(settingsDialog)
 	MaterialIconButton(title="Settings", icon="Settings", visible=false) largeIcon as OpenDialog(settingsDialog)
 
-	Dialog(title="Settings") settingsDialog as Absolute(width=500px, height=400px)
+	Dialog(title="Settings") settingsDialog as Absolute(width=500px, height=600px)
         Block as Relative(height=100%, offsetHeight=40px)
         	Text(format=doubleAirBottom) settingsTitleField as Editable Labeled("Title")
-        	Switch(title = "Model is private", format=doubleAirBottom) accessTypeField
+        	Switch(title = "Model is private", format=airBottom) accessTypeField
         	Text(visible=false) accessTokenField as Editable Labeled("Access token")
+			Block(format=doubleAirTop) > TemplateStamp(template=versionEditor) versionEditor
 		Divider
         Block(layout=Horizontal EndJustified)
             Button(title="Close", size=Small, format=airRight) as CloseDialog(settingsDialog)
@@ -29,3 +30,13 @@ Template(layout=Horizontal) cloneModelEditor
         Block(layout=Horizontal EndJustified)
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(modelDialog)
             Button(title="Accept", size=Small, highlight=Fill) cloneModel as Action
+
+Template versionEditor
+	Text(format=largeFontSize doubleAirBottom) versionField as Editable Labeled("Version") Readonly
+		Validation(pattern="0.0.0")
+
+	Block(format=doubleAirBottom) languageVersionBlock
+		Text(value="Language version", format=label middleAirBottom) metamomdelVersionTitle
+		Selector metamodelVersionField as ComboBox(placeholder="Available versions")
+
+	Text(format=doubleAirBottom, visible=false) builderUrlField as Editable Labeled("Builder URL")

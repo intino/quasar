@@ -6,6 +6,7 @@ import io.intino.ime.box.util.Formatters;
 import io.intino.ime.model.Model;
 
 public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
+	private LanguagesDatasource.Sorting selectedSorting;
 
 	public HomeTemplate(ImeBox box) {
 		super(box);
@@ -14,8 +15,12 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 	@Override
 	public void init() {
 		super.init();
+		redirectIfCallback();
 		header.onSearch(this::filter);
 		languagesCatalog.onOpenModel(this::notifyOpeningModel);
+		languagesCatalog.onSelectOwner(this::refreshNavigationToolbar);
+		navigationDialogRemove.onExecute(e -> removeOwnerFilter());
+		initSortings();
 		refresh();
 	}
 
@@ -25,10 +30,10 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 		header.refresh();
 		LanguagesDatasource source = new LanguagesDatasource(box(), session());
 		countLanguages.value(Formatters.countMessage(source.itemCount(), "language", "languages", language()));
-		refreshModels(source);
+		refreshLanguages(source);
 	}
 
-	private void refreshModels(LanguagesDatasource source) {
+	private void refreshLanguages(LanguagesDatasource source) {
 		languagesCatalog.source(source);
 		languagesCatalog.refresh();
 	}
@@ -41,6 +46,42 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 
 	private void filter(String condition) {
 		languagesCatalog.filter(condition);
+	}
+
+	private void removeOwnerFilter() {
+		languagesCatalog.removeOwnerFilter();
+		refreshNavigationToolbar(null);
+	}
+
+	private void refreshNavigationToolbar(String owner) {
+		navigationDialogTitle.value(owner);
+		navigationDialog.visible(owner != null);
+		countLanguages.value(Formatters.countMessage(languagesCatalog.itemCount(), "language", "languages", language()));
+	}
+
+	private void initSortings() {
+		mostUsedLink.onExecute(e -> sortBy(LanguagesDatasource.Sorting.MostUsed));
+		mostRecentsLink.onExecute(e -> sortBy(LanguagesDatasource.Sorting.MostRecents));
+	}
+
+	private void sortBy(LanguagesDatasource.Sorting sorting) {
+		this.selectedSorting = sorting;
+		languagesCatalog.sort(sorting);
+		refreshSortings();
+	}
+
+	private void refreshSortings() {
+		mostUsedLink.visible(selectedSorting != LanguagesDatasource.Sorting.MostUsed);
+		mostUsedText.visible(selectedSorting == LanguagesDatasource.Sorting.MostUsed);
+		mostRecentsLink.visible(selectedSorting != LanguagesDatasource.Sorting.MostRecents);
+		mostRecentsText.visible(selectedSorting == LanguagesDatasource.Sorting.MostRecents);
+	}
+
+	private void redirectIfCallback() {
+		String callback = session().preference("callback");
+		if (callback == null) return;
+		session().add("callback", null);
+		notifier.redirect(callback);
 	}
 
 }

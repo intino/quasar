@@ -8,7 +8,7 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	}
 
 	@Override
-	public void dispatchModel(Soul soul, String user, String model, String file, String accessToken) {
+	public void dispatchModel(Soul soul, String user, String name, String version, String file, String accessToken) {
 	}
 
 	@Override
@@ -20,11 +20,11 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	}
 
 	@Override
-	public void dispatchNotFound(Soul soul, String workspace) {
+	public void dispatchNotFound(Soul soul, String model) {
 	}
 
 	@Override
-	public void dispatchPermissions(Soul soul, String workspace) {
+	public void dispatchPermissions(Soul soul, String user, String model) {
 	}
 
 }

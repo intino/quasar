@@ -191,8 +191,8 @@ Format("minWidth:'250px'") selectorWidth
 Format("minWidth:'130px'") minExecutiveIndicatorWidth
 Format("position:'relative',borderRadius:'3px',minWidth:'150px'") block
 Format("width:'100%'") fullWidth
-Format("fontSize:'8pt',marginTop:'-5px'") tag
-Format("minWidth:'200px',textAlign:'center'") pill
+Format("marginLeft:'10px',background:'#f89101',padding:'0 7px',borderRadius:'6px'") tag
+Format("minWidth:'56px',textAlign:'center',fontSize:'8pt'") pill
 Format("minWidth:'120px',height:'30px',borderRadius:'3px',textAlign:'center',paddingTop:'4px'") formOption
 Format("background:'aliceblue',padding:'0 5px 0 5px',borderRadius:'3px',minHeight:'37px'") toolbar
 Format("height:'22px'") emptyToolbar
@@ -248,7 +248,7 @@ Format("width:'100px',height:'100px',background:'white',border:'1px solid #ddd'"
 Format("position:'absolute',marginLeft:'60px',bottom:'0',marginBottom:'10px'") footerDateNavigator
 Format("minWidth:'300px',minHeight:'100px'") popoverStyle
 Format("background:'white',borderRadius:'25px',padding:'5px 20px'") searchBox
-Format("width:'275px',height:'225px',background:'#f6f7ff',padding:'10px',margin:'10px 0',borderRadius:'4px'", darkContent="background:'#333'") languageMagazine
+Format("width:'275px',height:'170px',background:'#f6f7ff',padding:'10px',margin:'10px 0',borderRadius:'4px'", darkContent="background:'#333'") languageMagazine
 
 // Cards
 Format("textAlign:'left',color:'#B71A1C',padding:'10px'") cardTitle
@@ -275,7 +275,7 @@ Format("paddingRight:'10px',minWidth:'640px'") measurementsStyle
 Format("minWidth:'30px'") measurementsToolbarStyle
 Format("maxWidth:'260px'") tagsStyle
 Format("background:'#eee',paddingLeft:'10px'") countStyle
-Format("fontWeight:'bold',fontSize:'10pt'") label
+Format("color:'rgba(255, 255, 255, 0.7)',fontSize:'7pt'") label
 Format("position:'absolute',width:'300px',right:'0'") observableSelector
 Format("padding:'0 10px 2px 10px',whiteSpace:'nowrap'") countStyle
 Format("border:'1px solid #ddd',borderRadius:'2px',minWidth:'310px'") tokenFieldBlockStyle

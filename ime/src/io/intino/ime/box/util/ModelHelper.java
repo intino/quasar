@@ -23,7 +23,7 @@ public class ModelHelper {
 	}
 
 	public static boolean validName(String name) {
-		return StringUtils.isAlphanumeric(name);
+		return name.matches("^[a-zA-Z0-9_-]*$");
 	}
 
 	public static boolean nameInUse(String value, ImeBox box) {

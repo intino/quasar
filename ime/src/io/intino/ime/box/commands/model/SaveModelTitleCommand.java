@@ -15,7 +15,8 @@ public class SaveModelTitleCommand extends Command<Boolean> {
 	@Override
 	public Boolean execute() {
 		if (title.equals(model.title())) return true;
-		box.modelManager().saveTitle(model, title);
+		model.title(title);
+		box.modelManager().save(model);
 		return true;
 	}
 

@@ -6,13 +6,13 @@ import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.utils.DelayerUtil;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.commands.ModelCommands;
+import io.intino.ime.box.models.ModelContainer;
 import io.intino.ime.box.schemas.IntinoFileBrowserItem;
 import io.intino.ime.box.ui.DisplayHelper;
 import io.intino.ime.box.ui.PathHelper;
 import io.intino.ime.box.ui.displays.IntinoDslEditor;
 import io.intino.ime.box.ui.displays.IntinoFileBrowser;
-import io.intino.ime.box.util.Formatters;
-import io.intino.ime.box.models.ModelContainer;
+import io.intino.ime.model.Language;
 import io.intino.ime.model.Model;
 
 import java.io.IOException;
@@ -39,9 +39,9 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 		this.user = user;
 	}
 
-	public void model(String name) {
+	public void model(String id) {
 		try {
-			this.model = box().modelManager().model(name);
+			this.model = box().modelManager().model(id);
 			modelContainer = box().modelManager().modelContainer(model);
 			if (model.language() == null) return;
 			box().languageProvider().get(model.language());
@@ -110,9 +110,11 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 	}
 
 	private void refreshHeader() {
+		Language language = box().languageManager().get(model.language());
 		header.model(model);
 		header.title(model.title());
-		header.description(Formatters.countMessage(modelContainer.files().stream().filter(f -> !f.isDirectory()).count(), "file", "files", language()));
+		//header.description(Formatters.countMessage(modelContainer.files().stream().filter(f -> !f.isDirectory()).count(), "file", "files", language()));
+		header.description(String.format(translate("Created with %s"), language.id()));
 		header.refresh();
 	}
 

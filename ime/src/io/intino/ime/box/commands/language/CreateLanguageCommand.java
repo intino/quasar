@@ -9,7 +9,7 @@ import java.time.Instant;
 
 public class CreateLanguageCommand extends Command<Language> {
 	public Model model;
-	public String version;
+	public Model.Version version;
 
 	public CreateLanguageCommand(ImeBox box) {
 		super(box);

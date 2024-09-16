@@ -4,13 +4,17 @@ import io.intino.alexandria.Json;
 import io.intino.alexandria.logger.Logger;
 import io.intino.ime.box.languages.LanguageManager;
 import io.intino.ime.box.languages.LanguageServerManager;
+import io.intino.ime.model.Language;
 import io.intino.ime.model.Model;
+import io.intino.ime.model.User;
 import io.intino.languagearchetype.Archetype;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -48,28 +52,65 @@ public class ModelManager {
 	}
 
 	public boolean exists(String name) {
-		if (languageManager.exists(name)) return true;
+		if (languageManager.existsWithName(name)) return true;
 		return allModels().stream().anyMatch(w -> w.name().equals(name));
 	}
 
-	public Model model(String name) {
-		return modelOf(name);
+	public Model model(String id) {
+		Model model = modelOf(Model.nameOf(id));
+		return model != null ? model.version(Model.versionOf(id)) : null;
 	}
 
-	public Model create(Model model) {
+	public Model model(String name, String version) {
+		Model model = modelOf(name);
+		return model != null ? model.version(version) : null;
+	}
+
+	public Model create(Model model, String metaLanguageVersion) {
+		model.add(new Model.Version("1.0.0", metaLanguageVersion, ""));
 		save(model);
 		return model;
 	}
 
-	public Model clone(Model model, String name, String title) {
+	public Model createVersion(Model model, Model.Version version) {
+		Model result = Model.clone(model);
+		result.version(version.id());
+		result.language(Language.id(Language.nameOf(model.language()), version.metamodelVersion()));
+		result.lastModifyDate(Instant.now());
+		result.versionMap(model.versionMap());
+		result.add(version);
+		save(result);
+		return result;
+	}
+
+	public Model saveVersion(Model model, Model.Version version) {
+		Model.Version modelVersion = model.versionMap().get(version.id());
+		modelVersion.metamodelVersion(version.metamodelVersion());
+		modelVersion.builderUrl(version.builderUrl());
+		save(model);
+		return model;
+	}
+
+	public Model clone(Model model, Language metaLanguage, String name, String title, User owner) {
 		try {
 			Model result = Model.clone(model);
-			result.workspaceRootDirectory(archetype.models().workspace(name).getAbsoluteFile().getCanonicalFile().toURI());
 			result.name(name);
+			result.version("1.0.0");
 			result.title(title);
+			result.owner(owner);
+			result.add(new Model.Version("1.0.0", metaLanguage.version(), ""));
 			save(result);
 			new ModelContainerWriter(model, serverManager.get(model)).clone(result, serverManager.get(result));
 			return modelOf(name);
+		} catch (IOException e) {
+			Logger.error(e);
+			return null;
+		}
+	}
+
+	public URI workspace(Model model) {
+		try {
+			return archetype.models().workspace(model.name(), model.version()).getAbsoluteFile().getCanonicalFile().toURI();
 		} catch (IOException e) {
 			Logger.error(e);
 			return null;
@@ -129,9 +170,12 @@ public class ModelManager {
 		}
 	}
 
-	public void saveTitle(Model model, String title) {
-		model.title(title);
-		save(model);
+	public void save(Model model) {
+		try {
+			Files.writeString(archetype.models().definition(model.name()).toPath(), Json.toString(model));
+		} catch (IOException e) {
+			Logger.error(e);
+		}
 	}
 
 	public void makePrivate(Model model, String token) {
@@ -189,19 +233,10 @@ public class ModelManager {
 		try {
 			File definition = archetype.models().definition(name);
 			if (!definition.exists()) return null;
-			Model model = Json.fromJson(Files.readString(definition.toPath()), Model.class);
-			return model.workspaceRootDirectory(archetype.models().workspace(name).getAbsoluteFile().getCanonicalFile().toURI());
+			return Json.fromJson(Files.readString(definition.toPath()), Model.class);
 		} catch (IOException e) {
 			Logger.error(e);
 			return null;
-		}
-	}
-
-	private void save(Model model) {
-		try {
-			Files.writeString(archetype.models().definition(model.name()).toPath(), Json.toString(model));
-		} catch (IOException e) {
-			Logger.error(e);
 		}
 	}
 
@@ -215,4 +250,5 @@ public class ModelManager {
 		if (model == null) return false;
 		return user != null && model.owner() != null && user.equals(model.owner().name());
 	}
+
 }

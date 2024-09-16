@@ -21,11 +21,15 @@ public class PathHelper {
 	}
 
 	public static String modelPath(UISession session, Model model) {
-		return "/" + userOf(session) + "/models/" + model.name();
+		return "/" + userOf(session) + "/models/" + model.name() + "/" + model.version();
+	}
+
+	public static String modelPath(String user, Model model) {
+		return "/" + user + "/models/" + model.name() + "/" + model.version();
 	}
 
 	public static String modelUrl(UISession session, Model model) {
-		return session.browser().baseUrl() + "/" + userOf(session) + "/models/" + model.name();
+		return session.browser().baseUrl() + "/" + userOf(session) + "/models/" + model.name() + "/" + model.version();
 	}
 
 	private static String userOf(UISession session) {

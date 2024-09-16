@@ -5,6 +5,7 @@ import io.intino.ime.box.commands.ModelCommands;
 import io.intino.ime.box.ui.DisplayHelper;
 import io.intino.ime.box.util.ModelHelper;
 import io.intino.ime.model.Model;
+import io.intino.ime.model.User;
 
 import java.util.function.Consumer;
 
@@ -46,6 +47,7 @@ public class CloneModelEditor extends AbstractCloneModelEditor<ImeBox> {
 	private void initDialog() {
 		modelDialog.onOpen(e -> refreshDialog());
 		cloneModel.onExecute(e -> cloneModel());
+		modelTitleField.onEnterPress(e -> cloneModel());
 		modelNameField.onChange(e -> DisplayHelper.checkModelName(modelNameField, this::translate, box()));
 	}
 
@@ -59,8 +61,13 @@ public class CloneModelEditor extends AbstractCloneModelEditor<ImeBox> {
 		if (!DisplayHelper.checkModelName(modelNameField, this::translate, box())) return;
 		if (!DisplayHelper.check(modelTitleField, this::translate)) return;
 		modelDialog.close();
-		Model newModel = box().commands(ModelCommands.class).clone(model, modelNameField.value(), modelTitleField.value(), username());
+		Model newModel = box().commands(ModelCommands.class).clone(model, modelNameField.value(), modelTitleField.value(), modelOwner(), username());
 		cloneListener.accept(newModel);
+	}
+
+	private User modelOwner() {
+		io.intino.alexandria.ui.services.push.User user = session().user();
+		return new User(user.username(), user.fullName());
 	}
 
 }

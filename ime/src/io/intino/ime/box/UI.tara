@@ -9,13 +9,13 @@ Service ImeElements as UI(port = "{port}", title = "{title}", favicon = "/icons/
 	Authentication(by="{federation-url}")
 
 	Resource(path = "/") home as Page(homeTemplate) Main
-	Resource(path = "/:user/models/:model") model as Page(modelTemplate)
+	Resource(path = "/:user/models/:name/:version") model as Page(modelTemplate)
 		Parameter file
 		Parameter accessToken
 	Resource(path = "/:user/models") models as Page(modelsTemplate) Confidential
 	Resource(path = "/home") userHome as Page(modelsTemplate) Confidential
 	Resource(path = "/not-found") notFound as Page(notFoundTemplate) > Parameter model
-	Resource(path = "/permissions") permissions as Page(permissionsTemplate) > Parameter model
+	Resource(path = "/permissions") permissions as Page(permissionsTemplate) > Parameter username; Parameter model
 
 Template homeTemplate as Relative(height=100%, width=100%)
 	TemplateStamp(template=headerTemplate) header
@@ -25,8 +25,17 @@ Template homeTemplate as Relative(height=100%, width=100%)
 		Text(value="" , translate=true, format=h3 airTop) openingModelMessage
 
 	Block(layout=Vertical Flexible Center, format=greyBackground) bodyBlock as Relative(width=100%)
-		Block(format=middleTopSpaced middleBottomSpaced autoHeight) as Relative(width=70%)
-			Text countLanguages
+		Block(layout=Horizontal, format=middleTopSpaced middleBottomSpaced autoHeight) as Relative(width=70%)
+			Block(layout=Horizontal Flexible)
+				Text countLanguages
+				Block(layout=Horizontal Center, format=tag, visible=false) navigationDialog
+					Text(format=blackColor) navigationDialogTitle
+					MaterialIconButton(icon="Clear", size=Small, title="Show all", format=smallIconSize middleAirLeft blackColor) navigationDialogRemove
+			Block(layout=Horizontal EndJustified)
+				Link(title="most used", format=airRight, visible=false) mostUsedLink as Action
+				Text(value="most used", format=airRight, translate=true) mostUsedText
+				Link(title="most recents", format=airRight) mostRecentsLink as Action
+				Text(value="most recents", format=airRight, visible=false, translate=true) mostRecentsText
 		Block(format=whiteBackground topSpaced leftSpaced) as Relative(width=70%)
 			TemplateStamp(template=languagesCatalog) languagesCatalog
 
@@ -61,7 +70,8 @@ Template(layout=Vertical Flexible) permissionsTemplate as Relative(height=100%,w
 				Block(layout=Horizontal CenterJustified, format=middleAirTop)
 					Button(title="Home", highlight=Outline, format=airRight) gotoHome as OpenPage(ImeElements.home)
 					Button(title="My models", visible=false, highlight=Outline, format=airRight) myModels as OpenPage(ImeElements.models)
-					Button(title="Logout", highlight=Outline, visible=false) logoutButton as Action
+					//Button(title="Login", visible=false, highlight=Outline, format=airRight) loginButton as OpenPage(ImeElements.model)
+					Button(title="Logout", visible=false, highlight=Outline) logoutButton as Action
 
 Template(layout=Vertical Flexible) notFoundTemplate as Relative(height=100%,width=100%)
 	Block(layout=Vertical CenterCenter, format=grey) as Relative(height=100%,width=100%)
