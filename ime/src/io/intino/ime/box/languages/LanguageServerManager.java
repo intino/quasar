@@ -1,8 +1,6 @@
 package io.intino.ime.box.languages;
 
-import io.intino.ime.box.models.ModelManager;
 import io.intino.ime.model.Model;
-import io.intino.languagearchetype.Archetype;
 import io.intino.ls.DocumentManager;
 import io.intino.ls.IntinoLanguageServer;
 import io.intino.tara.Language;

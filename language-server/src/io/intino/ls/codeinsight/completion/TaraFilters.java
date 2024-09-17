@@ -13,13 +13,12 @@ import static io.intino.tara.language.grammar.TaraGrammar.IDENTIFIER;
 
 
 class TaraFilters {
-
-	static final BiPredicate<Token, ParserRuleContext> AfterNewLine = new AfterNewLinePrimalFilter();
-	static final BiPredicate<Token, ParserRuleContext> afterIs = new AfterIsFilter().and(new InFacetFilter());
-	static final BiPredicate<Token, ParserRuleContext> afterNewLineInBody = new AfterNewLineInBodyFilter().and(afterIs.negate());
-	static final BiPredicate<Token, ParserRuleContext> afterEquals = new AfterEqualsFilter();
-	static final BiPredicate<Token, ParserRuleContext> afterNodeIdentifier = new AfterElementTypeFitFilter(IDENTIFIER);
-	static final BiPredicate<Token, ParserRuleContext> inParameterName = new InParameters().and(afterEquals.negate());
+	public static final BiPredicate<Token, ParserRuleContext> afterIs = new AfterIsFilter().and(new InFacetFilter());
+	public static final BiPredicate<Token, ParserRuleContext> afterNewLineInBody = new AfterNewLineInBodyFilter().and(afterIs.negate());
+	public static final BiPredicate<Token, ParserRuleContext> afterNewLine = new AfterNewLinePrimalFilter();
+	public static final BiPredicate<Token, ParserRuleContext> afterEquals = new AfterEqualsFilter();
+	public static final BiPredicate<Token, ParserRuleContext> afterMogramIdentifier = new AfterElementTypeFitFilter(IDENTIFIER);
+	public static final BiPredicate<Token, ParserRuleContext> inParameterName = new InParameters().and(afterEquals.negate());
 
 	private TaraFilters() {
 	}
@@ -107,7 +106,7 @@ class TaraFilters {
 
 		@Override
 		public boolean test(Token element, ParserRuleContext context) {
-			if (!(element instanceof ParserRuleContext) || context == null || context.getParent() == null) return false;
+			if (context instanceof TaraGrammar.RootContext && element.getType() == Token.EOF) return true;
 			if (context.getParent() instanceof TaraGrammar.MetaidentifierContext && !new AfterIsFilter().test(element, context) && !inAnnotations(context)) {
 				ParserRuleContext containerContext = TreeUtils.getMogramContainerOf(context);
 				if (containerContext == null || prevSibling(containerContext) == null) return false;
@@ -161,6 +160,7 @@ class TaraFilters {
 	}
 
 	private static ParserRuleContext prevSibling(ParserRuleContext ctx) {
+		if (ctx == null || ctx.parent == null) return null;
 		int indexOfCurrentChildNode = ctx.getParent().children.indexOf(ctx);
 		return indexOfCurrentChildNode <= 0 ? null : (ParserRuleContext) ctx.parent.getChild(indexOfCurrentChildNode - 1);
 	}

@@ -1,15 +1,15 @@
 package io.intino.ime.box.lsp;
 
 import io.intino.alexandria.logger.Logger;
-import io.intino.ime.box.languages.LanguageServerManager;
-import io.intino.ime.model.Model;
-import io.intino.ime.box.models.ModelManager;
+import io.intino.ls.IntinoLanguageServer;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.lsp4j.jsonrpc.Launcher;
 import org.eclipse.lsp4j.launch.LSPLauncher;
+import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.io.PipedInputStream;
@@ -40,7 +40,10 @@ public class LanguageServerWebSocketHandler {
 				PipedOutputStream out = new PipedOutputStream(serverInput);
 				executorService = Executors.newSingleThreadExecutor();
 				executorService.submit(() -> notificationThread(session));
-				LSPLauncher.createServerLauncher(provider.apply(session), clientInput, out).startListening();
+				IntinoLanguageServer server = (IntinoLanguageServer) provider.apply(session);
+				Launcher<LanguageClient> serverLauncher = LSPLauncher.createServerLauncher(server, clientInput, out);
+				server.connect(serverLauncher.getRemoteProxy());
+				serverLauncher.startListening();
 			}
 		} catch (Exception e) {
 			Logger.error(e);
