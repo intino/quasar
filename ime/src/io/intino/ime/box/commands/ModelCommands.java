@@ -3,8 +3,10 @@ package io.intino.ime.box.commands;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.commands.model.*;
 import io.intino.ime.box.models.ModelContainer;
+import io.intino.ime.model.Language;
 import io.intino.ime.model.Model;
-import io.intino.ime.model.User;
+import io.intino.ime.model.Operation;
+import io.intino.ime.model.Release;
 
 public class ModelCommands extends Commands {
 
@@ -12,27 +14,20 @@ public class ModelCommands extends Commands {
 		super(box);
 	}
 
-	public Model create(String name, String title, String dsl, User owner, String username) {
+	public Model create(String id, String label, Release release, String owner, String username) {
 		CreateModelCommand command = setup(new CreateModelCommand(box), username);
-		command.name = name;
-		command.title = title;
-		command.dsl = dsl;
+		command.id = id;
+		command.label = label;
+		command.release = release;
 		command.owner = owner;
 		return command.execute();
 	}
 
-	public Model createVersion(Model model, Model.Version version, String username) {
-		CreateModelVersionCommand command = setup(new CreateModelVersionCommand(box), username);
-		command.model = model;
-		command.version = version;
-		return command.execute();
-	}
-
-	public Model clone(Model model, String name, String title, User owner, String username) {
+	public Model clone(Model model, String name, String title, String owner, String username) {
 		CloneModelCommand command = setup(new CloneModelCommand(box), username);
 		command.model = model;
-		command.name = name;
-		command.title = title;
+		command.id = name;
+		command.label = title;
 		command.owner = owner;
 		return command.execute();
 	}
@@ -70,6 +65,13 @@ public class ModelCommands extends Commands {
 		command.execute();
 	}
 
+	public void saveLabel(Model model, String label, String username) {
+		SaveModelLabelCommand command = setup(new SaveModelLabelCommand(box), username);
+		command.model = model;
+		command.label = label;
+		command.execute();
+	}
+
 	public ModelContainer.File rename(Model model, String newName, ModelContainer.File file, String username) {
 		RenameModelFileCommand command = setup(new RenameModelFileCommand(box), username);
 		command.model = model;
@@ -86,10 +88,9 @@ public class ModelCommands extends Commands {
 		return command.execute();
 	}
 
-	public void makePrivate(Model model, String token, String username) {
+	public void makePrivate(Model model, String username) {
 		MakeModelPrivateCommand command = setup(new MakeModelPrivateCommand(box), username);
 		command.model = model;
-		command.token = token;
 		command.execute();
 	}
 
@@ -97,20 +98,6 @@ public class ModelCommands extends Commands {
 		MakeModelPublicCommand command = setup(new MakeModelPublicCommand(box), username);
 		command.model = model;
 		command.execute();
-	}
-
-	public void saveTitle(Model model, String title, String username) {
-		SaveModelTitleCommand command = setup(new SaveModelTitleCommand(box), username);
-		command.model = model;
-		command.title = title;
-		command.execute();
-	}
-
-	public Model saveVersion(Model model, Model.Version version, String username) {
-		SaveModelVersionCommand command = setup(new SaveModelVersionCommand(box), username);
-		command.model = model;
-		command.version = version;
-		return command.execute();
 	}
 
 	public void remove(Model model, String username) {
@@ -124,5 +111,12 @@ public class ModelCommands extends Commands {
 		command.model = model;
 		command.file = file;
 		command.execute();
+	}
+
+	public boolean execute(Model model, Operation operation, String username) {
+		ExecuteModelOperationCommand command = setup(new ExecuteModelOperationCommand(box), username);
+		command.model = model;
+		command.operation = operation;
+		return command.execute();
 	}
 }

@@ -19,8 +19,8 @@ public class NotFoundTemplate extends AbstractNotFoundTemplate<ImeBox> {
 	public void refresh() {
 		super.refresh();
 		message.value(translate("Model was not found"));
-		myModels.visible(session().user() != null);
-		myModels.path(PathHelper.modelsPath(session()));
+		userHome.visible(session().user() != null);
+		userHome.path(PathHelper.userHomePath(session()));
 	}
 
 }

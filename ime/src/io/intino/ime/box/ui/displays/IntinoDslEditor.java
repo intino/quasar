@@ -63,7 +63,7 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<ImeBox> {
 	}
 
 	private IntinoDslEditorFile file() {
-		return new IntinoDslEditorFile().model(model.name()).name(name).uri(uri).extension(extension).content(content()).language(language);
+		return new IntinoDslEditorFile().model(model.id()).name(name).uri(uri).extension(extension).content(content()).language(language);
 	}
 
 	private String content() {

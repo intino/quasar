@@ -3,40 +3,85 @@ dsl Konos
 use UI
 use Theme
 
+Template(layout=Horizontal) languageEditor
+	Block as Absolute(width=170px)
+		Image(format=doubleAirBottom) logoField as Editable Absolute(height=150px, width=150px)
+	Block(layout=Vertical Flexible)
+		Text(format=doubleAirBottom) nameField as Editable(helperText="Only alphanumeric characters are allowed") Labeled("Name") Focused
+		Text(format=doubleAirBottom) descriptionField as Editable Labeled("Title")
+		Switch(title="Language is private", format=doubleAirBottom, state=On) accessTypeField
+
+Template languageSettingsEditor
+	Selector(format=tabsStyle) tabSelector as Tabs
+		Text(value="General", translate=true) propertiesOption as Option
+		Text(value="Operations", translate=true) operationsOption as Option
+
+	Block(layout=Horizontal Flexible, format=doubleAirTop) propertiesBlock as Conditional(tabSelector.propertiesOption)
+		Block as Absolute(width=170px)
+			Image(format=doubleAirBottom) logoField as Editable Absolute(height=150px, width=150px)
+		Block(layout=Vertical Flexible)
+			Text(value="Name", translate=true, format=label)
+			Text(format=doubleAirBottom) nameField
+			Text(format=doubleAirBottom) descriptionField as Editable Labeled("Description") Focused
+			Switch(title="Language is private", format=doubleAirBottom) accessTypeField
+			Text(format=doubleAirBottom) dockerImageUrlField as Editable Labeled("Docker image url")
+
+	Block operationsBlock as Conditional(tabSelector.operationsOption)
+		TemplateStamp(template=operationEditor) operations as Multiple("No operations")
+		Block(layout=Horizontal, format=airTop) > Button(title="Add operation", size=Small, highlight=Outline) addOperation as Action Readonly
+
 Template(layout=Horizontal) modelSettingsEditor
-	MaterialIconButton(title="Settings", icon="Settings", size=Small, visible=false) smallIcon as OpenDialog(settingsDialog)
-	MaterialIconButton(title="Settings", icon="Settings", visible=false) largeIcon as OpenDialog(settingsDialog)
+	MaterialIconButton(title="Settings", icon="Settings", size=Small, visible=false) smallIconInList as OpenDialog(settingsDialog)
+	MaterialIconButton(title="Settings", icon="Settings", visible=false) largeIconInList as OpenDialog(settingsDialog)
+	MaterialIconButton(title="Settings", icon="Settings", format=airRight, titlePosition=Bottom, size=Small, visible=false) smallIcon as OpenDialog(settingsDialog)
+	MaterialIconButton(title="Settings", icon="Settings", format=airRight, titlePosition=Bottom, visible=false) largeIcon as OpenDialog(settingsDialog)
 
 	Dialog(title="Settings") settingsDialog as Absolute(width=500px, height=600px)
         Block as Relative(height=100%, offsetHeight=40px)
         	Text(format=doubleAirBottom) settingsTitleField as Editable Labeled("Title")
-        	Switch(title = "Model is private", format=airBottom) accessTypeField
-        	Text(visible=false) accessTokenField as Editable Labeled("Access token")
-			Block(format=doubleAirTop) > TemplateStamp(template=versionEditor) versionEditor
+        	Switch(title="Model is private", format=airBottom) accessTypeField
 		Divider
         Block(layout=Horizontal EndJustified)
             Button(title="Close", size=Small, format=airRight) as CloseDialog(settingsDialog)
             Button(title="Save", size=Small, highlight=Fill) saveSettings as Action
 
 Template(layout=Horizontal) cloneModelEditor
-	MaterialIconButton(title="Clone model", icon="FileCopy", size=Small, visible=false) smallIcon as OpenDialog(modelDialog)
-	MaterialIconButton(title="Clone model", icon="FileCopy", visible=false) largeIcon as OpenDialog(modelDialog)
+	MaterialIconButton(title="Clone model", icon="FileCopy", size=Small, visible=false) smallIconInList as OpenDialog(modelDialog)
+	MaterialIconButton(title="Clone model", icon="FileCopy", visible=false) largeIconInList as OpenDialog(modelDialog)
+	MaterialIconButton(title="Clone model", icon="FileCopy", titlePosition=Bottom, format=airRight, size=Small, visible=false) smallIcon as OpenDialog(modelDialog)
+	MaterialIconButton(title="Clone model", icon="FileCopy", titlePosition=Bottom, format=airRight, visible=false) largeIcon as OpenDialog(modelDialog)
 
 	Dialog(title="Clone model") modelDialog as Absolute(width=400px, height=260px)
         Block as Relative(height=100%, offsetHeight=40px)
-        	Text modelNameField as Editable(placeholder="Indicate new name", helperText="Only alphanumeric characters are allowed") Labeled("New name") Focused
-        	Text modelTitleField as Editable(placeholder="Indicate title") Labeled("Title")
+        	Text modelTitleField as Editable(placeholder="Indicate title") Labeled("Title") Focused
 		Divider
         Block(layout=Horizontal EndJustified)
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(modelDialog)
             Button(title="Accept", size=Small, highlight=Fill) cloneModel as Action
 
-Template versionEditor
-	Text(format=largeFontSize doubleAirBottom) versionField as Editable Labeled("Version") Readonly
-		Validation(pattern="0.0.0")
+Template releaseEditor
+	Block(format=doubleAirBottom)
+		Block(layout=Vertical CenterCenter, format=doubleAirBottom)
+			Text(value="New version number", format=middleAirBottom)
+			Text(format=largeFontSize) version
 
-	Block(format=doubleAirBottom) languageVersionBlock
-		Text(value="Language version", format=label middleAirBottom) metamomdelVersionTitle
-		Selector metamodelVersionField as ComboBox(placeholder="Available versions")
+		Selector versionTypeSelector as RadioBox
+			Text(value="Major version") majorVersionOption as Option
+			Text(value="Minor version") minorVersionOption as Option
+			Text(value="Revision") revisionOption as Option
 
-	Text(format=doubleAirBottom, visible=false) builderUrlField as Editable Labeled("Builder URL")
+	Selector(format=doubleAirBottom) levelSelector as RadioBox Labeled("Language level")
+		Text(value="Level 1") level1Option as Option
+		Text(value="Level 2") level2Option as Option
+
+Template(layout=Horizontal Center, format=airTop airBottom) operationEditor
+	Block(format=airRight) as Absolute(width=200px) > Text nameField as Editable Labeled("Name") Focused
+	Block(format=airRight) as Absolute(width=270px) > Selector(format=doubleAirTop) typeField as ComboBox(view=TextView)
+	Text(format=airRight) urlField as Editable Labeled("Execution lambda function (docker image url)")
+	MaterialIconButton(title="Delete", icon="Clear") delete as Action Affirmed("Are you sure to remove operation?")
+
+	TemplateStamp(template=operationTypeView, visible=false)
+
+Template(layout=Horizontal) operationTypeView
+	Block(layout=Vertical Flexible) > Text(format=airRight) nameField
+	Block(layout=Horizontal EndJustified) > MaterialIconButton(title="", icon="HelpOutline", size=Small) iconField as Action

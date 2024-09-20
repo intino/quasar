@@ -49,8 +49,8 @@ public class ImeBox extends AbstractBox {
 		commandsFactory = new CommandsFactory(this);
 		languageLoader = new LanguageLoader(archetype.repository().languages().root(), url(configuration.languageArtifactory()));
 		languageManager = new LanguageManager(archetype);
-		serverManager = new LanguageServerManager(languageLoader, m -> modelManager.workspace(m));
-		modelManager = new ModelManager(archetype, languageManager, serverManager);
+		serverManager = new LanguageServerManager(languageLoader, model -> modelManager.workspace(model));
+		modelManager = new ModelManager(archetype, serverManager);
 		ModelSequence.init(archetype.configuration().modelSequence());
 	}
 

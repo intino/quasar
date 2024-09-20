@@ -25,6 +25,7 @@ public class ModelContainerWriter {
 
 	public void clone(Model destinyModel, LanguageServer destinyServer) {
 		try {
+			if (destinyServer == null) return;
 			Either<List<? extends SymbolInformation>, List<? extends WorkspaceSymbol>> symbols = server.getWorkspaceService().symbol(new WorkspaceSymbolParams()).get();
 			List<ModelContainer.File> files = WorkspaceHelper.filesOf(symbols.getRight());
 			CreateFilesParams params = new CreateFilesParams();

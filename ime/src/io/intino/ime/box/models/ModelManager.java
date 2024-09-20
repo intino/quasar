@@ -2,19 +2,19 @@ package io.intino.ime.box.models;
 
 import io.intino.alexandria.Json;
 import io.intino.alexandria.logger.Logger;
-import io.intino.ime.box.languages.LanguageManager;
 import io.intino.ime.box.languages.LanguageServerManager;
 import io.intino.ime.model.Language;
 import io.intino.ime.model.Model;
-import io.intino.ime.model.User;
+import io.intino.ime.model.Release;
+import io.intino.ime.model.WorkspaceProperties;
 import io.intino.languagearchetype.Archetype;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -24,12 +24,10 @@ import static java.util.stream.Collectors.toList;
 
 public class ModelManager {
 	private final Archetype archetype;
-	private final LanguageManager languageManager;
 	private final LanguageServerManager serverManager;
 
-	public ModelManager(Archetype archetype, LanguageManager languageManager, LanguageServerManager serverManager) {
+	public ModelManager(Archetype archetype, LanguageServerManager serverManager) {
 		this.archetype = archetype;
-		this.languageManager = languageManager;
 		this.serverManager = serverManager;
 	}
 
@@ -51,66 +49,60 @@ public class ModelManager {
 		return ownerModels(user).stream().filter(Model::isPrivate).collect(toList());
 	}
 
-	public boolean exists(String name) {
-		if (languageManager.existsWithName(name)) return true;
-		return allModels().stream().anyMatch(w -> w.name().equals(name));
+	public boolean exists(String id) {
+		return allModels().stream().anyMatch(m -> m.id().equals(id));
 	}
 
 	public Model model(String id) {
-		Model model = modelOf(Model.nameOf(id));
-		return model != null ? model.version(Model.versionOf(id)) : null;
+		return modelOf(id);
 	}
 
-	public Model model(String name, String version) {
-		Model model = modelOf(name);
-		return model != null ? model.version(version) : null;
+	public Model modelWith(Language language) {
+		return modelWith(language.name());
 	}
 
-	public Model create(Model model, String metaLanguageVersion) {
-		model.add(new Model.Version("1.0.0", metaLanguageVersion, ""));
+	public Model modelWith(String language) {
+		return allModels().stream().filter(m -> m.label().startsWith(language)).findFirst().orElse(null);
+	}
+
+	public Model create(String id, String label, Release parent, String owner, String releasedLanguage, boolean isPrivate) {
+		Model model = new Model();
+		model.id(id);
+		model.label(label);
+		model.modelingLanguage(parent.id());
+		model.releasedLanguage(releasedLanguage);
+		model.owner(owner);
+		model.isPrivate(isPrivate);
+		createWorkspaceProperties(model, parent);
 		save(model);
 		return model;
 	}
 
-	public Model createVersion(Model model, Model.Version version) {
+	public Model clone(Model model, String id, String label, String owner, String releasedLanguage) {
 		Model result = Model.clone(model);
-		result.version(version.id());
-		result.language(Language.id(Language.nameOf(model.language()), version.metamodelVersion()));
-		result.lastModifyDate(Instant.now());
-		result.versionMap(model.versionMap());
-		result.add(version);
+		result.id(id);
+		result.label(label);
+		result.owner(owner);
+		result.releasedLanguage(releasedLanguage);
 		save(result);
-		return result;
+		new ModelContainerWriter(model, server(model)).clone(result, server(result));
+		return modelOf(id);
 	}
 
-	public Model saveVersion(Model model, Model.Version version) {
-		Model.Version modelVersion = model.versionMap().get(version.id());
-		modelVersion.metamodelVersion(version.metamodelVersion());
-		modelVersion.builderUrl(version.builderUrl());
-		save(model);
-		return model;
-	}
-
-	public Model clone(Model model, Language metaLanguage, String name, String title, User owner) {
+	public URI workspace(Model model) {
 		try {
-			Model result = Model.clone(model);
-			result.name(name);
-			result.version("1.0.0");
-			result.title(title);
-			result.owner(owner);
-			result.add(new Model.Version("1.0.0", metaLanguage.version(), ""));
-			save(result);
-			new ModelContainerWriter(model, serverManager.get(model)).clone(result, serverManager.get(result));
-			return modelOf(name);
+			return archetype.models().workspace(model.id()).getAbsoluteFile().getCanonicalFile().toURI();
 		} catch (IOException e) {
 			Logger.error(e);
 			return null;
 		}
 	}
 
-	public URI workspace(Model model) {
+	public WorkspaceProperties workspaceProperties(Model model) {
 		try {
-			return archetype.models().workspace(model.name(), model.version()).getAbsoluteFile().getCanonicalFile().toURI();
+			File properties = archetype.models().getWorkspaceProperties(model.id());
+			if (!properties.exists()) return null;
+			return Json.fromJson(Files.readString(properties.toPath()), WorkspaceProperties.class);
 		} catch (IOException e) {
 			Logger.error(e);
 			return null;
@@ -118,52 +110,28 @@ public class ModelManager {
 	}
 
 	public ModelContainer.File copy(Model model, String filename, ModelContainer.File source) {
-		try {
-			return new ModelContainerWriter(model, serverManager.get(model)).copy(filename, source);
-		} catch (IOException e) {
-			Logger.error(e);
-			return null;
-		}
+		return new ModelContainerWriter(model, server(model)).copy(filename, source);
 	}
 
 	public ModelContainer.File createFile(Model model, String name, String content, ModelContainer.File parent) {
-		try {
-			return new ModelContainerWriter(model, serverManager.get(model)).createFile(name, content, parent);
-		} catch (IOException e) {
-			Logger.error(e);
-			return null;
-		}
+		return new ModelContainerWriter(model, server(model)).createFile(name, content, parent);
 	}
 
 	public ModelContainer.File createFolder(Model model, String name, ModelContainer.File parent) {
-		try {
-			return new ModelContainerWriter(model, serverManager.get(model)).createFolder(name, parent);
-		} catch (IOException e) {
-			Logger.error(e);
-			return null;
-		}
+		return new ModelContainerWriter(model, server(model)).createFolder(name, parent);
 	}
 
 	public void save(Model model, ModelContainer.File file, String content) {
-		try {
-			new ModelContainerWriter(model, serverManager.get(model)).save(file, content);
-		} catch (IOException e) {
-			Logger.error(e);
-		}
+		new ModelContainerWriter(model, server(model)).save(file, content);
 	}
 
 	public ModelContainer.File rename(Model model, ModelContainer.File file, String newName) {
-		try {
-			return new ModelContainerWriter(model, serverManager.get(model)).rename(file, newName);
-		} catch (IOException e) {
-			Logger.error(e);
-			return null;
-		}
+		return new ModelContainerWriter(model, server(model)).rename(file, newName);
 	}
 
 	public ModelContainer.File move(Model model, ModelContainer.File file, ModelContainer.File directory) {
 		try {
-			return new ModelContainerWriter(model, serverManager.get(model)).move(file, directory);
+			return new ModelContainerWriter(model, server(model)).move(file, directory);
 		} catch (Exception e) {
 			Logger.error(e);
 			return null;
@@ -172,15 +140,23 @@ public class ModelManager {
 
 	public void save(Model model) {
 		try {
-			Files.writeString(archetype.models().definition(model.name()).toPath(), Json.toString(model));
+			Files.writeString(archetype.models().definition(model.id()).toPath(), Json.toString(model));
 		} catch (IOException e) {
 			Logger.error(e);
 		}
 	}
 
-	public void makePrivate(Model model, String token) {
+	private void createWorkspaceProperties(Model model, Release parent) {
+		try {
+			WorkspaceProperties properties = new WorkspaceProperties(parent.id());
+			Files.writeString(archetype.models().getWorkspaceProperties(model.id()).toPath(), Json.toString(properties));
+		} catch (IOException e) {
+			Logger.error(e);
+		}
+	}
+
+	public void makePrivate(Model model) {
 		model.isPrivate(true);
-		model.token(token);
 		save(model);
 	}
 
@@ -190,16 +166,12 @@ public class ModelManager {
 	}
 
 	public void remove(Model model, ModelContainer.File file) {
-		try {
-			new ModelContainerWriter(model, serverManager.get(model)).remove(file);
-		} catch (IOException e) {
-			Logger.error(e);
-		}
+		new ModelContainerWriter(model, server(model)).remove(file);
 	}
 
 	public void remove(Model model) {
 		try {
-			File rootDir = archetype.models().definition(model.name()).getParentFile();
+			File rootDir = archetype.models().definition(model.id()).getParentFile();
 			if (!rootDir.exists()) return;
 			FileUtils.deleteDirectory(rootDir);
 		} catch (IOException e) {
@@ -208,30 +180,20 @@ public class ModelManager {
 	}
 
 	public ModelContainer modelContainer(Model model) {
-		try {
-			return new ModelContainer(model, serverManager.get(model));
-		} catch (IOException e) {
-			Logger.error(e);
-			return null;
-		}
+		return new ModelContainer(model, server(model));
 	}
 
 	public String content(Model model, String uri) {
-		try {
-			return new ModelContainerReader(model, serverManager.get(model)).content(uri);
-		} catch (IOException e) {
-			Logger.error(e);
-			return null;
-		}
+		return new ModelContainerReader(model, server(model)).content(uri);
 	}
 
 	private Model modelOf(File file) {
 		return modelOf(file.getName());
 	}
 
-	private Model modelOf(String name) {
+	private Model modelOf(String id) {
 		try {
-			File definition = archetype.models().definition(name);
+			File definition = archetype.models().definition(id);
 			if (!definition.exists()) return null;
 			return Json.fromJson(Files.readString(definition.toPath()), Model.class);
 		} catch (IOException e) {
@@ -240,15 +202,18 @@ public class ModelManager {
 		}
 	}
 
-	private boolean hasAccess(Model model, String user) {
-		if (model == null) return false;
-		if (model.isPublic()) return true;
-		return belongsTo(model, user);
-	}
-
 	private boolean belongsTo(Model model, String user) {
 		if (model == null) return false;
-		return user != null && model.owner() != null && user.equals(model.owner().name());
+		return user != null && model.owner() != null && user.equals(model.owner());
+	}
+
+	private LanguageServer server(Model model) {
+		try {
+			return serverManager.get(model);
+		} catch (IOException e) {
+			Logger.error(e);
+			return null;
+		}
 	}
 
 }

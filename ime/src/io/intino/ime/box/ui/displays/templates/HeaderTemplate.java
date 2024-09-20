@@ -29,6 +29,6 @@ public class HeaderTemplate extends AbstractHeaderTemplate<ImeBox> {
 		notLoggedToolbar.visible(session().user() == null);
 		user.visible(session().user() != null);
 		if (session().user() == null) return;
-		models.path(PathHelper.modelsPath(session()));
+		userHome.path(PathHelper.userHomePath(session()));
 	}
 }

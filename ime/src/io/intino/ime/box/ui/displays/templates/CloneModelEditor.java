@@ -5,13 +5,13 @@ import io.intino.ime.box.commands.ModelCommands;
 import io.intino.ime.box.ui.DisplayHelper;
 import io.intino.ime.box.util.ModelHelper;
 import io.intino.ime.model.Model;
-import io.intino.ime.model.User;
 
 import java.util.function.Consumer;
 
 public class CloneModelEditor extends AbstractCloneModelEditor<ImeBox> {
 	private Model model;
 	private Mode mode = Mode.Large;
+	private View view = View.Default;
 	private Consumer<Model> cloneListener;
 
 	public CloneModelEditor(ImeBox box) {
@@ -27,6 +27,11 @@ public class CloneModelEditor extends AbstractCloneModelEditor<ImeBox> {
 		this.mode = mode;
 	}
 
+	public enum View { List, Default }
+	public void view(View view) {
+		this.view = view;
+	}
+
 	public void onClone(Consumer<Model> listener) {
 		this.cloneListener = listener;
 	}
@@ -40,34 +45,28 @@ public class CloneModelEditor extends AbstractCloneModelEditor<ImeBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
-		largeIcon.visible(mode == Mode.Large);
-		smallIcon.visible(mode == Mode.Small);
+		largeIcon.visible(mode == Mode.Large && view == View.Default);
+		smallIcon.visible(mode == Mode.Small && view == View.Default);
+		largeIconInList.visible(mode == Mode.Large && view == View.List);
+		smallIconInList.visible(mode == Mode.Small && view == View.List);
 	}
 
 	private void initDialog() {
 		modelDialog.onOpen(e -> refreshDialog());
 		cloneModel.onExecute(e -> cloneModel());
 		modelTitleField.onEnterPress(e -> cloneModel());
-		modelNameField.onChange(e -> DisplayHelper.checkModelName(modelNameField, this::translate, box()));
 	}
 
 	private void refreshDialog() {
-		modelDialog.title(String.format(translate("Clone %s"), model.title()));
-		modelNameField.value(ModelHelper.proposeName());
-		modelTitleField.value(String.format(translate("%s Copy"), model.title()));
+		modelDialog.title(String.format(translate("Clone %s"), model.label()));
+		modelTitleField.value(String.format(translate("%s Copy"), model.label()));
 	}
 
 	private void cloneModel() {
-		if (!DisplayHelper.checkModelName(modelNameField, this::translate, box())) return;
 		if (!DisplayHelper.check(modelTitleField, this::translate)) return;
 		modelDialog.close();
-		Model newModel = box().commands(ModelCommands.class).clone(model, modelNameField.value(), modelTitleField.value(), modelOwner(), username());
+		Model newModel = box().commands(ModelCommands.class).clone(model, ModelHelper.proposeName(), modelTitleField.value(), username(), username());
 		cloneListener.accept(newModel);
-	}
-
-	private User modelOwner() {
-		io.intino.alexandria.ui.services.push.User user = session().user();
-		return new User(user.username(), user.fullName());
 	}
 
 }

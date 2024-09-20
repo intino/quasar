@@ -6,7 +6,6 @@ import io.intino.ime.model.Model;
 
 public class MakeModelPrivateCommand extends Command<Boolean> {
 	public Model model;
-	public String token;
 
 	public MakeModelPrivateCommand(ImeBox box) {
 		super(box);
@@ -14,7 +13,7 @@ public class MakeModelPrivateCommand extends Command<Boolean> {
 
 	@Override
 	public Boolean execute() {
-		box.modelManager().makePrivate(model, token);
+		box.modelManager().makePrivate(model);
 		return true;
 	}
 

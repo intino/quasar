@@ -3,16 +3,14 @@ package io.intino.ime.box.commands.model;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.commands.Command;
 import io.intino.ime.model.Language;
-import io.intino.ime.model.User;
 import io.intino.ime.model.Model;
-
-import java.time.Instant;
+import io.intino.ime.model.Release;
 
 public class CreateModelCommand extends Command<Model> {
-	public String name;
-	public String title;
-	public String dsl;
-	public User owner;
+	public String id;
+	public String label;
+	public Release release;
+	public String owner;
 
 	public CreateModelCommand(ImeBox box) {
 		super(box);
@@ -26,22 +24,11 @@ public class CreateModelCommand extends Command<Model> {
 	}
 
 	private Model create() {
-		Model model = new Model();
-		model.name(name);
-		model.title(title);
-		model.language(dsl);
-		model.owner(owner);
-		model.isPrivate(author != null);
-		model.lastModifyDate(Instant.now());
-		return box.modelManager().create(model, dslVersion());
-	}
-
-	private String dslVersion() {
-		return box.languageManager().get(dsl).version();
+		return box.modelManager().create(id, label, release, owner, release.language(), author != null);
 	}
 
 	private void updateLanguage(Model model) {
-		Language language = box.languageManager().get(model.language());
+		Language language = box.languageManager().get(model.modelingLanguage());
 		language.modelsCount(language.modelsCount()+1);
 		box.languageManager().save(language);
 	}

@@ -32,9 +32,9 @@ public class PermissionsTemplate extends AbstractPermissionsTemplate<ImeBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
-		message.value(String.format(translate("You dont have access permissions for %s"), model.title()));
-		myModels.visible(session().user() != null);
-		myModels.path(PathHelper.modelsPath(session()));
+		message.value(String.format(translate("You dont have access permissions for %s"), model.label()));
+		userHome.visible(session().user() != null);
+		userHome.path(PathHelper.userHomePath(session()));
 		logoutButton.visible(session().user() != null);
 		//loginButton.visible(session().user() == null);
 		//loginButton.path(PathHelper.modelPath(username, model));

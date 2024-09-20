@@ -17,7 +17,7 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 		super.init();
 		redirectIfCallback();
 		header.onSearch(this::filter);
-		languagesCatalog.onOpenModel(this::notifyOpeningModel);
+		languagesCatalog.onOpenLanguage(this::notifyOpeningModel);
 		languagesCatalog.onSelectOwner(this::refreshNavigationToolbar);
 		navigationDialogRemove.onExecute(e -> removeOwnerFilter());
 		initSortings();
@@ -40,7 +40,7 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 
 	private void notifyOpeningModel(Model model) {
 		bodyBlock.hide();
-		openingModelMessage.value(String.format(translate("Opening %s"), model.title()));
+		openingModelMessage.value(String.format(translate("Opening %s"), model.label()));
 		searchingModelsBlock.show();
 	}
 
@@ -61,7 +61,7 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 
 	private void initSortings() {
 		mostUsedLink.onExecute(e -> sortBy(LanguagesDatasource.Sorting.MostUsed));
-		mostRecentsLink.onExecute(e -> sortBy(LanguagesDatasource.Sorting.MostRecents));
+		mostRecentsLink.onExecute(e -> sortBy(LanguagesDatasource.Sorting.MostRecent));
 	}
 
 	private void sortBy(LanguagesDatasource.Sorting sorting) {
@@ -73,8 +73,8 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 	private void refreshSortings() {
 		mostUsedLink.visible(selectedSorting != LanguagesDatasource.Sorting.MostUsed);
 		mostUsedText.visible(selectedSorting == LanguagesDatasource.Sorting.MostUsed);
-		mostRecentsLink.visible(selectedSorting != LanguagesDatasource.Sorting.MostRecents);
-		mostRecentsText.visible(selectedSorting == LanguagesDatasource.Sorting.MostRecents);
+		mostRecentsLink.visible(selectedSorting != LanguagesDatasource.Sorting.MostRecent);
+		mostRecentsText.visible(selectedSorting == LanguagesDatasource.Sorting.MostRecent);
 	}
 
 	private void redirectIfCallback() {

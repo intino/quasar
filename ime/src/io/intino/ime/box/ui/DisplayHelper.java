@@ -7,7 +7,10 @@ import io.intino.alexandria.ui.displays.components.selector.Selector;
 import io.intino.alexandria.ui.services.push.UISession;
 import io.intino.alexandria.ui.services.push.User;
 import io.intino.ime.box.ImeBox;
+import io.intino.ime.box.util.LanguageHelper;
 import io.intino.ime.box.util.ModelHelper;
+import io.intino.ime.box.util.NameHelper;
+import io.intino.ime.model.Model;
 
 import java.util.function.Function;
 
@@ -24,8 +27,15 @@ public class DisplayHelper {
 
 	public static boolean checkModelName(TextEditable<?, ?> field, Function<String, String> translator, ImeBox box) {
 		if (!check(field, translator)) return false;
-		if (!ModelHelper.validName(field.value())) { field.error("Name contains non alphanumeric characters"); return false; }
-		if (ModelHelper.nameInUse(field.value(), box)) { field.error("Model name in use"); return false; }
+		if (!NameHelper.validName(field.value())) { field.error("Name contains non alphanumeric characters"); return false; }
+		if (NameHelper.modelInUse(field.value(), box)) { field.error("Model name in use"); return false; }
+		return true;
+	}
+
+	public static boolean checkLanguageName(TextEditable<?, ?> field, Function<String, String> translator, ImeBox box) {
+		if (!check(field, translator)) return false;
+		if (!NameHelper.validName(field.value())) { field.error("Name contains non alphanumeric characters"); return false; }
+		if (NameHelper.languageInUse(field.value(), box)) { field.error("Language name in use"); return false; }
 		return true;
 	}
 
@@ -34,20 +44,16 @@ public class DisplayHelper {
 	}
 
 	public static boolean check(Selector field) {
-		return field.selection().size() > 0;
+		return !field.selection().isEmpty();
 	}
 
 	public static boolean check(NumberEditable<?, ?> field) {
 		return field.value() != null;
 	}
 
-	public static io.intino.ime.model.User user(UISession session) {
+	public static String user(UISession session) {
 		User user = session.user();
-		return user != null ? new io.intino.ime.model.User(user.username(), user.fullName()) : defaultUser();
-	}
-
-	private static io.intino.ime.model.User defaultUser() {
-		return new io.intino.ime.model.User("anonymous", "Anonymous");
+		return user != null ? user.username() : Model.DefaultOwner;
 	}
 
 }

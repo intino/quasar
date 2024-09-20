@@ -20,7 +20,7 @@ public class RemoveModelCommand extends Command<Boolean> {
 	}
 
 	private void updateLanguage(Model model) {
-		Language language = box.languageManager().get(model.language());
+		Language language = box.languageManager().get(model.modelingLanguage());
 		language.modelsCount(language.modelsCount()-1);
 		box.languageManager().save(language);
 	}

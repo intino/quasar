@@ -1,6 +1,7 @@
 package io.intino.ime.box.commands;
 
 import io.intino.ime.box.ImeBox;
+import io.intino.ime.model.Model;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -23,7 +24,7 @@ public abstract class Command<T> {
 	}
 
 	protected String author() {
-		return this.author != null ? this.author : "anonymous";
+		return this.author != null ? this.author : Model.DefaultOwner;
 	}
 
 }

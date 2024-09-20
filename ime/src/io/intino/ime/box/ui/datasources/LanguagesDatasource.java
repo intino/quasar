@@ -5,9 +5,8 @@ import io.intino.alexandria.ui.model.datasource.Group;
 import io.intino.alexandria.ui.model.datasource.PageDatasource;
 import io.intino.alexandria.ui.services.push.UISession;
 import io.intino.ime.box.ImeBox;
-import io.intino.ime.box.languages.LanguageManager;
 import io.intino.ime.model.Language;
-import io.intino.ime.model.Model;
+import io.intino.ime.model.LanguageLevel;
 
 import java.util.List;
 import java.util.Map;
@@ -21,14 +20,35 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 	private String condition;
 	private List<Filter> filters;
 	private String owner;
+	private Boolean isPrivate = null;
+	private LanguageLevel level = null;
 	private Sorting sorting;
 
 	public LanguagesDatasource(ImeBox box, UISession session) {
-		this.box = box;
-		this.session = session;
+		this(box, session, null, null, null);
 	}
 
-	public enum Sorting { MostUsed, MostRecents;}
+	public LanguagesDatasource(ImeBox box, UISession session, LanguageLevel level) {
+		this(box, session, null, null, level);
+	}
+
+	public LanguagesDatasource(ImeBox box, UISession session, String owner) {
+		this(box, session, owner, null, null);
+	}
+
+	public LanguagesDatasource(ImeBox box, UISession session, String owner, boolean isPrivate) {
+		this(box, session, owner, isPrivate, null);
+	}
+
+	public LanguagesDatasource(ImeBox box, UISession session, String owner, Boolean isPrivate, LanguageLevel level) {
+		this.box = box;
+		this.session = session;
+		this.owner = owner;
+		this.isPrivate = isPrivate;
+		this.level = level;
+	}
+
+	public enum Sorting { MostUsed, MostRecent }
 	public void sort(Sorting sorting) {
 		this.sorting = sorting;
 	}
@@ -69,13 +89,14 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 	}
 
 	private List<Language> load(String condition, List<Filter> filters) {
-		List<Language> workspaces = load();
-		workspaces = filterOwner(workspaces);
-		workspaces = filterCondition(workspaces, condition);
-		return workspaces;
+		List<Language> languages = load();
+		languages = filterOwner(languages);
+		languages = filterPrivate(languages);
+		languages = filterCondition(languages, condition);
+		return languages;
 	}
 
-	private List<Language> load() {
+	protected List<Language> load() {
 		Map<String, List<Language>> groupedLanguages = box.languageManager().publicLanguages(username()).stream().collect(groupingBy(Language::name));
 		return groupedLanguages.values().stream().map(List::getLast).collect(toList());
 	}
@@ -85,19 +106,23 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 		return languages.stream().filter(l -> l.owner().equals(owner)).collect(toList());
 	}
 
+	private List<Language> filterPrivate(List<Language> languages) {
+		if (isPrivate == null) return languages;
+		return languages.stream().filter(l -> isPrivate ? l.isPrivate() : l.isPublic()).collect(toList());
+	}
+
 	private List<Language> filterCondition(List<Language> languages, String condition) {
 		if (condition == null || condition.isEmpty()) return languages;
 		String[] conditions = condition.toLowerCase().split(" ");
-		return languages.stream().filter(w ->
-				DatasourceHelper.matches(w.name(), conditions) ||
-				DatasourceHelper.matches(w.version(), conditions) ||
-				DatasourceHelper.matches(w.info().level().name(), conditions) ||
-				DatasourceHelper.matches(w.owner(), conditions)
+		return languages.stream().filter(l ->
+				DatasourceHelper.matches(l.name(), conditions) ||
+				DatasourceHelper.matches(l.description(), conditions) ||
+				DatasourceHelper.matches(l.owner(), conditions)
 		).collect(toList());
 	}
 
 	private List<Language> sort(List<Language> languages, List<String> sortings) {
-		if (sorting == Sorting.MostRecents) return languages.stream().sorted((o1, o2) -> o2.createDate().compareTo(o1.createDate())).toList();
+		if (sorting == Sorting.MostRecent) return languages.stream().sorted((o1, o2) -> o2.createDate().compareTo(o1.createDate())).toList();
 		return languages.stream().sorted((o1, o2) -> Integer.compare(o2.modelsCount(), o1.modelsCount())).toList();
 	}
 

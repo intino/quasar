@@ -12,8 +12,10 @@ import io.intino.ime.box.ui.DisplayHelper;
 import io.intino.ime.box.ui.PathHelper;
 import io.intino.ime.box.ui.displays.IntinoDslEditor;
 import io.intino.ime.box.ui.displays.IntinoFileBrowser;
+import io.intino.ime.box.util.LanguageHelper;
 import io.intino.ime.model.Language;
 import io.intino.ime.model.Model;
+import io.intino.ime.model.Release;
 
 import java.io.IOException;
 import java.util.*;
@@ -43,8 +45,8 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 		try {
 			this.model = box().modelManager().model(id);
 			modelContainer = box().modelManager().modelContainer(model);
-			if (model.language() == null) return;
-			box().languageProvider().get(model.language());
+			if (model.modelingLanguage() == null) return;
+			box().languageProvider().get(model.modelingLanguage());
 		} catch (Throwable e) {
 			Logger.error(e);
 		}
@@ -88,7 +90,35 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 		super.refresh();
 		refreshHeader();
 		refreshFileBrowser();
+		refreshPoweredBy();
 		refreshFileEditor();
+	}
+
+	private void refreshHeader() {
+		Release release = box().languageManager().lastRelease(model.modelingLanguage());
+		header.model(model);
+		header.title(model.label());
+		//header.description(Formatters.countMessage(modelContainer.files().stream().filter(f -> !f.isDirectory()).count(), "file", "files", language()));
+		header.description(LanguageHelper.type(release, this::translate), PathHelper.modelsPath(release), LanguageHelper.styleFormat(release));
+		header.refresh();
+	}
+
+	private void refreshFileBrowser() {
+		copyFileTrigger.readonly(selectedFile == null);
+		removeFileTrigger.readonly(selectedFile == null);
+		editFilenameTrigger.readonly(selectedFile == null);
+		IntinoFileBrowser browser = intinoFileBrowser.display();
+		browser.itemAddress(PathHelper.modelPath(session(), model) + "?file=:file");
+		browser.items(fileBrowserItems());
+		if (selectedFile != null) browser.select(itemOf(selectedFile));
+		browser.refresh();
+	}
+
+	private void refreshPoweredBy() {
+		Language language = box().languageManager().get(model.modelingLanguage());
+		poweredLink.path(PathHelper.languagePath(language));
+		poweredByImage.value(LanguageHelper.logo(language, box()));
+		poweredByText.value(String.format(translate("%s %s"), LanguageHelper.title(language), Language.versionOf(model.modelingLanguage())));
 	}
 
 	private void refreshFileEditor() {
@@ -107,15 +137,6 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 	private void refreshFileEditorToolbar() {
 		//fileModifiedMessage.visible(selectedFile != null && selectedFileIsModified);
 		saveFile.readonly(selectedFile == null || !selectedFileIsModified);
-	}
-
-	private void refreshHeader() {
-		Language language = box().languageManager().get(model.language());
-		header.model(model);
-		header.title(model.title());
-		//header.description(Formatters.countMessage(modelContainer.files().stream().filter(f -> !f.isDirectory()).count(), "file", "files", language()));
-		header.description(String.format(translate("Created with %s"), language.id()));
-		header.refresh();
 	}
 
 	private void initFileBrowser() {
@@ -138,17 +159,6 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 			refreshFileEditorToolbar();
 		});
 		editor.onSaveFile(this::saveFile);
-	}
-
-	private void refreshFileBrowser() {
-		copyFileTrigger.readonly(selectedFile == null);
-		removeFileTrigger.readonly(selectedFile == null);
-		editFilenameTrigger.readonly(selectedFile == null);
-		IntinoFileBrowser browser = intinoFileBrowser.display();
-		browser.itemAddress(PathHelper.modelPath(session(), model) + "?file=:file");
-		browser.items(fileBrowserItems());
-		if (selectedFile != null) browser.select(itemOf(selectedFile));
-		browser.refresh();
 	}
 
 	private List<IntinoFileBrowserItem> fileBrowserItems() {
@@ -335,7 +345,7 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 
 	private void notifyOpeningModel(Model model) {
 		bodyBlock.hide();
-		openingModelMessage.value(String.format(translate("Opening %s"), model.title()));
+		openingModelMessage.value(String.format(translate("Opening %s"), model.label()));
 		openingModelBlock.show();
 	}
 

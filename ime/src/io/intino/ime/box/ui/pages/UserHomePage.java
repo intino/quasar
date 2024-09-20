@@ -8,7 +8,7 @@ public class UserHomePage extends AbstractUserHomePage {
 		return new io.intino.alexandria.ui.Soul(session) {
 			@Override
 			public void personify() {
-				ModelsTemplate component = new ModelsTemplate(box);
+				UserHomeTemplate component = new UserHomeTemplate(box);
 				register(component);
 				component.init();
 			}

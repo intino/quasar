@@ -23,6 +23,12 @@ Template modelTemplate as Relative(height=100%, width=100%)
 					MaterialIconButton(title="Edit name", icon="Edit", size=Small) editFilenameTrigger as OpenDialog(fileDialog) Readonly
 					MaterialIconButton(title="Remove", icon="Delete", size=Small) removeFileTrigger as Action Affirmed("Are you sure to remove?") Readonly
 			DisplayStamp(display=intinoFileBrowser, format=displayHeaderPanel) intinoFileBrowser
+			Block(layout=Horizontal Center, format=leftPanelBackground spaced relative)
+				Link(title="", format=poweredLink) poweredLink as OpenPage(page=ImeElements.language)
+				Image(format=airRight) poweredByImage as Absolute(height=50px, width=50px)
+				Block
+					Text(value="Modeled with", format=greyColor)
+					Text(format=h6) poweredByText
 
 		Block(layout=Vertical Flexible)
 			Block(layout=Horizontal, format=headerPanel leftSpaced rightSpaced)
@@ -67,42 +73,48 @@ Template modelTemplate as Relative(height=100%, width=100%)
 Template(format=headerBackground middleTopSpaced middleBottomSpaced) modelHeaderTemplate
 	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)
 		Block(layout=Horizontal Flexible Center, format=airLeft)
-			Link(title="", format=logoLink) as OpenPage(ImeElements.home)
-			Image(value="/logo-dark.png", format=airLeft doubleAirRight, mobileReduceFactor=75%) as Absolute(width=45px, height=45px)
+			Block(layout=Vertical CenterCenter, format=airLeft doubleAirRight)
+				Link(title="M3", format=modelLink, visible=false) m3Link as OpenPage(ImeElements.publicModel)
+				Text(value="M3", format=modelText, visible=false) m3
+				Link(title="M2", format=modelLink, visible=false) m2Link as OpenPage(ImeElements.publicModel)
+				Text(value="M2", format=modelText, visible=false) m2
+				Link(title="M1", format=modelLink, visible=false) m1Link as OpenPage(ImeElements.publicModel)
+				Text(value="M1", format=modelText, visible=false) m1
 			Block
-				Link(format=h3 appTitleStyle, title="Model") titleLink
-				Block(layout=Horizontal Center, visible=false) titleEditor
+				Block(layout=Horizontal) > Link(title="", format=modelDescriptionStyle) description as OpenPage(ImeElements.publicModels)
+				Link(format=h2 appTitleStyle, title="Model") titleLink
+				Block(layout=Horizontal Center, format=middleAirBottom, visible=false) titleEditor
 					Text(value="Browser", format=h6 whiteBackground airRight minTitleEditorWidth) titleField as Editable
 					Link(title="Cancel", format=airRight) cancel as Action
 					Link(title="Save") save as Action
-				Text(format=orange) description
 			Block(layout=Horizontal, format=airLeft)
-				MaterialIconButton(title="Go model", icon="Dns", size=Medium, visible=false) models as OpenPage(ImeElements.models)
 		Block(layout=Horizontal Center EndJustified)
 			Link(title="LOG IN", format=white airRight, visible=false) login as Action
 			Block(layout=Horizontal Center, format=airRight)
-				Block(layout=Horizontal Center, visible=false) versionBlock
-					Block(format=airRight) as Absolute(width=160px) > Selector versionSelector as ComboBox(placeholder="Available versions")
-					Button(title="Create version", size=Small, format=airRight) createVersionTrigger as OpenDialog(createVersionDialog)
+				Block(format=languageOperationsStyle relative, visible=false) modelOperationsBlock
+					Text(value="", format=modelOperationsTextStyle, translate=true)
+					TemplateStamp(template=modelOperation) operations as Multiple(noItemsMessage="", arrangement=Horizontal)
+				MaterialIconButton(title="Publish", titlePosition=Bottom, format=airRight, icon="Publish") publishTrigger as OpenDialog(publishDialog)
 				TemplateStamp(template=cloneModelEditor) cloneModelEditor
-				MaterialIconButton(title="Create language", icon="CloudUpload", visible=false) createLanguage as Action Affirmed("Are you sure to create language for this model?")
-				MaterialIconButton(title="Remove language", icon="CloudDownload", visible=false) removeLanguage as Action Affirmed("Are you sure to remove language of this model?")
-				MaterialIconButton(title="Remove model", icon="Delete", visible=false) removeModel as Action Affirmed("Are you sure to remove model?")
+				MaterialIconButton(title="Remove model", titlePosition=Bottom, format=airRight, icon="Delete", visible=false) removeModel as Action Affirmed("Are you sure to remove model?")
 				TemplateStamp(template=modelSettingsEditor) settingsEditor
-				MaterialIconButton(title="Set dark mode", icon="Brightness4") as SetDarkMode
-				MaterialIconButton(title="Set light mode", icon="Brightness7") as SetLightMode
+				MaterialIconButton(title="Set dark mode", titlePosition=Bottom, format=airRight, icon="Brightness4") as SetDarkMode
+				MaterialIconButton(title="Set light mode", titlePosition=Bottom, format=airRight, icon="Brightness7") as SetLightMode
 			User(mode=OnlyPhoto, visible=false) user
 				Selector as ListBox
 					Block as Option > Link(title="Home") as OpenPage(page=ImeElements.home)
-					Block as Option > Link(title="My models") myModels as OpenPage(page=ImeElements.models)
+					Block as Option > Link(title="My home") userHome as OpenPage(page=ImeElements.userHome)
 
-	Dialog(title="Create version") createVersionDialog as Absolute(width=300px, height=400px)
+	Dialog(title="Publish") publishDialog as Absolute(width=300px, height=400px)
         Block as Relative(height=100%, offsetHeight=40px)
-        	TemplateStamp(template=versionEditor) versionEditor
+        	TemplateStamp(template=releaseEditor) releaseEditor
 		Divider
 		Block(layout=Horizontal EndJustified)
-			Button(title="Cancel", size=Small, highlight=Outline, format=airRight) as CloseDialog(createVersionDialog)
-			Button(title="Create", size=Small, highlight=Fill) createVersion as Action
+			Button(title="Cancel", size=Small, highlight=Outline, format=airRight) as CloseDialog(publishDialog)
+			Button(title="Create", size=Small, highlight=Fill) publish as Action
+
+Template modelOperation
+	MaterialIconButton(title="", icon="HelpOutline", titlePosition=Bottom, format=airRight) trigger as Action
 
 Display intinoFileBrowser
 	Notification refresh as Object(intinoFileBrowserInfo)

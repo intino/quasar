@@ -4,65 +4,35 @@ use Editors
 use UI
 use Theme
 
-Template modelsTemplate as Relative(height=100%, width=100%)
-	TemplateStamp(template=modelsHeaderTemplate) header
+Template languageModelsTemplate as Relative(height=100%, width=100%)
+	TemplateStamp(template=languageModelsHeaderTemplate) header
 
 	Block(layout=Vertical Flexible CenterCenter, visible=false) openingModelBlock
 		Spinner(mode=Ring, color="secondary")
 		Text(value="" , translate=true, format=h3 airTop) openingModelMessage
 
-	Block(layout=Horizontal Flexible) bodyBlock
-		Block(format=greyBackground) as Relative(width=20%)
-			Block(format=autoHeight) as Relative(width=100%)
-				Block(layout=Vertical CenterCenter, format=leftPanelBackground topSpaced bottomSpaced)
-					Button(title="Create model", highlight=Fill) as OpenDialog(addModelDialog)
-
-			Block
-				Selector modelsGroupSelector as ListBox
-					Text(value="All models") allModelsOption as Option
-					Text(value="Private models") privateModelsOption as Option
-					Text(value="Public models") publicModelsOption as Option
-
-		Block(layout=Vertical Flexible, format=spaced) > TemplateStamp(template=modelsCatalog) modelsCatalog
-
-	Dialog(title="Create model") addModelDialog as Absolute(width=800px, height=800px)
-        Block as Relative(height=100%, offsetHeight=40px)
-			Text(format=doubleAirBottom) nameField as Editable Labeled("Name") Focused
-			Text(format=doubleAirBottom) titleField as Editable Labeled("Title")
-        	Block
-        		Text(value="Language", translate=true, format=labelColor)
-	        	Selector(format=doubleAirBottom) languageField as CollectionBox(placeholder="Select language")
-	        		Table(itemClass="io.intino.ime.model.Language") languageTable as Selectable
-	        			noItemsMessage = "No languages"
-	        			Mold
-	        				Heading ltNameHeading > Text(value="Name", translate=true)
-	        				Item(height=20px, width=40%) ltNameItem > Text name
-	        			Mold
-	        				Heading ltVersionHeading > Text(value="Version", translate=true)
-	        				Item(height=20px, width=20%) ltVersionItem > Text version
-	        			Mold
-	        				Heading ltOwnerHeading > Text(value="Owner", translate=true)
-	        				Item(height=20px, width=40%) ltOwnerItem > Text owner
-		Divider
-        Block(layout=Horizontal EndJustified)
-            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addModelDialog)
-            Button(title="Create", size=Small, highlight=Fill) createModel as Action
+	Block(layout=Vertical Flexible, format=spaced) bodyBlock > TemplateStamp(template=modelsCatalog) modelsCatalog
 
 Template modelsCatalog as Relative(height=100%, width=100%)
 	Text(format=h4 middleAirBottom) title
 
 	Toolbar(format=dialog greyBackground) as Linked(to=modelTable)
-		Button(title="Remove selection", highlight=Outline, size=Small, format=airRight) removeSelection as Action(context=Selection) Affirmed("Are you sure to remove selected models?")
-		SearchBox(collections=modelTable) modelSearch
+		Button(title="Start modeling", highlight=Fill, format=airRight) addModelTrigger as Action
+		Button(title="Remove selection", highlight=Outline, size=Small, format=airRight, visible=false) removeSelection as Action(context=Selection) Affirmed("Are you sure to remove selected models?")
 
 	Table(itemClass="io.intino.ime.model.Model") modelTable as Selectable(multiple=true)
 		noItemsMessage = "No models"
 		Mold
-			Heading modelTitleHeading > Text(value="Title") titleSorting
-			Item(height=30px, width=45%) modelTitleItem
+			Heading modelLogoHeading
+			Item(height=30px, width=5%) modelLogoItem
+				Block(layout=Horizontal, format=topSpaced bottomSpaced)
+					Image logo as Absolute(height=40px, width=40px)
+		Mold
+			Heading modelLabelHeading > Text(value="Title") labelSorting
+			Item(height=30px, width=40%) modelLabelItem
 				Block(layout=Horizontal)
-					Link(title="") title as Action
-					Text(value="public", format=pill airLeft, visible=false) accessType as Highlighted(textColor="white", backgroundColor="#777")
+					Link(title="") label as Action
+					Text(value="is example", format=pill airLeft, visible=false) accessType as Highlighted(textColor="white", backgroundColor="#777")
 		Mold
 			Heading modelLanguageHeading > Sorting(collections=modelTable) languageSorting as OrderBy Labeled("Language")
 			Item(height=30px, width=15%) modelLanguageItem > Text language
@@ -70,15 +40,70 @@ Template modelsCatalog as Relative(height=100%, width=100%)
 			Heading modelOwnerHeading > Sorting(collections=modelTable) ownerSorting as OrderBy Labeled("Owner")
 			Item(height=30px, width=20%) modelOwnerItem > Text owner
 		Mold
-			Heading lastModifiedDateHeading > Sorting(collections=modelTable) lastModifiedSorting as OrderBy Labeled("Last modified")
-			Item(height=30px, width=10%) lastModifiedDateItem > Date lastModifiedDate
-		Mold
 			Heading operationsHeading > Text(value="Operations", translate=true)
 			Item(height=30px, width=10%) operationsItem
 				Block(layout=Horizontal)
 					TemplateStamp(template=cloneModelEditor) cloneModelEditor
-					MaterialIconButton(title="Remove model", icon="Delete", size=Small) removeModel as Action Affirmed("Are you sure to remove model?")
+					MaterialIconButton(title="Remove model", icon="Delete", size=Small) removeModel as Action Affirmed("Are you sure to remove model?") Readonly
 					TemplateStamp(template=modelSettingsEditor) settingsEditor
+
+	Dialog(title="Start modeling") addModelDialog as Absolute(width=800px, height=600px)
+        Block as Relative(height=100%, offsetHeight=40px)
+			Text(format=doubleAirBottom) labelField as Editable Labeled("Title") Focused
+        	Block
+        		Text(value="Language", translate=true, format=labelColor)
+	        	Selector(format=doubleAirBottom) languageField as CollectionBox(placeholder="Select language")
+	        		Table(itemClass="io.intino.ime.model.Language") languageTable as Selectable
+	        			noItemsMessage = "No languages"
+	        			Mold
+	        				Heading ltLogoHeading
+	        				Item(height=30px, width=10%) ltLogoItem > Image logo as Absolute(height=50px, width=50px)
+	        			Mold
+	        				Heading ltNameHeading > Text(value="Name", translate=true)
+	        				Item(height=30px, width=20%) ltNameItem > Text name
+	        			Mold
+	        				Heading ltDescriptionHeading > Text(value="Description", translate=true)
+	        				Item(height=30px, width=40%) ltDescriptionItem > Text(cropWithEllipsis=40 Chars) description
+	        			Mold
+	        				Heading ltOwnerHeading > Text(value="Owner", translate=true)
+	        				Item(height=30px, width=30%) ltOwnerItem > Text owner
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addModelDialog)
+            Button(title="Start", size=Small, highlight=Fill) createModel as Action
+
+	Dialog(title="Start modeling") addLanguageModelDialog as Absolute(height=360px, width=400px)
+        Block as Relative(height=100%, offsetHeight=40px)
+        	Block(format=doubleAirBottom)
+        		Text(value="Language", translate=true, format=labelColor)
+        		Text languageModelField
+			Text(format=doubleAirBottom) languageModelLabelField as Editable Labeled("Title") Focused
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addLanguageModelDialog)
+            Button(title="Start", size=Small, highlight=Fill) createLanguageModel as Action
+
+Template(format=headerBackground middleTopSpaced middleBottomSpaced) languageModelsHeaderTemplate
+	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)
+		Block(layout=Horizontal Flexible Center, format=airLeft relative)
+			Link(title="", format=logoLink) logoLink as OpenPage(ImeElements.language)
+			Image(format=airLeft doubleAirRight, mobileReduceFactor=75%) logo as Absolute(width=45px, height=45px)
+			Block
+				Text(format=h3 appTitleStyle) title
+				Text(format=whiteColor, value="The list of example models created with this language") description
+			Block(layout=Vertical Flexible, format=airLeft)
+				Block(layout=Vertical CenterCenter) > Block(format=searchBox) as Relative(width=60%) > Text(format=searchBoxBackground) searchField as Editable(placeholder="Search")
+		Block(layout=Horizontal Center EndJustified)
+			Block(visible=false, format=airRight) notLoggedToolbar
+				Link(title="LOG IN", format=white) login as OpenPage(ImeElements.userHome)
+			Block(format=airRight)
+				MaterialIconButton(title="set dark mode", icon="Brightness4") as SetDarkMode
+				MaterialIconButton(title="set light mode", icon="Brightness7") as SetLightMode
+			User(mode=OnlyPhoto) user
+				Selector as ListBox
+					Block as Option > Link(title="Home") as OpenPage(page=ImeElements.home)
+					Block as Option > Link(title="My home") userHome as OpenPage(page=ImeElements.userHome)
+					Block as Option > Link(title="Language home") languageHome as OpenPage(page=ImeElements.language)
 
 Template(format=headerBackground middleTopSpaced middleBottomSpaced) modelsHeaderTemplate
 	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)
@@ -86,8 +111,8 @@ Template(format=headerBackground middleTopSpaced middleBottomSpaced) modelsHeade
 			Link(title="", format=logoLink) as OpenPage(ImeElements.home)
 			Image(value="/logo-dark.png", format=airLeft doubleAirRight, mobileReduceFactor=75%) as Absolute(width=45px, height=45px)
 			Block
-				Text(format=h3 appTitleStyle, value="My models") title
-				Text(format=whiteColor, value="The list of models you designed")
+				Text(format=h3 appTitleStyle, value="Home", translate=true) title
+				Text(format=whiteColor, value="The list of languages/models you designed")
 			Block(layout=Horizontal, format=airLeft)
 		Block(layout=Horizontal Center EndJustified)
 			Block(format=airRight)

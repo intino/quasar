@@ -1,15 +1,19 @@
 package io.intino.ime.box.commands.language;
 
+import io.intino.alexandria.Resource;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.commands.Command;
+import io.intino.ime.box.util.ModelHelper;
 import io.intino.ime.model.Language;
 import io.intino.ime.model.Model;
-
-import java.time.Instant;
+import io.intino.ime.model.Release;
 
 public class CreateLanguageCommand extends Command<Language> {
-	public Model model;
-	public Model.Version version;
+	public String name;
+	public Release parent;
+	public String description;
+	public Resource logo;
+	public boolean isPrivate;
 
 	public CreateLanguageCommand(ImeBox box) {
 		super(box);
@@ -17,8 +21,9 @@ public class CreateLanguageCommand extends Command<Language> {
 
 	@Override
 	public Language execute() {
-		String name = model.name();
-		return box.languageManager().create(model, name, version, author, Instant.now());
+		Language language = box.languageManager().create(name, description, logo, parent, author(), isPrivate);
+		box.modelManager().create(ModelHelper.proposeName(), name, parent, author(), name, isPrivate);
+		return language;
 	}
 
 }

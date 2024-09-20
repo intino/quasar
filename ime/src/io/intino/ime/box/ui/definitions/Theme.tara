@@ -10,8 +10,8 @@ Theme theme1
 	Secondary("#ff9100")
 	Error("#f44336")
 
-Format("textShadow:'2px 2px 2px #fff',fontSize:'20pt'") h1
-Format("textShadow:'2px 2px 2px #fff',fontSize:'18pt'") h2
+Format("fontSize:'25pt'") h1
+Format("fontSize:'20pt'") h2
 Format("fontSize:'15pt'") h3
 Format("fontSize:'14pt',fontWeight:'400'") h4
 Format("fontSize:'12pt'") h5
@@ -64,6 +64,7 @@ Format("padding:'10px'") spaced
 Format("padding:'10px 10px 10px 10px'") observableSpaced
 Format("padding:'5px'") middleSpaced
 Format("paddingLeft:'10px'") leftSpaced
+Format("paddingTop:'20px'") doubleTopSpaced
 Format("paddingLeft:'20px'") doubleLeftSpaced
 Format("paddingBottom:'1px'") verySmallBottomSpaced
 Format("paddingRight:'10px'") rightSpaced
@@ -170,7 +171,8 @@ Format("background:'#F68A1C'") orangeBackground
 Format("boxShadow:'rgb(0 0 0 / 5%) 0px 0px 0px 1px, #F68A1C 0px 0px 0px 1px inset'") orangeOutlineBackground
 Format("background:'#2A95D6'") blueBackground
 Format("boxShadow:'rgb(0 0 0 / 5%) 0px 0px 0px 1px, #2A95D6 0px 0px 0px 1px inset'") blueOutlineBackground
-Format("background:'#4D9A51'") greenBackground
+Format("background:'#e8eb61'") greenBackground
+Format("background:'#f89101'") orangeBackground
 Format("boxShadow:'rgb(0 0 0 / 5%) 0px 0px 0px 1px, #4D9A51 0px 0px 0px 1px inset'") greenOutlineBackground
 Format("background:'#D74545'") redBackground
 Format("boxShadow:'rgb(0 0 0 / 5%) 0px 0px 0px 1px, #D74545 0px 0px 0px 1px inset'") redOutlineBackground
@@ -184,6 +186,8 @@ Format("bottom:'-10px',textAlign:'center',width:'100%',color:'red',marginLeft:'1
 Format("position:'absolute',bottom:'0',top:'0',width:'100%',height:'100%',zIndex:'0'") backgroundLogin
 Format("filter:'brightness(0) invert(1)',position:'absolute',margin:'30px'") logoLogin
 Format("position:'absolute',zIndex:'10',width:'85px',height:'65px',top:'0',left:'0'") logoLink
+Format("position:'absolute',zIndex:'10',width:'100%',height:'100%',top:'0',left:'0'") poweredLink
+Format("left:'auto'") noLeft
 Format("zIndex:'1'") visible
 Format("width:'150px'") openUsersButton
 Format("fontSize:'20pt',textAlign:'center',marginTop:'40px'") userNotGranted
@@ -248,7 +252,8 @@ Format("width:'100px',height:'100px',background:'white',border:'1px solid #ddd'"
 Format("position:'absolute',marginLeft:'60px',bottom:'0',marginBottom:'10px'") footerDateNavigator
 Format("minWidth:'300px',minHeight:'100px'") popoverStyle
 Format("background:'white',borderRadius:'25px',padding:'5px 20px'") searchBox
-Format("width:'275px',height:'170px',background:'#f6f7ff',padding:'10px',margin:'10px 0',borderRadius:'4px'", darkContent="background:'#333'") languageMagazine
+Format("width:'275px',height:'200px',background:'#f6f7ff',padding:'10px',margin:'10px 0',borderRadius:'4px'", darkContent="background:'#333'") languageMagazine
+Format("padding:'15px 40px'") largeButton
 
 // Cards
 Format("textAlign:'left',color:'#B71A1C',padding:'10px'") cardTitle
@@ -284,6 +289,13 @@ Format("height:'40px',marginRight:'20px'") viewSelectorStyle
 Format("marginLeft:'18px',marginTop:'10px'") indicatorFilterSelectorStyle
 Format("position:'absolute',height:'100%',width:'100%',zIndex:'100',background:'white'") mapGroupFilterNotAvailableStyle
 Format("position:'absolute',height:'100%',width:'100%',zIndex:'100',top:'0'") imageLinkStyle
+Format("position:'absolute',width:'100%',height:'calc(100% - 20px)',cursor:'pointer',marginTop:'20px'") magazineLinkStyle
+Format("padding:'0 20px',marginBottom:'2px',borderRadius:'6px',background:'#6595f4',color:'black'") modelLink
+Format("padding:'0 20px',marginBottom:'2px',borderRadius:'6px',background:'#909090',color:'black'") modelLinkDisabled
+Format("padding:'0 20px',marginBottom:'2px',borderRadius:'6px',background:'#909090',color:'black',fontWeight:'bold'") modelText
+Format("padding:'0 10px',borderRadius:'6px',textAlign:'center',color:'black'") modelDescriptionStyle
+Format("background:'transparent'") languageOperationsStyle
+Format("position:'absolute',top:'0',left:'0',fontSize:'7pt',whiteSpace:'nowrap'") modelOperationsTextStyle
 
 // Sumus
 Format("background:'white',border:'1px solid #eee',position:'relative'") cubeDialogStyle

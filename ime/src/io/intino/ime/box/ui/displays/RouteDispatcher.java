@@ -8,15 +8,31 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	}
 
 	@Override
-	public void dispatchModel(Soul soul, String user, String name, String version, String file, String accessToken) {
+	public void dispatchUserModel(Soul soul, String user, String name, String file) {
 	}
 
 	@Override
-	public void dispatchModels(Soul soul, String user) {
+	public void dispatchPublicModel(Soul soul, String language, String id, String file) {
+	}
+
+	@Override
+	public void dispatchUserModels(Soul soul, String user) {
 	}
 
 	@Override
 	public void dispatchUserHome(Soul soul) {
+	}
+
+	@Override
+	public void dispatchLanguage(Soul soul, String language) {
+	}
+
+	@Override
+	public void dispatchPublicLanguages(Soul soul, String language) {
+	}
+
+	@Override
+	public void dispatchPublicModels(Soul soul, String language) {
 	}
 
 	@Override

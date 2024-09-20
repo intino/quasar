@@ -1,8 +1,8 @@
 package io.intino.ime.box.ui.displays.templates;
 
 import io.intino.alexandria.ui.displays.events.actionable.ToggleEvent;
-import io.intino.ime.box.commands.ModelCommands;
 import io.intino.ime.box.ImeBox;
+import io.intino.ime.box.commands.ModelCommands;
 import io.intino.ime.box.ui.DisplayHelper;
 import io.intino.ime.model.Model;
 
@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 public class ModelSettingsEditor extends AbstractModelSettingsEditor<ImeBox> {
 	private Model model;
 	private Mode mode = Mode.Large;
+	private View view = View.Default;
 	private Consumer<String> saveTitleListener;
 	private Consumer<Boolean> saveAccessTypeListener;
 
@@ -27,8 +28,9 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<ImeBox> {
 		this.mode = mode;
 	}
 
-	public void onSaveTitle(Consumer<String> listener) {
-		this.saveTitleListener = listener;
+	public enum View { List, Default }
+	public void view(View view) {
+		this.view = view;
 	}
 
 	public void onSaveAccessType(Consumer<Boolean> listener) {
@@ -45,34 +47,28 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<ImeBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
-		largeIcon.visible(mode == Mode.Large);
-		smallIcon.visible(mode == Mode.Small);
+		largeIcon.visible(mode == Mode.Large && view == View.Default);
+		smallIcon.visible(mode == Mode.Small && view == View.Default);
+		largeIconInList.visible(mode == Mode.Large && view == View.List);
+		smallIconInList.visible(mode == Mode.Small && view == View.List);
 	}
 
 	public void refreshDialog() {
-		settingsTitleField.value(model.title());
+		settingsTitleField.value(model.label());
 		accessTypeField.state(model.isPrivate() ? ToggleEvent.State.On : ToggleEvent.State.Off);
-		accessTokenField.visible(model.isPrivate());
-		if (accessTokenField.isVisible()) accessTokenField.value(model.token());
-		accessTypeField.onToggle(e -> accessTokenField.visible(e.state() == ToggleEvent.State.On));
-		versionEditor.model(model);
-		versionEditor.refresh();
 	}
 
 	private void saveSettings() {
 		if (!DisplayHelper.check(settingsTitleField, this::translate)) return;
-		if (!versionEditor.check()) return;
 		boolean isPrivate = accessTypeField.state() == ToggleEvent.State.On;
 		settingsDialog.close();
-		box().commands(ModelCommands.class).saveTitle(model, settingsTitleField.value(), username());
 		saveAccessType(isPrivate);
-		box().commands(ModelCommands.class).saveVersion(model, versionEditor.version(), username());
 		if (saveTitleListener != null) saveTitleListener.accept(settingsTitleField.value());
 		if (saveAccessTypeListener != null) saveAccessTypeListener.accept(isPrivate);
 	}
 
 	private void saveAccessType(boolean isPrivate) {
-		if (isPrivate) box().commands(ModelCommands.class).makePrivate(model, accessTokenField.value(), username());
+		if (isPrivate) box().commands(ModelCommands.class).makePrivate(model, username());
 		else box().commands(ModelCommands.class).makePublic(model, username());
 	}
 

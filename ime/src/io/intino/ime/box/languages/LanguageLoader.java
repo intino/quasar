@@ -50,8 +50,7 @@ public class LanguageLoader {
 			if (classLoader == null) return null;
 			Class<?> cls = classLoader.loadClass(LANGUAGES_PACKAGE.replace("/", ".") + "." + firstUpperCase(parts[0]));
 			return (Language) cls.getConstructors()[0].newInstance();
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-				 InvocationTargetException e) {
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			Logger.error(e);
 			throw new IOException("Impossible to load language: " + e.getMessage(), e);
 		}

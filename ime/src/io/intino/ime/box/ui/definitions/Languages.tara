@@ -1,61 +1,120 @@
 dsl Konos
 
+use Editors
+use UI
 use Theme
 
 Template(layout=Vertical Flexible) languagesCatalog as Relative(height=100%, width=100%)
+	Text(format=h4 middleAirBottom, visible=false) title
+
 	Magazine(itemClass="io.intino.ime.model.Language") languagesMagazine
 		noItemsMessage = "No languages"
 		Mold
 			Item(height=100px) languageMagazineItem
 				Block(format=languageMagazine)
-					Block(layout=Vertical Flexible)
+					Block(format=relative)
+						Link(title="", format=magazineLinkStyle) languageLink as OpenPage(ImeElements.language)
 						Block(layout=Horizontal)
-							Block(layout=Vertical Flexible) > Link(title="", format=orange) owner as Action
-							Block(layout=Horizontal EndJustified) > Text(visible=false) privatePill as Highlighted(textColor="white", backgroundColor="#777")
-						Text(format=h5) title
-					Block(layout=Horizontal Start, format=airTop bottomSpaced)
-						Block(layout=Vertical Flexible)
-							Date(pattern="DD/MM/YYYY HH:mm") createDate as Labeled("Creation date")
-							Text metaLanguage as Labeled("Created with")
-							Number modelsCount as Labeled("Models count")
+							Block(format=airRight) > Image logo as Absolute(height=50px, width=50px)
+							Block(layout=Vertical Flexible)
+								Block(layout=Horizontal)
+									Block(layout=Vertical Flexible) > Link(title="", format=orange) owner as Action
+									Block(layout=Horizontal EndJustified) > Text(visible=false) privatePill as Highlighted(textColor="white", backgroundColor="#777")
+								Link(title="", format=h5) languageTitleLink as OpenPage(ImeElements.language)
+						Text(format=greyColor middleAirTop, cropWithEllipsis=40Chars) description
+						Block(layout=Horizontal Start, format=airTop bottomSpaced)
+							Block(layout=Vertical Flexible)
+								Date(pattern="DD/MM/YYYY HH:mm") createDate as Labeled("Creation date")
+								Text parent as Labeled("Created with")
+								Number modelsCount as Labeled("Models count")
 					Block(layout=Horizontal Wrap, format=topBordered topSpaced)
 						Block(layout=Horizontal Flexible)
-							Link(title="Versions", format=airRight) versionsDialogTrigger as OpenDialog(dialog=empty)
+							Link(title="Releases...", format=airRight) releasesDialogTrigger as OpenDialog(dialog=empty)
 						Block(layout=Horizontal EndJustified)
-							Link(title="Create model", size=Small, visible=false, format=airRight) addModel as Action
-							Link(title="Create model", size=Small, visible=false, format=airRight) addPrivateModel as OpenDialog(empty)
+							Link(title="Create language", size=Small, visible=false, format=airRight) createLanguageTrigger as OpenDialog(empty)
+							Link(title="Start modeling", size=Small, visible=false, format=airRight) addModel as Action
+							Link(title="Start modeling", size=Small, visible=false, format=airRight) addPrivateModel as OpenDialog(empty)
 
-	Dialog(title="Add model") addPrivateModelDialog as Absolute(height=360px, width=400px)
+	Dialog(title="Create language") createLanguageDialog as Absolute(height=360px, width=600px)
+        Block as Relative(height=100%, offsetHeight=40px)
+			TemplateStamp(template=languageEditor) languageEditor
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(createLanguageDialog)
+            Button(title="Create", size=Small, highlight=Fill) createLanguage as Action
+
+	Dialog(title="Start modeling") addPrivateModelDialog as Absolute(height=360px, width=400px)
         Block as Relative(height=100%, offsetHeight=40px)
         	Block(format=doubleAirBottom)
         		Text(value="Language", translate=true, format=labelColor)
         		Text languageField
-        	Text(format=doubleAirBottom) nameField as Editable(helperText="Only alphanumeric characters are allowed") Labeled("Name")
-        	Text(format=doubleAirBottom) titleField as Editable Labeled("Title") Focused
+        	Text(format=doubleAirBottom) labelField as Editable Labeled("Title") Focused
 		Divider
         Block(layout=Horizontal EndJustified)
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addPrivateModelDialog)
-            Button(title="Add", size=Small, highlight=Fill) createModel as Action
+            Button(title="Start", size=Small, highlight=Fill) createModel as Action
 
-	Dialog(title="Versions") versionsDialog as Absolute(width=500px, height=600px)
+	Dialog(title="Releases") releasesDialog as Absolute(width=500px, height=600px)
         Block as Relative(height=100%, offsetHeight=40px)
-        	TemplateStamp(template=languageAvailableVersionsCatalog) versionsCatalog
+        	TemplateStamp(template=languageReleasesCatalog) releasesCatalog
 		Divider
 		Block(layout=Horizontal EndJustified)
-			Button(title="Close", size=Small, highlight=Outline) as CloseDialog(versionsDialog)
+			Button(title="Close", size=Small, highlight=Outline) as CloseDialog(releasesDialog)
 
-Template(layout=Vertical Flexible) languageAvailableVersionsCatalog as Relative(height=100%, width=100%)
+Template parentLanguagesTemplate as Relative(height=100%, width=100%)
+	TemplateStamp(template=parentLanguagesHeaderTemplate) header
 
-	Table(itemClass="io.intino.ime.model.Language") languageAvailableVersionsTable
-		noItemsMessage = "No versions"
+	Block(layout=Vertical Flexible CenterCenter, visible=false) openingLanguageBlock
+		Spinner(mode=Ring, color="secondary")
+		Text(value="" , translate=true, format=h3 airTop) openingLanguageMessage
+
+	Block(layout=Vertical Flexible Center, format=greyBackground) bodyBlock as Relative(width=100%)
+		Block(layout=Horizontal, format=middleTopSpaced middleBottomSpaced autoHeight) as Relative(width=70%)
+			Block(layout=Horizontal Flexible)
+				Text countLanguages
+				Block(layout=Horizontal Center, format=tag, visible=false) navigationDialog
+					Text(format=blackColor) navigationDialogTitle
+					MaterialIconButton(icon="Clear", size=Small, title="Show all", format=smallIconSize middleAirLeft blackColor) navigationDialogRemove
+			Block(layout=Horizontal EndJustified)
+				Link(title="most used", format=airRight, visible=false) mostUsedLink as Action
+				Text(value="most used", format=airRight, translate=true) mostUsedText
+				Link(title="most recents", format=airRight) mostRecentsLink as Action
+				Text(value="most recents", format=airRight, visible=false, translate=true) mostRecentsText
+		Block(format=whiteBackground topSpaced leftSpaced) as Relative(width=70%)
+			TemplateStamp(template=languagesCatalog) languagesCatalog
+
+Template(format=headerBackground middleTopSpaced middleBottomSpaced) parentLanguagesHeaderTemplate
+	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)
+		Block(layout=Horizontal Flexible Center, format=airLeft relative)
+			Link(title="", format=logoLink) logoLink as OpenPage(ImeElements.language)
+			Image(format=airLeft doubleAirRight, mobileReduceFactor=75%) logo as Absolute(width=45px, height=45px)
+			Block
+				Text(format=h3 appTitleStyle) title
+				Text(format=whiteColor, value="The list of example languages using this language") description
+			Block(layout=Vertical Flexible, format=airLeft)
+				Block(layout=Vertical CenterCenter) > Block(format=searchBox) as Relative(width=60%) > Text(format=searchBoxBackground) searchField as Editable(placeholder="Search")
+		Block(layout=Horizontal Center EndJustified)
+			Block(format=airRight)
+				MaterialIconButton(title="set dark mode", icon="Brightness4") as SetDarkMode
+				MaterialIconButton(title="set light mode", icon="Brightness7") as SetLightMode
+			User(mode=OnlyPhoto) user
+				Selector as ListBox
+					Block as Option > Link(title="Home") as OpenPage(page=ImeElements.home)
+					Block as Option > Link(title="Language home") languageHome as OpenPage(page=ImeElements.language)
+
+Template(layout=Vertical Flexible) languageReleasesCatalog as Relative(height=100%, width=100%)
+
+	Table(itemClass="io.intino.ime.model.Release") languageReleasesTable
+		noItemsMessage = "No releases"
 		Mold
-			Heading lavtVersionHeading > Text(value="Version", translate=true)
-			Item(height=30px, width=30%) lavtVersionItem > Text version
+			Heading lrcVersionHeading > Text(value="Version", translate=true)
+			Item(height=30px, width=30%) lrcVersionItem > Text version
 		Mold
-			Heading lavtUpdateDateHeading > Text(value="Update date", translate=true)
-			Item(height=30px, width=20%) lavtUpdateDateItem > Date updateDate
+			Heading lrcLevelHeading > Text(value="Level", translate=true)
+			Item(height=30px, width=20%) lrcLevelItem > Text level
 		Mold
-			Heading lavtOperationsHeading
-			Item(height=30px, width=50%) lavtOperationsItem
+			Heading lrcOperationsHeading
+			Item(height=30px, width=50%) lrcOperationsItem
 				Block(layout=Horizontal EndJustified)
-					Link(title="Create model", format=airRight) addModelWithVersion as Action
+					Link(title="Create language", size=Small, visible=false, format=airRight) createLanguage as Action
+					Link(title="Start modeling", format=airRight, visible=false) addModelWithRelease as Action

@@ -6,21 +6,20 @@ import io.intino.alexandria.ui.model.datasource.PageDatasource;
 import io.intino.alexandria.ui.services.push.UISession;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.util.VersionNumberComparator;
-import io.intino.ime.model.Language;
+import io.intino.ime.model.Release;
 
-import java.util.Comparator;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-public class LanguageVersionsDatasource extends PageDatasource<Language> {
+public class LanguageReleasesDatasource extends PageDatasource<Release> {
 	protected final ImeBox box;
 	protected final UISession session;
 	private final String name;
 	private String condition;
 	private List<Filter> filters;
 
-	public LanguageVersionsDatasource(ImeBox box, UISession session, String name) {
+	public LanguageReleasesDatasource(ImeBox box, UISession session, String name) {
 		this.box = box;
 		this.session = session;
 		this.name = name;
@@ -31,9 +30,9 @@ public class LanguageVersionsDatasource extends PageDatasource<Language> {
 	}
 
 	@Override
-	public List<Language> items(int start, int count, String condition, List<Filter> filters, List<String> sortings) {
+	public List<Release> items(int start, int count, String condition, List<Filter> filters, List<String> sortings) {
 		saveParameters(condition, filters);
-		List<Language> result = sort(load(condition, filters), sortings);
+		List<Release> result = sort(load(condition, filters), sortings);
 		int from = Math.min(start, result.size());
 		int end = Math.min(start + count, result.size());
 		return result.subList(from, end);
@@ -49,33 +48,32 @@ public class LanguageVersionsDatasource extends PageDatasource<Language> {
 		return List.of();
 	}
 
-	private List<Language> load() {
-		return box.languageManager().versions(name);
+	private List<Release> load() {
+		return box.languageManager().releases(name);
 	}
 
 	protected String username() {
 		return session.user() != null ? session.user().username() : null;
 	}
 
-	private List<Language> load(String condition, List<Filter> filters) {
-		List<Language> workspaces = load();
-		workspaces = filterCondition(workspaces, condition);
-		return workspaces;
+	private List<Release> load(String condition, List<Filter> filters) {
+		List<Release> result = load();
+		result = filterCondition(result, condition);
+		return result;
 	}
 
-	private List<Language> filterCondition(List<Language> languages, String condition) {
-		if (condition == null || condition.isEmpty()) return languages;
+	private List<Release> filterCondition(List<Release> releases, String condition) {
+		if (condition == null || condition.isEmpty()) return releases;
 		String[] conditions = condition.toLowerCase().split(" ");
-		return languages.stream().filter(w ->
-				DatasourceHelper.matches(w.name(), conditions) ||
+		return releases.stream().filter(w ->
+				DatasourceHelper.matches(w.language(), conditions) ||
 				DatasourceHelper.matches(w.version(), conditions) ||
-				DatasourceHelper.matches(w.info().level().name(), conditions) ||
-				DatasourceHelper.matches(w.owner(), conditions)
+				DatasourceHelper.matches(w.level().name(), conditions)
 		).collect(toList());
 	}
 
-	private List<Language> sort(List<Language> languages, List<String> sortings) {
-		return languages.stream().sorted((o1, o2) -> VersionNumberComparator.getInstance().compare(o2.version(), o1.version())).toList();
+	private List<Release> sort(List<Release> releases, List<String> sortings) {
+		return releases.stream().sorted((o1, o2) -> VersionNumberComparator.getInstance().compare(o2.version(), o1.version())).toList();
 	}
 
 	private void saveParameters(String condition, List<Filter> filters) {

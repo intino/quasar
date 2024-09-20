@@ -4,18 +4,18 @@ import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.commands.Command;
 import io.intino.ime.model.Model;
 
-public class SaveModelTitleCommand extends Command<Boolean> {
+public class SaveModelLabelCommand extends Command<Boolean> {
 	public Model model;
-	public String title;
+	public String label;
 
-	public SaveModelTitleCommand(ImeBox box) {
+	public SaveModelLabelCommand(ImeBox box) {
 		super(box);
 	}
 
 	@Override
 	public Boolean execute() {
-		if (title.equals(model.title())) return true;
-		model.title(title);
+		if (label.equals(model.label())) return true;
+		model.label(label);
 		box.modelManager().save(model);
 		return true;
 	}

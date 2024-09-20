@@ -1,8 +1,6 @@
 package io.intino.ime.box.languages;
 
-import io.intino.ime.box.models.ModelManager;
 import io.intino.ime.model.Model;
-import io.intino.languagearchetype.Archetype;
 import io.intino.ls.DocumentManager;
 import io.intino.ls.IntinoLanguageServer;
 import io.intino.tara.Language;
@@ -32,8 +30,8 @@ public class LanguageServerManager {
 	}
 
 	public LanguageServer get(Model model) throws IOException {
-		if (!servers.containsKey(model.id()))
-			servers.put(model.id(), create(languageLoader.get(model.language()), workspaceProvider.apply(model)));
-		return servers.get(model.id());
+		if (!servers.containsKey(model.modelingLanguage()))
+			servers.put(model.modelingLanguage(), create(languageLoader.get(model.modelingLanguage()), workspaceProvider.apply(model)));
+		return servers.get(model.modelingLanguage());
 	}
 }

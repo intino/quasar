@@ -1,19 +1,22 @@
 dsl Konos
 
+use Languages
+use Language
 use Models
 use Model
-use Languages
 use Theme
 
 Service ImeElements as UI(port = "{port}", title = "{title}", favicon = "/icons/favicons/favicon.ico")
 	Authentication(by="{federation-url}")
 
 	Resource(path = "/") home as Page(homeTemplate) Main
-	Resource(path = "/:user/models/:name/:version") model as Page(modelTemplate)
-		Parameter file
-		Parameter accessToken
-	Resource(path = "/:user/models") models as Page(modelsTemplate) Confidential
-	Resource(path = "/home") userHome as Page(modelsTemplate) Confidential
+	Resource(path = "/home") userHome as Page(userHomeTemplate) Confidential
+	Resource(path = "/:user/home") userModels as Page(userHomeTemplate) Confidential
+	Resource(path = "/:user/models/:id") userModel as Page(modelTemplate) > Parameter file
+	Resource(path = "/languages/:language") language as Page(languageTemplate)
+	Resource(path = "/languages/:language/languages") publicLanguages as Page(parentLanguagesTemplate)
+	Resource(path = "/languages/:language/models") publicModels as Page(languageModelsTemplate)
+	Resource(path = "/languages/:language/models/:id") publicModel as Page(modelTemplate) > Parameter file
 	Resource(path = "/not-found") notFound as Page(notFoundTemplate) > Parameter model
 	Resource(path = "/permissions") permissions as Page(permissionsTemplate) > Parameter username; Parameter model
 
@@ -39,6 +42,32 @@ Template homeTemplate as Relative(height=100%, width=100%)
 		Block(format=whiteBackground topSpaced leftSpaced) as Relative(width=70%)
 			TemplateStamp(template=languagesCatalog) languagesCatalog
 
+Template userHomeTemplate as Relative(height=100%, width=100%)
+	TemplateStamp(template=modelsHeaderTemplate) header
+
+	Block(layout=Vertical Flexible CenterCenter, visible=false) openingModelBlock
+		Spinner(mode=Ring, color="secondary")
+		Text(value="" , translate=true, format=h3 airTop) openingModelMessage
+
+	Block(layout=Horizontal Flexible) bodyBlock
+		Block(format=greyBackground) as Relative(width=20%)
+			Block(format=autoHeight) as Relative(width=100%)
+				Block(layout=Vertical CenterCenter, format=leftPanelBackground topSpaced bottomSpaced)
+
+			Block
+				Selector groupSelector as ListBox
+					Text(value="All languages") allLanguagesOption as Option
+					Text(value="Private languages") privateLanguagesOption as Option
+					Text(value="Public languages") publicLanguagesOption as Option
+					Text(value="All models") allModelsOption as Option
+					Text(value="Private models") privateModelsOption as Option
+					Text(value="Public models") publicModelsOption as Option
+
+		Block(layout=Vertical Flexible, format=spaced)
+			Block(layout=Vertical Flexible, visible=false) languagesCatalogBlock > TemplateStamp(template=languagesCatalog) languagesCatalog
+			Block(layout=Vertical Flexible, visible=false) modelsCatalogBlock > TemplateStamp(template=modelsCatalog) modelsCatalog
+
+
 Template(format=headerBackground middleTopSpaced middleBottomSpaced) headerTemplate
 	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)
 		Block(layout=Horizontal Flexible Center, format=airLeft)
@@ -56,7 +85,7 @@ Template(format=headerBackground middleTopSpaced middleBottomSpaced) headerTempl
 				MaterialIconButton(title="set light mode", icon="Brightness7") as SetLightMode
 			User(mode=OnlyPhoto, visible=false) user
 				Selector as ListBox
-					Block as Option > Link(title="My models") models as OpenPage(page=ImeElements.models)
+					Block as Option > Link(title="My home") userHome as OpenPage(page=ImeElements.userHome)
 
 Template(layout=Vertical Flexible) permissionsTemplate as Relative(height=100%,width=100%)
 	Block(layout=Vertical CenterCenter, format=grey) as Relative(height=100%,width=100%)
@@ -69,7 +98,7 @@ Template(layout=Vertical Flexible) permissionsTemplate as Relative(height=100%,w
 				Divider
 				Block(layout=Horizontal CenterJustified, format=middleAirTop)
 					Button(title="Home", highlight=Outline, format=airRight) gotoHome as OpenPage(ImeElements.home)
-					Button(title="My models", visible=false, highlight=Outline, format=airRight) myModels as OpenPage(ImeElements.models)
+					Button(title="My home", visible=false, highlight=Outline, format=airRight) userHome as OpenPage(ImeElements.userHome)
 					//Button(title="Login", visible=false, highlight=Outline, format=airRight) loginButton as OpenPage(ImeElements.model)
 					Button(title="Logout", visible=false, highlight=Outline) logoutButton as Action
 
@@ -84,4 +113,4 @@ Template(layout=Vertical Flexible) notFoundTemplate as Relative(height=100%,widt
 				Divider
 				Block(layout=Horizontal CenterJustified, format=middleAirTop)
 					Button(title="Home", highlight=Outline, format=airRight) gotoHome as OpenPage(ImeElements.home)
-					Button(title="My models", highlight=Outline, visible=false) myModels as OpenPage(ImeElements.models)
+					Button(title="My home", highlight=Outline, visible=false) userHome as OpenPage(ImeElements.userHome)

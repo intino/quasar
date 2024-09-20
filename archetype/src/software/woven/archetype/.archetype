@@ -3,13 +3,18 @@ TARGETS:{editor}
 + configuration
     - modelSequence() in "model-sequence.tsv"
 
-- languages in "languages.tsv"
++ languages in "languages"
+    - releases(language) in "{language}/releases.json"
+    - definition(language) in "{language}/definition.json"
 
 + models in "models"
-    - definition(name) in "{name}/definition.json"
-    - workspace(name, version) in "{name}/workspaces/{version}"
+    - definition(model) in "{model}/definition.json"
+    - workspace(model) in "{model}/workspace"
+    - getWorkspaceProperties(model) in "{model}/workspace/properties.json"
 
 + tmp
 
 + repository
+    + logos
+        - getLogo(language) in "{language}.png"
 	+ languages

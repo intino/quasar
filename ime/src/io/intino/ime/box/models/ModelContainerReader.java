@@ -31,6 +31,7 @@ public class ModelContainerReader {
 
 	public List<ModelContainer.File> files() {
 		try {
+			if (server == null) return Collections.emptyList();
 			Either<List<? extends SymbolInformation>, List<? extends WorkspaceSymbol>> symbols = server.getWorkspaceService().symbol(new WorkspaceSymbolParams()).get();
 			return WorkspaceHelper.filesOf(symbols.getRight());
 		} catch (InterruptedException | ExecutionException e) {
@@ -40,6 +41,7 @@ public class ModelContainerReader {
 	}
 
 	public String content(String uri) {
+		if (server == null) return "";
 		try(InputStream content = ((IntinoLanguageServer) server).getWorkspaceService().content(URI.create(uri))) {
 			return new String(content.readAllBytes(), Charset.defaultCharset());
 		} catch (Exception e) {

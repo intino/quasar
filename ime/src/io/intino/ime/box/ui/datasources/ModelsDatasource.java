@@ -57,7 +57,7 @@ public class ModelsDatasource extends PageDatasource<Model> {
 	}
 
 	protected String username() {
-		return session.user() != null ? session.user().username() : "Anonymous";
+		return session.user() != null ? session.user().username() : Model.DefaultOwner;
 	}
 
 	private List<Model> load(String condition, List<Filter> filters) {
@@ -70,19 +70,18 @@ public class ModelsDatasource extends PageDatasource<Model> {
 		if (condition == null || condition.isEmpty()) return models;
 		String[] conditions = condition.toLowerCase().split(" ");
 		return models.stream().filter(w ->
-				DatasourceHelper.matches(w.name(), conditions) ||
-				DatasourceHelper.matches(w.title(), conditions) ||
-				DatasourceHelper.matches(w.owner().name(), conditions) ||
-				DatasourceHelper.matches(w.owner().fullName(), conditions) ||
-				DatasourceHelper.matches(w.language(), conditions)
+				DatasourceHelper.matches(w.id(), conditions) ||
+				DatasourceHelper.matches(w.label(), conditions) ||
+				DatasourceHelper.matches(w.owner(), conditions) ||
+				DatasourceHelper.matches(w.modelingLanguage(), conditions) ||
+				DatasourceHelper.matches(w.releasedLanguage(), conditions)
 		).collect(toList());
 	}
 
 	private List<Model> sort(List<Model> models, List<String> sortings) {
-		if (sortings.contains("Language")) return models.stream().sorted(Comparator.comparing(m -> m.language() != null ? m.language() : "z")).toList();
-		else if (sortings.contains("Owner")) return models.stream().sorted(Comparator.comparing(m -> m.owner() != null ? m.owner().fullName() : "z")).toList();
-		else if (sortings.contains("Last modified")) return models.stream().sorted(Comparator.comparing(Model::lastModifyDate)).toList();
-		return models.stream().sorted(Comparator.comparing(m -> m.title().toLowerCase())).toList();
+		if (sortings.contains("Language")) return models.stream().sorted(Comparator.comparing(m -> m.modelingLanguage() != null ? m.modelingLanguage() : "z")).toList();
+		else if (sortings.contains("Owner")) return models.stream().sorted(Comparator.comparing(m -> m.owner() != null ? m.owner() : "z")).toList();
+		return models.stream().sorted(Comparator.comparing(m -> m.label().toLowerCase())).toList();
 	}
 
 	private void saveParameters(String condition, List<Filter> filters) {
