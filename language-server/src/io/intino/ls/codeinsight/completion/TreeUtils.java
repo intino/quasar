@@ -14,7 +14,7 @@ public class TreeUtils {
 		return null;
 	}
 
-	public Token findToken(TokenStream tokens, int line, int column) {
+	public static Token findToken(TokenStream tokens, int line, int column) {
 		for (int i = 0; i < tokens.size(); i++) {
 			Token token = tokens.get(i);
 			if (token.getLine() == line) {
@@ -28,7 +28,7 @@ public class TreeUtils {
 		return null;
 	}
 
-	public ParserRuleContext findNodeContainingToken(ParserRuleContext ctx, Token token) {
+	public static ParserRuleContext findNodeContainingToken(ParserRuleContext ctx, Token token) {
 		Token startToken = ctx.getStart();
 		Token stopToken = ctx.getStop();
 		if (token.getTokenIndex() >= startToken.getTokenIndex() && token.getTokenIndex() <= stopToken.getTokenIndex()) {

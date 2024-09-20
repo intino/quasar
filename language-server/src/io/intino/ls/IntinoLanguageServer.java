@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static io.intino.ls.IntinoSemanticTokens.tokenModifiers;
 import static io.intino.ls.IntinoSemanticTokens.tokenTypes;
@@ -22,11 +23,12 @@ public class IntinoLanguageServer implements LanguageServer, LanguageClientAware
 	public HashMap<Object, Object> expectedRequests = new HashMap<>();
 	private final IntinoDocumentService documentService;
 	private final IntinoWorkspaceService workspaceService;
+	private AtomicReference<LanguageClient> client = new AtomicReference<>(null);
 
 	public IntinoLanguageServer(Language language, DocumentManager documentManager) {
 		Map<URI, ModelUnit> models = new HashMap<>();
 		DiagnosticService diagnosticService = new DiagnosticService(documentManager, models);
-		this.documentService = new IntinoDocumentService(language, documentManager, diagnosticService, models);
+		this.documentService = new IntinoDocumentService(language, documentManager, diagnosticService, models, client);
 		this.workspaceService = new IntinoWorkspaceService(language, documentManager, diagnosticService);
 	}
 
@@ -37,7 +39,7 @@ public class IntinoLanguageServer implements LanguageServer, LanguageClientAware
 //		capabilities.setDocumentHighlightProvider(new DocumentHighlightOptions());
 		capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
 		capabilities.setCompletionProvider(new CompletionOptions(true, List.of()));
-		capabilities.setDiagnosticProvider(new DiagnosticRegistrationOptions(true, true));
+		capabilities.setDiagnosticProvider(new DiagnosticRegistrationOptions(true, false));
 //		capabilities.setHoverProvider(true);
 //		capabilities.setCodeActionProvider(true);
 //		capabilities.setDocumentSymbolProvider(true);
@@ -100,11 +102,10 @@ public class IntinoLanguageServer implements LanguageServer, LanguageClientAware
 
 	@Override
 	public void connect(LanguageClient client) {
-
+		this.client.set(client);
 	}
 
 	@Override
 	public void setTrace(SetTraceParams params) {
-
 	}
 }

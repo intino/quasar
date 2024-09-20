@@ -28,7 +28,7 @@ public class ReferenceResolver {
 	}
 
 
-	public Element findMogramContainingToken(Element element, Position position) {
+	public static Element findMogramContainingToken(Element element, Position position) {
 		if (isInRange(element, position)) {
 			if (element instanceof ElementContainer ec)
 				for (Element e : ec.elements()) {
@@ -40,7 +40,7 @@ public class ReferenceResolver {
 		return null;
 	}
 
-	private boolean isInRange(Element mogram, Position position) {
-		return mogram.textRange().startLine() <= position.getLine() && position.getLine() <= mogram.textRange().endLine();
+	private static boolean isInRange(Element mogram, Position position) {
+		return mogram != null && mogram.textRange().startLine() <= position.getLine() && position.getLine() <= mogram.textRange().endLine();
 	}
 }

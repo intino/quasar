@@ -17,7 +17,7 @@ public class DocumentSourceProvider implements SourceProvider {
 
 	@Override
 	public Stream<Source> all() {
-		return documentManager.all().stream().map(u -> get(u));
+		return documentManager.all().stream().map(this::get);
 	}
 
 	public Source get(URI uri) {

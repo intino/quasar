@@ -4,24 +4,31 @@ import io.intino.alexandria.logger.Logger;
 import io.intino.ls.IntinoSemanticTokens.SemanticToken;
 import io.intino.ls.codeinsight.DiagnosticService;
 import io.intino.ls.codeinsight.ReferenceResolver;
+import io.intino.ls.codeinsight.completion.CompletionContext;
+import io.intino.ls.codeinsight.completion.CompletionService;
+import io.intino.ls.codeinsight.completion.TreeUtils;
+import io.intino.ls.parsing.ParsingService;
 import io.intino.tara.Language;
 import io.intino.tara.Source.StringSource;
 import io.intino.tara.language.grammar.TaraLexer;
 import io.intino.tara.language.model.Element;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.jsonrpc.messages.Either3;
+import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.TextDocumentService;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.antlr.v4.runtime.CharStreams.fromString;
@@ -33,21 +40,27 @@ public class IntinoDocumentService implements TextDocumentService {
 	private final DiagnosticService diagnosticService;
 	private final ReferenceResolver referenceResolver;
 	private final Map<URI, ModelUnit> models;
+	private final AtomicReference<LanguageClient> client;
+	private final ParsingService parsingService;
+	private final CompletionService completionService;
 
-	public IntinoDocumentService(Language language, DocumentManager workspaceManager, DiagnosticService diagnosticService, Map<URI, ModelUnit> models) {
+	public IntinoDocumentService(Language language, DocumentManager workspaceManager, DiagnosticService diagnosticService, Map<URI, ModelUnit> models, AtomicReference<LanguageClient> client) {
 		this.language = language;
 		this.workspaceManager = workspaceManager;
 		this.documentSourceProvider = new DocumentSourceProvider(workspaceManager);
 		this.diagnosticService = diagnosticService;
-		referenceResolver = new ReferenceResolver(models);
+		this.referenceResolver = new ReferenceResolver(models);
+		this.parsingService = new ParsingService(models);
+		this.completionService = new CompletionService();
 		this.models = models;
+		this.client = client;
 		laodModels();
 	}
 
 	private void laodModels() {
 		documentSourceProvider.all().forEach(u -> {
 			try {
-				diagnosticService.updateModel(new StringSource(u.uri().getPath(), new String(u.content().readAllBytes())));
+				parsingService.updateModel(new StringSource(u.uri().getPath(), new String(u.content().readAllBytes())));
 			} catch (IOException e) {
 				Logger.error(e);
 			}
@@ -57,7 +70,9 @@ public class IntinoDocumentService implements TextDocumentService {
 	@Override
 	public void didOpen(DidOpenTextDocumentParams params) {
 		URI uri = URI.create(normalize(params.getTextDocument().getUri()));
-		diagnosticService.updateModel(new StringSource(uri.getPath(), params.getTextDocument().getText()));
+		parsingService.updateModel(new StringSource(uri.getPath(), params.getTextDocument().getText()));
+		notifyDiagnostics(uri, params.getTextDocument().getVersion());
+
 	}
 
 	@Override
@@ -67,10 +82,16 @@ public class IntinoDocumentService implements TextDocumentService {
 			InputStream doc = workspaceManager.getDocumentText(uri);
 			String content = applyChanges(doc != null ? new String(doc.readAllBytes()) : "", params.getContentChanges());
 			workspaceManager.upsertDocument(uri, language.languageName(), content == null ? "" : content);
-			diagnosticService.updateModel(new StringSource(uri.getPath(), content));
-		} catch (IOException e) {
+			parsingService.updateModel(new StringSource(uri.getPath(), content));
+			notifyDiagnostics(uri, params.getTextDocument().getVersion());
+		} catch (Throwable e) {
 			Logger.error(e);
 		}
+	}
+
+	private void notifyDiagnostics(URI uri, int version) {
+		List<Diagnostic> diagnostics = diagnosticService.analyzeWorkspace().stream().filter(d -> d.getSource().equals(uri.getPath())).toList();
+		client.get().publishDiagnostics(new PublishDiagnosticsParams(uri.getPath(), diagnostics, version));
 	}
 
 	@Override
@@ -98,7 +119,12 @@ public class IntinoDocumentService implements TextDocumentService {
 
 	@Override
 	public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
-		return completedFuture(new DocumentDiagnosticReport(new RelatedFullDocumentDiagnosticReport(diagnosticService.analyzeWorkspace())));
+		try {
+			return completedFuture(new DocumentDiagnosticReport(new RelatedFullDocumentDiagnosticReport(diagnosticService.analyzeWorkspace())));
+		} catch (Exception e) {
+			Logger.error(e);
+			return completedFuture(null);
+		}
 	}
 
 	private int getOffset(Position position, String content) {
@@ -142,14 +168,22 @@ public class IntinoDocumentService implements TextDocumentService {
 
 	@Override
 	public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams params) {
-		CompletionItem item = new CompletionItem();
-		item.setLabel("exampleCompletion");
-		item.setInsertText("Example insert text");
-//		item.setTextEdit(new TextEdit(null, "Example replacement text"));
+		List<CompletionItem> items = completionService.propose(completionContextOf(params));
 		CompletionList completionList = new CompletionList();
 		completionList.setIsIncomplete(false);
-		completionList.setItems(Collections.singletonList(item));
+		completionList.setItems(items);
 		return completedFuture(Either.forRight(completionList));
+	}
+
+	private CompletionContext completionContextOf(CompletionParams params) {
+		URI uri = URI.create(normalize(params.getTextDocument().getUri()));
+		ModelUnit modelUnit = models.get(uri);
+		Position position = params.getPosition();
+		position.setLine(position.getLine() + 1);
+		Token token = TreeUtils.findToken(modelUnit.tokens(), position.getLine(), params.getPosition().getCharacter());
+		ParserRuleContext nodeContainingToken = token == null ? null : TreeUtils.findNodeContainingToken(modelUnit.tree(), token);
+		return new CompletionContext(uri, language, modelUnit.model(), params.getPosition(),
+				token, nodeContainingToken, params.getContext().getTriggerCharacter());
 	}
 
 
@@ -212,16 +246,6 @@ public class IntinoDocumentService implements TextDocumentService {
 	}
 
 	@Override
-	public CompletableFuture<List<? extends CodeLens>> codeLens(CodeLensParams params) {
-		return TextDocumentService.super.codeLens(params);
-	}
-
-	@Override
-	public CompletableFuture<CodeLens> resolveCodeLens(CodeLens unresolved) {
-		return TextDocumentService.super.resolveCodeLens(unresolved);
-	}
-
-	@Override
 	public CompletableFuture<WorkspaceEdit> rename(RenameParams params) {
 		return TextDocumentService.super.rename(params);//TODO
 	}
@@ -229,36 +253,6 @@ public class IntinoDocumentService implements TextDocumentService {
 	@Override
 	public CompletableFuture<Either3<Range, PrepareRenameResult, PrepareRenameDefaultBehavior>> prepareRename(PrepareRenameParams params) {
 		return TextDocumentService.super.prepareRename(params);
-	}
-
-	@Override
-	public CompletableFuture<List<TypeHierarchyItem>> prepareTypeHierarchy(TypeHierarchyPrepareParams params) {
-		return TextDocumentService.super.prepareTypeHierarchy(params);
-	}
-
-	@Override
-	public CompletableFuture<List<TypeHierarchyItem>> typeHierarchySupertypes(TypeHierarchySupertypesParams params) {
-		return TextDocumentService.super.typeHierarchySupertypes(params);
-	}
-
-	@Override
-	public CompletableFuture<List<TypeHierarchyItem>> typeHierarchySubtypes(TypeHierarchySubtypesParams params) {
-		return TextDocumentService.super.typeHierarchySubtypes(params);
-	}
-
-	@Override
-	public CompletableFuture<List<CallHierarchyItem>> prepareCallHierarchy(CallHierarchyPrepareParams params) {
-		return TextDocumentService.super.prepareCallHierarchy(params);
-	}
-
-	@Override
-	public CompletableFuture<List<CallHierarchyIncomingCall>> callHierarchyIncomingCalls(CallHierarchyIncomingCallsParams params) {
-		return TextDocumentService.super.callHierarchyIncomingCalls(params);
-	}
-
-	@Override
-	public CompletableFuture<List<CallHierarchyOutgoingCall>> callHierarchyOutgoingCalls(CallHierarchyOutgoingCallsParams params) {
-		return TextDocumentService.super.callHierarchyOutgoingCalls(params);
 	}
 
 	@Override
