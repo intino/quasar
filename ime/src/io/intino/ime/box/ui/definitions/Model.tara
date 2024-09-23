@@ -94,12 +94,12 @@ Template(format=headerBackground middleTopSpaced middleBottomSpaced) modelHeader
 				Block(format=languageOperationsStyle relative, visible=false) modelOperationsBlock
 					Text(value="", format=modelOperationsTextStyle, translate=true)
 					TemplateStamp(template=modelOperation) operations as Multiple(noItemsMessage="", arrangement=Horizontal)
-				MaterialIconButton(title="Publish", titlePosition=Bottom, format=airRight, icon="Publish") publishTrigger as OpenDialog(publishDialog)
+				MaterialIconButton(title="Publish"/*, titlePosition=Bottom*/, format=airRight, icon="Publish") publishTrigger as OpenDialog(publishDialog)
 				TemplateStamp(template=cloneModelEditor) cloneModelEditor
-				MaterialIconButton(title="Remove model", titlePosition=Bottom, format=airRight, icon="Delete", visible=false) removeModel as Action Affirmed("Are you sure to remove model?")
+				MaterialIconButton(title="Remove model"/*, titlePosition=Bottom*/, format=airRight, icon="Delete", visible=false) removeModel as Action Affirmed("Are you sure to remove model?")
 				TemplateStamp(template=modelSettingsEditor) settingsEditor
-				MaterialIconButton(title="Set dark mode", titlePosition=Bottom, format=airRight, icon="Brightness4") as SetDarkMode
-				MaterialIconButton(title="Set light mode", titlePosition=Bottom, format=airRight, icon="Brightness7") as SetLightMode
+				MaterialIconButton(title="Set dark mode"/*, titlePosition=Bottom*/, format=airRight, icon="Brightness4") as SetDarkMode
+				MaterialIconButton(title="Set light mode"/*, titlePosition=Bottom*/, format=airRight, icon="Brightness7") as SetLightMode
 			User(mode=OnlyPhoto, visible=false) user
 				Selector as ListBox
 					Block as Option > Link(title="Home") as OpenPage(page=ImeElements.home)
@@ -114,7 +114,7 @@ Template(format=headerBackground middleTopSpaced middleBottomSpaced) modelHeader
 			Button(title="Create", size=Small, highlight=Fill) publish as Action
 
 Template modelOperation
-	MaterialIconButton(title="", icon="HelpOutline", titlePosition=Bottom, format=airRight) trigger as Action
+	MaterialIconButton(title="", icon="HelpOutline"/*, titlePosition=Bottom*/, format=airRight) trigger as Action
 
 Display intinoFileBrowser
 	Notification refresh as Object(intinoFileBrowserInfo)

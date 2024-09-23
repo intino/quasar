@@ -33,8 +33,8 @@ Template languageSettingsEditor
 Template(layout=Horizontal) modelSettingsEditor
 	MaterialIconButton(title="Settings", icon="Settings", size=Small, visible=false) smallIconInList as OpenDialog(settingsDialog)
 	MaterialIconButton(title="Settings", icon="Settings", visible=false) largeIconInList as OpenDialog(settingsDialog)
-	MaterialIconButton(title="Settings", icon="Settings", format=airRight, titlePosition=Bottom, size=Small, visible=false) smallIcon as OpenDialog(settingsDialog)
-	MaterialIconButton(title="Settings", icon="Settings", format=airRight, titlePosition=Bottom, visible=false) largeIcon as OpenDialog(settingsDialog)
+	MaterialIconButton(title="Settings", icon="Settings", format=airRight,/* titlePosition=Bottom,*/ size=Small, visible=false) smallIcon as OpenDialog(settingsDialog)
+	MaterialIconButton(title="Settings", icon="Settings", format=airRight,/* titlePosition=Bottom,*/ visible=false) largeIcon as OpenDialog(settingsDialog)
 
 	Dialog(title="Settings") settingsDialog as Absolute(width=500px, height=600px)
         Block as Relative(height=100%, offsetHeight=40px)
@@ -48,8 +48,8 @@ Template(layout=Horizontal) modelSettingsEditor
 Template(layout=Horizontal) cloneModelEditor
 	MaterialIconButton(title="Clone model", icon="FileCopy", size=Small, visible=false) smallIconInList as OpenDialog(modelDialog)
 	MaterialIconButton(title="Clone model", icon="FileCopy", visible=false) largeIconInList as OpenDialog(modelDialog)
-	MaterialIconButton(title="Clone model", icon="FileCopy", titlePosition=Bottom, format=airRight, size=Small, visible=false) smallIcon as OpenDialog(modelDialog)
-	MaterialIconButton(title="Clone model", icon="FileCopy", titlePosition=Bottom, format=airRight, visible=false) largeIcon as OpenDialog(modelDialog)
+	MaterialIconButton(title="Clone model", icon="FileCopy"/*, titlePosition=Bottom*/, format=airRight, size=Small, visible=false) smallIcon as OpenDialog(modelDialog)
+	MaterialIconButton(title="Clone model", icon="FileCopy"/*, titlePosition=Bottom*/, format=airRight, visible=false) largeIcon as OpenDialog(modelDialog)
 
 	Dialog(title="Clone model") modelDialog as Absolute(width=400px, height=260px)
         Block as Relative(height=100%, offsetHeight=40px)
