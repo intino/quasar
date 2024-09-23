@@ -4,7 +4,7 @@ import io.intino.tara.Language;
 import io.intino.tara.language.model.*;
 import io.intino.tara.language.model.rules.Size;
 import io.intino.tara.language.semantics.Constraint;
-import io.intino.tara.processors.model.Model;
+import io.intino.tara.processors.Resolver;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 
@@ -38,7 +38,7 @@ public class CompletionUtils {
 		String type = container instanceof Mogram m ? m.types().get(0) : "";
 		if (type == null) return List.of();
 		final List<Constraint> mogramConstraints = language.constraints(type);
-		if (mogramConstraints == null) return null;
+		if (mogramConstraints == null) return List.of();
 		List<Constraint> constraints = new ArrayList<>(mogramConstraints);
 		if (container instanceof Mogram m)
 			constraints.addAll(constraintsOf(facetConstraints(mogramConstraints, m.appliedFacets())));
@@ -50,7 +50,7 @@ public class CompletionUtils {
 					.filter(c -> isSizeAccepted(c, container)).toList());
 		}
 		if (components.isEmpty()) return List.of();
-		return createCompletionForComponents(components, container);
+		return createCompletionForComponents(components);
 	}
 
 	private static List<Constraint.Component> componentConstraints(List<Constraint> constraints) {
@@ -120,7 +120,7 @@ public class CompletionUtils {
 		return list;
 	}
 
-	private List<CompletionItem> createCompletionForComponents(List<Constraint.Component> constraints, ElementContainer container) {
+	private List<CompletionItem> createCompletionForComponents(List<Constraint.Component> constraints) {
 		Set<String> added = new HashSet<>();
 		List<CompletionItem> items = new ArrayList<>();
 		for (Constraint.Component constraint : constraints)
@@ -163,12 +163,14 @@ public class CompletionUtils {
 
 	private CompletionItem createCompletionItem(Constraint.Component constraint) {
 		CompletionItem item = new CompletionItem(constraint.type());
+		item.setKind(CompletionItemKind.Class);
 		item.setInsertText(lastTypeOf(constraint.type()) + " ");
 		return item;
 	}
 
 	private CompletionItem createCompletionItem(Constraint.Facet facet) {
 		CompletionItem item = new CompletionItem("facet " + facet.type());
+		item.setKind(CompletionItemKind.Interface);
 		item.setInsertText(facet.type());
 		return item;
 	}

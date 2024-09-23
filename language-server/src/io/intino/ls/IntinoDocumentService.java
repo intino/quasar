@@ -6,15 +6,13 @@ import io.intino.ls.codeinsight.DiagnosticService;
 import io.intino.ls.codeinsight.ReferenceResolver;
 import io.intino.ls.codeinsight.completion.CompletionContext;
 import io.intino.ls.codeinsight.completion.CompletionService;
-import io.intino.ls.codeinsight.completion.TreeUtils;
 import io.intino.ls.parsing.ParsingService;
 import io.intino.tara.Language;
+import io.intino.tara.Source;
 import io.intino.tara.Source.StringSource;
 import io.intino.tara.language.grammar.TaraLexer;
 import io.intino.tara.language.model.Element;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.Token;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.jsonrpc.messages.Either3;
@@ -30,6 +28,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static io.intino.ls.codeinsight.completion.CompletionService.completionContextOf;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.antlr.v4.runtime.CharStreams.fromString;
 
@@ -44,10 +43,10 @@ public class IntinoDocumentService implements TextDocumentService {
 	private final ParsingService parsingService;
 	private final CompletionService completionService;
 
-	public IntinoDocumentService(Language language, DocumentManager workspaceManager, DiagnosticService diagnosticService, Map<URI, ModelUnit> models, AtomicReference<LanguageClient> client) {
+	public IntinoDocumentService(Language language, DocumentManager documentManager, DiagnosticService diagnosticService, Map<URI, ModelUnit> models, AtomicReference<LanguageClient> client) {
 		this.language = language;
-		this.workspaceManager = workspaceManager;
-		this.documentSourceProvider = new DocumentSourceProvider(workspaceManager);
+		this.workspaceManager = documentManager;
+		this.documentSourceProvider = new DocumentSourceProvider(documentManager);
 		this.diagnosticService = diagnosticService;
 		this.referenceResolver = new ReferenceResolver(models);
 		this.parsingService = new ParsingService(models);
@@ -168,24 +167,22 @@ public class IntinoDocumentService implements TextDocumentService {
 
 	@Override
 	public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams params) {
-		List<CompletionItem> items = completionService.propose(completionContextOf(params));
-		CompletionList completionList = new CompletionList();
-		completionList.setIsIncomplete(false);
-		completionList.setItems(items);
-		return completedFuture(Either.forRight(completionList));
-	}
-
-	private CompletionContext completionContextOf(CompletionParams params) {
 		URI uri = URI.create(normalize(params.getTextDocument().getUri()));
-		ModelUnit modelUnit = models.get(uri);
-		Position position = params.getPosition();
-		position.setLine(position.getLine() + 1);
-		Token token = TreeUtils.findToken(modelUnit.tokens(), position.getLine(), params.getPosition().getCharacter());
-		ParserRuleContext nodeContainingToken = token == null ? null : TreeUtils.findNodeContainingToken(modelUnit.tree(), token);
-		return new CompletionContext(uri, language, modelUnit.model(), params.getPosition(),
-				token, nodeContainingToken, params.getContext().getTriggerCharacter());
+		String textDoc = contentOf(uri);
+		Source.StringSource source = new Source.StringSource("model", textDoc);
+		CompletionContext context = completionContextOf(params, language, source);
+		if (context == null) return completedFuture(Either.forRight(new CompletionList()));
+		List<CompletionItem> items = completionService.propose(context);
+		return completedFuture(Either.forRight(new CompletionList(false, items)));
 	}
 
+	private String contentOf(URI uri) {
+		try {
+			return new String(workspaceManager.getDocumentText(uri).readAllBytes());
+		} catch (IOException e) {
+			return null;
+		}
+	}
 
 	@Override
 	public CompletableFuture<CompletionItem> resolveCompletionItem(CompletionItem unresolved) {
@@ -273,7 +270,7 @@ public class IntinoDocumentService implements TextDocumentService {
 	public void setTrace(SetTraceParams params) {
 	}
 
-	private String normalize(String uri) {
+	public static String normalize(String uri) {
 		return uri.replace("file:///", "");
 	}
 }

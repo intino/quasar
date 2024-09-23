@@ -1,26 +1,27 @@
 package io.intino.ls.codeinsight.completion;
 
 import io.intino.tara.language.grammar.TaraGrammar;
-import io.intino.tara.language.model.Element;
 import io.intino.tara.language.model.Level;
 import io.intino.tara.language.model.Mogram;
+import io.intino.tara.processors.Resolver;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 
 import java.util.List;
 
-import static io.intino.ls.codeinsight.ReferenceResolver.findMogramContainingToken;
+import static io.intino.ls.codeinsight.completion.CompletionProvider.create;
 
 public class BodyCompletionProvider implements CompletionProvider {
 	@Override
 	public void addCompletions(CompletionContext context, List<CompletionItem> result) {
-		if (!(context.elementOnPosition() instanceof TaraGrammar.MetaidentifierContext)) return;
-		Element element = findMogramContainingToken(context.model(), context.position());
-		if (!(element instanceof Mogram m)) return;
-		final CompletionUtils completionUtils = new CompletionUtils(context);
-		result.addAll(completionUtils.collectAllowedComponents(m));
-		result.addAll(completionUtils.collectBodyParameters(m));
-		if (m.level() != Level.M1) addKeywords(result);
+		if (!(context.ruleOnPosition() instanceof TaraGrammar.MetaidentifierContext)) return;
+		if (!(context.elementOnPosition() instanceof Mogram m)) return;
+		final CompletionUtils utils = new CompletionUtils(context);
+		Mogram container = (Mogram) m.container();
+		new Resolver(context.language()).resolve(container);
+		result.addAll(utils.collectAllowedComponents(container));
+		result.addAll(utils.collectBodyParameters(container));
+		if (container.level() != Level.M1) addKeywords(result);
 	}
 
 	private void addKeywords(List<CompletionItem> resultSet) {
@@ -29,10 +30,4 @@ public class BodyCompletionProvider implements CompletionProvider {
 		resultSet.add(create("def ", CompletionItemKind.Keyword));
 	}
 
-	private CompletionItem create(String text, CompletionItemKind kind) {
-		CompletionItem item = new CompletionItem();
-		item.setInsertText(text);
-		item.setKind(kind);
-		return item;
-	}
 }

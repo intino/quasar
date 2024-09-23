@@ -1,7 +1,8 @@
-package io.intino.ls;
+package io.intino.ls.parsing;
 
 import io.intino.tara.language.grammar.SyntaxException;
 import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.Parser;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -15,35 +16,35 @@ public class ParserErrorStrategy extends DefaultErrorStrategy {
 	}
 
 	@Override
-	public void reportError(Parser recognizer, RecognitionException e) {
+	public void reportError(org.antlr.v4.runtime.Parser recognizer, RecognitionException e) {
 		Token token = recognizer.getCurrentToken();
 		URI uri = URI.create(recognizer.getSourceName());
 		errors.add(new SyntaxException("Syntax error in " + uri, uri, token.getLine(), token.getCharPositionInLine(), expectedTokens(recognizer)));
 	}
 
 	@Override
-	public Token recoverInline(Parser recognizer) throws RecognitionException {
+	public Token recoverInline(org.antlr.v4.runtime.Parser recognizer) throws RecognitionException {
 		reportError(recognizer, new InputMismatchException(recognizer));
 		return null;
 	}
 
 	@Override
-	protected void reportNoViableAlternative(Parser recognizer, NoViableAltException e) {
+	protected void reportNoViableAlternative(org.antlr.v4.runtime.Parser recognizer, NoViableAltException e) {
 		reportError(recognizer, null);
 	}
 
 	@Override
-	protected void reportInputMismatch(Parser recognizer, InputMismatchException e) {
+	protected void reportInputMismatch(org.antlr.v4.runtime.Parser recognizer, InputMismatchException e) {
 		reportError(recognizer, null);
 	}
 
 	@Override
-	protected void reportFailedPredicate(Parser recognizer, FailedPredicateException e) {
+	protected void reportFailedPredicate(org.antlr.v4.runtime.Parser recognizer, FailedPredicateException e) {
 		reportError(recognizer, null);
 	}
 
 	@Override
-	protected void reportUnwantedToken(Parser recognizer) {
+	protected void reportUnwantedToken(org.antlr.v4.runtime.Parser recognizer) {
 		reportError(recognizer, null);
 	}
 

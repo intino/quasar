@@ -96,6 +96,6 @@
     <orderEntry type="library" name="Intino: io.intino.tara:language:2.0.0" level="project" />
     <orderEntry type="library" name="Intino: org.antlr:antlr4-runtime:4.13.1" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:ui-framework:5.2.15" level="project" />
-    <orderEntry type="library" name="Intino: commons-io:commons-io:2.16.0" level="project" />
+    <orderEntry type="library" name="Intino: commons-io:commons-io:2.16.1" level="project" />
   </component>
 </module>
