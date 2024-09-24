@@ -1,11 +1,11 @@
 dsl Konos
 
 
-Service BuilderService as REST(host = "", port = "{port}")
+Service builder-service as REST(host = "", port = "{port}")
 	Resource(path = "/builders") builders
-		Get > Response as Object(schema = Builder) List
+		Get > Response as Object(schema = BuilderInfo) List
 		Post
-			Parameter(in = body) builder as Object(schema = Builder)
+			Parameter(in = body) builderInfo as Object(schema = BuilderInfo)
 			Response(code ="201")
 
 	Resource("/operations/run") runOperation
@@ -16,7 +16,7 @@ Service BuilderService as REST(host = "", port = "{port}")
 	Notification(path = "build/messages") subscribeBuild
 		Parameter(in = query) buildTicket as Text
 
-Schema Builder
+Schema BuilderInfo
 	Attribute id as Text
 	Attribute url as Text
 	Attribute operations as Text  List
