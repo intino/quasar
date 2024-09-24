@@ -1,6 +1,5 @@
 dsl Konos
 
-
 Service builder-service as REST(host = "", port = "{port}")
 	Resource(path = "/builders") builders
 		Get > Response as Object(schema = BuilderInfo) List
@@ -18,7 +17,7 @@ Service builder-service as REST(host = "", port = "{port}")
 
 Schema BuilderInfo
 	Attribute id as Text
-	Attribute url as Text
+	Attribute imageName as Text
 	Attribute operations as Text  List
 
 Schema RunOperationContext
@@ -44,6 +43,9 @@ Schema ExceptionMessage as ExtensionOf(Message)
 
 Schema WarningMessage as ExtensionOf(Message)
 	Attribute type as Text("WarningMessage")
+	Attribute uri as Text
+	Attribute line as Integer
+	Attribute column as Integer
 	Attribute content as Text
 
 Schema SyntaxErrorMessage as ExtensionOf(Message)
