@@ -10,3 +10,4 @@ package.json
 .intino/
 package-lock.json
 webpack.config.js
+*/www/
