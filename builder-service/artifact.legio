@@ -1,0 +1,14 @@
+dsl Legio
+
+Artifact("io.intino", "1.0.0") builder-service
+	Dsl("Konos", "12.2.9")
+	Imports
+		Test(groupId = "junit", artifactId = "junit", version = "4.13")
+		Compile(groupId = "io.intino.alexandria", artifactId = "core-framework", version = "2.2.0")
+		Compile(groupId = "io.intino.alexandria", artifactId = "logger4j", version = "1.0.1")
+		Compile(groupId = "io.intino.alexandria", artifactId = "rest", version = "3.9.4")
+	Package(mode = ModulesAndLibrariesLinkedByManifest) as Runnable(mainClass = "io.intino.builderservice.konos.Main")
+	Parameter("language-repository")
+	Parameter(name = "port")
+
+RunConfiguration local
