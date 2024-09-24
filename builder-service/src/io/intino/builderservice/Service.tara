@@ -24,10 +24,11 @@ Schema RunOperationContext
 	Attribute builderId as Text
 	Attribute operation as Text
 	Attribute project as Text
+	Attribute version as Text
 	Attribute language as Text
 	Attribute languageVersion as Text
 	Attribute generationPackage as Text
-	Attribute files as Text List
+	Attribute sources as Text List
 
 Schema Message
 	Attribute type as Text

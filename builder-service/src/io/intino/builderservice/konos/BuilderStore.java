@@ -10,22 +10,18 @@ import io.intino.builderservice.konos.schemas.BuilderInfo;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
 public class BuilderStore {
 	private final File directory;
 	private final File indexFile;
-	private final File images;
 	private final Map<String, BuilderInfo> index;
 
 	public BuilderStore(File directory) {
 		this.directory = directory;
 		this.indexFile = new File(directory, "builders.json");
-		this.images = new File(directory, "images");
 		this.directory.mkdirs();
-		this.images.mkdirs();
 		this.index = load(indexFile);
 	}
 
@@ -50,17 +46,8 @@ public class BuilderStore {
 	}
 
 	private void download(BuilderInfo info) throws InterruptedException, IOException {
-		String outputFilePath = new File(images, info.imageName().replace(":", "-") + ".tar").getAbsolutePath();
 		DockerClient dockerClient = DockerClientBuilder.getInstance().build();
 		dockerClient.pullImageCmd(info.imageName()).exec(new PullImageResultCallback()).awaitCompletion();
-		try (InputStream inputStream = dockerClient.saveImageCmd(info.imageName()).exec();
-			 OutputStream outputStream = new FileOutputStream(Paths.get(outputFilePath).toFile())) {
-			byte[] buffer = new byte[1024];
-			int bytesRead;
-			while ((bytesRead = inputStream.read(buffer)) != -1) {
-				outputStream.write(buffer, 0, bytesRead);
-			}
-		}
 	}
 
 	public synchronized void saveIndex() {
@@ -69,5 +56,9 @@ public class BuilderStore {
 		} catch (IOException e) {
 			Logger.error(e);
 		}
+	}
+
+	public BuilderInfo get(String builderId) {
+		return index.get(builderId);
 	}
 }
