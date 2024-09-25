@@ -12,5 +12,7 @@ Artifact("io.intino", "1.0.0") builder-service
 	Package(mode = ModulesAndLibrariesLinkedByManifest) as Runnable(mainClass = "io.intino.builderservice.konos.Main")
 	Parameter("language-repository")
 	Parameter(name = "port")
+	Parameter(name = "home")
+	Parameter(name = "dockerhub-auth-file")
 
 RunConfiguration local

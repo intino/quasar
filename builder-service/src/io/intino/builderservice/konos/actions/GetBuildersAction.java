@@ -1,17 +1,18 @@
 package io.intino.builderservice.konos.actions;
 
+import io.intino.alexandria.exceptions.AlexandriaException;
+import io.intino.alexandria.exceptions.BadRequest;
 import io.intino.builderservice.konos.BuilderServiceBox;
-import io.intino.alexandria.exceptions.*;
-import java.time.*;
-import java.util.*;
-import io.intino.builderservice.konos.schemas.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GetBuildersAction implements io.intino.alexandria.rest.RequestErrorHandler {
 	public BuilderServiceBox box;
 	public io.intino.alexandria.http.spark.SparkContext context;
 
 	public List<io.intino.builderservice.konos.schemas.BuilderInfo> execute() {
-		return null;
+		return new ArrayList<>(box.builderStore().all());
 	}
 
 	public void onMalformedRequest(Throwable e) throws AlexandriaException {

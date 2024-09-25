@@ -12,7 +12,7 @@ public class PostBuildersAction implements io.intino.alexandria.rest.RequestErro
 	public io.intino.alexandria.http.spark.SparkContext context;
 
 	public void execute() {
-
+		box.builderStore().put(builderInfo);
 	}
 
 	public void onMalformedRequest(Throwable e) throws AlexandriaException {

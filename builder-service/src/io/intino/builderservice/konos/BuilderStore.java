@@ -10,24 +10,28 @@ import io.intino.builderservice.konos.schemas.BuilderInfo;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 public class BuilderStore {
-	private final File directory;
 	private final File indexFile;
 	private final Map<String, BuilderInfo> index;
 
 	public BuilderStore(File directory) {
-		this.directory = directory;
+		directory.mkdirs();
 		this.indexFile = new File(directory, "builders.json");
-		this.directory.mkdirs();
 		this.index = load(indexFile);
+	}
+
+	public Collection<BuilderInfo> all() {
+		return index.values();
 	}
 
 	private Map<String, BuilderInfo> load(File index) {
 		try {
-			return Json.fromJson(new FileReader(index), new TypeToken<Map<String, BuilderInfo>>() {
+			if (!index.exists()) return new HashMap<>();
+			return Json.fromJson(new FileReader(index), new TypeToken<HashMap<String, BuilderInfo>>() {
 			}.getType());
 		} catch (FileNotFoundException e) {
 			Logger.error(e);
@@ -52,7 +56,7 @@ public class BuilderStore {
 
 	public synchronized void saveIndex() {
 		try {
-			Files.writeString(indexFile.toPath(), Json.toJson(indexFile));
+			Files.writeString(indexFile.toPath(), Json.toJson(index));
 		} catch (IOException e) {
 			Logger.error(e);
 		}

@@ -9,9 +9,9 @@ import java.util.List;
 
 public class TarExtractor {
 
-	public static List<File> extractTar(File tarFile, File destDir) throws IOException {
+	public static List<File> extractTar(InputStream tarFile, File destDir) throws IOException {
 		List<File> files = new ArrayList<>();
-		try (TarArchiveInputStream tarIn = new TarArchiveInputStream(new FileInputStream(tarFile))) {
+		try (TarArchiveInputStream tarIn = new TarArchiveInputStream(tarFile)) {
 			TarArchiveEntry entry;
 			while ((entry = tarIn.getNextTarEntry()) != null) {
 				File outputFile = new File(destDir, entry.getName());

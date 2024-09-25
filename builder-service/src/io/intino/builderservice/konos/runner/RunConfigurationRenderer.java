@@ -1,4 +1,4 @@
-package io.intino.builderservice.konos.actions;
+package io.intino.builderservice.konos.runner;
 
 
 import io.intino.builderservice.konos.schemas.RunOperationContext;
@@ -27,8 +27,7 @@ public class RunConfigurationRenderer {
 	public String build() {
 		StringWriter writer = new StringWriter();
 		writer.write(SRC_FILE + NL);
-		for (String file : srcFiles)
-			writer.write(file + "#" + true + NL);
+		srcFiles.stream().map(file -> file + "#" + true + NL).forEach(writer::write);
 		writer.write(NL);
 		writer.write(PROJECT + NL + params.project() + NL);
 		writer.write(MODULE + NL + params.project() + NL);
@@ -55,6 +54,4 @@ public class RunConfigurationRenderer {
 		writer.write(NL);
 		writer.write(NL);
 	}
-
 }
-
