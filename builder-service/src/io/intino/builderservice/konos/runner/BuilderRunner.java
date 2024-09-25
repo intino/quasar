@@ -47,7 +47,7 @@ public class BuilderRunner {
 		RunConfigurationRenderer renderer = new RunConfigurationRenderer(params, projectDir, srcPaths, new File(M2_BIND));
 		Files.writeString(new File(projectDir, "tara_args.txt").toPath(), renderer.build());
 		CreateContainerResponse container = client.createContainerCmd(info.imageName())
-				.withBinds(new Bind(projectDir.getAbsolutePath(), new Volume(PROJECT_BIND)),
+				.withBinds(new Bind(projectDir.getCanonicalFile().getAbsolutePath(), new Volume(PROJECT_BIND)),
 						new Bind(languagesRepository.getAbsolutePath(), new Volume(M2_BIND)))
 				.withName(ticket)
 				.exec();

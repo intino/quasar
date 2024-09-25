@@ -35,6 +35,7 @@ public class RunConfigurationRenderer {
 		writer.write(MAKE + NL + true + NL);
 		writer.write(TEST + NL + false + NL);
 		writer.write(ENCODING + NL + Charset.defaultCharset().name() + NL);
+		writer.write(GENERATION_PACKAGE + NL + params.generationPackage() + NL);
 		writer.write(COMPILATION_MODE + NL + params.operation() + NL);
 		if (!params.version().isEmpty()) writer.write(VERSION + NL + params.version() + NL);
 		writer.write(DSL + NL + params.language() + ":" + params.languageVersion() + NL);

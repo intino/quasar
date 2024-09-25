@@ -9,6 +9,7 @@ Artifact("io.intino", "1.0.0") builder-service
 		Compile("io.intino.alexandria", "core-framework", "2.2.0")
 		Compile("io.intino.alexandria", "logger4j", "1.0.1")
 		Compile("io.intino.alexandria", "rest", "3.9.4")
+		Compile(groupId = "io.intino.itrules", artifactId = "engine", version = "2.0.0")
 	Package(mode = ModulesAndLibrariesLinkedByManifest) as Runnable(mainClass = "io.intino.builderservice.konos.Main")
 	Parameter("language-repository")
 	Parameter(name = "port")

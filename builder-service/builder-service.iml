@@ -100,5 +100,6 @@
     <orderEntry type="library" name="Intino: com.github.docker-java:docker-java-transport-netty:3.4.0" level="project" />
     <orderEntry type="library" name="Intino: io.intino:builder-interface:2.2.0" level="project" />
     <orderEntry type="library" name="Intino: io.intino:configuration:2.0.0" level="project" />
+    <orderEntry type="library" name="Intino: io.intino.itrules:engine:2.0.0" level="project" />
   </component>
 </module>
