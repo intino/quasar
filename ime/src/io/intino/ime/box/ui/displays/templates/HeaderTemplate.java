@@ -1,6 +1,7 @@
 package io.intino.ime.box.ui.displays.templates;
 
 import io.intino.alexandria.ui.displays.events.actionable.ToggleEvent;
+import io.intino.alexandria.ui.services.push.User;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.ui.DisplayHelper;
 import io.intino.ime.box.ui.PathHelper;
@@ -48,12 +49,14 @@ public class HeaderTemplate extends AbstractHeaderTemplate<ImeBox> {
 	public void refresh() {
 		super.refresh();
 		ViewMode viewMode = DisplayHelper.viewMode(session());
+		User loggedUser = session().user();
 		appViewSwitch.state(viewMode == ViewMode.Languages ? ToggleEvent.State.Off : ToggleEvent.State.On);
 		appViewText.value(translate(viewMode == ViewMode.Languages ? "Languages" : "Models"));
-		login.visible(session().user() == null);
+		login.visible(loggedUser == null);
 		dashboard.visible(showDashboardButton && user() != null);
-		user.visible(session().user() != null);
-		if (session().user() == null) return;
+		user.visible(loggedUser != null);
+		notLoggedBlock.visible(loggedUser == null);
+		if (loggedUser == null) return;
 		userHome.visible(showDashboardButton);
 		userHome.path(PathHelper.dashboardPath(session()));
 	}

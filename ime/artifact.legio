@@ -6,7 +6,7 @@ Artifact(groupId = "io.intino", version = "1.0.0") ime
 	Archetype("io.intino", "editor-archetype", "1.0.0-SNAPSHOT")
 
 	Imports
-		Compile("io.intino.alexandria", "ui-framework", "5.2.17")
+		Compile("io.intino.alexandria", "ui-framework", "5.2.19")
 			Exclude("io.intino.tara","language")
 		Compile("io.intino.alexandria", "core-framework", "2.2.0")
 		Compile("io.intino", "language-server", "1.0.0")

@@ -65,6 +65,9 @@ Template(format=headerBackground middleTopSpaced middleBottomSpaced) headerTempl
 		Block(layout=Horizontal Center EndJustified)
 			Link(title="LOG IN", format=white airRight, visible=false) login as OpenPage(ImeElements.dashboard)
 			MaterialIconButton(title="Dashboard", icon="Home", titlePosition=Bottom, format=airRight iconButtonColor, size=Small, visible=false) dashboard as OpenPage(ImeElements.dashboard)
+			Block(layout=Horizontal Center, visible=false) notLoggedBlock
+				MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
+				MaterialIconButton(title="Set light mode", format=airRight, icon="Brightness7", size=Small) as SetLightMode
 			User(mode=OnlyPhoto, visible=false, format=relative) user
 				Block(layout=Horizontal EndJustified, format=userToolbar)
 					MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
