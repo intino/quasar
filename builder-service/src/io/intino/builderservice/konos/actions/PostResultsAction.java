@@ -6,13 +6,13 @@ import java.time.*;
 import java.util.*;
 import io.intino.builderservice.konos.schemas.*;
 
-public class PostBuildersAction implements io.intino.alexandria.rest.RequestErrorHandler {
-	public io.intino.builderservice.konos.schemas.BuilderInfo builderInfo;
+public class PostResultsAction implements io.intino.alexandria.rest.RequestErrorHandler {
 	public BuilderServiceBox box;
 	public io.intino.alexandria.http.spark.SparkContext context;
+	public String buildTicket;
 
-	public void execute() {
-		box.builderStore().put(builderInfo);
+	public BuildOutput execute() {
+		return null;
 	}
 
 	public void onMalformedRequest(Throwable e) throws AlexandriaException {

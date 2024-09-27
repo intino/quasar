@@ -33,7 +33,7 @@ public class BuilderTest {
 		action.builderInfo = new BuilderInfo()
 				.id("io.intino.tara.builder:1.3.0")
 				.imageName("octavioroncal/io.intino.tara.builder:1.3.0")
-				.operations(List.of("build"));
+				.operations(List.of("Build"));
 		action.execute();
 	}
 
@@ -50,8 +50,7 @@ public class BuilderTest {
 		action.box = box;
 		action.filesInTar = new Resource(new File("test-res/sources.tar"));
 		action.runOperationContext = new RunOperationContext()
-				.operation("build")
-				.sources(List.of())
+				.operation("Build")
 				.language("Meta")
 				.languageVersion("2.0.0")
 				.project("konos")

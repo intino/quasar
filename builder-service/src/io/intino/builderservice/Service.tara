@@ -14,6 +14,13 @@ Service builder-service as REST(host = "", port = "{port}")
 			Response buildTicket as Text
 	Notification(path = "build/messages") subscribeBuild
 		Parameter(in = query) buildTicket as Text
+	Resource(path = "build/output") results
+		Post
+			Parameter(in = query) buildTicket as Text
+			Response buildOutput as Object(BuildOutput)
+
+Schema BuildOutput
+	Attribute genTar as File
 
 Schema BuilderInfo
 	Attribute id as Text
@@ -28,7 +35,6 @@ Schema RunOperationContext
 	Attribute language as Text
 	Attribute languageVersion as Text
 	Attribute generationPackage as Text
-	Attribute sources as Text List
 
 Schema Message
 	Attribute type as Text
