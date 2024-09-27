@@ -8,25 +8,25 @@ import io.intino.ime.model.Model;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-public class PublicModelPage extends AbstractPublicModelPage {
-	public String language;
+public class ModelPage extends AbstractModelPage {
+	public String user;
 	public String id;
 	public String file;
 
 	@Override
 	public boolean hasPermissions() {
+		if (PathHelper.PublicUser.equals(user)) return true;
 		Model model = box.modelManager().model(id);
 		if (model == null) return false;
 		if (model.isPublic()) return true;
 		User loggedUser = session.user();
-		return loggedUser != null && loggedUser.username().equals(model.owner());
+		return loggedUser != null && model.owner().equals(loggedUser.username());
 	}
 
 	@Override
 	public String redirectUrl() {
 		String callbackUrl = URLEncoder.encode(session.browser().requestUrl(), StandardCharsets.UTF_8);
 		Model model = box.modelManager().model(id);
-		//if (session.user() == null) return box.configuration().federationUrl() + "?authenticate-callback=" + callbackUrl;
 		return session.browser().baseUrl() + (model != null ? "/permissions" : "/not-found") + "?model=" + id + "&callback=" + callbackUrl;
 	}
 
@@ -43,4 +43,5 @@ public class PublicModelPage extends AbstractPublicModelPage {
 			}
 		};
 	}
+
 }

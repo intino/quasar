@@ -24,7 +24,7 @@ public class CreateModelCommand extends Command<Model> {
 	}
 
 	private Model create() {
-		return box.modelManager().create(id, label, release, owner, release.language(), author != null);
+		return box.modelManager().create(id, label, release, owner, null, author != null);
 	}
 
 	private void updateLanguage(Model model) {

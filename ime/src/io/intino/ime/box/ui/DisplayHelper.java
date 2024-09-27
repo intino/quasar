@@ -56,4 +56,19 @@ public class DisplayHelper {
 		return user != null ? user.username() : Model.DefaultOwner;
 	}
 
+	public static void initViewMode(UISession session) {
+		String preference = session.preference(ViewMode.SessionVariableName);
+		if (preference != null && !preference.isEmpty()) return;
+		updateViewMode(ViewMode.Languages, session);
+	}
+
+	public static void updateViewMode(ViewMode viewMode, UISession session) {
+		session.add(ViewMode.SessionVariableName, viewMode.name());
+	}
+
+	public static ViewMode viewMode(UISession session) {
+		String preference = session.preference(ViewMode.SessionVariableName);
+		if (preference == null || preference.isEmpty()) initViewMode(session);
+		return ViewMode.valueOf(session.preference(ViewMode.SessionVariableName));
+	}
 }

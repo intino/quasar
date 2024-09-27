@@ -53,6 +53,10 @@ public class ModelManager {
 		return allModels().stream().anyMatch(m -> m.id().equals(id));
 	}
 
+	public List<Model> models(Language language) {
+		return allModels().stream().filter(m -> Language.nameOf(m.modelingLanguage()).equals(language.name())).toList();
+	}
+
 	public Model model(String id) {
 		return modelOf(id);
 	}

@@ -34,6 +34,7 @@ public class LanguageTemplate extends AbstractLanguageTemplate<ImeBox> {
 	@Override
 	public void init() {
 		super.init();
+		header.onChangeViewMode(e -> refresh());
 		addModel.onExecute(e -> createModel(lastRelease));
 		addPrivateModelDialog.onOpen(e -> refreshAddPrivateModelDialog());
 		openModel.onExecute(e -> openModelOf(language));
@@ -54,7 +55,7 @@ public class LanguageTemplate extends AbstractLanguageTemplate<ImeBox> {
 		header.language(language);
 		header.refresh();
 		logo.value(LanguageHelper.logo(language, box()));
-		name.value(LanguageHelper.title(language));
+		name.value(LanguageHelper.label(language));
 		release.title(lastRelease != null ? lastRelease.version() : ModelHelper.FirstReleaseVersion);
 		description.value(language.description());
 		viewModelExamples.path(PathHelper.modelsPath(language));
@@ -71,12 +72,12 @@ public class LanguageTemplate extends AbstractLanguageTemplate<ImeBox> {
 	}
 
 	private void refreshPoweredBy() {
-		Language parent = box().languageManager().get(language.parent());
+		Language parent = language.parent() != null ? box().languageManager().get(language.parent()) : null;
 		poweredBlock.visible(parent != null);
 		if (parent == null) return;
 		poweredLink.path(PathHelper.languagePath(parent));
 		poweredByImage.value(LanguageHelper.logo(parent, box()));
-		poweredByText.value(String.format(translate("powered by %s"), LanguageHelper.title(parent)));
+		poweredByText.value(String.format(translate("defined with %s"), LanguageHelper.label(parent)));
 	}
 
 	private void refreshAddPrivateModelDialog() {
@@ -156,7 +157,7 @@ public class LanguageTemplate extends AbstractLanguageTemplate<ImeBox> {
 
 	private void notifyOpeningModel(Model model) {
 		bodyBlock.hide();
-		openingModelMessage.value(String.format(translate("Opening %s"), model.label()));
+		openingModelMessage.value(String.format(translate("Opening %s"), ModelHelper.label(model, language(), box())));
 		searchingModelsBlock.show();
 	}
 

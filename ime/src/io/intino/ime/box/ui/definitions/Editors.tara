@@ -31,27 +31,35 @@ Template languageSettingsEditor
 		Block(layout=Horizontal, format=airTop) > Button(title="Add operation", size=Small, highlight=Outline) addOperation as Action Readonly
 
 Template(layout=Horizontal) modelSettingsEditor
-	MaterialIconButton(title="Settings", icon="Settings", size=Small, visible=false) smallIconInList as OpenDialog(settingsDialog)
-	MaterialIconButton(title="Settings", icon="Settings", visible=false) largeIconInList as OpenDialog(settingsDialog)
-	MaterialIconButton(title="Settings", icon="Settings", format=airRight, titlePosition=Bottom, size=Small, visible=false) smallIcon as OpenDialog(settingsDialog)
-	MaterialIconButton(title="Settings", icon="Settings", format=airRight, titlePosition=Bottom, visible=false) largeIcon as OpenDialog(settingsDialog)
+	MaterialIconButton(title="Properties...", icon="Settings", size=Small, format=airRight, visible=false) smallIconInList as OpenDialog(settingsDialog)
+	MaterialIconButton(title="Properties...", icon="Settings", format=airRight, visible=false) largeIconInList as OpenDialog(settingsDialog)
+	MaterialIconButton(title="Properties...", icon="Settings", format=airRight, titlePosition=Bottom, size=Small, visible=false) smallIcon as OpenDialog(settingsDialog)
+	MaterialIconButton(title="Properties...", icon="Settings", format=airRight, titlePosition=Bottom, visible=false) largeIcon as OpenDialog(settingsDialog)
 
-	Dialog(title="Settings") settingsDialog as Absolute(width=500px, height=600px)
+	Dialog(title="Properties") settingsDialog as Absolute(width=500px, height=600px)
         Block as Relative(height=100%, offsetHeight=40px)
-        	Text(format=doubleAirBottom) settingsTitleField as Editable Labeled("Title")
-        	Switch(title="Model is private", format=airBottom) accessTypeField
+        	Block(format=airBottom)
+        		Text(value="Attributes", translate=true, format=h5)
+	        	Text(format=doubleAirBottom) settingsTitleField as Editable Labeled("Title")
+        	Block(format=airBottom)
+        		Text(value="Project access", translate=true, format=h5)
+	        	Switch(title="Project is private", format=airBottom) accessTypeField
+        	Block(format=airBottom)
+        		Text(value="Remove project", translate=true, format=redColor h5)
+        		Text(value="Removed projects cannot be restored!", format=greyColor middleAirBottom)
+				Block(layout=Horizontal) > Button(title="Remove project...", format=airRight redBackground whiteColor, highlight=Fill) removeModel as Action Readonly Affirmed("Are you sure to remove project?")
 		Divider
-        Block(layout=Horizontal EndJustified)
-            Button(title="Close", size=Small, format=airRight) as CloseDialog(settingsDialog)
-            Button(title="Save", size=Small, highlight=Fill) saveSettings as Action
+        Block(layout=Horizontal)
+        	Block(layout=Horizontal StartJustified Flexible) > Button(title="Close", size=Small, format=airRight) as CloseDialog(settingsDialog)
+            Block(layout=Horizontal EndJustified) > Button(title="Apply", size=Small, highlight=Fill) saveSettings as Action
 
 Template(layout=Horizontal) cloneModelEditor
-	MaterialIconButton(title="Clone model", icon="FileCopy", size=Small, visible=false) smallIconInList as OpenDialog(modelDialog)
-	MaterialIconButton(title="Clone model", icon="FileCopy", visible=false) largeIconInList as OpenDialog(modelDialog)
-	MaterialIconButton(title="Clone model", icon="FileCopy", titlePosition=Bottom, format=airRight, size=Small, visible=false) smallIcon as OpenDialog(modelDialog)
-	MaterialIconButton(title="Clone model", icon="FileCopy", titlePosition=Bottom, format=airRight, visible=false) largeIcon as OpenDialog(modelDialog)
+	MaterialIconButton(title="Clone...", icon="FileCopy", size=Small, visible=false, format=airRight) smallIconInList as OpenDialog(modelDialog)
+	MaterialIconButton(title="Clone...", icon="FileCopy", visible=false, format=airRight) largeIconInList as OpenDialog(modelDialog)
+	MaterialIconButton(title="Clone...", icon="FileCopy", titlePosition=Bottom, format=airRight, size=Small, visible=false) smallIcon as OpenDialog(modelDialog)
+	MaterialIconButton(title="Clone...", icon="FileCopy", titlePosition=Bottom, format=airRight, visible=false) largeIcon as OpenDialog(modelDialog)
 
-	Dialog(title="Clone model") modelDialog as Absolute(width=400px, height=260px)
+	Dialog(title="Clone project") modelDialog as Absolute(width=400px, height=260px)
         Block as Relative(height=100%, offsetHeight=40px)
         	Text modelTitleField as Editable(placeholder="Indicate title") Labeled("Title") Focused
 		Divider
@@ -82,6 +90,6 @@ Template(layout=Horizontal Center, format=airTop airBottom) operationEditor
 
 	TemplateStamp(template=operationTypeView, visible=false)
 
-Template(layout=Horizontal) operationTypeView
+Template(layout=Horizontal Center) operationTypeView
 	Block(layout=Vertical Flexible) > Text(format=airRight) nameField
 	Block(layout=Horizontal EndJustified) > MaterialIconButton(title="", icon="HelpOutline", size=Small) iconField as Action

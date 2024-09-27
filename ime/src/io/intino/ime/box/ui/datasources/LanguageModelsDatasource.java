@@ -13,12 +13,13 @@ public class LanguageModelsDatasource extends ModelsDatasource {
 	private final Language language;
 
 	public LanguageModelsDatasource(ImeBox box, UISession session, Language language) {
-		super(box, session, false);
+		super(box, session, null);
 		this.language = language;
 	}
 
 	@Override
 	protected List<Model> load() {
+		if (language == null) return super.load();
 		ModelManager manager = box.modelManager();
 		return manager.allModels().stream().filter(m -> ModelHelper.canOpenModel(m, username()) && language.name().equals(Language.nameOf(m.modelingLanguage()))).toList();
 	}

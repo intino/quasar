@@ -4,6 +4,8 @@ import io.intino.alexandria.ui.displays.events.actionable.ToggleEvent;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.commands.ModelCommands;
 import io.intino.ime.box.ui.DisplayHelper;
+import io.intino.ime.box.ui.PathHelper;
+import io.intino.ime.box.util.ModelHelper;
 import io.intino.ime.model.Model;
 
 import java.util.function.Consumer;
@@ -40,6 +42,7 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<ImeBox> {
 	@Override
 	public void init() {
 		super.init();
+		removeModel.onExecute(e -> removeModel());
 		settingsDialog.onOpen(e -> refreshDialog());
 		saveSettings.onExecute(e -> saveSettings());
 	}
@@ -54,7 +57,9 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<ImeBox> {
 	}
 
 	public void refreshDialog() {
-		settingsTitleField.value(model.label());
+		settingsTitleField.value(ModelHelper.label(model, language(), box()));
+		settingsTitleField.readonly(ModelHelper.isMetamodel(model, box()));
+		removeModel.readonly(ModelHelper.canRemove(model, box()));
 		accessTypeField.state(model.isPrivate() ? ToggleEvent.State.On : ToggleEvent.State.Off);
 	}
 
@@ -70,6 +75,11 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<ImeBox> {
 	private void saveAccessType(boolean isPrivate) {
 		if (isPrivate) box().commands(ModelCommands.class).makePrivate(model, username());
 		else box().commands(ModelCommands.class).makePublic(model, username());
+	}
+
+	private void removeModel() {
+		box().commands(ModelCommands.class).remove(model, username());
+		notifier.redirect(PathHelper.dashboardUrl(session()));
 	}
 
 }

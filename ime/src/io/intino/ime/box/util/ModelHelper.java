@@ -10,24 +10,29 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 
 public class ModelHelper {
 
 	public static final String FirstReleaseVersion = "1.0.0";
+
+	public static String label(Model model, String language, ImeBox box) {
+		if (isMetamodel(model, box)) return String.format(box.translatorService().translate("%s metamodel", language), model.label());
+		return model.label();
+	}
 
 	public static String proposeName() {
 		String uuid = UUID.randomUUID().toString();
 		return uuid.substring(uuid.lastIndexOf("-")+1) + new Timetag(Instant.now(), Scale.Month).value();
 	}
 
+	private static final Map<LanguageLevel, ModelLevel> LevelRelationMap = Map.of(LanguageLevel.L3, ModelLevel.M3, LanguageLevel.L2, ModelLevel.M2, LanguageLevel.L1, ModelLevel.M1);
 	public static ModelLevel level(Model model, ImeBox box) {
-		Release release = box.languageManager().release(model);
+		Release release = box.languageManager().lastRelease(model.modelingLanguage());
 		if (release == null) return ModelLevel.M1;
-		LanguageLevel level = release.level();
-		if (level == LanguageLevel.L3) return ModelLevel.M3;
-		else if (level == LanguageLevel.L2) return ModelLevel.M2;
-		return ModelLevel.M1;
+		return LevelRelationMap.get(release.level());
 	}
 
 	private static final String VersionPattern = "%s.%s.%s";
@@ -63,17 +68,11 @@ public class ModelHelper {
 
 	public static boolean canRemove(Model model, ImeBox box) {
 		if (model.isTemporal()) return false;
-		Release release = box.languageManager().release(model);
-		return release != null && release.level() == LanguageLevel.L1;
+		return !isMetamodel(model, box);
 	}
 
 	public static Language language(Model model, ImeBox box) {
 		return box.languageManager().get(model.modelingLanguage());
-	}
-
-	public static URL logo(Model model, ImeBox box) {
-		Language language = box.languageManager().get(model.modelingLanguage());
-		return LanguageHelper.logo(language, box);
 	}
 
 	public static boolean hasRelease(Model model, Release release, ImeBox box) {
@@ -81,14 +80,17 @@ public class ModelHelper {
 	}
 
 	public static boolean canClone(Model model, ImeBox box) {
-		Release release = box.languageManager().release(model);
-		return release != null && release.level() == LanguageLevel.L1;
+		return !ModelHelper.isMetamodel(model, box);
+	}
+
+	public static boolean canBuild(Model model, String user, ImeBox box) {
+		return true;
 	}
 
 	public static boolean canCreateRelease(Model model, String user, ImeBox box) {
 		if (user == null) return false;
 		if (!model.owner().equals(user)) return false;
-		Release release = box.languageManager().release(model);
+		Release release = box.languageManager().lastRelease(model.modelingLanguage());
 		return release != null && release.level() != LanguageLevel.L1;
 	}
 
@@ -105,6 +107,7 @@ public class ModelHelper {
 
 	public static Model metamodel(Model model, ModelLevel metamodelLevel, ImeBox box) {
 		Model result = metamodel(model, box);
+		if (result == null) return null;
 		ModelLevel level = level(result, box);
 		while (level != metamodelLevel) {
 			result = metamodel(result, box);
@@ -117,5 +120,9 @@ public class ModelHelper {
 	private static Model metamodel(Model model, ImeBox box) {
 		Language language = box.languageManager().get(model.modelingLanguage());
 		return box.modelManager().modelWith(language);
+	}
+
+	public static boolean isMetamodel(Model model, ImeBox box) {
+		return level(model, box) != ModelLevel.M1;
 	}
 }

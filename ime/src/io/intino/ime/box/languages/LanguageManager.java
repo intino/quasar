@@ -93,10 +93,6 @@ public class LanguageManager {
 		return releases(model.releasedLanguage()).stream().filter(r -> r.model().equals(model.id())).toList();
 	}
 
-	public Release release(Model model) {
-		return releases(model.modelingLanguage()).stream().filter(r -> r.version().equals(Language.versionOf(model.modelingLanguage()))).findFirst().orElse(null);
-	}
-
 	public Release lastRelease(Model model) {
 		return lastRelease(model.releasedLanguage());
 	}

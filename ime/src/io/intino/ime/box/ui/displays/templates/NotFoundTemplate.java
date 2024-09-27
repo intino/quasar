@@ -20,7 +20,7 @@ public class NotFoundTemplate extends AbstractNotFoundTemplate<ImeBox> {
 		super.refresh();
 		message.value(translate("Model was not found"));
 		userHome.visible(session().user() != null);
-		userHome.path(PathHelper.userHomePath(session()));
+		userHome.path(PathHelper.dashboardPath(session()));
 	}
 
 }

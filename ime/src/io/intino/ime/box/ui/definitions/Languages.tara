@@ -15,7 +15,7 @@ Template(layout=Vertical Flexible) languagesCatalog as Relative(height=100%, wid
 					Block(format=relative)
 						Link(title="", format=magazineLinkStyle) languageLink as OpenPage(ImeElements.language)
 						Block(layout=Horizontal)
-							Block(format=airRight) > Image logo as Absolute(height=50px, width=50px)
+							Block(format=airRight) > Image(colorInvertedWithDarkMode=true) logo as Absolute(height=50px, width=50px)
 							Block(layout=Vertical Flexible)
 								Block(layout=Horizontal)
 									Block(layout=Vertical Flexible) > Link(title="", format=orange) owner as Action
@@ -61,46 +61,35 @@ Template(layout=Vertical Flexible) languagesCatalog as Relative(height=100%, wid
 		Block(layout=Horizontal EndJustified)
 			Button(title="Close", size=Small, highlight=Outline) as CloseDialog(releasesDialog)
 
-Template parentLanguagesTemplate as Relative(height=100%, width=100%)
-	TemplateStamp(template=parentLanguagesHeaderTemplate) header
+Template languagesTemplate as Relative(height=100%, width=100%)
+	TemplateStamp(template=headerTemplate) header
 
-	Block(layout=Vertical Flexible CenterCenter, visible=false) openingLanguageBlock
+	Block(layout=Vertical Flexible CenterCenter, visible=false) searchingModelsBlock
 		Spinner(mode=Ring, color="secondary")
-		Text(value="" , translate=true, format=h3 airTop) openingLanguageMessage
+		Text(value="" , translate=true, format=h3 airTop) openingModelMessage
 
-	Block(layout=Vertical Flexible Center, format=greyBackground) bodyBlock as Relative(width=100%)
-		Block(layout=Horizontal, format=middleTopSpaced middleBottomSpaced autoHeight) as Relative(width=70%)
-			Block(layout=Horizontal Flexible)
-				Text countLanguages
+	Block(layout=Horizontal Flexible Center, format=greyBackground) bodyBlock as Relative(width=100%)
+		Block(format=airLeft airRight) as Relative(width=20%, offsetWidth=10px)
+			Block(layout=Horizontal, format=middleTopSpaced middleBottomSpaced minPanelHeaderHeight)
 				Block(layout=Horizontal Center, format=tag, visible=false) navigationDialog
 					Text(format=blackColor) navigationDialogTitle
 					MaterialIconButton(icon="Clear", size=Small, title="Show all", format=smallIconSize middleAirLeft blackColor) navigationDialogRemove
-			Block(layout=Horizontal EndJustified)
-				Link(title="most used", format=airRight, visible=false) mostUsedLink as Action
-				Text(value="most used", format=airRight, translate=true) mostUsedText
-				Link(title="most recents", format=airRight) mostRecentsLink as Action
-				Text(value="most recents", format=airRight, visible=false, translate=true) mostRecentsText
-		Block(format=whiteBackground topSpaced leftSpaced) as Relative(width=70%)
-			TemplateStamp(template=languagesCatalog) languagesCatalog
+			Block(layout=Vertical Flexible, format=leftPanelStyle languagesStyle)
+				Block(format=airLeft airRight airBottom) > Text search as Editable(placeholder="Filter...")
+				Grouping(collections = empty) owner as Labeled("Owner")
 
-Template(format=headerBackground middleTopSpaced middleBottomSpaced) parentLanguagesHeaderTemplate
-	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)
-		Block(layout=Horizontal Flexible Center, format=airLeft relative)
-			Link(title="", format=logoLink) logoLink as OpenPage(ImeElements.language)
-			Image(format=airLeft doubleAirRight, mobileReduceFactor=75%) logo as Absolute(width=45px, height=45px)
-			Block
-				Text(format=h3 appTitleStyle) title
-				Text(format=whiteColor, value="The list of example languages using this language") description
-			Block(layout=Vertical Flexible, format=airLeft)
-				Block(layout=Vertical CenterCenter) > Block(format=searchBox) as Relative(width=60%) > Text(format=searchBoxBackground) searchField as Editable(placeholder="Search")
-		Block(layout=Horizontal Center EndJustified)
-			Block(format=airRight)
-				MaterialIconButton(title="set dark mode", icon="Brightness4") as SetDarkMode
-				MaterialIconButton(title="set light mode", icon="Brightness7") as SetLightMode
-			User(mode=OnlyPhoto) user
-				Selector as ListBox
-					Block as Option > Link(title="Home") as OpenPage(page=ImeElements.home)
-					Block as Option > Link(title="Language home") languageHome as OpenPage(page=ImeElements.language)
+		Block(layout=Vertical Flexible) as Relative(height=100%)
+			Block(layout=Horizontal, format=middleTopSpaced middleBottomSpaced airLeft airRight autoHeight)
+				Block(layout=Horizontal Flexible)
+					Text countLanguages
+				Block(layout=Horizontal EndJustified)
+					Link(title="most used", format=airRight, visible=false) mostUsedLink as Action
+					Text(value="most used", format=airRight, translate=true) mostUsedText
+					Link(title="most recents", format=airRight) mostRecentsLink as Action
+					Text(value="most recents", format=airRight, visible=false, translate=true) mostRecentsText
+
+			Block(layout=Vertical Flexible, format=mainPanelStyle languagesStyle)
+				TemplateStamp(template=languagesCatalog) languagesCatalog
 
 Template(layout=Vertical Flexible) languageReleasesCatalog as Relative(height=100%, width=100%)
 

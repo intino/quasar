@@ -1,8 +1,11 @@
 package io.intino.ime.box.util;
 
 import io.intino.alexandria.logger.Logger;
+import io.intino.alexandria.ui.services.push.UISession;
 import io.intino.alexandria.ui.services.push.User;
 import io.intino.ime.box.ImeBox;
+import io.intino.ime.box.ui.DisplayHelper;
+import io.intino.ime.box.ui.ViewMode;
 import io.intino.ime.model.Language;
 import io.intino.ime.model.LanguageLevel;
 import io.intino.ime.model.Release;
@@ -14,16 +17,12 @@ import java.util.function.Function;
 
 public class LanguageHelper {
 
-	public static String title(Language language) {
-		return language.name() + " language";
+	public static String label(Language language) {
+		return language.name();
 	}
 
 	public static String type(Release release, Function<String, String> translator) {
 		return translator.apply(release.level() == LanguageLevel.L1 ? "Model" : "Language");
-	}
-
-	public static String styleFormat(Release release) {
-		return release.level() == LanguageLevel.L1 ? "greenBackground" : "orangeBackground";
 	}
 
 	public static URL logo(String language, ImeBox box) {

@@ -119,4 +119,11 @@ public class ModelCommands extends Commands {
 		command.operation = operation;
 		return command.execute();
 	}
+
+	public boolean build(Model model, String username) {
+		BuildModelCommand command = setup(new BuildModelCommand(box), username);
+		command.model = model;
+		return command.execute();
+	}
+
 }

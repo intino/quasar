@@ -11,6 +11,7 @@ public class HomePage extends AbstractHomePage {
 				HomeTemplate component = new HomeTemplate(box);
 				register(component);
 				component.init();
+				component.refresh();
 			}
 		};
 	}

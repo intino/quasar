@@ -16,6 +16,7 @@ public class ParentLanguagesDatasource extends LanguagesDatasource {
 
 	@Override
 	protected List<Language> load() {
+		if (parent == null) return super.load();
 		return box.languageManager().publicLanguages(username()).stream().filter(l -> l.parent() != null && Language.nameOf(l.parent()).equals(parent.name())).toList();
 	}
 }

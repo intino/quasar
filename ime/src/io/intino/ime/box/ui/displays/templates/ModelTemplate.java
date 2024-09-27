@@ -13,15 +13,14 @@ import io.intino.ime.box.ui.PathHelper;
 import io.intino.ime.box.ui.displays.IntinoDslEditor;
 import io.intino.ime.box.ui.displays.IntinoFileBrowser;
 import io.intino.ime.box.util.LanguageHelper;
+import io.intino.ime.box.util.ModelHelper;
 import io.intino.ime.model.Language;
 import io.intino.ime.model.Model;
-import io.intino.ime.model.Release;
 
 import java.io.IOException;
 import java.util.*;
 
 public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
-	private String user;
 	private Model model;
 	private ModelContainer.File selectedFile;
 	private ModelContainer.File selectedNewFile;
@@ -35,10 +34,6 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 
 	public ModelTemplate(ImeBox box) {
 		super(box);
-	}
-
-	public void user(String user) {
-		this.user = user;
 	}
 
 	public void model(String id) {
@@ -64,6 +59,7 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 		initFileBrowser();
 		initFileEditor();
 		initFileModifiedDialog();
+		workspaceDialog.onOpen(e -> refreshWorkspaceDialog());
 	}
 
 	private void initFileModifiedDialog() {
@@ -85,6 +81,11 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 		});
 	}
 
+	private void refreshWorkspaceDialog() {
+		removeFileTrigger.readonly(selectedFile == null);
+		editFilenameTrigger.readonly(selectedFile == null);
+	}
+
 	@Override
 	public void refresh() {
 		super.refresh();
@@ -95,18 +96,12 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 	}
 
 	private void refreshHeader() {
-		Release release = box().languageManager().lastRelease(model.modelingLanguage());
 		header.model(model);
-		header.title(model.label());
-		//header.description(Formatters.countMessage(modelContainer.files().stream().filter(f -> !f.isDirectory()).count(), "file", "files", language()));
-		header.description(LanguageHelper.type(release, this::translate), PathHelper.modelsPath(release), LanguageHelper.styleFormat(release));
+		header.title(ModelHelper.label(model, language(), box()));
 		header.refresh();
 	}
 
 	private void refreshFileBrowser() {
-		copyFileTrigger.readonly(selectedFile == null);
-		removeFileTrigger.readonly(selectedFile == null);
-		editFilenameTrigger.readonly(selectedFile == null);
 		IntinoFileBrowser browser = intinoFileBrowser.display();
 		browser.itemAddress(PathHelper.modelPath(session(), model) + "?file=:file");
 		browser.items(fileBrowserItems());
@@ -118,7 +113,7 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 		Language language = box().languageManager().get(model.modelingLanguage());
 		poweredLink.path(PathHelper.languagePath(language));
 		poweredByImage.value(LanguageHelper.logo(language, box()));
-		poweredByText.value(String.format(translate("%s %s"), LanguageHelper.title(language), Language.versionOf(model.modelingLanguage())));
+		poweredByText.value(String.format(translate("%s %s"), LanguageHelper.label(language), Language.versionOf(model.modelingLanguage())));
 	}
 
 	private void refreshFileEditor() {
@@ -136,7 +131,7 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 
 	private void refreshFileEditorToolbar() {
 		//fileModifiedMessage.visible(selectedFile != null && selectedFileIsModified);
-		saveFile.readonly(selectedFile == null || !selectedFileIsModified);
+		//saveFile.readonly(selectedFile == null || !selectedFileIsModified);
 	}
 
 	private void initFileBrowser() {
@@ -231,7 +226,6 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 	}
 
 	private void initFileBrowserToolbar() {
-		copyFileTrigger.onOpen(e -> refreshFileDialog(FileDialogOperation.CopyFile));
 		addFileTrigger.onOpen(e -> refreshFileDialog(FileDialogOperation.AddFile));
 		addFolderTrigger.onOpen(e -> refreshFileDialog(FileDialogOperation.AddFolder));
 		editFilenameTrigger.onOpen(e -> refreshFileDialog(FileDialogOperation.EditFilename));
@@ -249,7 +243,7 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 	}
 
 	private void initFileEditorToolbar() {
-		saveFile.onExecute(e -> intinoDslEditor.<IntinoDslEditor>display().fireSavingProcess());
+		//saveFile.onExecute(e -> intinoDslEditor.<IntinoDslEditor>display().fireSavingProcess());
 	}
 
 	private void refreshFileDialog(FileDialogOperation operation) {
@@ -345,7 +339,7 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 
 	private void notifyOpeningModel(Model model) {
 		bodyBlock.hide();
-		openingModelMessage.value(String.format(translate("Opening %s"), model.label()));
+		openingModelMessage.value(String.format(translate("Opening %s"), ModelHelper.label(model, language(), box())));
 		openingModelBlock.show();
 	}
 

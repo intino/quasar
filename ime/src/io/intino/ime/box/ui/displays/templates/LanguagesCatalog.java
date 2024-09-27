@@ -1,7 +1,9 @@
 package io.intino.ime.box.ui.displays.templates;
 
 import io.intino.alexandria.Resource;
+import io.intino.alexandria.ui.displays.components.Grouping;
 import io.intino.alexandria.ui.displays.events.AddItemEvent;
+import io.intino.alexandria.ui.displays.notifiers.GroupingNotifier;
 import io.intino.alexandria.ui.services.push.User;
 import io.intino.alexandria.ui.utils.DelayerUtil;
 import io.intino.ime.box.ImeBox;
@@ -9,6 +11,7 @@ import io.intino.ime.box.commands.LanguageCommands;
 import io.intino.ime.box.commands.ModelCommands;
 import io.intino.ime.box.ui.DisplayHelper;
 import io.intino.ime.box.ui.PathHelper;
+import io.intino.ime.box.ui.datasources.DatasourceHelper;
 import io.intino.ime.box.ui.datasources.LanguagesDatasource;
 import io.intino.ime.box.ui.displays.items.LanguageMagazineItem;
 import io.intino.ime.box.util.LanguageHelper;
@@ -17,13 +20,14 @@ import io.intino.ime.model.Language;
 import io.intino.ime.model.Model;
 import io.intino.ime.model.Release;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class LanguagesCatalog extends AbstractLanguagesCatalog<ImeBox> {
 	private String _title = null;
 	private LanguagesDatasource source;
 	private Consumer<Model> openModelListener;
-	private Consumer<String> ownerSelectedListener;
+	private Consumer<Long> filterListener;
 	private Language selectedLanguage;
 	private Release selectedRelease;
 
@@ -43,12 +47,12 @@ public class LanguagesCatalog extends AbstractLanguagesCatalog<ImeBox> {
 		this.openModelListener = listener;
 	}
 
-	public void onSelectOwner(Consumer<String> listener) {
-		this.ownerSelectedListener = listener;
+	public void onFilter(Consumer<Long> listener) {
+		this.filterListener = listener;
 	}
 
-	public long itemCount() {
-		return source.itemCount();
+	public void bindTo(Grouping<GroupingNotifier, ImeBox> grouping) {
+		grouping.bindTo(languagesMagazine);
 	}
 
 	public void sort(LanguagesDatasource.Sorting sorting) {
@@ -56,13 +60,16 @@ public class LanguagesCatalog extends AbstractLanguagesCatalog<ImeBox> {
 		languagesMagazine.reload();
 	}
 
+	public long itemCount() {
+		return languagesMagazine.itemCount();
+	}
+
 	public void filter(String condition) {
 		languagesMagazine.filter(condition);
 	}
 
-	public void removeOwnerFilter() {
-		source.owner(null);
-		languagesMagazine.reload();
+	public void filter(String grouping, List<String> values) {
+		languagesMagazine.filter(grouping, values);
 	}
 
 	@Override
@@ -77,6 +84,7 @@ public class LanguagesCatalog extends AbstractLanguagesCatalog<ImeBox> {
 		labelField.onEnterPress(e -> createModel());
 		createLanguageDialog.onOpen(e -> refreshCreateLanguageDialog());
 		createLanguage.onExecute(e -> createLanguage());
+		languagesMagazine.onRefreshItemCount(e -> filterListener.accept(e.count()));
 	}
 
 	@Override
@@ -115,9 +123,7 @@ public class LanguagesCatalog extends AbstractLanguagesCatalog<ImeBox> {
 	}
 
 	private void filterOwner(String owner) {
-		source.owner(owner);
-		languagesMagazine.reload();
-		if (ownerSelectedListener != null) ownerSelectedListener.accept(owner);
+		languagesMagazine.filter(DatasourceHelper.Owner, List.of(owner));
 	}
 
 	private void refreshAddPrivateModelDialog(Language language) {

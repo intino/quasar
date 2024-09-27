@@ -8,6 +8,8 @@ import io.intino.ime.box.ImeBox;
 import io.intino.ime.model.Language;
 import io.intino.ime.model.LanguageLevel;
 
+import javax.xml.crypto.Data;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,9 +19,9 @@ import static java.util.stream.Collectors.toList;
 public class LanguagesDatasource extends PageDatasource<Language> {
 	protected final ImeBox box;
 	protected final UISession session;
+	private final String owner;
 	private String condition;
 	private List<Filter> filters;
-	private String owner;
 	private Boolean isPrivate = null;
 	private LanguageLevel level = null;
 	private Sorting sorting;
@@ -53,14 +55,6 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 		this.sorting = sorting;
 	}
 
-	public String owner() {
-		return owner;
-	}
-
-	public void owner(String owner) {
-		this.owner = owner;
-	}
-
 	public long itemCount() {
 		return itemCount(condition, filters);
 	}
@@ -81,7 +75,8 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 
 	@Override
 	public List<Group> groups(String key) {
-		return List.of();
+		if (key.equalsIgnoreCase(DatasourceHelper.Owner)) return load().stream().map(Language::owner).distinct().map(o -> new Group().name(o).label(o)).toList();
+		return new ArrayList<>();
 	}
 
 	protected String username() {
@@ -90,7 +85,7 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 
 	private List<Language> load(String condition, List<Filter> filters) {
 		List<Language> languages = load();
-		languages = filterOwner(languages);
+		languages = filterOwner(languages, filters);
 		languages = filterPrivate(languages);
 		languages = filterCondition(languages, condition);
 		return languages;
@@ -101,9 +96,10 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 		return groupedLanguages.values().stream().map(List::getLast).collect(toList());
 	}
 
-	private List<Language> filterOwner(List<Language> languages) {
-		if (owner == null) return languages;
-		return languages.stream().filter(l -> l.owner().equals(owner)).collect(toList());
+	private List<Language> filterOwner(List<Language> languages, List<Filter> filters) {
+		List<String> owners = this.owner != null ? List.of(this.owner) : DatasourceHelper.categories(DatasourceHelper.Owner, filters);
+		if (owners.isEmpty()) return languages;
+		return languages.stream().filter(l -> owners.contains(l.owner())).collect(toList());
 	}
 
 	private List<Language> filterPrivate(List<Language> languages) {

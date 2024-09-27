@@ -6,8 +6,11 @@ import io.intino.alexandria.ui.model.datasource.PageDatasource;
 import io.intino.alexandria.ui.services.push.UISession;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.models.ModelManager;
+import io.intino.ime.model.Language;
 import io.intino.ime.model.Model;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -46,7 +49,8 @@ public class ModelsDatasource extends PageDatasource<Model> {
 
 	@Override
 	public List<Group> groups(String key) {
-		return List.of();
+		if (key.equalsIgnoreCase(DatasourceHelper.Owner)) return load().stream().map(Model::owner).distinct().map(o -> new Group().name(o).label(o)).toList();
+		return new ArrayList<>();
 	}
 
 	protected List<Model> load() {
@@ -62,8 +66,15 @@ public class ModelsDatasource extends PageDatasource<Model> {
 
 	private List<Model> load(String condition, List<Filter> filters) {
 		List<Model> models = load();
+		models = filterOwner(models, filters);
 		models = filterCondition(models, condition);
 		return models;
+	}
+
+	private List<Model> filterOwner(List<Model> models, List<Filter> filters) {
+		List<String> owners = DatasourceHelper.categories(DatasourceHelper.Owner, filters);
+		if (owners.isEmpty()) return models;
+		return models.stream().filter(l -> owners.contains(l.owner())).collect(toList());
 	}
 
 	private List<Model> filterCondition(List<Model> models, String condition) {

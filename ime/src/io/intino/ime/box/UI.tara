@@ -10,96 +10,82 @@ Service ImeElements as UI(port = "{port}", title = "{title}", favicon = "/icons/
 	Authentication(by="{federation-url}")
 
 	Resource(path = "/") home as Page(homeTemplate) Main
-	Resource(path = "/home") userHome as Page(userHomeTemplate) Confidential
-	Resource(path = "/:user/home") userModels as Page(userHomeTemplate) Confidential
-	Resource(path = "/:user/models/:id") userModel as Page(modelTemplate) > Parameter file
-	Resource(path = "/languages/:language") language as Page(languageTemplate)
-	Resource(path = "/languages/:language/languages") publicLanguages as Page(parentLanguagesTemplate)
-	Resource(path = "/languages/:language/models") publicModels as Page(languageModelsTemplate)
-	Resource(path = "/languages/:language/models/:id") publicModel as Page(modelTemplate) > Parameter file
+	Resource(path = "/dashboard") dashboard as Page(dashboardTemplate) Confidential
+	Resource(path = "/languages") languages as Page(languagesTemplate) > Parameter filters
+	Resource(path = "/languages/:id") language as Page(languageTemplate)
+	Resource(path = "/models") models as Page(modelsTemplate) > Parameter filters
+	Resource(path = "/models/:id") model as Page(modelTemplate) > Parameter file
 	Resource(path = "/not-found") notFound as Page(notFoundTemplate) > Parameter model
-	Resource(path = "/permissions") permissions as Page(permissionsTemplate) > Parameter username; Parameter model
+	Resource(path = "/permissions") permissions as Page(permissionsTemplate) > Parameter username; Parameter model; Parameter callback
 
 Template homeTemplate as Relative(height=100%, width=100%)
+	Block(layout=Vertical Flexible, visible=false) languagesBlock as Conditional > TemplateStamp(template=languagesTemplate) languagesTemplate
+	Block(layout=Vertical Flexible, visible=false) modelsBlock as Conditional > TemplateStamp(template=modelsTemplate) modelsTemplate
+
+Template dashboardTemplate as Relative(height=100%, width=100%)
 	TemplateStamp(template=headerTemplate) header
-
-	Block(layout=Vertical Flexible CenterCenter, visible=false) searchingModelsBlock
-		Spinner(mode=Ring, color="secondary")
-		Text(value="" , translate=true, format=h3 airTop) openingModelMessage
-
-	Block(layout=Vertical Flexible Center, format=greyBackground) bodyBlock as Relative(width=100%)
-		Block(layout=Horizontal, format=middleTopSpaced middleBottomSpaced autoHeight) as Relative(width=70%)
-			Block(layout=Horizontal Flexible)
-				Text countLanguages
-				Block(layout=Horizontal Center, format=tag, visible=false) navigationDialog
-					Text(format=blackColor) navigationDialogTitle
-					MaterialIconButton(icon="Clear", size=Small, title="Show all", format=smallIconSize middleAirLeft blackColor) navigationDialogRemove
-			Block(layout=Horizontal EndJustified)
-				Link(title="most used", format=airRight, visible=false) mostUsedLink as Action
-				Text(value="most used", format=airRight, translate=true) mostUsedText
-				Link(title="most recents", format=airRight) mostRecentsLink as Action
-				Text(value="most recents", format=airRight, visible=false, translate=true) mostRecentsText
-		Block(format=whiteBackground topSpaced leftSpaced) as Relative(width=70%)
-			TemplateStamp(template=languagesCatalog) languagesCatalog
-
-Template userHomeTemplate as Relative(height=100%, width=100%)
-	TemplateStamp(template=modelsHeaderTemplate) header
 
 	Block(layout=Vertical Flexible CenterCenter, visible=false) openingModelBlock
 		Spinner(mode=Ring, color="secondary")
 		Text(value="" , translate=true, format=h3 airTop) openingModelMessage
 
-	Block(layout=Horizontal Flexible) bodyBlock
-		Block(format=greyBackground) as Relative(width=20%)
-			Block(format=autoHeight) as Relative(width=100%)
-				Block(layout=Vertical CenterCenter, format=leftPanelBackground topSpaced bottomSpaced)
+	Block(layout=Horizontal Flexible Center, format=greyBackground) bodyBlock as Relative(width=100%)
+		Block(format=airLeft airRight) as Relative(width=20%, offsetWidth=10px)
+			Block(layout=Horizontal, format=middleTopSpaced middleBottomSpaced minPanelHeaderHeight)
+				Text(value="Dashboard", translate=true, format=airLeft h5)
+			Block(layout=Vertical Flexible, format=leftPanelStyle) leftPanelBlock
+				Selector(visible=false) modelGroupSelector as ListBox
+					Text(value="My models") allModelsOption as Option
+					Text(value="My private models") privateModelsOption as Option
+					Text(value="My public models") publicModelsOption as Option
 
-			Block
-				Selector groupSelector as ListBox
-					Text(value="All languages") allLanguagesOption as Option
-					Text(value="Private languages") privateLanguagesOption as Option
-					Text(value="Public languages") publicLanguagesOption as Option
-					Text(value="All models") allModelsOption as Option
-					Text(value="Private models") privateModelsOption as Option
-					Text(value="Public models") publicModelsOption as Option
+				Selector(visible=false) languageGroupSelector as ListBox
+					Text(value="My languages") allLanguagesOption as Option
+					Text(value="My private languages") privateLanguagesOption as Option
+					Text(value="My public languages") publicLanguagesOption as Option
 
-		Block(layout=Vertical Flexible, format=spaced)
-			Block(layout=Vertical Flexible, visible=false) languagesCatalogBlock > TemplateStamp(template=languagesCatalog) languagesCatalog
-			Block(layout=Vertical Flexible, visible=false) modelsCatalogBlock > TemplateStamp(template=modelsCatalog) modelsCatalog
-
+		Block(layout=Vertical Flexible) as Relative(height=100%)
+			Block(layout=Horizontal, format=middleTopSpaced middleBottomSpaced airLeft airRight minPanelHeaderHeight)
+				Block(layout=Horizontal Flexible)
+					Text count
+			Block(layout=Vertical Flexible, format=mainPanelStyle) mainPanelBlock as Relative(height=100%,width=100%,offsetWidth=10px)
+				Block(layout=Vertical Flexible, visible=false) languagesCatalogBlock > TemplateStamp(template=languagesCatalog) languagesCatalog
+				Block(layout=Vertical Flexible, visible=false) modelsCatalogBlock > TemplateStamp(template=modelsCatalog) modelsCatalog
 
 Template(format=headerBackground middleTopSpaced middleBottomSpaced) headerTemplate
 	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)
 		Block(layout=Horizontal Flexible Center, format=airLeft)
-			Image(value="/logo-dark.png", format=airLeft doubleAirRight, mobileReduceFactor=75%) as Absolute(width=45px, height=45px)
+			Link(title="", format=logoLink noLeft) logoLink as OpenPage(ImeElements.home)
+			Image(value="/logo-dark.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=50px, height=45px)
 			Block
-				Text(format=h3 appTitleStyle, value="Quasar")
-				Text(format=whiteColor, value="Design your own DSL models and run them wherever you want")
+				Text(value="Languages", format=appViewTextStyle, translate=true) appViewText
+				Switch(title="") appViewSwitch
 			Block(layout=Vertical Flexible)
 				Block(layout=Vertical CenterCenter) > Block(format=searchBox) as Relative(width=60%) > Text(format=searchBoxBackground) searchField as Editable(placeholder="Search")
 		Block(layout=Horizontal Center EndJustified)
-			Block(visible=false, format=airRight) notLoggedToolbar
-				Link(title="LOG IN", format=white) login as OpenPage(ImeElements.userHome)
-			Block(format=airRight)
-				MaterialIconButton(title="set dark mode", icon="Brightness4") as SetDarkMode
-				MaterialIconButton(title="set light mode", icon="Brightness7") as SetLightMode
-			User(mode=OnlyPhoto, visible=false) user
+			Link(title="LOG IN", format=white airRight, visible=false) login as OpenPage(ImeElements.dashboard)
+			MaterialIconButton(title="Dashboard", icon="Home", titlePosition=Bottom, format=airRight iconButtonColor, size=Small, visible=false) dashboard as OpenPage(ImeElements.dashboard)
+			User(mode=OnlyPhoto, visible=false, format=relative) user
+				Block(layout=Horizontal EndJustified, format=userToolbar)
+					MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
+					MaterialIconButton(title="Set light mode", format=airRight, icon="Brightness7", size=Small) as SetLightMode
 				Selector as ListBox
-					Block as Option > Link(title="My home") userHome as OpenPage(page=ImeElements.userHome)
+					Block as Option > Link(title="Home") home as OpenPage(page=ImeElements.home)
+					Block as Option > Link(title="Dashboard", visible=false) userHome as OpenPage(page=ImeElements.dashboard)
 
 Template(layout=Vertical Flexible) permissionsTemplate as Relative(height=100%,width=100%)
 	Block(layout=Vertical CenterCenter, format=grey) as Relative(height=100%,width=100%)
 		Block(format=visible headerBackground) as Absolute(width=400px, height=400px) Paper
 			Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
 				Block(layout=Vertical CenterCenter)
-					Image(value="/logo-dark.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=181px, height=200px)
+					Image(value="/logo-expanded-dark.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=340px, height=80px)
 					Text(value="You dont have access permissions", format=h4 airTop textCentered, translate=true) message
 			Block
 				Divider
 				Block(layout=Horizontal CenterJustified, format=middleAirTop)
 					Button(title="Home", highlight=Outline, format=airRight) gotoHome as OpenPage(ImeElements.home)
-					Button(title="My home", visible=false, highlight=Outline, format=airRight) userHome as OpenPage(ImeElements.userHome)
-					//Button(title="Login", visible=false, highlight=Outline, format=airRight) loginButton as OpenPage(ImeElements.model)
+					Button(title="Dashboard", visible=false, highlight=Outline, format=airRight) userHome as OpenPage(ImeElements.dashboard)
+					Button(title="Login", visible=false, highlight=Outline, format=airRight) loginButton as Action
 					Button(title="Logout", visible=false, highlight=Outline) logoutButton as Action
 
 Template(layout=Vertical Flexible) notFoundTemplate as Relative(height=100%,width=100%)
@@ -107,10 +93,10 @@ Template(layout=Vertical Flexible) notFoundTemplate as Relative(height=100%,widt
 		Block(format=visible headerBackground) as Absolute(width=400px, height=400px) Paper
 			Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
 				Block(layout=Vertical CenterCenter)
-					Image(value="/logo-dark.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=181px, height=200px)
+					Image(value="/logo-expanded-dark.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=340px, height=80px)
 					Text(value="Model not found", format=h4 airTop textCentered, translate=true) message
 			Block
 				Divider
 				Block(layout=Horizontal CenterJustified, format=middleAirTop)
 					Button(title="Home", highlight=Outline, format=airRight) gotoHome as OpenPage(ImeElements.home)
-					Button(title="My home", highlight=Outline, visible=false) userHome as OpenPage(ImeElements.userHome)
+					Button(title="Dashboard", highlight=Outline, visible=false) userHome as OpenPage(ImeElements.dashboard)

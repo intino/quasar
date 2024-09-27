@@ -12,10 +12,10 @@ Template languageTemplate as Relative(height=100%, width=100%)
 		Text(value="" , translate=true, format=h3 airTop) openingModelMessage
 
 	Block(layout=Vertical Flexible Center, format=greyBackground) bodyBlock as Relative(width=100%)
-		Block(layout=Vertical, format=autoHeight) as Relative(width=70%)> TemplateStamp(template=languageHeaderTemplate) header
+		Block(layout=Vertical, format=autoHeight) as Relative(width=100%)> TemplateStamp(template=languageHeaderTemplate) header
 
-		Block(layout=Vertical CenterCenter Flexible, format=whiteBackground topSpaced leftSpaced) as Relative(width=70%)
-			Image logo as Absolute(height=100px, width=100px)
+		Block(layout=Vertical CenterCenter Flexible, format=whiteBackground topSpaced leftSpaced) as Relative(width=100%)
+			Image(colorInvertedWithDarkMode=true) logo as Absolute(height=100px, width=100px)
 			Block(layout=Horizontal Center, format=airTop)
 				Text(format=h1 airRight) name
 				Link(title="1.0.0", format=h1) release as OpenPopover(releasesBlock)
@@ -24,19 +24,19 @@ Template languageTemplate as Relative(height=100%, width=100%)
 				Button(title="Create language", size=Large, highlight=Fill, visible=false, format=largeButton airBottom) createLanguageTrigger as OpenDialog(createLanguageDialog)
 				Button(title="Start modeling", size=Large, highlight=Fill, visible=false, format=largeButton airBottom) addModel as Action
 				Button(title="Start modeling", size=Large, highlight=Fill, visible=false, format=largeButton airBottom) addPrivateModel as OpenDialog(addPrivateModelDialog)
-				Link(title="View examples...", visible=false, format=airRight) viewModelExamples as OpenPage(ImeElements.publicModels)
-				Link(title="View examples...", visible=false, format=airRight) viewLanguageExamples as OpenPage(ImeElements.publicLanguages)
+				Link(title="View examples...", visible=false, format=airRight) viewModelExamples as OpenPage(ImeElements.models)
+				Link(title="View examples...", visible=false, format=airRight) viewLanguageExamples as OpenPage(ImeElements.languages)
 //				Link(title="Releases...", format=airRight) viewReleases as OpenDialog(dialog=releasesDialog)
 				Block(layout=Horizontal Center, format=doubleAirTop, visible=false) ownerBlock
 					Link(title="metamodel", format=airRight) openModel as Action
 					Text(value="-", format=airRight)
 					Link(title="properties", format=airRight) viewSettings as OpenDialog(dialog=settingsDialog)
 
-		Block(layout=Vertical EndJustified, format=autoHeight) as Relative(width=70%)
+		Block(layout=Vertical EndJustified, format=autoHeight) as Relative(width=100%)
 			Block(layout=Horizontal CenterJustified, format=headerBackground middleTopSpaced middleBottomSpaced relative, visible=false) poweredBlock
 				Link(title="", format=poweredLink whiteColor) poweredLink as OpenPage(page=ImeElements.language)
-				Image(format=airRight) poweredByImage as Absolute(height=50px, width=50px)
-				Text(value="powered by", format=h4 whiteColor) poweredByText
+				Image(format=airRight, colorInvertedWithDarkMode=true) poweredByImage as Absolute(height=50px, width=50px)
+				Text(format=h4 whiteColor) poweredByText
 
 	Block(format=spaced) releasesBlock as Popover Absolute(width=500px, height=300px)
 		TemplateStamp(template=languageReleasesCatalog) releasesCatalog
@@ -64,22 +64,22 @@ Template languageTemplate as Relative(height=100%, width=100%)
         Block as Relative(height=100%, offsetHeight=40px)
         	TemplateStamp(template=languageSettingsEditor) settingsEditor
 		Divider
-		Block(layout=Horizontal EndJustified)
-			Button(title="Close", size=Small, format=airRight) as CloseDialog(settingsDialog)
-            Button(title="Save", size=Small, highlight=Fill) saveSettings as Action
+        Block(layout=Horizontal)
+        	Block(layout=Horizontal StartJustified Flexible) > Button(title="Close", size=Small, format=airRight) as CloseDialog(settingsDialog)
+            Block(layout=Horizontal EndJustified) > Button(title="Apply", size=Small, highlight=Fill) saveSettings as Action
 
 Template(format=headerBackground middleTopSpaced middleBottomSpaced) languageHeaderTemplate
 	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)
 		Block(layout=Horizontal Flexible Center, format=airLeft)
 			Link(title="", format=logoLink noLeft) logoLink as OpenPage(ImeElements.home)
-			Image(value="/logo-dark.png", format=airLeft doubleAirRight, mobileReduceFactor=75%) logo as Absolute(width=45px, height=45px)
+			Image(value="/logo-dark.png", format=airRight, mobileReduceFactor=75%) logo as Absolute(width=50px, height=45px)
 		Block(layout=Horizontal Center EndJustified)
-			Block(visible=false, format=airRight) notLoggedToolbar
-				Link(title="LOG IN", format=white airRight, visible=false) login as Action
-			Block(format=airRight)
-				MaterialIconButton(title="set dark mode", icon="Brightness4") as SetDarkMode
-				MaterialIconButton(title="set light mode", icon="Brightness7") as SetLightMode
-			User(mode=OnlyPhoto, visible=false) user
+			Link(title="LOG IN", format=white airRight, visible=false) login as Action
+			MaterialIconButton(title="Dashboard", icon="Home", titlePosition=Bottom, format=airRight iconButtonColor, size=Small, visible=false) dashboard as OpenPage(ImeElements.dashboard)
+			User(mode=OnlyPhoto, visible=false, format=relative) user
+				Block(layout=Horizontal EndJustified, format=userToolbar)
+					MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
+					MaterialIconButton(title="Set light mode", format=airRight, icon="Brightness7", size=Small) as SetLightMode
 				Selector as ListBox
 					Block as Option > Link(title="Home") as OpenPage(page=ImeElements.home)
-					Block as Option > Link(title="My home") userHome as OpenPage(page=ImeElements.userHome)
+					Block as Option > Link(title="Dashboard") userHome as OpenPage(page=ImeElements.dashboard)

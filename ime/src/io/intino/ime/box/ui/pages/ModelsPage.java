@@ -1,16 +1,16 @@
 package io.intino.ime.box.ui.pages;
 
-import io.intino.ime.box.ui.displays.templates.LanguageModelsTemplate;
+import io.intino.ime.box.ui.displays.templates.ModelsTemplate;
 
-public class PublicModelsPage extends AbstractPublicModelsPage {
-	public String language;
+public class ModelsPage extends AbstractModelsPage {
+	public String filters;
 
 	public io.intino.alexandria.ui.Soul prepareSoul(io.intino.alexandria.ui.services.push.UIClient client) {
 		return new io.intino.alexandria.ui.Soul(session) {
 			@Override
 			public void personify() {
-				LanguageModelsTemplate component = new LanguageModelsTemplate(box);
-				component.language(language);
+				ModelsTemplate component = new ModelsTemplate(box);
+				component.filters(filters);
 				register(component);
 				component.init();
 				component.refresh();

@@ -58,8 +58,8 @@ public class CloneModelEditor extends AbstractCloneModelEditor<ImeBox> {
 	}
 
 	private void refreshDialog() {
-		modelDialog.title(String.format(translate("Clone %s"), model.label()));
-		modelTitleField.value(String.format(translate("%s Copy"), model.label()));
+		modelDialog.title(String.format(translate("Clone %s"), ModelHelper.label(model, language(), box())));
+		modelTitleField.value(String.format(translate("%s Copy"), ModelHelper.label(model, language(), box())));
 	}
 
 	private void cloneModel() {

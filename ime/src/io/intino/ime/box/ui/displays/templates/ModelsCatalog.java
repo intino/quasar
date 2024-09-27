@@ -1,8 +1,10 @@
 package io.intino.ime.box.ui.displays.templates;
 
 import io.intino.alexandria.ui.displays.UserMessage;
+import io.intino.alexandria.ui.displays.components.Grouping;
 import io.intino.alexandria.ui.displays.events.AddItemEvent;
 import io.intino.alexandria.ui.displays.events.SelectionEvent;
+import io.intino.alexandria.ui.displays.notifiers.GroupingNotifier;
 import io.intino.alexandria.ui.utils.DelayerUtil;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.commands.ModelCommands;
@@ -30,6 +32,7 @@ public class ModelsCatalog extends AbstractModelsCatalog<ImeBox> {
 	private Language language;
 	private Consumer<Model> openModelListener;
 	private boolean readonly = false;
+	private boolean embedded = false;
 
 	public ModelsCatalog(ImeBox box) {
 		super(box);
@@ -55,8 +58,20 @@ public class ModelsCatalog extends AbstractModelsCatalog<ImeBox> {
 		this.readonly = value;
 	}
 
+	public void embedded(boolean value) {
+		this.embedded = value;
+	}
+
 	public void filter(String condition) {
 		modelTable.filter(condition);
+	}
+
+	public long itemCount() {
+		return modelTable.itemCount();
+	}
+
+	public void bindTo(Grouping< GroupingNotifier, ImeBox> grouping) {
+		grouping.bindTo(modelTable);
 	}
 
 	@Override
@@ -73,16 +88,17 @@ public class ModelsCatalog extends AbstractModelsCatalog<ImeBox> {
 	public void refresh() {
 		super.refresh();
 		title.value(translate(_title));
+		addModelTrigger.visible(!readonly);
 		removeSelection.visible(!readonly);
+		searchBox.visible(embedded);
 		modelTable.source(source);
 	}
 
 	private void refresh(AddItemEvent event) {
 		Model model = event.item();
 		ModelTableRow row = event.component();
-		row.modelLogoItem.logo.value(ModelHelper.logo(model, box()));
 		row.modelLabelItem.accessType.visible(!model.isPrivate());
-		row.modelLabelItem.label.title(model.label());
+		row.modelLabelItem.label.title(ModelHelper.label(model, language(), box()));
 		row.modelLabelItem.label.onExecute(e -> {
 			openModelListener.accept(model);
 			DelayerUtil.execute(this, v -> notifier.redirect(PathHelper.modelUrl(session(), model)), 600);
@@ -99,6 +115,7 @@ public class ModelsCatalog extends AbstractModelsCatalog<ImeBox> {
 		row.operationsItem.settingsEditor.mode(ModelSettingsEditor.Mode.Small);
 		row.operationsItem.settingsEditor.view(ModelSettingsEditor.View.List);
 		row.operationsItem.settingsEditor.refresh();
+		row.operationsItem.operationsToolbar.visible(!readonly);
 		row.operationsItem.removeModel.readonly(!ModelHelper.canRemove(model, box()));
 		row.operationsItem.removeModel.onExecute(e -> remove(model));
 	}
@@ -121,7 +138,7 @@ public class ModelsCatalog extends AbstractModelsCatalog<ImeBox> {
 		modelsWithoutReleases.forEach(this::remove);
 		if (modelsWithReleases.isEmpty()) notifyUser(translate("Models removed"), UserMessage.Type.Success);
 		else if (selection.size() == modelsWithReleases.size()) notifyUser(translate("Cannot remove models with releases"), UserMessage.Type.Error);
-		else notifyUser(translate("Removed models without releases, but those models could not be removed: " + modelsWithReleases.stream().map(Model::label).collect(Collectors.joining(", "))), UserMessage.Type.Success);
+		else notifyUser(translate("Removed models without releases, but those models could not be removed: " + modelsWithReleases.stream().map(m -> ModelHelper.label(m, language(), box())).collect(Collectors.joining(", "))), UserMessage.Type.Success);
 		refresh();
 	}
 

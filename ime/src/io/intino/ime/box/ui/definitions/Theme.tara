@@ -6,7 +6,7 @@ Theme theme1
 	Typography
 		fontSize = 11px
 
-	Primary("#005b9f", "#6595f4")
+	Primary("#3377ff", "#fffb81")
 	Secondary("#ff9100")
 	Error("#f44336")
 
@@ -57,7 +57,7 @@ Format("background:'white',color:'black'") searchBoxBackground
 Format("background:'#1B222C'") headerBackground
 Format("background:'#b9d1e3'", darkContent="background:'#2a3443'") leftPanelBackground
 Format("background:'#b9d1e3',height:'39px'", darkContent="background:'#2a3443'") headerPanel
-Format("height:'calc(100% - 39px)'") displayHeaderPanel
+Format("height:'calc(100% - 109px)'") displayHeaderPanel
 Format("background:'#000'") blackBackground
 Format("background:'transparent'") noBackground
 Format("padding:'10px'") spaced
@@ -210,10 +210,15 @@ Format("paddingTop:'10px'") paddingTop
 Format("marginTop:'6px'") changesTextAir
 Format("margin:'0 auto'") centered
 Format("cursor:'default'") unselectable
+Format("fontSize:'23pt'") textIcon
 Format("background:'#efefef',padding:'0 10px',borderRadius:'4px',margin:'0 0 12px 20px',border:'1px solid #efefef'") filterDialog
 Format("fontSize:'11px',padding:'0 10px',margin:'0 0 12px 15px'") legendAll
 Format("minWidth:'450px'") histogramStyle
 Format("height:'auto'") autoHeight
+Format("borderRadius:'10px'") rounded
+Format("borderRadius:'10px 10px 0 0'") topRounded
+Format("border:'1px solid #bdbdbd',borderBottom:'0'") languagesStyle
+Format("border:'1px solid #b16401',borderBottom:'0'") modelsStyle
 Format("width:'auto'") autoWidth
 Format("height:'30px'") summaryHeight
 Format("height:'100%'") fullHeight
@@ -254,6 +259,12 @@ Format("minWidth:'300px',minHeight:'100px'") popoverStyle
 Format("background:'white',borderRadius:'25px',padding:'5px 20px'") searchBox
 Format("width:'275px',height:'200px',background:'#f6f7ff',padding:'10px',margin:'10px 0',borderRadius:'4px'", darkContent="background:'#333'") languageMagazine
 Format("padding:'15px 40px'") largeButton
+Format("position:'absolute',bottom:'0',left:'0',marginLeft:'6px',marginBottom:'7px'") userToolbar
+Format("color:'#3377ff'", "color:'#fffb81'") iconButtonColor
+Format("marginLeft:'10px',marginBottom:'-8px',fontSize:'15pt',color:'white'") appViewTextStyle
+Format("height:'28px'") minPanelHeaderHeight
+Format("background:'white',padding:'10px 0 0 10px',borderRadius:'10px 10px 0 0',marginRight:'10px'", darkContent="background:'#1F1F1F'") mainPanelStyle
+Format("background:'white',padding:'10px',borderRadius:'10px 10px 0 0'", darkContent="background:'#1F1F1F'") leftPanelStyle
 
 // Cards
 Format("textAlign:'left',color:'#B71A1C',padding:'10px'") cardTitle
@@ -290,9 +301,12 @@ Format("marginLeft:'18px',marginTop:'10px'") indicatorFilterSelectorStyle
 Format("position:'absolute',height:'100%',width:'100%',zIndex:'100',background:'white'") mapGroupFilterNotAvailableStyle
 Format("position:'absolute',height:'100%',width:'100%',zIndex:'100',top:'0'") imageLinkStyle
 Format("position:'absolute',width:'100%',height:'calc(100% - 20px)',cursor:'pointer',marginTop:'20px'") magazineLinkStyle
-Format("padding:'0 20px',marginBottom:'2px',borderRadius:'6px',background:'#6595f4',color:'black'") modelLink
-Format("padding:'0 20px',marginBottom:'2px',borderRadius:'6px',background:'#909090',color:'black'") modelLinkDisabled
-Format("padding:'0 20px',marginBottom:'2px',borderRadius:'6px',background:'#909090',color:'black',fontWeight:'bold'") modelText
+Format("padding:'0 15px',color:'#fffb81'") modelLink
+Format("borderRadius:'6px 0 0 6px',border:'1px solid white',borderRight:'0'") m3Style
+Format("borderRadius:'0',border:'1px solid white',borderRight:'0'") m2Style
+Format("borderRadius:'0 6px 6px 0',border:'1px solid white'") m1Style
+Format("padding:'0 15px',color:'silver'") modelLinkDisabled
+Format("padding:'0 15px',background:'white',color:'black',fontWeight:'bold'") modelText
 Format("padding:'0 10px',borderRadius:'6px',textAlign:'center',color:'black'") modelDescriptionStyle
 Format("background:'transparent'") languageOperationsStyle
 Format("position:'absolute',top:'0',left:'0',fontSize:'7pt',whiteSpace:'nowrap'") modelOperationsTextStyle

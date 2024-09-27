@@ -1,9 +1,17 @@
 package io.intino.ime.box.ui.datasources;
 
+import io.intino.alexandria.ui.model.datasource.Filter;
+import io.intino.alexandria.ui.model.datasource.filters.GroupFilter;
+
 import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class DatasourceHelper {
+
+	public static final String Owner = "owner";
 
 	public static boolean matches(String value, String[] conditions) {
 		if (value == null) return false;
@@ -17,4 +25,9 @@ public class DatasourceHelper {
 		return value;
 	}
 
+	public static List<String> categories(String grouping, List<Filter> filters) {
+		if (filters == null) return Collections.emptyList();
+		Filter filter = filters.stream().filter(f -> f.grouping().equalsIgnoreCase(grouping)).findFirst().orElse(null);
+		return filter != null ? new ArrayList<>(((GroupFilter)filter).groups()) : Collections.emptyList();
+	}
 }

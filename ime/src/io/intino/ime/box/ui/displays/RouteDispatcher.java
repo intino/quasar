@@ -8,31 +8,24 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	}
 
 	@Override
-	public void dispatchUserModel(Soul soul, String user, String name, String file) {
+	public void dispatchModel(Soul soul, String id, String file) {
 	}
 
 	@Override
-	public void dispatchPublicModel(Soul soul, String language, String id, String file) {
+	public void dispatchDashboard(Soul soul) {
 	}
 
 	@Override
-	public void dispatchUserModels(Soul soul, String user) {
+	public void dispatchLanguages(Soul soul, String filters) {
+
 	}
 
 	@Override
-	public void dispatchUserHome(Soul soul) {
+	public void dispatchLanguage(Soul soul, String id) {
 	}
 
 	@Override
-	public void dispatchLanguage(Soul soul, String language) {
-	}
-
-	@Override
-	public void dispatchPublicLanguages(Soul soul, String language) {
-	}
-
-	@Override
-	public void dispatchPublicModels(Soul soul, String language) {
+	public void dispatchModels(Soul soul, String filters) {
 	}
 
 	@Override
@@ -40,7 +33,7 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	}
 
 	@Override
-	public void dispatchPermissions(Soul soul, String user, String model) {
+	public void dispatchPermissions(Soul soul, String username, String model, String callback) {
 	}
 
 }
