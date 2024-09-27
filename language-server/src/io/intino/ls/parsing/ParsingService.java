@@ -1,7 +1,6 @@
 package io.intino.ls.parsing;
 
 import io.intino.ls.ModelUnit;
-import io.intino.ls.ParserErrorStrategy;
 import io.intino.tara.Source;
 import io.intino.tara.language.grammar.SyntaxException;
 import io.intino.tara.language.grammar.TaraGrammar;

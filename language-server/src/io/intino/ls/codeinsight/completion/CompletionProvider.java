@@ -10,6 +10,7 @@ public interface CompletionProvider {
 
 	static CompletionItem create(String text, CompletionItemKind kind) {
 		CompletionItem item = new CompletionItem();
+		item.setLabel(text);
 		item.setInsertText(text);
 		item.setKind(kind);
 		return item;
