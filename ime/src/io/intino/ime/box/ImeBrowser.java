@@ -35,7 +35,7 @@ public class ImeBrowser implements Browser {
 
 			@Override
 			public Language releasedLanguage() {
-				return model.releasedLanguage() != null && !model.releasedLanguage().isEmpty() ? languageOf(model.releasedLanguage()) : null;
+				return languageOf(model.releasedLanguage());
 			}
 		};
 	}

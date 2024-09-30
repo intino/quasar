@@ -1,7 +1,7 @@
 dsl Legio
 
 Artifact(groupId = "io.intino", version = "1.0.0") ime
-	Dsl("Konos", "12.2.11")
+	Dsl("Konos", "12.2.12")
 		Builder(generationPackage = "box")
 	Archetype("io.intino", "editor-archetype", "1.0.0-SNAPSHOT")
 
