@@ -6,6 +6,8 @@ import io.intino.ls.codeinsight.DiagnosticService;
 import io.intino.ls.codeinsight.ReferenceResolver;
 import io.intino.ls.codeinsight.completion.CompletionContext;
 import io.intino.ls.codeinsight.completion.CompletionService;
+import io.intino.ls.document.FileDocumentManager;
+import io.intino.ls.document.DocumentSourceProvider;
 import io.intino.ls.parsing.ParsingService;
 import io.intino.tara.Language;
 import io.intino.tara.Source;
@@ -34,7 +36,7 @@ import static org.antlr.v4.runtime.CharStreams.fromString;
 
 public class IntinoDocumentService implements TextDocumentService {
 	private final Language language;
-	private final DocumentManager workspaceManager;
+	private final FileDocumentManager workspaceManager;
 	private final DocumentSourceProvider documentSourceProvider;
 	private final DiagnosticService diagnosticService;
 	private final ReferenceResolver referenceResolver;
@@ -43,7 +45,7 @@ public class IntinoDocumentService implements TextDocumentService {
 	private final ParsingService parsingService;
 	private final CompletionService completionService;
 
-	public IntinoDocumentService(Language language, DocumentManager documentManager, DiagnosticService diagnosticService, Map<URI, ModelUnit> models, AtomicReference<LanguageClient> client) {
+	public IntinoDocumentService(Language language, FileDocumentManager documentManager, DiagnosticService diagnosticService, Map<URI, ModelUnit> models, AtomicReference<LanguageClient> client) {
 		this.language = language;
 		this.workspaceManager = documentManager;
 		this.documentSourceProvider = new DocumentSourceProvider(documentManager);

@@ -1,6 +1,7 @@
 package io.intino.ls;
 
 import io.intino.ls.codeinsight.DiagnosticService;
+import io.intino.ls.document.FileDocumentManager;
 import io.intino.tara.Language;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.services.LanguageClient;
@@ -25,7 +26,7 @@ public class IntinoLanguageServer implements LanguageServer, LanguageClientAware
 	private final IntinoWorkspaceService workspaceService;
 	private AtomicReference<LanguageClient> client = new AtomicReference<>(null);
 
-	public IntinoLanguageServer(Language language, DocumentManager documentManager) {
+	public IntinoLanguageServer(Language language, FileDocumentManager documentManager) {
 		Map<URI, ModelUnit> models = new HashMap<>();
 		DiagnosticService diagnosticService = new DiagnosticService(documentManager, models);
 		this.documentService = new IntinoDocumentService(language, documentManager, diagnosticService, models, client);

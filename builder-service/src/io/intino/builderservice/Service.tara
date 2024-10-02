@@ -22,6 +22,7 @@ Service builder-service as REST(host = "", port = "{port}")
 Schema BuildOutput
 	Attribute genTar as File
 
+
 Schema BuilderInfo
 	Attribute id as Text
 	Attribute imageName as Text

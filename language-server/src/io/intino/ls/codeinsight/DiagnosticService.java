@@ -1,6 +1,6 @@
 package io.intino.ls.codeinsight;
 
-import io.intino.ls.DocumentManager;
+import io.intino.ls.document.FileDocumentManager;
 import io.intino.ls.ModelUnit;
 import io.intino.tara.Language;
 import io.intino.tara.language.grammar.SyntaxException;
@@ -27,10 +27,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DiagnosticService {
-	private final DocumentManager documentManager;
+	private final FileDocumentManager documentManager;
 	private final Map<URI, ModelUnit> models;
 
-	public DiagnosticService(DocumentManager documentManager, Map<URI, ModelUnit> models) {
+	public DiagnosticService(FileDocumentManager documentManager, Map<URI, ModelUnit> models) {
 		this.documentManager = documentManager;
 		this.models = models;
 	}

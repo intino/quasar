@@ -1,4 +1,4 @@
-package io.intino.ls;
+package io.intino.ls.document;
 
 import io.intino.alexandria.logger.Logger;
 import org.apache.commons.io.FileUtils;
@@ -18,12 +18,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class DocumentManager {
+public class FileDocumentManager {
 	private final Object lock = new Object();
 	private final Map<URI, TextDocumentItem> documents;
 	private final File root;
 
-	public DocumentManager(File root) throws IOException {
+	public FileDocumentManager(File root) throws IOException {
 		this.root = root;
 		this.documents = loadDocuments(root);
 	}

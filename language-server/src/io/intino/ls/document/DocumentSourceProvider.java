@@ -1,6 +1,7 @@
-package io.intino.ls;
+package io.intino.ls.document;
 
 
+import io.intino.ls.SourceProvider;
 import io.intino.tara.Source;
 
 import java.io.InputStream;
@@ -9,9 +10,9 @@ import java.nio.charset.Charset;
 import java.util.stream.Stream;
 
 public class DocumentSourceProvider implements SourceProvider {
-	private final DocumentManager documentManager;
+	private final FileDocumentManager documentManager;
 
-	public DocumentSourceProvider(DocumentManager documentManager) {
+	public DocumentSourceProvider(FileDocumentManager documentManager) {
 		this.documentManager = documentManager;
 	}
 
