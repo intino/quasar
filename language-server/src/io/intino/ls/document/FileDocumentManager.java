@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class FileDocumentManager {
+public class FileDocumentManager implements DocumentManager {
 	private final Object lock = new Object();
 	private final Map<URI, TextDocumentItem> documents;
 	private final File root;
@@ -36,14 +36,17 @@ public class FileDocumentManager {
 		return new TextDocumentItem(relativePath(f).getPath(), dslOf(f), (int) f.lastModified(), content(f));
 	}
 
+	@Override
 	public List<URI> all() {
 		return documents.keySet().stream().toList();
 	}
 
+	@Override
 	public List<URI> folders() {
 		return FileUtils.listFilesAndDirs(root, fileFilter(), fileFilter()).stream().filter(f -> !f.getPath().equals(root.getPath())).map(this::relativePath).toList();
 	}
 
+	@Override
 	public void upsertDocument(URI uri, String dsl, String content) {
 		synchronized (lock) {
 			try {
@@ -58,6 +61,7 @@ public class FileDocumentManager {
 		}
 	}
 
+	@Override
 	public InputStream getDocumentText(URI uri) {
 		synchronized (lock) {
 			TextDocumentItem document = documents.get(uri);
@@ -65,10 +69,11 @@ public class FileDocumentManager {
 		}
 	}
 
+	@Override
 	public void move(URI oldUri, URI newUri) {
 		TextDocumentItem textDocumentItem = documents.get(oldUri);
 		if (textDocumentItem != null) try {
-			removeDocument(oldUri);
+			remove(oldUri);
 			documents.put(newUri, textDocumentItem);
 			Files.move(fileOf(oldUri).toPath(), fileOf(newUri).toPath());
 		} catch (IOException e) {
@@ -76,9 +81,24 @@ public class FileDocumentManager {
 		}
 	}
 
-	public void removeDocument(URI uri) {
+	@Override
+	public void remove(URI uri) {
 		documents.remove(uri);
-		fileOf(uri).delete();
+		File file = fileOf(uri);
+		if(file.isFile()) file.delete();
+		else removeDirectory(file);
+	}
+
+	@Override
+	public void commit() {
+	}
+
+	private static void removeDirectory(File file) {
+		try {
+			FileUtils.deleteDirectory(file);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private String content(File f) {

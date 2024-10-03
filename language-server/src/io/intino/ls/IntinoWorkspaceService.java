@@ -56,7 +56,7 @@ public class IntinoWorkspaceService implements WorkspaceService {
 
 	@Override
 	public CompletableFuture<WorkspaceEdit> willDeleteFiles(DeleteFilesParams params) {
-		params.getFiles().forEach(f -> documentManager.removeDocument(URI.create(f.getUri())));
+		params.getFiles().forEach(f -> documentManager.remove(URI.create(f.getUri())));
 		List<DeleteFile> list = params.getFiles().stream().map(f -> new DeleteFile(f.getUri())).toList();
 		return completedFuture(new WorkspaceEdit(list.stream()
 				.map(Either::<TextDocumentEdit, ResourceOperation>forRight)
@@ -78,7 +78,7 @@ public class IntinoWorkspaceService implements WorkspaceService {
 
 	private void removeContainedDocuments(String uri) {
 		documentManager.all().stream().filter(u -> u.getPath().startsWith(uri))
-				.forEach(u -> documentManager.removeDocument(URI.create(u.getPath())));
+				.forEach(u -> documentManager.remove(URI.create(u.getPath())));
 	}
 
 	public InputStream content(URI uri) {
@@ -87,7 +87,7 @@ public class IntinoWorkspaceService implements WorkspaceService {
 
 	@Override
 	public void didDeleteFiles(DeleteFilesParams params) {
-		params.getFiles().forEach(f -> documentManager.removeDocument(URI.create(f.getUri())));
+		params.getFiles().forEach(f -> documentManager.remove(URI.create(f.getUri())));
 	}
 
 	@Override
