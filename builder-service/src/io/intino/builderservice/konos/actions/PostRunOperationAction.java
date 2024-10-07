@@ -17,7 +17,7 @@ public class PostRunOperationAction implements io.intino.alexandria.rest.Request
 
 	public String execute() throws InternalServerError {
 		try {
-			return new BuilderRunner(box.builderStore(), box.workspace(), box.configuration().dockerhubAuthFile(), new File(box.configuration().languageRepository()))
+			return new BuilderRunner(box.builderStore(), box.containerManager(), box.workspace(), new File(box.configuration().languageRepository()))
 					.run(runOperationContext, filesInTar.inputStream());
 		} catch (Throwable e) {
 			Logger.error(e);
@@ -26,7 +26,6 @@ public class PostRunOperationAction implements io.intino.alexandria.rest.Request
 	}
 
 	public void onMalformedRequest(Throwable e) throws AlexandriaException {
-		//TODO
 		throw new BadRequest("Malformed request");
 	}
 }

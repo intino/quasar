@@ -11,11 +11,9 @@ public class SubscribeOperationAction {
 	public String ticket;
 
 	public void onOpen(Client client, SparkNotifier notifier) {
-		//register listener
 	}
 
 	public void onClose(Client client) {
-		//unregister listener
 	}
 
 	public void execute() {

@@ -7,6 +7,8 @@ import java.util.*;
 import io.intino.builderservice.konos.schemas.*;
 
 public class GetResultResourceAction implements io.intino.alexandria.rest.RequestErrorHandler {
+	public String ticket;
+	public String output;
 	public BuilderServiceBox box;
 	public io.intino.alexandria.http.spark.SparkContext context;
 	public String resourceId;
