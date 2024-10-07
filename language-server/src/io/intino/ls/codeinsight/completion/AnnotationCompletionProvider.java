@@ -3,7 +3,7 @@ package io.intino.ls.codeinsight.completion;
 import io.intino.tara.language.grammar.TaraGrammar;
 import io.intino.tara.language.grammar.TaraGrammar.MogramReferenceContext;
 import io.intino.tara.language.grammar.TaraGrammar.SignatureContext;
-import io.intino.tara.language.model.Annotation;
+import io.intino.tara.model.Annotation;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 

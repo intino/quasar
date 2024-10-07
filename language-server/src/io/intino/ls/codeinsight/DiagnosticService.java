@@ -1,11 +1,12 @@
 package io.intino.ls.codeinsight;
 
+import io.intino.ls.document.DocumentManager;
 import io.intino.ls.document.FileDocumentManager;
 import io.intino.ls.ModelUnit;
 import io.intino.tara.Language;
 import io.intino.tara.language.grammar.SyntaxException;
-import io.intino.tara.language.model.Element;
-import io.intino.tara.language.model.Mogram;
+import io.intino.tara.model.Element;
+import io.intino.tara.model.Mogram;
 import io.intino.tara.language.semantics.errorcollector.SemanticException;
 import io.intino.tara.language.semantics.errorcollector.SemanticFatalException;
 import io.intino.tara.language.semantics.errorcollector.SemanticIssue;
@@ -27,10 +28,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DiagnosticService {
-	private final FileDocumentManager documentManager;
+	private final DocumentManager documentManager;
 	private final Map<URI, ModelUnit> models;
 
-	public DiagnosticService(FileDocumentManager documentManager, Map<URI, ModelUnit> models) {
+	public DiagnosticService(DocumentManager documentManager, Map<URI, ModelUnit> models) {
 		this.documentManager = documentManager;
 		this.models = models;
 	}

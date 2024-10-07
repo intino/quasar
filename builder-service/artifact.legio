@@ -1,7 +1,7 @@
 dsl Legio
 
-Artifact("io.intino", "1.0.0") builder-service
-	Dsl("Konos", "12.2.12")
+Artifact("io.intino", "1.0.0-SNAPSHOT") builder-service
+	Dsl("Konos", "12.2.13")
 	Imports
 		Test("junit", "junit", "4.13.2")
 		Compile("com.github.docker-java", "docker-java", "3.4.0")

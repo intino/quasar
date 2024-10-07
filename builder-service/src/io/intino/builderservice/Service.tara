@@ -11,16 +11,26 @@ Service builder-service as REST(host = "", port = "{port}")
 		Post
 			Parameter(in = form) runOperationContext as Object(schema = RunOperationContext)
 			Parameter(in = form) filesInTar as File
-			Response buildTicket as Text
-	Notification(path = "build/messages") subscribeBuild
-		Parameter(in = query) buildTicket as Text
-	Resource(path = "build/output") results
-		Post
-			Parameter(in = query) buildTicket as Text
-			Response buildOutput as Object(BuildOutput)
+			Response ticket as Text
+	Notification(path = "operation/:ticket/messages") subscribeOperation
+		Parameter(in = path) ticket as Text
+	Resource(path = "operation/:ticket/output") operationResult
+		Get
+			Parameter(in = path) ticket as Text
+			Response operationResult as Object(OperationResult)
+	Resource(path = "build/output/resource/:resourceId") resultResource
+		Get
+			Parameter(in = path) resourceId as Text
+			Response file as File
+			Exception(code = NotFound)
 
-Schema BuildOutput
-	Attribute genTar as File
+Schema OperationResult
+	Attribute state as Word(values = "Running" "Finished")
+	Attribute genTarHRef as Text
+	Attribute srcTarHRef as Text
+	Attribute resTarHRef as Text
+	Attribute graphHRef as Text
+	Attribute messages as Object(Message) List
 
 
 Schema BuilderInfo

@@ -1,9 +1,9 @@
 package io.intino.ls.codeinsight.completion;
 
 import io.intino.tara.language.grammar.TaraGrammar;
-import io.intino.tara.language.model.Element;
-import io.intino.tara.language.model.ElementContainer;
-import io.intino.tara.language.model.Mogram;
+import io.intino.tara.model.Element;
+import io.intino.tara.model.ElementContainer;
+import io.intino.tara.model.Mogram;
 import io.intino.tara.processors.model.Model;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;

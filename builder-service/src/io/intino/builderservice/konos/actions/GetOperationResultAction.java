@@ -6,12 +6,12 @@ import java.time.*;
 import java.util.*;
 import io.intino.builderservice.konos.schemas.*;
 
-public class PostResultsAction implements io.intino.alexandria.rest.RequestErrorHandler {
+public class GetOperationResultAction implements io.intino.alexandria.rest.RequestErrorHandler {
 	public BuilderServiceBox box;
 	public io.intino.alexandria.http.spark.SparkContext context;
-	public String buildTicket;
+	public String ticket;
 
-	public BuildOutput execute() {
+	public OperationResult execute() {
 		return null;
 	}
 

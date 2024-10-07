@@ -1,8 +1,8 @@
 package io.intino.ls.codeinsight.completion;
 
 import io.intino.tara.Language;
-import io.intino.tara.language.model.*;
-import io.intino.tara.language.model.rules.Size;
+import io.intino.tara.model.*;
+import io.intino.tara.model.rules.Size;
 import io.intino.tara.language.semantics.Constraint;
 import io.intino.tara.processors.Resolver;
 import org.eclipse.lsp4j.CompletionItem;

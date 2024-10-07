@@ -1,10 +1,11 @@
 package io.intino.ime.box.languages;
 
 import io.intino.ime.model.Model;
-import io.intino.ls.document.FileDocumentManager;
 import io.intino.ls.IntinoLanguageServer;
+import io.intino.ls.document.FileDocumentManager;
+import io.intino.ls.document.GitDocumentManager;
 import io.intino.tara.Language;
-import org.eclipse.jetty.util.security.Credential;
+import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.io.File;
@@ -31,9 +32,11 @@ public class LanguageServerManager {
 		return new IntinoLanguageServer(language, new FileDocumentManager(root));
 	}
 
-//	public LanguageServer create(Language language, URL gitUrl, Credential credential) throws IOException {
-//		return new IntinoLanguageServer(language, new FileDocumentManager(root));
-//	}
+	public LanguageServer create(Language language, URI workspaceRoot, URL gitUrl, CredentialsProvider credentialsProvider) throws IOException {
+		File root = new File(workspaceRoot);
+		root.mkdirs();
+		return new IntinoLanguageServer(language, new GitDocumentManager(root, gitUrl, credentialsProvider));
+	}
 
 	public LanguageServer get(Model model) throws IOException {
 		if (!servers.containsKey(model.modelingLanguage()))

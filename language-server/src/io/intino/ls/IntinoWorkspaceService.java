@@ -2,6 +2,7 @@ package io.intino.ls;
 
 import io.intino.alexandria.logger.Logger;
 import io.intino.ls.codeinsight.DiagnosticService;
+import io.intino.ls.document.DocumentManager;
 import io.intino.ls.document.FileDocumentManager;
 import io.intino.tara.Language;
 import org.apache.commons.io.FileUtils;
@@ -24,11 +25,11 @@ import static org.eclipse.lsp4j.jsonrpc.messages.Either.forRight;
 
 public class IntinoWorkspaceService implements WorkspaceService {
 	private final Language language;
-	private final FileDocumentManager documentManager;
+	private final DocumentManager documentManager;
 	private final DiagnosticService diagnosticService;
 	private Integer version;
 
-	public IntinoWorkspaceService(Language language, FileDocumentManager documentManager, DiagnosticService diagnosticService) {
+	public IntinoWorkspaceService(Language language, DocumentManager documentManager, DiagnosticService diagnosticService) {
 		this.language = language;
 		this.documentManager = documentManager;
 		this.diagnosticService = diagnosticService;

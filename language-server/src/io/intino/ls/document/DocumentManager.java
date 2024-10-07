@@ -5,6 +5,9 @@ import java.net.URI;
 import java.util.List;
 
 public interface DocumentManager {
+
+	File root();
+
 	List<URI> all();
 
 	List<URI> folders();
