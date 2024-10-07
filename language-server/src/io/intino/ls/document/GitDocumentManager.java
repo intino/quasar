@@ -81,9 +81,24 @@ public class GitDocumentManager implements DocumentManager {
 		}
 	}
 
-	public void removeDocument(URI uri) {
+	@Override
+	public void remove(URI uri) {
 		documents.remove(uri);
-		fileOf(uri).delete();
+		File file = fileOf(uri);
+		if (file.isFile()) file.delete();
+		else removeDirectory(file);
+	}
+
+	@Override
+	public void commit() {
+	}
+
+	private static void removeDirectory(File file) {
+		try {
+			FileUtils.deleteDirectory(file);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private String content(File f) {

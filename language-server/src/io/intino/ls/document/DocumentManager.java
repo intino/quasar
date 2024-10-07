@@ -1,5 +1,6 @@
 package io.intino.ls.document;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
