@@ -73,7 +73,7 @@ public class GitDocumentManager implements DocumentManager {
 	public void move(URI oldUri, URI newUri) {
 		TextDocumentItem textDocumentItem = documents.get(oldUri);
 		if (textDocumentItem != null) try {
-			removeDocument(oldUri);
+			remove(oldUri);
 			documents.put(newUri, textDocumentItem);
 			Files.move(fileOf(oldUri).toPath(), fileOf(newUri).toPath());
 		} catch (IOException e) {
