@@ -43,7 +43,7 @@ Schema RunOperationContext
 	Attribute builderId as Text
 	Attribute operation as Text
 	Attribute project as Text
-	Attribute version as Text
+	Attribute projectVersion as Text
 	Attribute language as Text
 	Attribute languageVersion as Text
 	Attribute generationPackage as Text

@@ -54,7 +54,7 @@ public class BuilderTest {
 				.language("Meta")
 				.languageVersion("2.0.0")
 				.project("konos")
-				.version("13.0.1")
+				.projectVersion("13.0.1")
 				.generationPackage("model")
 				.builderId("io.intino.tara.builder:1.3.0");
 		action.execute();

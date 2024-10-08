@@ -37,7 +37,7 @@ public class RunConfigurationRenderer {
 		writer.write(ENCODING + NL + Charset.defaultCharset().name() + NL);
 		writer.write(GENERATION_PACKAGE + NL + params.generationPackage() + NL);
 		writer.write(COMPILATION_MODE + NL + params.operation() + NL);
-		if (!params.version().isEmpty()) writer.write(VERSION + NL + params.version() + NL);
+		if (!params.projectVersion().isEmpty()) writer.write(VERSION + NL + params.projectVersion() + NL);
 		writer.write(DSL + NL + params.language() + ":" + params.languageVersion() + NL);
 		writer.write(OUT_DSL + NL + params.project() + NL);
 		return writer.toString();
