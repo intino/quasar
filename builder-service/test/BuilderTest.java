@@ -1,7 +1,10 @@
+import io.intino.alexandria.Json;
 import io.intino.alexandria.Resource;
 import io.intino.alexandria.exceptions.InternalServerError;
+import io.intino.alexandria.exceptions.NotFound;
 import io.intino.builderservice.konos.BuilderServiceBox;
 import io.intino.builderservice.konos.actions.GetBuildersAction;
+import io.intino.builderservice.konos.actions.GetOperationOutputAction;
 import io.intino.builderservice.konos.actions.PostBuildersAction;
 import io.intino.builderservice.konos.actions.PostRunOperationAction;
 import io.intino.builderservice.konos.schemas.BuilderInfo;
@@ -49,19 +52,24 @@ public class BuilderTest {
 	}
 
 	@Test
-	public void should_run_build() throws InternalServerError, InterruptedException {
+	public void should_run_build() throws InternalServerError, InterruptedException, NotFound {
 		var action = new PostRunOperationAction();
 		action.box = box;
 		action.filesInTar = new Resource(new File("test-res/sources.tar"));
 		action.runOperationContext = new RunOperationContext()
 				.operation("Build")
 				.language("Meta")
-		 		.languageVersion("2.0.0")
+				.languageVersion("2.0.0")
 				.project("konos")
 				.projectVersion("13.0.1")
 				.generationPackage("model")
 				.builderId("io.intino.tara.builder:1.3.0");
-		action.execute();
+		String ticket = action.execute();
+		Thread.sleep(10000);
+		GetOperationOutputAction get = new GetOperationOutputAction();
+		get.box = box;
+		get.ticket = ticket;
+		System.out.println(Json.toJsonPretty(get.execute()));
 		Thread.sleep(10000);
 	}
 }
