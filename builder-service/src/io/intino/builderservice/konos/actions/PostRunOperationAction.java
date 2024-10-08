@@ -17,8 +17,10 @@ public class PostRunOperationAction implements io.intino.alexandria.rest.Request
 
 	public String execute() throws InternalServerError {
 		try {
-			return new BuilderRunner(box.builderStore(), box.containerManager(), box.workspace(), new File(box.configuration().languageRepository()))
+			String ticket = new BuilderRunner(box.builderStore(), box.containerManager(), box.workspace(), new File(box.configuration().languageRepository()))
 					.run(runOperationContext, filesInTar.inputStream());
+			box.registerOperationHandler(ticket);
+			return ticket;
 		} catch (Throwable e) {
 			Logger.error(e);
 			throw new InternalServerError(e.getMessage());

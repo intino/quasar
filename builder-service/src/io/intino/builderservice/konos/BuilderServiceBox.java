@@ -1,13 +1,19 @@
 package io.intino.builderservice.konos;
 
+import io.intino.alexandria.logger.Logger;
 import io.intino.builderservice.konos.runner.ContainerManager;
+import io.intino.builderservice.konos.runner.OperationOutputHandler;
+import io.intino.builderservice.konos.runner.ProjectDirectory;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BuilderServiceBox extends AbstractBox {
 	private final BuilderStore builderStore;
 	private final ContainerManager containerManager;
 	private final File workspace;
+	private final Map<String, OperationOutputHandler> operationHandlers;
 
 	public BuilderServiceBox(String[] args) {
 		this(new BuilderServiceConfiguration(args));
@@ -18,6 +24,7 @@ public class BuilderServiceBox extends AbstractBox {
 		this.builderStore = new BuilderStore(new File(configuration.home(), "builder-service/store"));
 		this.workspace = new File(configuration.home(), "builder-service/workspace");
 		this.containerManager = new ContainerManager(configuration().dockerhubAuthFile());
+		this.operationHandlers = new HashMap<>();
 		this.workspace.mkdirs();
 	}
 
@@ -37,6 +44,18 @@ public class BuilderServiceBox extends AbstractBox {
 
 	public ContainerManager containerManager() {
 		return containerManager;
+	}
+
+	public void registerOperationHandler(String ticket) {
+		if (this.operationHandlers.containsKey(ticket)) Logger.error("Ticket " + ticket + " already registered");
+		else {
+			ProjectDirectory projectDirectory = ProjectDirectory.of(workspace(), ticket);
+			this.operationHandlers.put(ticket, new OperationOutputHandler(projectDirectory.logFile(), projectDirectory.directoryMapper()));
+		}
+	}
+
+	public OperationOutputHandler operationHandler(String ticket) {
+		return operationHandlers.get(ticket);
 	}
 
 	public void beforeStart() {

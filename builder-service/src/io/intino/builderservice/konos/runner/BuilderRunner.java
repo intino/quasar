@@ -14,9 +14,10 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.UUID;
 
+import static io.intino.builderservice.konos.runner.ProjectDirectory.PROJECT_BIND;
+
 public class BuilderRunner {
 	public static final String M2_BIND = "/root/.m2";
-	public static final String PROJECT_BIND = "/root/project";
 	private final BuilderStore store;
 	private final ContainerManager manager;
 	private final File workspace;
@@ -32,20 +33,21 @@ public class BuilderRunner {
 	public String run(RunOperationContext params, InputStream tarSources) throws IOException {
 		BuilderInfo info = store.get(params.builderId());
 		String ticket = UUID.randomUUID().toString();
-		File projectDir = new File(workspace, ticket);
-		List<File> srcFiles = moveFiles(tarSources, projectDir);
+		ProjectDirectory projectDir = ProjectDirectory.of(workspace, ticket);
+		List<File> srcFiles = moveFiles(tarSources, projectDir.root());
 		List<String> srcPaths = mapPaths(srcFiles, projectDir);
-		RunConfigurationRenderer renderer = new RunConfigurationRenderer(params, new ProjectDirectory(new File(PROJECT_BIND)), srcPaths, new File(M2_BIND));
-		Files.writeString(new File(projectDir, "tara_args.txt").toPath(), renderer.build());
+		ProjectDirectory project = new ProjectDirectory(new File(PROJECT_BIND));
+		RunConfigurationRenderer renderer = new RunConfigurationRenderer(params, project, srcPaths, new File(M2_BIND));
+		Files.writeString(project.argsFile().toPath().toAbsolutePath(), renderer.build());
 		String container = manager.createContainer(info.imageName(), ticket,
-				new Bind(projectDir.getCanonicalFile().getAbsolutePath(), new Volume(PROJECT_BIND)),
+				new Bind(projectDir.root().getCanonicalFile().getAbsolutePath(), new Volume(PROJECT_BIND)),
 				new Bind(languagesRepository.getAbsolutePath(), new Volume(M2_BIND)));
 		manager.start(container);
 		return ticket;
 	}
 
-	private List<String> mapPaths(List<File> srcFiles, File projectDir) {
-		return srcFiles.stream().map(f -> f.getAbsolutePath().replace(projectDir.getAbsolutePath(), PROJECT_BIND)).toList();
+	private List<String> mapPaths(List<File> srcFiles, ProjectDirectory projectDir) {
+		return srcFiles.stream().map(File::getAbsolutePath).map(projectDir.directoryMapper()).toList();
 	}
 
 	private static List<File> moveFiles(InputStream tar, File projectDir) throws IOException {

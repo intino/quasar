@@ -10,10 +10,12 @@ Artifact("io.intino", "1.0.0-SNAPSHOT") builder-service
 		Compile("io.intino.alexandria", "logger4j", "1.1.0")
 		Compile("io.intino.alexandria", "rest", "3.9.7")
 		Compile("io.intino.itrules", "engine", "2.0.1")
+		Compile(groupId = "io.intino.alexandria", artifactId = "scheduler-framework", version = "1.2.0")
 	Package(mode = ModulesAndLibrariesLinkedByManifest) as Runnable(mainClass = "io.intino.builderservice.konos.Main")
 	Parameter("language-repository")
 	Parameter(name = "port")
 	Parameter(name = "home")
 	Parameter(name = "dockerhub-auth-file")
+	Parameter(name = "file")
 
 RunConfiguration local
