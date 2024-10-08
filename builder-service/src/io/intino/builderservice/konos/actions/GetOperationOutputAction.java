@@ -10,6 +10,7 @@ import io.intino.builderservice.konos.runner.ProjectDirectory;
 import io.intino.builderservice.konos.schemas.Message;
 import io.intino.builderservice.konos.schemas.OperationResult;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static io.intino.builderservice.konos.schemas.OperationResult.State.Finished;
@@ -35,7 +36,7 @@ public class GetOperationOutputAction implements io.intino.alexandria.rest.Reque
 	}
 
 	private List<Message> map(List<CompilerMessage> compilerMessages) {
-		return compilerMessages.stream()
+		return new ArrayList<>(compilerMessages).stream()
 				.map(c -> new Message().kind(kindOf(c.category())).column(c.columnNum()).content(c.message()).line(c.lineNum()).uri(c.url()))
 				.toList();
 	}

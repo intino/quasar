@@ -15,7 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static io.intino.builder.BuildConstants.*;
 import static io.intino.builder.CompilerMessage.WARNING;
@@ -25,13 +24,12 @@ public class OperationOutputHandler {
 	private final List<OutputItem> compiledItems = new ArrayList<>();
 	private final List<CompilerMessage> compilerMessages = new ArrayList<>();
 	private final Sentinel sentinel;
-	private final Function<String, String> directoryMapper;
+	private final ProjectDirectory project;
 	private Consumer<String> statusUpdater;
-	private final StringBuilder outputBuffer = new StringBuilder();
 
-	public OperationOutputHandler(File logFile, Function<String, String> directoryMapper) {
-		this.sentinel = new Sentinel(logFile);
-		this.directoryMapper = directoryMapper;
+	public OperationOutputHandler(ProjectDirectory project) {
+		this.project = project;
+		this.sentinel = new Sentinel(project.logFile());
 		this.sentinel.init(this::notifyTextAvailable);
 	}
 
@@ -62,38 +60,22 @@ public class OperationOutputHandler {
 			updateStatus(null);
 			return;
 		}
-		if (!text.trim().isEmpty()) {
-			outputBuffer.append(trimmed);
-			if (trimmed.startsWith(COMPILED_START)) updateStatus("Finishing...");
-			else if (trimmed.startsWith(MESSAGES_START)) processMessage();
-			if (trimmed.endsWith(COMPILED_END)) processCompiledItems();
+		if (!trimmed.isEmpty()) for (String line : trimmed.split("\n")) {
+			if (line.startsWith(MESSAGES_START)) processMessage(line);
+			if (line.startsWith(COMPILED_START)) processCompiledItem(line);
 		}
 	}
 
-	private void processCompiledItems() {
-		if (outputBuffer.indexOf(COMPILED_END) == -1) return;
-		final String compiled = handleOutputBuffer(COMPILED_START, COMPILED_END);
-		final List<String> list = splitAndTrim(compiled);
-		compiledItems.add(new OutputItem(directoryMapper.apply(list.get(0)), directoryMapper.apply(list.get(1))));
+	private void processCompiledItem(String line) {
+		final List<String> list = splitAndTrim(line);
+		compiledItems.add(new OutputItem(project.reverseDirectoryMapper().apply(list.get(0)), project.reverseDirectoryMapper().apply(list.get(1))));
 	}
 
-	private String handleOutputBuffer(String startMarker, String endMarker) {
-		final int start = outputBuffer.indexOf(startMarker);
-		final int end = outputBuffer.indexOf(endMarker);
-		if (start > end)
-			throw new AssertionError("Malformed Tarac output: " + outputBuffer);
-		String text = outputBuffer.substring(start + startMarker.length(), end);
-		outputBuffer.delete(start, end + endMarker.length());
-		return text.trim();
-	}
-
-	private void processMessage() {
-		if (outputBuffer.indexOf(MESSAGES_END) == -1) return;
-		String text = handleOutputBuffer(MESSAGES_START, MESSAGES_END);
+	private void processMessage(String text) {
 		List<String> tokens = splitAndTrim(text);
 		String category = tokens.get(0);
 		String message = tokens.get(1);
-		String url = directoryMapper.apply(tokens.get(2));
+		String url = project.reverseDirectoryMapper().apply(tokens.get(2));
 		String lineNum = tokens.get(3);
 		String columnNum = tokens.get(4);
 		int line = 0, column = 0;

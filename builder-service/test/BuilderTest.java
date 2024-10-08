@@ -70,6 +70,5 @@ public class BuilderTest {
 		get.box = box;
 		get.ticket = ticket;
 		System.out.println(Json.toJsonPretty(get.execute()));
-		Thread.sleep(10000);
 	}
 }

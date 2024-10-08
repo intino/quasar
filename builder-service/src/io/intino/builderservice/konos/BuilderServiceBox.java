@@ -50,7 +50,7 @@ public class BuilderServiceBox extends AbstractBox {
 		if (this.operationHandlers.containsKey(ticket)) Logger.error("Ticket " + ticket + " already registered");
 		else {
 			ProjectDirectory projectDirectory = ProjectDirectory.of(workspace(), ticket);
-			this.operationHandlers.put(ticket, new OperationOutputHandler(projectDirectory.logFile(), projectDirectory.directoryMapper()));
+			this.operationHandlers.put(ticket, new OperationOutputHandler(projectDirectory));
 		}
 	}
 

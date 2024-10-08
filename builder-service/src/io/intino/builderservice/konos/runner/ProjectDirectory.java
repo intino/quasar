@@ -1,6 +1,9 @@
 package io.intino.builderservice.konos.runner;
 
+import io.intino.alexandria.logger.Logger;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.function.Function;
 
 public record ProjectDirectory(File root) {
@@ -12,6 +15,16 @@ public record ProjectDirectory(File root) {
 
 	public Function<String, String> directoryMapper() {
 		return f -> f.replace(root.getAbsolutePath(), PROJECT_BIND);
+	}
+
+	public Function<String, String> reverseDirectoryMapper() {
+		return f -> {
+			try {
+				return new File(f.replace(PROJECT_BIND, root.getAbsolutePath())).getCanonicalPath();
+			} catch (IOException e) {
+				return f;
+			}
+		};
 	}
 
 	public boolean exists() {
