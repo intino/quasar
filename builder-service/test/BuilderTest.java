@@ -41,11 +41,11 @@ public class BuilderTest {
 	public void should_retrieve_builders() {
 		GetBuildersAction action = new GetBuildersAction();
 		action.box = box;
-		System.out.println(action.execute().stream().map(b -> String.join("\n", b.id(), b.imageName())).collect(Collectors.joining("\n")));
+		System.out.println(action.execute().stream().map(b -> String.join(" - ", b.id(), b.imageName())).collect(Collectors.joining("\n")));
 	}
 
 	@Test
-	public void should_run_build() throws InternalServerError {
+	public void should_run_build() throws InternalServerError, InterruptedException {
 		var action = new PostRunOperationAction();
 		action.box = box;
 		action.filesInTar = new Resource(new File("test-res/sources.tar"));
@@ -58,5 +58,6 @@ public class BuilderTest {
 				.generationPackage("model")
 				.builderId("io.intino.tara.builder:1.3.0");
 		action.execute();
+		Thread.sleep(10000);
 	}
 }

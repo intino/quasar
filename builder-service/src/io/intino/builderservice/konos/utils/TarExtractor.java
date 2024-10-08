@@ -16,7 +16,7 @@ public class TarExtractor {
 			while ((entry = tarIn.getNextTarEntry()) != null) {
 				File outputFile = new File(destDir, entry.getName());
 				if (entry.isDirectory()) outputFile.mkdirs();
-				else if (!entry.getName().startsWith(".")) {
+				else if (!entry.getName().startsWith(".") || entry.getName().startsWith("./")) {
 					outputFile.getParentFile().mkdirs();
 					try (OutputStream out = new FileOutputStream(outputFile)) {
 						byte[] buffer = new byte[1024];

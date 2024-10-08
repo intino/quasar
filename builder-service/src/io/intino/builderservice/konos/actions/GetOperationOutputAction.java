@@ -13,7 +13,7 @@ import io.intino.builderservice.konos.schemas.OperationResult;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetOperationResultAction implements io.intino.alexandria.rest.RequestErrorHandler {
+public class GetOperationOutputAction implements io.intino.alexandria.rest.RequestErrorHandler {
 	public BuilderServiceBox box;
 	public io.intino.alexandria.http.spark.SparkContext context;
 	public String ticket;

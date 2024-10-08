@@ -33,14 +33,14 @@ public class BuilderRunner {
 	public String run(RunOperationContext params, InputStream tarSources) throws IOException {
 		BuilderInfo info = store.get(params.builderId());
 		String ticket = UUID.randomUUID().toString();
-		ProjectDirectory projectDir = ProjectDirectory.of(workspace, ticket);
-		List<File> srcFiles = moveFiles(tarSources, projectDir.root());
-		List<String> srcPaths = mapPaths(srcFiles, projectDir);
-		ProjectDirectory project = new ProjectDirectory(new File(PROJECT_BIND));
-		RunConfigurationRenderer renderer = new RunConfigurationRenderer(params, project, srcPaths, new File(M2_BIND));
-		Files.writeString(project.argsFile().toPath().toAbsolutePath(), renderer.build());
+		ProjectDirectory hostProject = ProjectDirectory.of(workspace, ticket);
+		List<File> srcFiles = moveFiles(tarSources, hostProject.root());
+		List<String> srcPaths = mapPaths(srcFiles, hostProject);
+		ProjectDirectory containerProject = new ProjectDirectory(new File(PROJECT_BIND));
+		RunConfigurationRenderer renderer = new RunConfigurationRenderer(params, containerProject, srcPaths, new File(M2_BIND));
+		Files.writeString(hostProject.argsFile().toPath().toAbsolutePath(), renderer.build());
 		String container = manager.createContainer(info.imageName(), ticket,
-				new Bind(projectDir.root().getCanonicalFile().getAbsolutePath(), new Volume(PROJECT_BIND)),
+				new Bind(hostProject.root().getCanonicalFile().getAbsolutePath(), new Volume(PROJECT_BIND)),
 				new Bind(languagesRepository.getAbsolutePath(), new Volume(M2_BIND)));
 		manager.start(container);
 		return ticket;

@@ -14,11 +14,11 @@ Service builder-service as REST(host = "", port = "{port}")
 			Response ticket as Text
 	Notification(path = "operation/:ticket/messages") subscribeOperation
 		Parameter(in = path) ticket as Text
-	Resource(path = "operation/:ticket/output") operationResult
+	Resource(path = "operation/:ticket/output") operationOutput
 		Get
 			Parameter(in = path) ticket as Text
 			Response operationResult as Object(OperationResult)
-	Resource(path = "operation/:ticket/outputs/:output") resultResource
+	Resource(path = "operation/:ticket/outputs/:output") outputResource
 		Get
 			Parameter(in = path) ticket as Text
 			Parameter(in = path) output as Text
