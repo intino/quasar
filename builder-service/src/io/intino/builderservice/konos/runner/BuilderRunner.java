@@ -33,7 +33,7 @@ public class BuilderRunner {
 	public String run(RunOperationContext params, InputStream tarSources) throws IOException {
 		BuilderInfo info = store.get(params.builderId());
 		String ticket = UUID.randomUUID().toString();
-		ProjectDirectory hostProject = ProjectDirectory.of(workspace, ticket);
+		ProjectDirectory hostProject = ProjectDirectory.of(workspace.getCanonicalFile(), ticket);
 		List<File> srcFiles = moveFiles(tarSources, hostProject.root());
 		List<String> srcPaths = mapPaths(srcFiles, hostProject);
 		ProjectDirectory containerProject = new ProjectDirectory(new File(PROJECT_BIND));

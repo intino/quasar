@@ -50,15 +50,8 @@ Schema RunOperationContext
 
 Schema Message
 	Attribute type as Text
-	Attribute kind as Word(values = "INFO" "WARNING" "RECOVERABLE_ERROR" "ERROR")
+	Attribute kind as Word(values = "INFO" "WARNING" "ERROR")
 	Attribute content as Text
-
-Schema PresentableMessage as ExtensionOf(Message)
-	Attribute type as Text("PresentableMessage")
-
-
-Schema LocalizedMessage as ExtensionOf(Message)
-	Attribute type as Text("SyntaxIssueMessage")
 	Attribute uri as Text
 	Attribute line as Integer
 	Attribute column as Integer
