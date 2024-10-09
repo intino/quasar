@@ -5,12 +5,14 @@ import io.intino.ls.IntinoLanguageServer;
 import io.intino.ls.document.FileDocumentManager;
 import io.intino.ls.document.GitDocumentManager;
 import io.intino.tara.Language;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,10 +34,10 @@ public class LanguageServerManager {
 		return new IntinoLanguageServer(language, new FileDocumentManager(root));
 	}
 
-	public LanguageServer create(Language language, URI workspaceRoot, URL gitUrl, CredentialsProvider credentialsProvider) throws IOException {
+	public LanguageServer create(Language language, URI workspaceRoot, URL gitUrl, String branch, CredentialsProvider credentialsProvider) throws IOException, GitAPIException, URISyntaxException {
 		File root = new File(workspaceRoot);
 		root.mkdirs();
-		return new IntinoLanguageServer(language, new GitDocumentManager(root, gitUrl, credentialsProvider));
+		return new IntinoLanguageServer(language, new GitDocumentManager(root, branch, gitUrl, credentialsProvider));
 	}
 
 	public LanguageServer get(Model model) throws IOException {
