@@ -5,7 +5,7 @@ import com.github.dockerjava.api.model.Volume;
 import io.intino.builderservice.konos.BuilderStore;
 import io.intino.builderservice.konos.schemas.BuilderInfo;
 import io.intino.builderservice.konos.schemas.RunOperationContext;
-import io.intino.builderservice.konos.utils.TarExtractor;
+import io.intino.builderservice.konos.utils.Tar;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,6 +53,6 @@ public class BuilderRunner {
 	private static List<File> moveFiles(InputStream tar, File projectDir) throws IOException {
 		File src = new File(projectDir, "src");
 		src.mkdirs();
-		return TarExtractor.extractTar(tar, src);
+		return Tar.unTar(tar, src);
 	}
 }

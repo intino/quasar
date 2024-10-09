@@ -1,7 +1,5 @@
 package io.intino.builderservice.konos.runner;
 
-import io.intino.alexandria.logger.Logger;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.function.Function;

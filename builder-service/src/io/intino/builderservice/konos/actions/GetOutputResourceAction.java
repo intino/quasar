@@ -1,17 +1,55 @@
 package io.intino.builderservice.konos.actions;
 
+import io.intino.alexandria.Resource;
+import io.intino.alexandria.exceptions.AlexandriaException;
+import io.intino.alexandria.exceptions.BadRequest;
+import io.intino.alexandria.exceptions.InternalServerError;
+import io.intino.alexandria.exceptions.NotFound;
+import io.intino.alexandria.logger.Logger;
 import io.intino.builderservice.konos.BuilderServiceBox;
-import io.intino.alexandria.exceptions.*;
+import io.intino.builderservice.konos.runner.ProjectDirectory;
+import org.apache.commons.io.filefilter.RegexFileFilter;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.nio.file.Files;
+
+import static io.intino.builderservice.konos.utils.Tar.tar;
 
 public class GetOutputResourceAction implements io.intino.alexandria.rest.RequestErrorHandler {
 	public String ticket;
 	public String output;
+	public String excludeFilePattern;
 	public BuilderServiceBox box;
 	public io.intino.alexandria.http.spark.SparkContext context;
-	public String resourceId;
 
-	public io.intino.alexandria.Resource execute() throws NotFound {
-		return null;
+	public io.intino.alexandria.Resource execute() throws NotFound, InternalServerError {
+		ProjectDirectory directory = ProjectDirectory.of(box.workspace(), ticket);
+		if (!directory.exists()) throw new NotFound("Ticket does not exist");
+		File file = tempFile();
+		FileFilter filter = excludeFilePattern != null ? new RegexFileFilter(excludeFilePattern) : f -> true;
+		try {
+			switch (output) {
+				case "gen" -> tar(directory.gen(), filter, file);
+				case "src" -> tar(directory.src(), filter, file);
+				case "res" -> tar(directory.res(), filter, file);
+				case "out" -> tar(directory.out(), filter, file);
+				default -> throw new NotFound("Output not found");
+			}
+			return new Resource("file", file);
+		} catch (IOException e) {
+			throw new InternalServerError(e.getMessage());
+		}
+	}
+
+	private static File tempFile() {
+		try {
+			return Files.createTempFile("output", ".tar").toFile();
+		} catch (IOException e) {
+			Logger.error(e);
+			return null;
+		}
 	}
 
 	public void onMalformedRequest(Throwable e) throws AlexandriaException {

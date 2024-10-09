@@ -22,6 +22,7 @@ Service builder-service as REST(host = "", port = "{port}")
 		Get
 			Parameter(in = path) ticket as Text
 			Parameter(in = path) output as Text
+			Parameter(in = query) excludeFilePattern as Text
 			Response file as File
 			Exception(code = NotFound)
 
