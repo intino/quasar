@@ -1,4 +1,8 @@
+import io.intino.alexandria.Resource;
+import io.intino.alexandria.exceptions.InternalServerError;
+import io.intino.builderservice.QuassarBuilderServiceAccessor;
 import io.intino.builderservice.konos.BuilderServiceBox;
+import io.intino.builderservice.schemas.RunOperationContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -13,12 +17,17 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class ApiTest {
 
 
+	private static File file;
+
 	@BeforeClass
 	public static void beforeClass() throws Exception {
+		file = new File("./test-res/quassar10906546769131108430.tar");
 		BuilderServiceBox box = new BuilderServiceBox(new String[]{"home=../temp",
 				"language-repository=/Users/oroncal/.m2/",
 				"port=9000",
@@ -32,8 +41,6 @@ public class ApiTest {
 	public void should_run_builder_service_api() {
 		String url = "http://localhost:9000/api/operations/run";
 		String jsonParam = "{\"builderId\":\"io.intino.tara.builder:1.3.0\",\"operation\":\"Build\",\"project\":\"Tafat\",\"projectVersion\":\"1.0.0\",\"language\":\"Meta\",\"languageVersion\":\"2.0.0\",\"generationPackage\":\"\"}"; // Replace with your JSON content
-		File file = new File("./test-res/quassar10906546769131108430.tar"); // Replace with your file path
-
 		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 			HttpPost httpPost = new HttpPost(url);
 
@@ -54,5 +61,22 @@ public class ApiTest {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Test
+	public void should_run_builder_service_using_accessor() throws MalformedURLException, InternalServerError {
+		String tiket = new QuassarBuilderServiceAccessor(new URL("http://localhost:9000/"))
+				.postRunOperation(context(), Resource.InputStreamProvider.of(file));
+	}
+
+	private static RunOperationContext context() {
+		return new RunOperationContext()
+				.operation("Build")
+				.language("Meta")
+				.languageVersion("2.0.0")
+				.project("konos")
+				.projectVersion("13.0.1")
+				.generationPackage("model")
+				.builderId("io.intino.tara.builder:1.3.0");
 	}
 }

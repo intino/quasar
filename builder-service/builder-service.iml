@@ -107,5 +107,16 @@
     <orderEntry type="library" name="Intino: com.mchange:mchange-commons-java:0.2.15" level="project" />
     <orderEntry type="library" name="Intino: com.zaxxer:HikariCP-java7:2.4.13" level="project" />
     <orderEntry type="library" name="Intino: org.quartz-scheduler:quartz-jobs:2.3.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Intino: io.intino:quassar-builder-service-accessor:1.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="TEST" name="Intino: io.intino.alexandria:rest-accessor:3.1.7" level="project" />
+    <orderEntry type="library" scope="TEST" name="Intino: org.glassfish.tyrus:tyrus-client:2.1.5" level="project" />
+    <orderEntry type="library" scope="TEST" name="Intino: org.glassfish.tyrus:tyrus-core:2.1.5" level="project" />
+    <orderEntry type="library" scope="TEST" name="Intino: org.glassfish.tyrus:tyrus-spi:2.1.5" level="project" />
+    <orderEntry type="library" scope="TEST" name="Intino: jakarta.websocket:jakarta.websocket-client-api:2.1.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Intino: jakarta.websocket:jakarta.websocket-api:2.1.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Intino: org.glassfish.tyrus:tyrus-container-grizzly-client:2.1.5" level="project" />
+    <orderEntry type="library" scope="TEST" name="Intino: org.glassfish.grizzly:grizzly-framework:4.0.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Intino: org.glassfish.grizzly:grizzly-http-server:4.0.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Intino: org.glassfish.grizzly:grizzly-http:4.0.2" level="project" />
   </component>
 </module>

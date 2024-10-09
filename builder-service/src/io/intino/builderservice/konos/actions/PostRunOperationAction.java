@@ -20,6 +20,7 @@ public class PostRunOperationAction implements io.intino.alexandria.rest.Request
 		try {
 			if (box.builderStore().get(runOperationContext.builderId()) == null)
 				throw new NotFound("Builder not found");
+			if (filesInTar == null) throw new BadRequest("Required source files");
 			String ticket = new BuilderRunner(box.builderStore(), box.containerManager(), box.workspace(), new File(box.configuration().languageRepository()))
 					.run(runOperationContext, filesInTar.inputStream());
 			box.registerOperationHandler(ticket);
