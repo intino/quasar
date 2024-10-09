@@ -18,7 +18,8 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class ApiTest {
 
@@ -64,8 +65,8 @@ public class ApiTest {
 	}
 
 	@Test
-	public void should_run_builder_service_using_accessor() throws MalformedURLException, InternalServerError {
-		String tiket = new QuassarBuilderServiceAccessor(new URL("http://localhost:9000/"))
+	public void should_run_builder_service_using_accessor() throws MalformedURLException, InternalServerError, URISyntaxException {
+		String tiket = new QuassarBuilderServiceAccessor(new URI("http://localhost:9000/").toURL())
 				.postRunOperation(context(), Resource.InputStreamProvider.of(file));
 	}
 
