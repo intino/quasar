@@ -20,7 +20,7 @@ public interface DocumentManager {
 
 	void remove(URI uri);
 
-	default void commit() {
+	default void commit(String user) {
 
 	}
 
