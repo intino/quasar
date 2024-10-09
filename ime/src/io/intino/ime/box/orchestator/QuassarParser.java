@@ -18,8 +18,7 @@ public class QuassarParser {
 		Deque<String> pathStack = new ArrayDeque<>();
 
 		for (String line : lines) {
-			line = line.trim();
-			if (line.isEmpty()) continue;
+			if (line.trim().isEmpty()) continue;
 			if (line.startsWith("#")) processVariable(line);
 			else processPath(line, pathStack);
 		}
@@ -77,7 +76,11 @@ public class QuassarParser {
 	}
 
 	public String langName() {
-		return variables.get("lang").split(":")[0];
+		return last(langQn().split("\\."));
+	}
+
+	private String last(String[] split) {
+		return split[split.length - 1];
 	}
 
 	public String langVersion() {
@@ -112,5 +115,9 @@ public class QuassarParser {
 				.map(ArchetypeEntry::path)
 				.filter(path -> path.contains(prefix))
 				.findFirst().get();
+	}
+
+	public String langQn() {
+		return variables.get("lang").split(":")[0];
 	}
 }

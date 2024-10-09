@@ -29,19 +29,10 @@ public class BuilderOrchestator {
 	private final QuassarBuilderServiceAccessor accessor;
 	private final QuassarParser quassar;
 
-	public BuilderOrchestator(ImeBox box, DocumentManager manager) {
+	public BuilderOrchestator(URL builderedServiceUrl, DocumentManager manager) {
 		this.manager = manager;
-		this.accessor = new QuassarBuilderServiceAccessor(builderServiceUrl(box));
+		this.accessor = new QuassarBuilderServiceAccessor(builderedServiceUrl);
 		this.quassar = new QuassarParser(quassarContent());
-	}
-
-	private static URI quassarUri() {
-		try {
-			return new URI("./.quassar");
-		} catch (URISyntaxException e) {
-			Logger.error(e);
-			return null;
-		}
 	}
 
 	private static URL builderServiceUrl(ImeBox box) {
@@ -55,25 +46,26 @@ public class BuilderOrchestator {
 
 	private String quassarContent() {
 		try {
-			return new String(manager.getDocumentText(quassarUri()).readAllBytes());
-		} catch (IOException e) {
+			return new String(manager.getDocumentText(new URI(".quassar")).readAllBytes());
+		} catch (Exception e) {
 			Logger.error(e);
 			return "";
 		}
 	}
 
-	public Message build() {
+	public Message build(String user) {
 		File taraFiles = taraFiles();
 		if (taraFiles == null) return new Message("Model files not found");
 		runBuild(quassar.tara(), taraFiles);
 		for (String b : builders()) runBuild(b.trim(), taraFiles);
-		manager.commit();
+		manager.commit(user);
+		manager.push();
 		return new Message("OK");
 	}
 
 	private void runBuild(String builder, File taraFiles) {
 		try {
-			String ticket = accessor.postRunOperation(context(builder).operation("build"), new Resource(taraFiles));
+			String ticket = accessor.postRunOperation(context(builder).operation("Build"), new Resource(taraFiles));
 			OperationResult output = accessor.getOperationOutput(ticket);
 			while (output.state() == Running) {
 				Thread.sleep(1000);
@@ -99,7 +91,7 @@ public class BuilderOrchestator {
 
 	private File taraFiles() {
 		try {
-			return TarUtils.createTarFile(modelUris(), Files.createTempFile("quassar", ".tar").toFile());
+			return TarUtils.createTarFile(manager, modelUris(), Files.createTempFile("quassar", ".tar").toFile());
 		} catch (IOException e) {
 			Logger.error(e);
 			return null;
@@ -107,14 +99,14 @@ public class BuilderOrchestator {
 	}
 
 	private List<URI> modelUris() {
-		return manager.all().stream().filter(l -> l.getPath().endsWith("." + quassar)).toList();
+		return manager.all().stream().filter(l -> l.getPath().endsWith("." + quassar.langName().toLowerCase())).toList();
 	}
 
 	private RunOperationContext context(String builder) {
 		return new RunOperationContext()
 				.builderId(builder.split("@")[0])
 				.generationPackage(builder.contains("@") ? builder.split("@")[1] : "")
-				.language(quassar.langName())
+				.language(quassar.langQn())
 				.languageVersion(quassar.langVersion())
 				.project(quassar.projectName())
 				.projectVersion(quassar.projectVersion());

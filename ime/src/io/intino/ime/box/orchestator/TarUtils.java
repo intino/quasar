@@ -7,8 +7,6 @@ import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
 import java.io.*;
 import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 public class TarUtils {
@@ -43,36 +41,19 @@ public class TarUtils {
 		}
 	}
 
-	public static File createTarFile(List<URI> uris, File outputTarFile) throws IOException {
+	public static File createTarFile(DocumentManager manager, List<URI> uris, File outputTarFile) throws IOException {
 		try (TarArchiveOutputStream tarOut = new TarArchiveOutputStream(new FileOutputStream(outputTarFile))) {
-			for (URI uri : uris) {
-				Path path = Paths.get(uri);
-				File file = path.toFile();
-				if (file.exists()) {
-					addFileToTar(tarOut, file, "");
-				}
-			}
+			for (URI uri : uris) tarFile(tarOut, manager.getDocumentText(uri), uri.getPath());
 			return outputTarFile;
 		}
 	}
 
-	private static void addFileToTar(TarArchiveOutputStream tarOut, File file, String parentDir) throws IOException {
-		String entryName = parentDir + file.getName();
-
-		if (file.isDirectory()) tarDirectory(tarOut, file, entryName);
-		else tarFile(tarOut, file, entryName);
-	}
-
-	private static void tarFile(TarArchiveOutputStream tarOut, File file, String entryName) throws IOException {
-		TarArchiveEntry entry = new TarArchiveEntry(file, entryName);
+	private static void tarFile(TarArchiveOutputStream tarOut, InputStream is, String entryName) throws IOException {
+		byte[] bytes = is.readAllBytes();
+		TarArchiveEntry entry = new TarArchiveEntry(entryName);
+		entry.setSize(bytes.length);
 		tarOut.putArchiveEntry(entry);
-		try (FileInputStream fileIn = new FileInputStream(file)) {
-			byte[] buffer = new byte[1024];
-			int len;
-			while ((len = fileIn.read(buffer)) > 0) {
-				tarOut.write(buffer, 0, len);
-			}
-		}
+		tarOut.write(bytes);
 		tarOut.closeArchiveEntry();
 	}
 
@@ -80,7 +61,12 @@ public class TarUtils {
 		TarArchiveEntry entry = new TarArchiveEntry(file, entryName + "/");
 		tarOut.putArchiveEntry(entry);
 		tarOut.closeArchiveEntry();
-		for (File child : file.listFiles()) addFileToTar(tarOut, child, entryName + "/");
+		for (File child : file.listFiles()) {
+			String entryName1 = entryName + "/" + child.getName();
+
+			if (child.isDirectory()) tarDirectory(tarOut, child, entryName1);
+			else tarFile(tarOut, null, entryName1); // TODO remove?
+		}
 	}
 
 }

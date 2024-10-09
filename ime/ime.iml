@@ -94,5 +94,10 @@
     <orderEntry type="library" name="Intino: org.eclipse.jgit:org.eclipse.jgit:7.0.0.202409031743-r" level="project" />
     <orderEntry type="library" name="Intino: com.googlecode.javaewah:JavaEWAH:1.2.3" level="project" />
     <orderEntry type="library" name="Intino: org.slf4j:slf4j-api:1.7.36" level="project" />
+    <orderEntry type="library" name="Intino: org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:6.8.0.202311291450-r" level="project" />
+    <orderEntry type="library" name="Intino: com.jcraft:jsch:0.1.55" level="project" />
+    <orderEntry type="library" name="Intino: com.jcraft:jzlib:1.1.3" level="project" />
+    <orderEntry type="library" name="Intino: com.github.mwiede:jsch:0.2.17" level="project" />
+    <orderEntry type="library" name="Intino: io.intino:quassar-builder-service-accessor:1.0.0-SNAPSHOT" level="project" />
   </component>
 </module>
