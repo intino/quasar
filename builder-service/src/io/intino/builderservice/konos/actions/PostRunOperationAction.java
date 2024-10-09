@@ -3,6 +3,7 @@ package io.intino.builderservice.konos.actions;
 import io.intino.alexandria.exceptions.AlexandriaException;
 import io.intino.alexandria.exceptions.BadRequest;
 import io.intino.alexandria.exceptions.InternalServerError;
+import io.intino.alexandria.exceptions.NotFound;
 import io.intino.alexandria.logger.Logger;
 import io.intino.builderservice.konos.BuilderServiceBox;
 import io.intino.builderservice.konos.runner.BuilderRunner;
@@ -17,6 +18,8 @@ public class PostRunOperationAction implements io.intino.alexandria.rest.Request
 
 	public String execute() throws InternalServerError {
 		try {
+			if (box.builderStore().get(runOperationContext.builderId()) == null)
+				throw new NotFound("Builder not found");
 			String ticket = new BuilderRunner(box.builderStore(), box.containerManager(), box.workspace(), new File(box.configuration().languageRepository()))
 					.run(runOperationContext, filesInTar.inputStream());
 			box.registerOperationHandler(ticket);
