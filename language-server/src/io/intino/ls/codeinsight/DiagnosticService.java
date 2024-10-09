@@ -1,15 +1,14 @@
 package io.intino.ls.codeinsight;
 
-import io.intino.ls.document.DocumentManager;
-import io.intino.ls.document.FileDocumentManager;
 import io.intino.ls.ModelUnit;
+import io.intino.ls.document.DocumentManager;
 import io.intino.tara.Language;
 import io.intino.tara.language.grammar.SyntaxException;
-import io.intino.tara.model.Element;
-import io.intino.tara.model.Mogram;
 import io.intino.tara.language.semantics.errorcollector.SemanticException;
 import io.intino.tara.language.semantics.errorcollector.SemanticFatalException;
 import io.intino.tara.language.semantics.errorcollector.SemanticIssue;
+import io.intino.tara.model.Element;
+import io.intino.tara.model.Mogram;
 import io.intino.tara.processors.SemanticAnalyzer;
 import io.intino.tara.processors.dependencyresolution.DependencyException;
 import io.intino.tara.processors.dependencyresolution.DependencyResolver;
@@ -47,7 +46,7 @@ public class DiagnosticService {
 	}
 
 	private ModelUnit merge(List<ModelUnit> units) {
-		Model model = new Model(documentManager.root().getParentFile().toURI());
+		Model model = new Model(new File(documentManager.root().getPath()).getParentFile().toURI());
 		ModelUnit reference = units.get(0);
 		if (reference.model() == null)
 			return new ModelUnit(model, reference.tokens(), reference.tree(), reference.syntaxErrors(), reference.dependencyErrors(), reference.semanticErrors());

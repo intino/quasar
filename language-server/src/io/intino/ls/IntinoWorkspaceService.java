@@ -3,7 +3,6 @@ package io.intino.ls;
 import io.intino.alexandria.logger.Logger;
 import io.intino.ls.codeinsight.DiagnosticService;
 import io.intino.ls.document.DocumentManager;
-import io.intino.ls.document.FileDocumentManager;
 import io.intino.tara.Language;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.lsp4j.*;
@@ -67,9 +66,10 @@ public class IntinoWorkspaceService implements WorkspaceService {
 	@Override
 	public void didChangeWorkspaceFolders(DidChangeWorkspaceFoldersParams params) {
 		try {
-			params.getEvent().getAdded().forEach(folder -> new File(documentManager.root(), folder.getUri()).mkdirs());
+			String root = documentManager.root().getPath();
+			params.getEvent().getAdded().forEach(folder -> new File(root, folder.getUri()).mkdirs());
 			for (WorkspaceFolder folder : params.getEvent().getRemoved()) {
-				FileUtils.deleteDirectory(new File(documentManager.root(), folder.getUri()));
+				FileUtils.deleteDirectory(new File(root, folder.getUri()));
 				removeContainedDocuments(folder.getUri());
 			}
 		} catch (IOException e) {

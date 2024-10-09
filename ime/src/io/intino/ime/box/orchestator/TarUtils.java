@@ -21,7 +21,7 @@ public class TarUtils {
 	}
 
 	private static void processEntry(DocumentManager manager, String path, TarArchiveEntry entry, TarArchiveInputStream tarInput, boolean replace) throws IOException {
-		File entryFile = new File(manager.root(), path + "/" + entry.getName());
+		File entryFile = new File(manager.root().getPath(), path + "/" + entry.getName());
 		if (entry.isDirectory()) {
 			if (!entryFile.exists()) entryFile.mkdirs();
 		} else {

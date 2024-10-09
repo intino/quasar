@@ -1,13 +1,12 @@
 package io.intino.ls.document;
 
-import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
 
 public interface DocumentManager {
 
-	File root();
+	URI root();
 
 	List<URI> all();
 
@@ -21,5 +20,11 @@ public interface DocumentManager {
 
 	void remove(URI uri);
 
-	void commit();
+	default void commit() {
+
+	}
+
+	default void push() {
+
+	}
 }

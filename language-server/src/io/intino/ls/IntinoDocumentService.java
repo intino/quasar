@@ -82,6 +82,7 @@ public class IntinoDocumentService implements TextDocumentService {
 			URI uri = URI.create(normalize(params.getTextDocument().getUri()));
 			InputStream doc = workspaceManager.getDocumentText(uri);
 			String content = applyChanges(doc != null ? new String(doc.readAllBytes()) : "", params.getContentChanges());
+			if (content == null || content.isEmpty()) content = "dsl " + language.languageName() + "\n\n";
 			workspaceManager.upsertDocument(uri, language.languageName(), content == null ? "" : content);
 			parsingService.updateModel(new StringSource(uri.getPath(), content));
 			notifyDiagnostics(uri, params.getTextDocument().getVersion());

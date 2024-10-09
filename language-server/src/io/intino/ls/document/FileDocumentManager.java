@@ -28,12 +28,8 @@ public class FileDocumentManager implements DocumentManager {
 		this.documents = loadDocuments(root);
 	}
 
-	public File root() {
-		return root;
-	}
-
-	private TextDocumentItem documentItem(File f) {
-		return new TextDocumentItem(relativePath(f).getPath(), dslOf(f), (int) f.lastModified(), content(f));
+	public URI root() {
+		return root.toURI();
 	}
 
 	@Override
@@ -50,7 +46,6 @@ public class FileDocumentManager implements DocumentManager {
 	public void upsertDocument(URI uri, String dsl, String content) {
 		synchronized (lock) {
 			try {
-				content = content.isEmpty() ? "dsl " + dsl + "\n\n" : content;
 				File file = fileOf(uri);
 				documents.put(uri, new TextDocumentItem(uri.toString(), dsl, (int) Instant.now().toEpochMilli(), content));
 				file.getParentFile().mkdirs();
@@ -85,12 +80,8 @@ public class FileDocumentManager implements DocumentManager {
 	public void remove(URI uri) {
 		documents.remove(uri);
 		File file = fileOf(uri);
-		if(file.isFile()) file.delete();
+		if (file.isFile()) file.delete();
 		else removeDirectory(file);
-	}
-
-	@Override
-	public void commit() {
 	}
 
 	private static void removeDirectory(File file) {
@@ -114,19 +105,30 @@ public class FileDocumentManager implements DocumentManager {
 		return new File(root, uri.getPath());
 	}
 
-	private String dslOf(File f) {
+	private TextDocumentItem documentItem(File f) {
+		return new TextDocumentItem(relativePath(f).getPath(), languageOf(f), (int) f.lastModified(), content(f));
+	}
+
+	private String languageOf(File f) {
 		try {
 			if (!f.exists()) return "";
-			return Files.lines(f.toPath()).filter(l -> !l.trim().isEmpty()).findFirst().orElse("");
+			if (f.getName().endsWith(".tara"))
+				return Files.lines(f.toPath()).filter(l -> !l.trim().isEmpty()).findFirst().orElse("");
+			return extensionOf(f);
 		} catch (IOException e) {
 			Logger.error(e);
 			return "";
 		}
 	}
 
+	private String extensionOf(File f) {
+		String fileName = f.getName();
+		int lastIndex = fileName.lastIndexOf('.');
+		return lastIndex > 0 && lastIndex < fileName.length() - 1 ? fileName.substring(lastIndex + 1) : "";
+	}
+
 	private Map<URI, TextDocumentItem> loadDocuments(File projectRoot) throws IOException {
 		return Files.walk(projectRoot.toPath())
-				.filter(p -> p.toFile().isFile() && p.toFile().getName().endsWith(".tara"))
 				.map(Path::toFile)
 				.collect(Collectors.toMap(this::relativePath, this::documentItem, (a, b) -> a, ConcurrentHashMap::new));
 	}
