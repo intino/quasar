@@ -31,7 +31,7 @@ public class ApiTest {
 	@Test
 	public void should_run_builder_service_api() {
 		String url = "http://localhost:9000/api/operations/run";
-		String jsonParam = "{\"builderId\":\"io.intino.tara:1.3.0\",\"operation\":\"Build\",\"project\":\"Tafat\",\"projectVersion\":\"1.0.0\",\"language\":\"Meta\",\"languageVersion\":\"2.0.0\",\"generationPackage\":\"\"}"; // Replace with your JSON content
+		String jsonParam = "{\"builderId\":\"io.intino.tara.builder:1.3.0\",\"operation\":\"Build\",\"project\":\"Tafat\",\"projectVersion\":\"1.0.0\",\"language\":\"Meta\",\"languageVersion\":\"2.0.0\",\"generationPackage\":\"\"}"; // Replace with your JSON content
 		File file = new File("./test-res/quassar10906546769131108430.tar"); // Replace with your file path
 
 		try (CloseableHttpClient httpClient = HttpClients.createDefault()) {

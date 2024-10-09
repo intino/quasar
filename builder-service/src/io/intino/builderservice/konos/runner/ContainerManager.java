@@ -3,6 +3,8 @@ package io.intino.builderservice.konos.runner;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.InspectContainerResponse;
+import com.github.dockerjava.api.exception.ConflictException;
+import com.github.dockerjava.api.exception.NotFoundException;
 import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.core.DockerClientBuilder;
 import io.intino.alexandria.logger.Logger;
@@ -26,11 +28,16 @@ public class ContainerManager {
 		client.authConfig().withUsername(properties.getProperty("user")).withRegistrytoken("password");
 	}
 
-	public String createContainer(String imageName, String containerName, Bind... bind) {
-		CreateContainerResponse container = client.createContainerCmd(imageName)
-				.withName(containerName)
-				.withBinds(bind)
-				.exec();
+	public String createContainer(String imageName, String containerName, Bind... bind) throws IOException {
+		CreateContainerResponse container = null;
+		try {
+			container = client.createContainerCmd(imageName)
+					.withName(containerName)
+					.withBinds(bind)
+					.exec();
+		} catch (RuntimeException e) {
+			throw new IOException(e.getMessage() + ". Is docker started?");
+		}
 		containerIds.put(containerName, container.getId());
 		return container.getId();
 	}
