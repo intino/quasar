@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -105,6 +104,13 @@ public class FileDocumentManager implements DocumentManager {
 		return new File(root, uri.getPath());
 	}
 
+	private Map<URI, TextDocumentItem> loadDocuments(File projectRoot) {
+		return FileUtils.listFiles(projectRoot, null, true).stream()
+				.filter(File::isFile)
+				.filter(f -> !f.getName().startsWith("."))
+				.collect(Collectors.toMap(this::relativePath, this::documentItem, (a, b) -> a, ConcurrentHashMap::new));
+	}
+
 	private TextDocumentItem documentItem(File f) {
 		return new TextDocumentItem(relativePath(f).getPath(), languageOf(f), (int) f.lastModified(), content(f));
 	}
@@ -125,12 +131,6 @@ public class FileDocumentManager implements DocumentManager {
 		String fileName = f.getName();
 		int lastIndex = fileName.lastIndexOf('.');
 		return lastIndex > 0 && lastIndex < fileName.length() - 1 ? fileName.substring(lastIndex + 1) : "";
-	}
-
-	private Map<URI, TextDocumentItem> loadDocuments(File projectRoot) throws IOException {
-		return Files.walk(projectRoot.toPath())
-				.map(Path::toFile)
-				.collect(Collectors.toMap(this::relativePath, this::documentItem, (a, b) -> a, ConcurrentHashMap::new));
 	}
 
 	private IOFileFilter fileFilter() {
