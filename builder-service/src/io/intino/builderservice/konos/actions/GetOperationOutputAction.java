@@ -8,15 +8,21 @@ import io.intino.builderservice.konos.BuilderServiceBox;
 import io.intino.builderservice.konos.runner.OperationOutputHandler;
 import io.intino.builderservice.konos.runner.ProjectDirectory;
 import io.intino.builderservice.konos.schemas.Message;
+import io.intino.builderservice.konos.schemas.Message.Kind;
 import io.intino.builderservice.konos.schemas.OperationResult;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.intino.builder.CompilerMessage.ERROR;
+import static io.intino.builder.CompilerMessage.WARNING;
 import static io.intino.builderservice.konos.schemas.OperationResult.State.Finished;
 import static io.intino.builderservice.konos.schemas.OperationResult.State.Running;
+import static java.util.Objects.requireNonNull;
 
 public class GetOperationOutputAction implements io.intino.alexandria.rest.RequestErrorHandler {
+	public static final String GRAPH_JSON = "graph.json";
 	public BuilderServiceBox box;
 	public io.intino.alexandria.http.spark.SparkContext context;
 	public String ticket;
@@ -25,10 +31,11 @@ public class GetOperationOutputAction implements io.intino.alexandria.rest.Reque
 		ProjectDirectory directory = ProjectDirectory.of(box.workspace(), ticket);
 		if (!directory.exists()) throw new NotFound("Ticket does not exist");
 		OperationResult result = new OperationResult();
-		result.genRef(directory.gen().getName());
-		result.srcRef(directory.src().getName());
-		result.resRef(directory.res().getName());
-		result.graphRef(directory.out().getName() + "/graph.json");
+		if (requireNonNull(directory.gen().listFiles()).length > 0) result.genRef(directory.gen().getName());
+		if (requireNonNull(directory.src().listFiles()).length > 0) result.srcRef(directory.src().getName());
+		if (requireNonNull(directory.res().listFiles()).length > 0) result.resRef(directory.res().getName());
+		if (new File(directory.out(), GRAPH_JSON).exists())
+			result.graphRef(directory.out().getName() + "/" + GRAPH_JSON);
 		OperationOutputHandler handler = box.operationHandler(ticket);
 		result.messages(map(handler.compilerMessages()));
 		result.state(box.containerManager().isRunning(ticket) ? Running : Finished);
@@ -41,14 +48,13 @@ public class GetOperationOutputAction implements io.intino.alexandria.rest.Reque
 				.toList();
 	}
 
-	private Message.Kind kindOf(String category) {
-		if (category.equals(CompilerMessage.ERROR)) return Message.Kind.ERROR;
-		if (category.equals(CompilerMessage.WARNING)) return Message.Kind.WARNING;
-		return Message.Kind.INFO;
+	private Kind kindOf(String category) {
+		if (category.equals(ERROR)) return Kind.ERROR;
+		if (category.equals(WARNING)) return Kind.WARNING;
+		return Kind.INFO;
 	}
 
 	public void onMalformedRequest(Throwable e) throws AlexandriaException {
-		//TODO
 		throw new BadRequest("Malformed request");
 	}
 }
