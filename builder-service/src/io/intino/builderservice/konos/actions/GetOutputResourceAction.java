@@ -32,19 +32,19 @@ public class GetOutputResourceAction implements io.intino.alexandria.rest.Reques
 		try {
 			switch (output) {
 				case "gen" -> {
-					if (directory.gen().listFiles().length == 0) throw new NotFound("Directory is empty");
+					if (emptyIfNull(directory.gen().listFiles()).length == 0) throw new NotFound("Directory is empty");
 					tar(directory.gen(), filter, file);
 				}
 				case "src" -> {
-					if (directory.src().listFiles().length == 0) throw new NotFound("Directory is empty");
+					if (emptyIfNull(directory.src().listFiles()).length == 0) throw new NotFound("Directory is empty");
 					tar(directory.src(), filter, file);
 				}
 				case "res" -> {
-					if (directory.res().listFiles().length == 0) throw new NotFound("Directory is empty");
+					if (emptyIfNull(directory.res().listFiles()).length == 0) throw new NotFound("Directory is empty");
 					tar(directory.res(), filter, file);
 				}
 				case "out" -> {
-					if (directory.out().listFiles().length == 0) throw new NotFound("Directory is empty");
+					if (emptyIfNull(directory.out().listFiles()).length == 0) throw new NotFound("Directory is empty");
 					tar(directory.out(), filter, file);
 				}
 				default -> throw new NotFound("Output not found");
@@ -53,6 +53,10 @@ public class GetOutputResourceAction implements io.intino.alexandria.rest.Reques
 		} catch (IOException e) {
 			throw new InternalServerError(e.getMessage());
 		}
+	}
+
+	private File[] emptyIfNull(File[] files) {
+		return files == null ? new File[0] : files;
 	}
 
 	private static File tempFile() {
