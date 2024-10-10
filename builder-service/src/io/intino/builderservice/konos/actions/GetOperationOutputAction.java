@@ -11,6 +11,7 @@ import io.intino.builderservice.konos.schemas.Message;
 import io.intino.builderservice.konos.schemas.Message.Kind;
 import io.intino.builderservice.konos.schemas.OperationResult;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,10 +30,10 @@ public class GetOperationOutputAction implements io.intino.alexandria.rest.Reque
 		ProjectDirectory directory = ProjectDirectory.of(box.workspace(), ticket);
 		if (!directory.exists()) throw new NotFound("Ticket does not exist");
 		OperationResult result = new OperationResult();
-		if (requireNonNull(directory.gen().listFiles()).length > 0) result.genRef(directory.gen().getName());
-		if (requireNonNull(directory.src().listFiles()).length > 0) result.srcRef(directory.src().getName());
-		if (requireNonNull(directory.res().listFiles()).length > 0) result.resRef(directory.res().getName());
-		if (requireNonNull(directory.out().listFiles()).length > 0) result.outRef(directory.out().getName());
+		if (emptyIfNull(directory.gen().listFiles()).length > 0) result.genRef(directory.gen().getName());
+		if (emptyIfNull(directory.src().listFiles()).length > 0) result.srcRef(directory.src().getName());
+		if (emptyIfNull(directory.res().listFiles()).length > 0) result.resRef(directory.res().getName());
+		if (emptyIfNull(directory.out().listFiles()).length > 0) result.outRef(directory.out().getName());
 		OperationOutputHandler handler = box.operationHandler(ticket);
 		result.messages(map(handler.compilerMessages()));
 		result.state(box.containerManager().isRunning(ticket) ? Running : Finished);
@@ -49,6 +50,10 @@ public class GetOperationOutputAction implements io.intino.alexandria.rest.Reque
 		if (category.equals(ERROR)) return Kind.ERROR;
 		if (category.equals(WARNING)) return Kind.WARNING;
 		return Kind.INFO;
+	}
+
+	private File[] emptyIfNull(File[] files) {
+		return files == null ? new File[0] : files;
 	}
 
 	public void onMalformedRequest(Throwable e) throws AlexandriaException {
