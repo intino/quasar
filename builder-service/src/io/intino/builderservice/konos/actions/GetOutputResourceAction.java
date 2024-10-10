@@ -31,10 +31,22 @@ public class GetOutputResourceAction implements io.intino.alexandria.rest.Reques
 		FileFilter filter = excludeFilePattern != null ? new RegexFileFilter(excludeFilePattern) : f -> true;
 		try {
 			switch (output) {
-				case "gen" -> tar(directory.gen(), filter, file);
-				case "src" -> tar(directory.src(), filter, file);
-				case "res" -> tar(directory.res(), filter, file);
-				case "out" -> tar(directory.out(), filter, file);
+				case "gen" -> {
+					if (directory.gen().listFiles().length == 0) throw new NotFound("Directory is empty");
+					tar(directory.gen(), filter, file);
+				}
+				case "src" -> {
+					if (directory.src().listFiles().length == 0) throw new NotFound("Directory is empty");
+					tar(directory.src(), filter, file);
+				}
+				case "res" -> {
+					if (directory.res().listFiles().length == 0) throw new NotFound("Directory is empty");
+					tar(directory.res(), filter, file);
+				}
+				case "out" -> {
+					if (directory.out().listFiles().length == 0) throw new NotFound("Directory is empty");
+					tar(directory.out(), filter, file);
+				}
 				default -> throw new NotFound("Output not found");
 			}
 			return new Resource("file", file);

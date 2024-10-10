@@ -31,7 +31,7 @@ Schema OperationResult
 	Attribute genRef as Text
 	Attribute srcRef as Text
 	Attribute resRef as Text
-	Attribute graphRef as Text
+	Attribute outRef as Text
 	Attribute messages as Object(Message) List
 
 
