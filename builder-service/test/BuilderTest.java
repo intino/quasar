@@ -3,18 +3,17 @@ import io.intino.alexandria.Resource;
 import io.intino.alexandria.exceptions.InternalServerError;
 import io.intino.alexandria.exceptions.NotFound;
 import io.intino.builderservice.konos.BuilderServiceBox;
-import io.intino.builderservice.konos.actions.GetBuildersAction;
-import io.intino.builderservice.konos.actions.GetOperationOutputAction;
-import io.intino.builderservice.konos.actions.PostBuildersAction;
-import io.intino.builderservice.konos.actions.PostRunOperationAction;
+import io.intino.builderservice.konos.actions.*;
 import io.intino.builderservice.konos.schemas.BuilderInfo;
 import io.intino.builderservice.konos.schemas.RunOperationContext;
 import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,7 +51,7 @@ public class BuilderTest {
 	}
 
 	@Test
-	public void should_run_build() throws InternalServerError, InterruptedException, NotFound {
+	public void should_run_build() throws InternalServerError, InterruptedException, NotFound, IOException {
 		var action = new PostRunOperationAction();
 		action.box = box;
 		action.filesInTar = new Resource(new File("test-res/sources.tar"));
@@ -70,5 +69,10 @@ public class BuilderTest {
 		get.box = box;
 		get.ticket = ticket;
 		System.out.println(Json.toJsonPretty(get.execute()));
+		var output = new GetOutputResourceAction();
+		output.box = box;
+		output.ticket = ticket;
+		output.output = "out";
+		Resource execute = output.execute();
 	}
 }
