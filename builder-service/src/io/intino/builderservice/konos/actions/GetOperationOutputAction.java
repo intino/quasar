@@ -10,6 +10,9 @@ import io.intino.builderservice.konos.runner.ProjectDirectory;
 import io.intino.builderservice.konos.schemas.Message;
 import io.intino.builderservice.konos.schemas.Message.Kind;
 import io.intino.builderservice.konos.schemas.OperationResult;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,12 +32,13 @@ public class GetOperationOutputAction implements io.intino.alexandria.rest.Reque
 	public OperationResult execute() throws NotFound {
 		ProjectDirectory directory = ProjectDirectory.of(box.workspace(), ticket);
 		if (!directory.exists()) throw new NotFound("Ticket does not exist");
+		OperationOutputHandler handler = box.operationHandler(ticket);
 		OperationResult result = new OperationResult();
 		if (emptyIfNull(directory.gen().listFiles()).length > 0) result.genRef(directory.gen().getName());
-		if (emptyIfNull(directory.src().listFiles()).length > 0) result.srcRef(directory.src().getName());
+		if (excludeSourceFiles(directory.src(), handler.srcFiles()).length > 0)
+			result.srcRef(directory.src().getName());
 		if (emptyIfNull(directory.res().listFiles()).length > 0) result.resRef(directory.res().getName());
 		if (emptyIfNull(directory.out().listFiles()).length > 0) result.outRef(directory.out().getName());
-		OperationOutputHandler handler = box.operationHandler(ticket);
 		result.messages(map(handler.compilerMessages(), directory));
 		result.state(box.containerManager().isRunning(ticket) ? Running : Finished);
 		return result;
@@ -53,6 +57,20 @@ public class GetOperationOutputAction implements io.intino.alexandria.rest.Reque
 				.content(c.message())
 				.line(c.lineNum())
 				.uri(c.url().replace(canonicalPath(directory), ""));
+	}
+
+	private File[] excludeSourceFiles(File srcDirectory, List<File> srcFiles) {
+		return FileUtils.listFiles(srcDirectory, new IOFileFilter() {
+			@Override
+			public boolean accept(File file) {
+				return !srcFiles.contains(file);
+			}
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return true;
+			}
+		}, TrueFileFilter.INSTANCE).toArray(new File[0]);
 	}
 
 	private Kind kindOf(String category) {

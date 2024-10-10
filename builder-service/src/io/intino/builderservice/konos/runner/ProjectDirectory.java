@@ -5,6 +5,15 @@ import java.io.IOException;
 import java.util.function.Function;
 
 public record ProjectDirectory(File root) {
+
+	public ProjectDirectory(File root) {
+		try {
+			this.root = root.getCanonicalFile();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public static final String PROJECT_BIND = "/root/project";
 
 	public static ProjectDirectory of(File root, String name) {

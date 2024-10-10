@@ -24,12 +24,14 @@ public class OperationOutputHandler {
 	private final List<OutputItem> compiledItems = new ArrayList<>();
 	private final List<CompilerMessage> compilerMessages = new ArrayList<>();
 	private final Sentinel sentinel;
+	private final List<File> srcFiles;
 	private final ProjectDirectory project;
 	private Consumer<String> statusUpdater;
 
-	public OperationOutputHandler(ProjectDirectory project) {
+	public OperationOutputHandler(ProjectDirectory project, List<File> srcFiles) {
 		this.project = project;
 		this.sentinel = new Sentinel(project.logFile());
+		this.srcFiles = srcFiles;
 		this.sentinel.init(this::notifyTextAvailable);
 	}
 
@@ -40,6 +42,10 @@ public class OperationOutputHandler {
 
 	public List<OutputItem> compiledItems() {
 		return compiledItems;
+	}
+
+	public List<File> srcFiles() {
+		return srcFiles;
 	}
 
 	public List<CompilerMessage> compilerMessages() {

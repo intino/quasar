@@ -7,6 +7,7 @@ import io.intino.builderservice.konos.runner.ProjectDirectory;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class BuilderServiceBox extends AbstractBox {
@@ -46,11 +47,11 @@ public class BuilderServiceBox extends AbstractBox {
 		return containerManager;
 	}
 
-	public void registerOperationHandler(String ticket) {
+	public void registerOperationHandler(String ticket, List<File> srcFiles) {
 		if (this.operationHandlers.containsKey(ticket)) Logger.error("Ticket " + ticket + " already registered");
 		else {
 			ProjectDirectory projectDirectory = ProjectDirectory.of(workspace(), ticket);
-			this.operationHandlers.put(ticket, new OperationOutputHandler(projectDirectory));
+			this.operationHandlers.put(ticket, new OperationOutputHandler(projectDirectory, srcFiles));
 		}
 	}
 
