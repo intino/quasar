@@ -1,5 +1,6 @@
 package io.intino.builderservice.konos.utils;
 
+import io.intino.alexandria.logger.Logger;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
@@ -8,6 +9,7 @@ import spark.utils.IOUtils;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Tar {
 
@@ -37,7 +39,9 @@ public class Tar {
 	public static void tar(File sourceDir, FileFilter filter, File tarFile) throws IOException {
 		try (FileOutputStream fos = new FileOutputStream(tarFile);
 			 TarArchiveOutputStream tarOut = new TarArchiveOutputStream(fos)) {
-			addFileToTar(tarOut, sourceDir, "", filter);
+			for (File f : Objects.requireNonNull(sourceDir.listFiles())) addFileToTar(tarOut, f, "", filter);
+		} catch (IOException e) {
+			Logger.error(e);
 		}
 	}
 

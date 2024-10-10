@@ -7,7 +7,6 @@ import io.intino.builderservice.konos.actions.*;
 import io.intino.builderservice.konos.schemas.BuilderInfo;
 import io.intino.builderservice.konos.schemas.RunOperationContext;
 import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -74,5 +73,6 @@ public class BuilderTest {
 		output.ticket = ticket;
 		output.output = "out";
 		Resource execute = output.execute();
+//		Files.write(new File("test-res/out.tar").toPath(), execute.inputStream().readAllBytes());
 	}
 }
