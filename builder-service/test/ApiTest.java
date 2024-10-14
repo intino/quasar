@@ -1,7 +1,9 @@
 import io.intino.alexandria.Resource;
 import io.intino.alexandria.exceptions.InternalServerError;
+import io.intino.alexandria.exceptions.NotFound;
 import io.intino.builderservice.QuassarBuilderServiceAccessor;
 import io.intino.builderservice.konos.BuilderServiceBox;
+import io.intino.builderservice.schemas.OperationResult;
 import io.intino.builderservice.schemas.RunOperationContext;
 import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
@@ -17,9 +19,9 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 
 public class ApiTest {
 
@@ -65,9 +67,14 @@ public class ApiTest {
 	}
 
 	@Test
-	public void should_run_builder_service_using_accessor() throws MalformedURLException, InternalServerError, URISyntaxException {
-		String tiket = new QuassarBuilderServiceAccessor(new URI("http://localhost:9000/").toURL())
-				.postRunOperation(context(), Resource.InputStreamProvider.of(file));
+	public void should_run_builder_service_using_accessor() throws IOException, InternalServerError, URISyntaxException, InterruptedException, NotFound {
+		QuassarBuilderServiceAccessor accessor = new QuassarBuilderServiceAccessor(new URI("http://localhost:9000/").toURL());
+		String tiket = accessor.postRunOperation(context(), Resource.InputStreamProvider.of(file));
+		while (accessor.getOperationOutput(tiket).state() == OperationResult.State.Running) {
+			Thread.sleep(1000);
+		}
+		Resource out = accessor.getOutputResource(tiket, "out");
+		Files.write(new File("test-res/out.tar").toPath(), out.inputStream().readAllBytes());
 	}
 
 	private static RunOperationContext context() {

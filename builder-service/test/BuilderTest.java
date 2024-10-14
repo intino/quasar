@@ -73,6 +73,6 @@ public class BuilderTest {
 		output.ticket = ticket;
 		output.output = "out";
 		Resource execute = output.execute();
-//		Files.write(new File("test-res/out.tar").toPath(), execute.inputStream().readAllBytes());
+		Files.write(new File("test-res/out.tar").toPath(), execute.inputStream().readAllBytes());
 	}
 }
