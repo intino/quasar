@@ -109,14 +109,6 @@ public class QuassarParser {
 				.findFirst().get();
 	}
 
-	public String pathOf(String builder, String prefix) {
-		return archetypeEntries.stream()
-				.filter(e -> e.builders().contains(builder))
-				.map(ArchetypeEntry::path)
-				.filter(path -> path.contains(prefix))
-				.findFirst().get();
-	}
-
 	public String langQn() {
 		return variables.get("lang").split(":")[0];
 	}

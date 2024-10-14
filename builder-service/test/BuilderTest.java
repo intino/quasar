@@ -22,10 +22,10 @@ public class BuilderTest {
 
 	@Before
 	public void setUp() throws IOException {
-		box = new BuilderServiceBox(new String[]{"home=../temp",
-				"language-repository=/Users/oroncal/.m2/",
+		box = new BuilderServiceBox(new String[]{"home=temp",
+				"language-repository=/Users/jevora/.m2/",
 				"port=9000",
-				"dockerhub-auth-file=../temp/configuration/dockerhub.properties"});
+				"dockerhub-auth-file=temp/configuration/dockerhub.properties"});
 		FileUtils.deleteDirectory(box.workspace());
 		box.workspace().mkdirs();
 		box.start();
@@ -53,7 +53,7 @@ public class BuilderTest {
 	public void should_run_build() throws InternalServerError, InterruptedException, NotFound, IOException {
 		var action = new PostRunOperationAction();
 		action.box = box;
-		action.filesInTar = new Resource(new File("test-res/sources.tar"));
+		action.filesInTar = new Resource(new File("temp/sources.tar"));
 		action.runOperationContext = new RunOperationContext()
 				.operation("Build")
 				.language("Meta")
