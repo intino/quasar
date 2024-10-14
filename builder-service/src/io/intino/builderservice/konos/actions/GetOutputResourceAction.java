@@ -8,6 +8,7 @@ import io.intino.alexandria.exceptions.NotFound;
 import io.intino.alexandria.logger.Logger;
 import io.intino.builderservice.konos.BuilderServiceBox;
 import io.intino.builderservice.konos.runner.ProjectDirectory;
+import org.apache.commons.io.filefilter.NotFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 
 import java.io.File;
@@ -28,7 +29,7 @@ public class GetOutputResourceAction implements io.intino.alexandria.rest.Reques
 		ProjectDirectory directory = ProjectDirectory.of(box.workspace(), ticket);
 		if (!directory.exists()) throw new NotFound("Ticket does not exist");
 		File file = tempFile();
-		FileFilter filter = excludeFilePattern != null ? new RegexFileFilter(excludeFilePattern) : f -> true;
+		FileFilter filter = excludeFilePattern != null ? new NotFileFilter(new RegexFileFilter(excludeFilePattern)) : f -> true;
 		try {
 			switch (output) {
 				case "gen" -> {

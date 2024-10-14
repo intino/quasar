@@ -73,7 +73,7 @@ public class ApiTest {
 		while (accessor.getOperationOutput(tiket).state() == OperationResult.State.Running) {
 			Thread.sleep(1000);
 		}
-		Resource out = accessor.getOutputResource(tiket, "out");
+		Resource out = accessor.getOutputResource(tiket, "out",  ".*\\.meta$");
 		Files.write(new File("test-res/out.tar").toPath(), out.inputStream().readAllBytes());
 	}
 
