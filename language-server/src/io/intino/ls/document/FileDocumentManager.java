@@ -42,11 +42,11 @@ public class FileDocumentManager implements DocumentManager {
 	}
 
 	@Override
-	public void upsertDocument(URI uri, String dsl, String content) {
+	public void upsertDocument(URI uri, String language, String content) {
 		synchronized (lock) {
 			try {
 				File file = fileOf(uri);
-				documents.put(uri, new TextDocumentItem(uri.toString(), dsl, (int) Instant.now().toEpochMilli(), content));
+				documents.put(uri, new TextDocumentItem(uri.toString(), language, (int) Instant.now().toEpochMilli(), content));
 				file.getParentFile().mkdirs();
 				Files.writeString(file.toPath(), content);
 			} catch (IOException e) {
