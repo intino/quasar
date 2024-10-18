@@ -1,4 +1,5 @@
 import io.intino.ime.box.orchestator.BuilderOrchestator;
+import io.intino.ime.box.scaffolds.IntellijScaffold;
 import io.intino.ls.document.FileDocumentManager;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -17,6 +18,16 @@ import java.net.URISyntaxException;
 public class ImeTest {
 
 	public static void main(String[] args) throws IOException, URISyntaxException {
+		testBuilderService();
+		//testScaffold();
+	}
+
+	private static void testScaffold() throws IOException {
+		final FileDocumentManager fileDocumentManager = new FileDocumentManager(new File("temp/projects/tafat"));
+		new IntellijScaffold(fileDocumentManager, "code/java/Tafat").build();
+	}
+
+	private static void testBuilderService() throws IOException, URISyntaxException {
 		final FileDocumentManager fileDocumentManager = new FileDocumentManager(new File("temp/projects/tafat"));
 		new BuilderOrchestator(new URI("http://localhost:9000").toURL(), fileDocumentManager).build("");
 	}

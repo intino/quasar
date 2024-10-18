@@ -13,6 +13,7 @@ import io.intino.ls.document.DocumentManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -56,18 +57,18 @@ public class BuilderOrchestator {
 		}
 	}
 
-	public Message build(String user) {
+	public List<io.intino.builderservice.schemas.Message> build(String user) {
 		try {
 			File taraFiles = taraFiles();
 			if (taraFiles == null) return new Message("Model files not found");
-			runBuild(quassar.tara(), taraFiles);
+			runBuild(quassar.tara(), taraFiles); // TODO propagate errors of builders
 			for (String b : builders()) runBuild(b.trim(), taraFiles);
 			manager.commit(user);
 			manager.push();
-			return new Message("OK");
+			return Collections.emptyList();
 		} catch (Throwable t) {
 			Logger.error(t);
-			return new Message(t.getMessage());
+			return new Message(t.getMessage()); // TODO error generico
 		}
 	}
 
@@ -78,17 +79,22 @@ public class BuilderOrchestator {
 			Thread.sleep(1000);
 			output = accessor.getOperationOutput(ticket);
 		}
-		extractFiles(ticket, output.genRef(), quassar.pathOf(builder) + "/gen", true);
-		extractFiles(ticket, output.srcRef(), quassar.pathOf(builder) + "/src", false);
-		extractFiles(ticket, output.outRef(), quassar.pathOf(builder) + "/out", true);
-		extractFiles(ticket, output.resRef(), quassar.pathOf(builder) + "/res", true);
+		output.messages()
+		doExtraction(ticket, output, quassar.pathOf(builder));
 		moveGraphJson();
+	}
+
+	private void doExtraction(String ticket, OperationResult output, String builderPath) throws InternalServerError, NotFound, IOException {
+		extractFiles(ticket, output.genRef(), builderPath + "/gen", true);
+		extractFiles(ticket, output.srcRef(), builderPath + "/src", false);
+		extractFiles(ticket, output.outRef(), builderPath + "/out", true);
+		extractFiles(ticket, output.resRef(), builderPath + "/res", true);
 	}
 
 	private void moveGraphJson() throws URISyntaxException {
 		URI old = manager.all().stream().filter(u -> u.getPath().endsWith("graph.json")).findFirst().orElse(null);
 		if (old != null && !old.getPath().endsWith("graph/graph.json"))
-			manager.move(new URI("graph/graph.json"), old);
+			manager.move(old, new URI("graph/graph.json"));
 	}
 
 	private void extractFiles(String ticket, String ref, String path, boolean replace) throws InternalServerError, NotFound, IOException {
