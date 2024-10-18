@@ -9,6 +9,10 @@ Artifact("io.intino", "1.0.0") language-server
         Compile("io.intino.tara", "language", "2.0.0")
         Compile("tara.dsl", "meta", "2.0.0")
         Compile("commons-io","commons-io","2.16.0")
+        Compile("org.eclipse.jgit", "org.eclipse.jgit", "7.0.0.202409031743-r")
+        Compile("org.eclipse.jgit", "org.eclipse.jgit.ssh.jsch", "6.8.0.202311291450-r")
+			Exclude("com.jcraft", "jsch")
+		Compile("com.github.mwiede", "jsch", "0.2.17")
         Test("io.intino.alexandria", "ui-framework", "5.2.9")
 		Test("junit", "junit", "4.13.2")
 

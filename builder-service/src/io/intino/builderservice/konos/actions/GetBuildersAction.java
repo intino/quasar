@@ -16,7 +16,6 @@ public class GetBuildersAction implements io.intino.alexandria.rest.RequestError
 	}
 
 	public void onMalformedRequest(Throwable e) throws AlexandriaException {
-		//TODO
 		throw new BadRequest("Malformed request");
 	}
 }

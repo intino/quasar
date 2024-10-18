@@ -3,11 +3,14 @@ package io.intino.builderservice.konos.actions;
 import io.intino.alexandria.exceptions.AlexandriaException;
 import io.intino.alexandria.exceptions.BadRequest;
 import io.intino.alexandria.exceptions.InternalServerError;
+import io.intino.alexandria.exceptions.NotFound;
 import io.intino.alexandria.logger.Logger;
 import io.intino.builderservice.konos.BuilderServiceBox;
 import io.intino.builderservice.konos.runner.BuilderRunner;
 
 import java.io.File;
+import java.util.AbstractMap;
+import java.util.List;
 
 public class PostRunOperationAction implements io.intino.alexandria.rest.RequestErrorHandler {
 	public BuilderServiceBox box;
@@ -17,8 +20,13 @@ public class PostRunOperationAction implements io.intino.alexandria.rest.Request
 
 	public String execute() throws InternalServerError {
 		try {
-			return new BuilderRunner(box.builderStore(), box.workspace(), box.configuration().dockerhubAuthFile(), new File(box.configuration().languageRepository()))
+			if (box.builderStore().get(runOperationContext.builderId()) == null)
+				throw new NotFound("Builder not found");
+			if (filesInTar == null) throw new BadRequest("Required source files");
+			AbstractMap.SimpleEntry<String, List<File>> ticketWithSources = new BuilderRunner(box.builderStore(), box.containerManager(), box.workspace(), new File(box.configuration().languageRepository()))
 					.run(runOperationContext, filesInTar.inputStream());
+			box.registerOperationHandler(ticketWithSources.getKey(), ticketWithSources.getValue());
+			return ticketWithSources.getKey();
 		} catch (Throwable e) {
 			Logger.error(e);
 			throw new InternalServerError(e.getMessage());
@@ -26,7 +34,6 @@ public class PostRunOperationAction implements io.intino.alexandria.rest.Request
 	}
 
 	public void onMalformedRequest(Throwable e) throws AlexandriaException {
-		//TODO
 		throw new BadRequest("Malformed request");
 	}
 }

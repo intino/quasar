@@ -1,4 +1,4 @@
-package io.intino.ls;
+package io.intino.ls.document;
 
 import io.intino.alexandria.logger.Logger;
 import org.apache.commons.io.FileUtils;
@@ -11,45 +11,42 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class DocumentManager {
+public class FileDocumentManager implements DocumentManager {
 	private final Object lock = new Object();
 	private final Map<URI, TextDocumentItem> documents;
 	private final File root;
 
-	public DocumentManager(File root) throws IOException {
+	public FileDocumentManager(File root) throws IOException {
 		this.root = root;
 		this.documents = loadDocuments(root);
 	}
 
-	public File root() {
-		return root;
+	public URI root() {
+		return root.toURI();
 	}
 
-	private TextDocumentItem documentItem(File f) {
-		return new TextDocumentItem(relativePath(f).getPath(), dslOf(f), (int) f.lastModified(), content(f));
-	}
-
+	@Override
 	public List<URI> all() {
 		return documents.keySet().stream().toList();
 	}
 
+	@Override
 	public List<URI> folders() {
 		return FileUtils.listFilesAndDirs(root, fileFilter(), fileFilter()).stream().filter(f -> !f.getPath().equals(root.getPath())).map(this::relativePath).toList();
 	}
 
-	public void upsertDocument(URI uri, String dsl, String content) {
+	@Override
+	public void upsertDocument(URI uri, String language, String content) {
 		synchronized (lock) {
 			try {
-				content = content.isEmpty() ? "dsl " + dsl + "\n\n" : content;
 				File file = fileOf(uri);
-				documents.put(uri, new TextDocumentItem(uri.toString(), dsl, (int) Instant.now().toEpochMilli(), content));
+				documents.put(uri, new TextDocumentItem(uri.toString(), language, (int) Instant.now().toEpochMilli(), content));
 				file.getParentFile().mkdirs();
 				Files.writeString(file.toPath(), content);
 			} catch (IOException e) {
@@ -58,6 +55,7 @@ public class DocumentManager {
 		}
 	}
 
+	@Override
 	public InputStream getDocumentText(URI uri) {
 		synchronized (lock) {
 			TextDocumentItem document = documents.get(uri);
@@ -65,10 +63,10 @@ public class DocumentManager {
 		}
 	}
 
+	@Override
 	public void move(URI oldUri, URI newUri) {
 		TextDocumentItem textDocumentItem = documents.get(oldUri);
 		if (textDocumentItem != null) try {
-			removeDocument(oldUri);
 			documents.put(newUri, textDocumentItem);
 			Files.move(fileOf(oldUri).toPath(), fileOf(newUri).toPath());
 		} catch (IOException e) {
@@ -76,9 +74,20 @@ public class DocumentManager {
 		}
 	}
 
-	public void removeDocument(URI uri) {
+	@Override
+	public void remove(URI uri) {
 		documents.remove(uri);
-		fileOf(uri).delete();
+		File file = fileOf(uri);
+		if (file.isFile()) file.delete();
+		else removeDirectory(file);
+	}
+
+	private static void removeDirectory(File file) {
+		try {
+			FileUtils.deleteDirectory(file);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private String content(File f) {
@@ -94,21 +103,33 @@ public class DocumentManager {
 		return new File(root, uri.getPath());
 	}
 
-	private String dslOf(File f) {
+	private Map<URI, TextDocumentItem> loadDocuments(File projectRoot) {
+		return FileUtils.listFiles(projectRoot, null, true).stream()
+				.filter(File::isFile)
+				.filter(f -> !f.getName().startsWith("."))
+				.collect(Collectors.toMap(this::relativePath, this::documentItem, (a, b) -> a, ConcurrentHashMap::new));
+	}
+
+	private TextDocumentItem documentItem(File f) {
+		return new TextDocumentItem(relativePath(f).getPath(), languageOf(f), (int) f.lastModified(), content(f));
+	}
+
+	private String languageOf(File f) {
 		try {
 			if (!f.exists()) return "";
-			return Files.lines(f.toPath()).filter(l -> !l.trim().isEmpty()).findFirst().orElse("");
+			if (f.getName().endsWith(".tara"))
+				return Files.lines(f.toPath()).filter(l -> !l.trim().isEmpty()).findFirst().orElse("");
+			return extensionOf(f);
 		} catch (IOException e) {
 			Logger.error(e);
 			return "";
 		}
 	}
 
-	private Map<URI, TextDocumentItem> loadDocuments(File projectRoot) throws IOException {
-		return Files.walk(projectRoot.toPath())
-				.filter(p -> p.toFile().isFile() && p.toFile().getName().endsWith(".tara"))
-				.map(Path::toFile)
-				.collect(Collectors.toMap(this::relativePath, this::documentItem, (a, b) -> a, ConcurrentHashMap::new));
+	private String extensionOf(File f) {
+		String fileName = f.getName();
+		int lastIndex = fileName.lastIndexOf('.');
+		return lastIndex > 0 && lastIndex < fileName.length() - 1 ? fileName.substring(lastIndex + 1) : "";
 	}
 
 	private IOFileFilter fileFilter() {

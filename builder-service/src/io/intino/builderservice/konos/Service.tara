@@ -1,0 +1,58 @@
+dsl Konos
+
+Service builder-service as REST(host = "", port = "{port}")
+	Resource(path = "/builders") builders
+		Get > Response as Object(schema = BuilderInfo) List
+		Post
+			Parameter(in = body) builderInfo as Object(schema = BuilderInfo)
+			Response(code ="201")
+
+	Resource("/operations/run") runOperation
+		Post
+			Parameter(in = form) runOperationContext as Object(schema = RunOperationContext)
+			Parameter(in = form) filesInTar as File
+			Response ticket as Text
+	Notification(path = "operation/:ticket/messages") subscribeOperation
+		Parameter(in = path) ticket as Text
+	Resource(path = "operation/:ticket/output") operationOutput
+		Get
+			Parameter(in = path) ticket as Text
+			Response operationResult as Object(OperationResult)
+	Resource(path = "operation/:ticket/outputs/:output") outputResource
+		Get
+			Parameter(in = path) ticket as Text
+			Parameter(in = path) output as Text
+			Parameter(in = query) excludeFilePattern as Text
+			Response file as File
+			Exception(code = NotFound)
+
+Schema OperationResult
+	Attribute state as Word(values = "Running" "Finished")
+	Attribute genRef as Text
+	Attribute srcRef as Text
+	Attribute resRef as Text
+	Attribute outRef as Text
+	Attribute messages as Object(Message) List
+
+
+Schema BuilderInfo
+	Attribute id as Text
+	Attribute imageName as Text
+	Attribute operations as Text  List
+
+Schema RunOperationContext
+	Attribute builderId as Text
+	Attribute operation as Text
+	Attribute project as Text
+	Attribute projectVersion as Text
+	Attribute language as Text
+	Attribute languageVersion as Text
+	Attribute generationPackage as Text
+
+Schema Message
+	Attribute type as Text
+	Attribute kind as Word(values = "INFO" "WARNING" "ERROR")
+	Attribute content as Text
+	Attribute uri as Text
+	Attribute line as Integer
+	Attribute column as Integer

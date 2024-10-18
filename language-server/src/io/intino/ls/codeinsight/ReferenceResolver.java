@@ -1,9 +1,9 @@
 package io.intino.ls.codeinsight;
 
 import io.intino.ls.ModelUnit;
-import io.intino.tara.language.model.Element;
-import io.intino.tara.language.model.ElementContainer;
-import io.intino.tara.language.model.MogramReference;
+import io.intino.tara.model.Element;
+import io.intino.tara.model.ElementContainer;
+import io.intino.tara.model.MogramReference;
 import org.eclipse.lsp4j.Position;
 
 import java.net.URI;

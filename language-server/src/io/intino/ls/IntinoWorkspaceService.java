@@ -2,6 +2,7 @@ package io.intino.ls;
 
 import io.intino.alexandria.logger.Logger;
 import io.intino.ls.codeinsight.DiagnosticService;
+import io.intino.ls.document.DocumentManager;
 import io.intino.tara.Language;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.lsp4j.*;
@@ -55,7 +56,7 @@ public class IntinoWorkspaceService implements WorkspaceService {
 
 	@Override
 	public CompletableFuture<WorkspaceEdit> willDeleteFiles(DeleteFilesParams params) {
-		params.getFiles().forEach(f -> documentManager.removeDocument(URI.create(f.getUri())));
+		params.getFiles().forEach(f -> documentManager.remove(URI.create(f.getUri())));
 		List<DeleteFile> list = params.getFiles().stream().map(f -> new DeleteFile(f.getUri())).toList();
 		return completedFuture(new WorkspaceEdit(list.stream()
 				.map(Either::<TextDocumentEdit, ResourceOperation>forRight)
@@ -65,9 +66,10 @@ public class IntinoWorkspaceService implements WorkspaceService {
 	@Override
 	public void didChangeWorkspaceFolders(DidChangeWorkspaceFoldersParams params) {
 		try {
-			params.getEvent().getAdded().forEach(folder -> new File(documentManager.root(), folder.getUri()).mkdirs());
+			String root = documentManager.root().getPath();
+			params.getEvent().getAdded().forEach(folder -> new File(root, folder.getUri()).mkdirs());
 			for (WorkspaceFolder folder : params.getEvent().getRemoved()) {
-				FileUtils.deleteDirectory(new File(documentManager.root(), folder.getUri()));
+				FileUtils.deleteDirectory(new File(root, folder.getUri()));
 				removeContainedDocuments(folder.getUri());
 			}
 		} catch (IOException e) {
@@ -77,7 +79,7 @@ public class IntinoWorkspaceService implements WorkspaceService {
 
 	private void removeContainedDocuments(String uri) {
 		documentManager.all().stream().filter(u -> u.getPath().startsWith(uri))
-				.forEach(u -> documentManager.removeDocument(URI.create(u.getPath())));
+				.forEach(u -> documentManager.remove(URI.create(u.getPath())));
 	}
 
 	public InputStream content(URI uri) {
@@ -86,7 +88,7 @@ public class IntinoWorkspaceService implements WorkspaceService {
 
 	@Override
 	public void didDeleteFiles(DeleteFilesParams params) {
-		params.getFiles().forEach(f -> documentManager.removeDocument(URI.create(f.getUri())));
+		params.getFiles().forEach(f -> documentManager.remove(URI.create(f.getUri())));
 	}
 
 	@Override

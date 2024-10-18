@@ -1,6 +1,7 @@
-package io.intino.ls;
+package io.intino.ls.document;
 
 
+import io.intino.ls.SourceProvider;
 import io.intino.tara.Source;
 
 import java.io.InputStream;

@@ -1,8 +1,7 @@
 dsl Legio
 
 Artifact(groupId = "io.intino", version = "1.0.0") ime
-	Dsl("Konos", "12.2.13")
-		Builder(generationPackage = "box")
+	Dsl("Konos", "12.2.13") > Builder(generationPackage = "box")
 	Archetype("io.intino", "editor-archetype", "1.0.0-SNAPSHOT")
 
 	Imports
@@ -11,20 +10,20 @@ Artifact(groupId = "io.intino", version = "1.0.0") ime
 		Compile("io.intino.alexandria", "core-framework", "2.2.0")
 		Compile("io.intino", "language-server", "1.0.0")
 		Compile("io.intino.amidas", "accessor", "4.1.1")
-
+		Compile("org.apache.commons", "commons-compress", "1.21")
+		Compile("io.intino", "quassar-builder-service-accessor", "1.0.0-SNAPSHOT")
+		Compile("io.intino.alexandria", "logger4j", "1.0.1")
 		Web("io.intino", "ime-elements", "1.0.0")
 
 		Test("junit", "junit", "4.13.2")
-		Compile(groupId = "io.intino.alexandria", artifactId = "logger4j", version = "1.0.1")
-
 	Package(mode = ModulesAndLibrariesLinkedByManifest) as Runnable(mainClass="io.intino.ime.box.Main")
-
 	Parameter("home")
 	Parameter("port")
 	Parameter("url")
 	Parameter("title")
 	Parameter("language-artifactory")
 	Parameter("federation-url")
+	Parameter("builder-service-url")
 
 RunConfiguration local
 	Argument("home", "./temp")
@@ -34,3 +33,4 @@ RunConfiguration local
 //	Argument("federation-url", "")
 	Argument("title", "Intino Language editor")
 	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
+	Argument("builder-service-url", "http://localhost:9002")

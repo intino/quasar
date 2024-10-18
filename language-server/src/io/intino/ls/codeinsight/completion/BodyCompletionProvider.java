@@ -1,8 +1,8 @@
 package io.intino.ls.codeinsight.completion;
 
 import io.intino.tara.language.grammar.TaraGrammar;
-import io.intino.tara.language.model.Level;
-import io.intino.tara.language.model.Mogram;
+import io.intino.tara.model.Level;
+import io.intino.tara.model.Mogram;
 import io.intino.tara.processors.Resolver;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;

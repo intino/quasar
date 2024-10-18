@@ -1,6 +1,8 @@
 package io.intino.builderservice.konos.runner;
 
 
+import io.intino.Configuration;
+import io.intino.builder.CompilerConfiguration;
 import io.intino.builderservice.konos.schemas.RunOperationContext;
 
 import java.io.File;
@@ -13,13 +15,13 @@ import static io.intino.builder.BuildConstants.*;
 public class RunConfigurationRenderer {
 	private static final char NL = '\n';
 	private final RunOperationContext params;
-	private final File projectDir;
+	private final ProjectDirectory project;
 	private final List<String> srcFiles;
 	private final File languagesRepository;
 
-	public RunConfigurationRenderer(RunOperationContext params, File projectDir, List<String> srcFiles, File languagesRepository) {
+	public RunConfigurationRenderer(RunOperationContext params, ProjectDirectory project, List<String> srcFiles, File languagesRepository) {
 		this.params = params;
-		this.projectDir = projectDir;
+		this.project = project;
 		this.srcFiles = srcFiles;
 		this.languagesRepository = languagesRepository;
 	}
@@ -37,21 +39,21 @@ public class RunConfigurationRenderer {
 		writer.write(ENCODING + NL + Charset.defaultCharset().name() + NL);
 		writer.write(GENERATION_PACKAGE + NL + params.generationPackage() + NL);
 		writer.write(COMPILATION_MODE + NL + params.operation() + NL);
-		if (!params.version().isEmpty()) writer.write(VERSION + NL + params.version() + NL);
+		if (!params.projectVersion().isEmpty()) writer.write(VERSION + NL + params.projectVersion() + NL);
 		writer.write(DSL + NL + params.language() + ":" + params.languageVersion() + NL);
 		writer.write(OUT_DSL + NL + params.project() + NL);
 		return writer.toString();
 	}
 
 	private void writePaths(StringWriter writer) {
-		writer.write(PROJECT_PATH + NL + projectDir.getAbsolutePath() + NL);
-		writer.write(MODULE_PATH + NL + projectDir.getAbsolutePath() + NL);
-		writer.write(OUTPUTPATH + NL + new File(projectDir.getAbsolutePath(), "gen") + NL);
-		writer.write(FINAL_OUTPUTPATH + NL + new File(projectDir.getAbsolutePath(), "out") + NL);
-		writer.write(RES_PATH + NL + new File(projectDir.getAbsolutePath(), "res") + NL);
+		writer.write(PROJECT_PATH + NL + project.root().getAbsolutePath() + NL);
+		writer.write(MODULE_PATH + NL + project.root().getAbsolutePath() + NL);
+		writer.write(OUTPUTPATH + NL + project.gen().getAbsolutePath() + NL);
+		writer.write(FINAL_OUTPUTPATH + NL + project.out().getAbsolutePath() + NL);
+		writer.write(RES_PATH + NL + project.res() + NL);
 		writer.write(REPOSITORY_PATH + NL + languagesRepository.getPath() + NL);
 		writer.write(SRC_PATH + NL);
-		writer.write(new File(projectDir.getAbsolutePath(), "src").getAbsolutePath());
+		writer.write(project.src().getAbsolutePath());
 		writer.write(NL);
 		writer.write(NL);
 	}

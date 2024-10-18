@@ -1,6 +1,8 @@
 package io.intino.ls;
 
 import io.intino.ls.codeinsight.DiagnosticService;
+import io.intino.ls.document.DocumentManager;
+import io.intino.ls.document.FileDocumentManager;
 import io.intino.tara.Language;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.services.LanguageClient;
