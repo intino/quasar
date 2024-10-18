@@ -19,8 +19,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.intino.builder.CompilerMessage.ERROR;
-import static io.intino.builder.CompilerMessage.WARNING;
 import static io.intino.builderservice.konos.schemas.OperationResult.State.Finished;
 import static io.intino.builderservice.konos.schemas.OperationResult.State.Running;
 
@@ -35,13 +33,17 @@ public class GetOperationOutputAction implements io.intino.alexandria.rest.Reque
 		OperationOutputHandler handler = box.operationHandler(ticket);
 		OperationResult result = new OperationResult();
 		if (emptyIfNull(directory.gen().listFiles()).length > 0) result.genRef(directory.gen().getName());
-		if (excludeSourceFiles(directory.src(), handler.srcFiles()).length > 0)
-			result.srcRef(directory.src().getName());
+		if (srcFiles(directory, handler).length > 0) result.srcRef(directory.src().getName());
 		if (emptyIfNull(directory.res().listFiles()).length > 0) result.resRef(directory.res().getName());
 		if (emptyIfNull(directory.out().listFiles()).length > 0) result.outRef(directory.out().getName());
 		result.messages(map(handler.compilerMessages(), directory));
+		result.success(result.messages().stream().anyMatch(m -> m.kind().equals(Kind.ERROR)));
 		result.state(box.containerManager().isRunning(ticket) ? Running : Finished);
 		return result;
+	}
+
+	private File[] srcFiles(ProjectDirectory directory, OperationOutputHandler handler) {
+		return excludeSourceFiles(directory.src(), handler.srcFiles());
 	}
 
 	private List<Message> map(List<CompilerMessage> compilerMessages, ProjectDirectory directory) {
@@ -74,8 +76,8 @@ public class GetOperationOutputAction implements io.intino.alexandria.rest.Reque
 	}
 
 	private Kind kindOf(String category) {
-		if (category.equals(ERROR)) return Kind.ERROR;
-		if (category.equals(WARNING)) return Kind.WARNING;
+		if (category.equalsIgnoreCase(Kind.ERROR.name())) return Kind.ERROR;
+		if (category.equalsIgnoreCase(Kind.WARNING.name())) return Kind.WARNING;
 		return Kind.INFO;
 	}
 

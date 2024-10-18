@@ -58,17 +58,17 @@ public class OperationOutputHandler {
 
 	private void notifyTextAvailable(final String text) {
 		final String trimmed = text.trim();
-		if (trimmed.startsWith(PRESENTABLE_MESSAGE)) {
-			updateStatus(trimmed.substring(PRESENTABLE_MESSAGE.length()));
-			return;
-		}
-		if (BuildConstants.CLEAR_PRESENTABLE.equals(trimmed)) {
-			updateStatus(null);
-			return;
-		}
 		if (!trimmed.isEmpty()) for (String line : trimmed.split("\n")) {
-			if (line.startsWith(MESSAGES_START)) processMessage(line);
-			if (line.startsWith(COMPILED_START)) processCompiledItem(line);
+			if (line.startsWith(PRESENTABLE_MESSAGE)) {
+				updateStatus(line.substring(PRESENTABLE_MESSAGE.length()));
+				continue;
+			}
+			if (BuildConstants.CLEAR_PRESENTABLE.equals(line)) {
+				updateStatus(null);
+				continue;
+			}
+			if (line.startsWith(MESSAGES_START)) processMessage(clean(line, MESSAGES_START, MESSAGES_END));
+			if (line.startsWith(COMPILED_START)) processCompiledItem(clean(line, COMPILED_START, COMPILED_END));
 		}
 	}
 
@@ -98,6 +98,10 @@ public class OperationOutputHandler {
 		compilerMessages.add(new CompilerMessage(kind.name(), message, url, line, column));
 	}
 
+	private String clean(String line, String messagesStart, String messagesEnd) {
+		return line.replaceFirst(MESSAGES_START, "").replace(MESSAGES_END, "");
+	}
+
 	private void updateStatus(String status) {
 		if (statusUpdater != null) statusUpdater.accept(status == null ? COMPILER_IN_OPERATION : status);
 	}
@@ -105,7 +109,6 @@ public class OperationOutputHandler {
 	private List<String> splitAndTrim(String compiled) {
 		return map(List.of(compiled.split(BuildConstants.SEPARATOR)), String::trim);
 	}
-
 
 	public static <T, V> List<V> map(Collection<? extends T> collection, Function<? super T, ? extends V> mapping) {
 		if (collection.isEmpty()) return Collections.emptyList();

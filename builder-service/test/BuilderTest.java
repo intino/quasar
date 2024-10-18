@@ -18,14 +18,16 @@ import java.util.stream.Collectors;
 
 public class BuilderTest {
 
+	public static final String TEMP = "../temp";
+	public static final String TEST_RES = "test-res/";
 	private BuilderServiceBox box;
 
 	@Before
 	public void setUp() throws IOException {
-		box = new BuilderServiceBox(new String[]{"home=temp",
-				"language-repository=/Users/jevora/.m2/",
+		box = new BuilderServiceBox(new String[]{"home=" + TEMP,
+				"language-repository=" + System.getProperty("user.home") + "/.m2/",
 				"port=9000",
-				"dockerhub-auth-file=temp/configuration/dockerhub.properties"});
+				"dockerhub-auth-file=" + TEMP + "/configuration/dockerhub.properties"});
 		FileUtils.deleteDirectory(box.workspace());
 		box.workspace().mkdirs();
 		box.start();
@@ -53,7 +55,7 @@ public class BuilderTest {
 	public void should_run_build() throws InternalServerError, InterruptedException, NotFound, IOException {
 		var action = new PostRunOperationAction();
 		action.box = box;
-		action.filesInTar = new Resource(new File("temp/sources.tar"));
+		action.filesInTar = new Resource(new File(TEST_RES + "sources.tar"));
 		action.runOperationContext = new RunOperationContext()
 				.operation("Build")
 				.language("Meta")
@@ -73,6 +75,6 @@ public class BuilderTest {
 		output.ticket = ticket;
 		output.output = "out";
 		Resource execute = output.execute();
-		Files.write(new File("test-res/out.tar").toPath(), execute.inputStream().readAllBytes());
+		Files.write(new File(TEST_RES + "out.tar").toPath(), execute.inputStream().readAllBytes());
 	}
 }

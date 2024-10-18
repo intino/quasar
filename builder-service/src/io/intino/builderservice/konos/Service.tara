@@ -32,8 +32,8 @@ Schema OperationResult
 	Attribute srcRef as Text
 	Attribute resRef as Text
 	Attribute outRef as Text
+	Attribute success as Bool
 	Attribute messages as Object(Message) List
-
 
 Schema BuilderInfo
 	Attribute id as Text
