@@ -5,17 +5,6 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.util.List;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-
-import java.io.File;
-import java.io.IOException;
 
 public class MainTest {
 

@@ -9,7 +9,7 @@ import java.net.URISyntaxException;
 
 import static io.intino.ime.box.orchestator.BuilderOrchestator.QUASSAR_FILE;
 
-public class IntellijScaffold implements Scaffold {
+public class PycharmScaffold implements Scaffold {
 
 	private final DocumentManager manager;
 	private final String path;
@@ -56,7 +56,7 @@ public class IntellijScaffold implements Scaffold {
 			}
 			""";
 
-	public IntellijScaffold(DocumentManager manager, String path){
+	public PycharmScaffold(DocumentManager manager, String path){
 		this.manager = manager;
 		this.path = path.endsWith("/") ? path : path + "/";
 		this.quassar = new QuassarParser(quassarContent());

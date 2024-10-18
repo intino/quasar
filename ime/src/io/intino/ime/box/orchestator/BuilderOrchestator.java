@@ -4,16 +4,15 @@ import io.intino.alexandria.Resource;
 import io.intino.alexandria.exceptions.InternalServerError;
 import io.intino.alexandria.exceptions.NotFound;
 import io.intino.alexandria.logger.Logger;
-import io.intino.alexandria.ui.Message;
 import io.intino.builderservice.QuassarBuilderServiceAccessor;
 import io.intino.builderservice.schemas.BuilderInfo;
+import io.intino.builderservice.schemas.Message;
 import io.intino.builderservice.schemas.OperationResult;
 import io.intino.builderservice.schemas.RunOperationContext;
 import io.intino.ls.document.DocumentManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -57,31 +56,43 @@ public class BuilderOrchestator {
 		}
 	}
 
-	public List<io.intino.builderservice.schemas.Message> build(String user) {
+	public List<Message> build(String user) {
 		try {
 			File taraFiles = taraFiles();
-			if (taraFiles == null) return new Message("Model files not found");
-			runBuild(quassar.tara(), taraFiles); // TODO propagate errors of builders
-			for (String b : builders()) runBuild(b.trim(), taraFiles);
+			if (taraFiles == null)
+				return List.of(new Message().kind(Message.Kind.ERROR).content("Model files not found"));
+			List<Message> messages = doBuild(taraFiles);
+			if (!messages.isEmpty()) return messages;
 			manager.commit(user);
 			manager.push();
-			return Collections.emptyList();
 		} catch (Throwable t) {
 			Logger.error(t);
-			return new Message(t.getMessage()); // TODO error generico
+			return List.of(new Message().kind(Message.Kind.ERROR).content("Unknown error"));
 		}
+		return Collections.emptyList();
 	}
 
-	private void runBuild(String builder, File taraFiles) throws InternalServerError, IOException, NotFound, InterruptedException, URISyntaxException {
+	private List<Message> doBuild(File taraFiles) throws InternalServerError, IOException, NotFound, InterruptedException, URISyntaxException {
+		List<Message> messages = runBuild(quassar.tara(), taraFiles);
+		if (!messages.isEmpty()) return messages;
+		for (String b : builders()) {
+			messages = runBuild(b.trim(), taraFiles);
+			if (!messages.isEmpty()) return messages;
+		}
+		return Collections.emptyList();
+	}
+
+	private List<Message> runBuild(String builder, File taraFiles) throws InternalServerError, IOException, NotFound, InterruptedException, URISyntaxException {
 		String ticket = accessor.postRunOperation(context(builder).operation("Build"), Resource.InputStreamProvider.of(taraFiles));
 		OperationResult output = accessor.getOperationOutput(ticket);
 		while (output.state() == Running) {
 			Thread.sleep(1000);
 			output = accessor.getOperationOutput(ticket);
 		}
-		output.messages()
+		// TODO return messages
 		doExtraction(ticket, output, quassar.pathOf(builder));
-		moveGraphJson();
+		//moveGraphJson();
+		return Collections.emptyList();
 	}
 
 	private void doExtraction(String ticket, OperationResult output, String builderPath) throws InternalServerError, NotFound, IOException {
@@ -126,7 +137,7 @@ public class BuilderOrchestator {
 	private RunOperationContext context(String builder) {
 		return new RunOperationContext()
 				.builderId(imageOf(builder.split("@")[0]))
-				.generationPackage(builder.contains("@") ? builder.split("@")[1] : "")
+				.generationPackage(quassar.codePackage())
 				.language(quassar.langQn())
 				.languageVersion(quassar.langVersion())
 				.project(quassar.projectName())
