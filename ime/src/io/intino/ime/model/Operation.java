@@ -3,12 +3,14 @@ package io.intino.ime.model;
 public class Operation {
 	private String name;
 	private Type type;
-	private String url;
 
-	public Operation(String name, Type type, String url) {
+	public Operation(String name) {
+		this(name, Operation.Type.Generic);
+	}
+
+	public Operation(String name, Type type) {
 		this.name = name;
 		this.type = type;
-		this.url = url;
 	}
 
 	public String name() {
@@ -26,15 +28,6 @@ public class Operation {
 
 	public Operation type(Type type) {
 		this.type = type;
-		return this;
-	}
-
-	public String url() {
-		return url;
-	}
-
-	public Operation url(String url) {
-		this.url = url;
 		return this;
 	}
 

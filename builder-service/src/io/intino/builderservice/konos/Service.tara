@@ -1,6 +1,12 @@
 dsl Konos
 
 Service builder-service as REST(host = "", port = "{port}")
+
+	Resource(path = "/check/:name") check
+		Get
+			Parameter(in = path) name as Text
+			Response as Object(schema = BuilderInfo)
+
 	Resource(path = "/builders") builders
 		Get > Response as Object(schema = BuilderInfo) List
 		Post
@@ -38,7 +44,12 @@ Schema OperationResult
 Schema BuilderInfo
 	Attribute id as Text
 	Attribute imageName as Text
-	Attribute operations as Text  List
+	Attribute operations as Text List
+	Attribute valid as Bool
+
+	Schema Properties
+		Attribute name as Text
+		Attribute value as Text
 
 Schema RunOperationContext
 	Attribute builderId as Text

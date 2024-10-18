@@ -12,9 +12,10 @@ public class SaveLanguageCommand extends Command<Boolean> {
 	public Language language;
 	public String description;
 	public boolean isPrivate;
-	public String dockerImageUrl;
+	public String builder;
 	public Resource logo;
 	public List<Operation> operations;
+	public List<String> tags;
 
 	public SaveLanguageCommand(ImeBox box) {
 		super(box);
@@ -24,8 +25,9 @@ public class SaveLanguageCommand extends Command<Boolean> {
 	public Boolean execute() {
 		language.description(description);
 		language.isPrivate(isPrivate);
-		language.dockerImageUrl(dockerImageUrl);
+		language.builder(builder);
 		language.operations(operations);
+		language.tags(tags);
 		box.languageManager().save(language);
 		if (logo != null) box.languageManager().saveLogo(language, logo);
 		return true;

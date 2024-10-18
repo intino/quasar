@@ -14,7 +14,7 @@ Template(layout=Horizontal) languageEditor
 Template languageSettingsEditor
 	Selector(format=tabsStyle) tabSelector as Tabs
 		Text(value="General", translate=true) propertiesOption as Option
-		Text(value="Operations", translate=true) operationsOption as Option
+		Text(value="Builder", translate=true) builderOption as Option
 
 	Block(layout=Horizontal Flexible, format=doubleAirTop) propertiesBlock as Conditional(tabSelector.propertiesOption)
 		Block as Absolute(width=170px)
@@ -24,11 +24,38 @@ Template languageSettingsEditor
 			Text(format=doubleAirBottom) nameField
 			Text(format=doubleAirBottom) descriptionField as Editable Labeled("Description") Focused
 			Switch(title="Language is private", format=doubleAirBottom) accessTypeField
-			Text(format=doubleAirBottom) dockerImageUrlField as Editable Labeled("Docker image url")
+			Block
+				Text(value="Tags", translate=true, format=label middleAirBottom)
+				TemplateStamp(template=tagEditor) tags as Multiple("No tags", arrangement=Horizontal, spacing=DP8)
+				Block(layout=Horizontal, format=airTop) > Button(title="Add tag", size=Small, highlight=Outline) as OpenDialog(addTagDialog)
 
-	Block operationsBlock as Conditional(tabSelector.operationsOption)
-		TemplateStamp(template=operationEditor) operations as Multiple("No operations")
-		Block(layout=Horizontal, format=airTop) > Button(title="Add operation", size=Small, highlight=Outline) addOperation as Action Readonly
+	Block builderBlock as Conditional(tabSelector.builderOption)
+		Block(format=airTop doubleAirBottom)
+			Block(layout=Horizontal Center)
+				Text builderField as Editable Labeled("Docker image name")
+				MaterialIcon(icon="CheckCircle", format=airTop greenColor, visible=false) validBuilderIcon
+				MaterialIcon(icon="Help", format=airTop, visible=false) noBuilderInfoIcon
+				MaterialIcon(icon="Cancel", format=airTop redColor, visible=false) invalidBuilderIcon
+			Block(layout=Horizontal, format=airTop)
+				Button(title="Check", highlight=Outline, size=Small, format=airRight) checkBuilder as Readonly
+				Button(title="Details", size=Small, highlight=Outline) showBuilderInfo as OpenDialog(dialog=builderDetailsDialog) Readonly
+		Block
+			TemplateStamp(template=operationEditor) operations as Multiple("No operations")
+
+	Dialog(title="Add tag") addTagDialog as Absolute(width=280px, height=200px)
+        Block as Relative(height=100%, offsetHeight=40px)
+        	Text tagField as Editable(placeholder="Indicate tag name") Labeled("Tag") Focused
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addTagDialog)
+            Button(title="Accept", size=Small, highlight=Fill) addTag as Action
+
+	Dialog(title="Builder details") builderDetailsDialog as Absolute(width=500px, height=350px)
+        Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
+        	TemplateStamp(template=builderPropertyView) builderProperties as Multiple(noItemsMessage="No information")
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Close", size=Small, format=airRight, highlight=Outline) as CloseDialog(builderDetailsDialog)
 
 Template(layout=Horizontal) modelSettingsEditor
 	Button(title="Properties...", size=Small, visible=false) smallIconInList as OpenDialog(settingsDialog)
@@ -36,7 +63,7 @@ Template(layout=Horizontal) modelSettingsEditor
 	Button(title="Properties...", size=Small, visible=false) smallIcon as OpenDialog(settingsDialog)
 	Button(title="Properties...", visible=false) largeIcon as OpenDialog(settingsDialog)
 
-	Dialog(title="Properties") settingsDialog as Absolute(width=500px, height=600px)
+	Dialog(title="Properties") settingsDialog as Relative(width=60%, height=80%)
         Block as Relative(height=100%, offsetHeight=40px)
         	Block(format=airBottom)
         		Text(value="Attributes", translate=true, format=h5)
@@ -83,13 +110,19 @@ Template releaseEditor
 		Text(value="Level 2") level2Option as Option
 
 Template(layout=Horizontal Center, format=airTop airBottom) operationEditor
-	Block(format=airRight) as Absolute(width=200px) > Text nameField as Editable Labeled("Name") Focused
-	Block(format=airRight) as Absolute(width=270px) > Selector(format=doubleAirTop) typeField as ComboBox(view=TextView)
-	Text(format=airRight) urlField as Editable Labeled("Execution lambda function (docker image url)")
-	MaterialIconButton(title="Delete", icon="Clear") delete as Action Affirmed("Are you sure to remove operation?")
+	Block(format=airRight) as Absolute(width=200px) > Text nameField as Labeled("Name")
+	Block(format=airRight) as Absolute(width=270px) > Selector(format=doubleAirTop) typeField as ComboBox(view=TextView) Focused
 
 	TemplateStamp(template=operationTypeView, visible=false)
 
+Template(layout=Horizontal Center, format=tag) tagEditor
+	Text(format=smallAirRight) nameField
+	MaterialIconButton(title="Delete", icon="Clear", size=Small, format=smallIconSize) delete as Action
+
 Template(layout=Horizontal Center) operationTypeView
-	Block(layout=Vertical Flexible) > Text(format=airRight) nameField
+	Block(layout=Vertical Flexible) > Text(format=middleAirRight) nameField
 	Block(layout=Horizontal EndJustified) > MaterialIconButton(title="", icon="HelpOutline", size=Small) iconField as Action
+
+Template(layout=Horizontal) builderPropertyView
+	Block as Relative(width=30%) > Text name
+	Block as Relative(width=70%) > Text value

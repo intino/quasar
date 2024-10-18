@@ -199,7 +199,7 @@ Format("minWidth:'250px'") selectorWidth
 Format("minWidth:'130px'") minExecutiveIndicatorWidth
 Format("position:'relative',borderRadius:'3px',minWidth:'150px'") block
 Format("width:'100%'") fullWidth
-Format("marginLeft:'10px',background:'#f89101',padding:'0 7px',borderRadius:'6px'") tag
+Format("background:'white',padding:'0 7px',borderRadius:'6px'", darkContent="background:'#1F1F1F'") tag
 Format("minWidth:'56px',textAlign:'center',fontSize:'8pt'") pill
 Format("minWidth:'120px',height:'30px',borderRadius:'3px',textAlign:'center',paddingTop:'4px'") formOption
 Format("background:'aliceblue',padding:'0 5px 0 5px',borderRadius:'3px',minHeight:'37px'") toolbar

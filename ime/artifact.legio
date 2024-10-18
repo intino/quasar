@@ -8,11 +8,12 @@ Artifact(groupId = "io.intino", version = "1.0.0") ime
 		Compile("io.intino.alexandria", "ui-framework", "5.2.24")
 			Exclude("io.intino.tara","language")
 		Compile("io.intino.alexandria", "core-framework", "2.2.0")
+		Compile("io.intino.alexandria", "logger4j", "1.0.1")
 		Compile("io.intino", "language-server", "1.0.0")
 		Compile("io.intino.amidas", "accessor", "4.1.1")
 		Compile("org.apache.commons", "commons-compress", "1.21")
 		Compile("io.intino", "quassar-builder-service-accessor", "1.0.0-SNAPSHOT")
-		Compile("io.intino.alexandria", "logger4j", "1.0.1")
+
 		Web("io.intino", "ime-elements", "1.0.0")
 
 		Test("junit", "junit", "4.13.2")

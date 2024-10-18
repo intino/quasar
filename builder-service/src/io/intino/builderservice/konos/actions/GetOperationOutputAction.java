@@ -29,7 +29,7 @@ public class GetOperationOutputAction implements io.intino.alexandria.rest.Reque
 	public io.intino.alexandria.http.spark.SparkContext context;
 	public String ticket;
 
-	public OperationResult execute() throws NotFound {
+	public io.intino.builderservice.konos.schemas.OperationResult execute() throws NotFound {
 		ProjectDirectory directory = ProjectDirectory.of(box.workspace(), ticket);
 		if (!directory.exists()) throw new NotFound("Ticket does not exist");
 		OperationOutputHandler handler = box.operationHandler(ticket);

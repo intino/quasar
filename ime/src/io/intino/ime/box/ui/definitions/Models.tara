@@ -45,7 +45,7 @@ Template(layout=Vertical Flexible) modelsCatalog as Relative(height=100%, width=
 	        			noItemsMessage = "No languages"
 	        			Mold
 	        				Heading lteLogoHeading
-	        				Item(height=30px, width=10%) lteLogoItem > Image logo as Absolute(height=50px, width=50px)
+	        				Item(height=30px, width=10%) lteLogoItem > Image logo as Absolute(height=25px, width=25px)
 	        			Mold
 	        				Heading lteNameHeading > Text(value="Name", translate=true)
 	        				Item(height=30px, width=20%) lteNameItem > Text name

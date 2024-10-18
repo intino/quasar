@@ -52,7 +52,7 @@ public class TagsDatasource extends PageDatasource<Tag> {
 
 	protected List<Tag> load() {
 		Map<String, Tag> result = new HashMap<>();
-		Map<List<String>, List<Language>> tagList = box.languageManager().publicLanguages(username()).stream().collect(groupingBy(Language::tagList));
+		Map<List<String>, List<Language>> tagList = box.languageManager().publicLanguages(username()).stream().collect(groupingBy(Language::tags));
 		tagList.forEach((key, value) -> key.forEach(t -> register(t, value, result)));
 		return new ArrayList<>(result.values());
 	}

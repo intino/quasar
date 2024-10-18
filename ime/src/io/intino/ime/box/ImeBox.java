@@ -3,6 +3,7 @@ package io.intino.ime.box;
 import io.intino.alexandria.logger.Logger;
 import io.intino.alexandria.ui.services.auth.Space;
 import io.intino.amidas.accessor.alexandria.core.AmidasOauthAccessor;
+import io.intino.builderservice.QuassarBuilderServiceAccessor;
 import io.intino.ime.box.commands.Commands;
 import io.intino.ime.box.commands.CommandsFactory;
 import io.intino.ime.box.languages.LanguageLoader;
@@ -28,6 +29,7 @@ public class ImeBox extends AbstractBox {
 	private CommandsFactory commandsFactory;
 	private AmidasOauthAccessor amidasOauthAccessor;
 	private LanguageServerManager serverManager;
+	private QuassarBuilderServiceAccessor builderServiceAccessor;
 
 	public ImeBox(String[] args) {
 		this(new ImeConfiguration(args));
@@ -51,12 +53,17 @@ public class ImeBox extends AbstractBox {
 		languageManager = new LanguageManager(archetype);
 		serverManager = new LanguageServerManager(languageLoader, model -> modelManager.workspace(model));
 		modelManager = new ModelManager(archetype, serverManager);
+		builderServiceAccessor = new QuassarBuilderServiceAccessor(url(configuration.builderServiceUrl()));
 		ModelSequence.init(archetype.configuration().modelSequence());
 	}
 
 	@Override
 	protected void beforeSetupImeElementsUi(io.intino.alexandria.ui.UISpark sparkInstance) {
 		sparkInstance.service().webSocket("/dsl/tara", new LanguageServerWebSocketHandler(this::serverFor));
+	}
+
+	public QuassarBuilderServiceAccessor builderService() {
+		return builderServiceAccessor;
 	}
 
 	private LanguageServer serverFor(Session s) {
@@ -108,4 +115,5 @@ public class ImeBox extends AbstractBox {
 	public AmidasOauthAccessor authService() {
 		return amidasOauthAccessor;
 	}
+
 }

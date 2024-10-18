@@ -90,8 +90,8 @@ Template(format=headerBackground) languageHeaderTemplate
 	Block(format=spaced) languageChildrenView as Popover Absolute(width=800px, height=400px)
 		TemplateStamp(template=languagesCatalogTable) languageChildrenCatalog
 
-	Dialog(title="Settings") settingsDialog as Absolute(width=800px, height=450px)
-        Block as Relative(height=100%, offsetHeight=40px)
+	Dialog(title="Settings") settingsDialog as Relative(width=60%, height=80%)
+        Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
         	TemplateStamp(template=languageSettingsEditor) settingsEditor
 		Divider
         Block(layout=Horizontal)

@@ -12,7 +12,7 @@ public class Language {
 	private List<Operation> operations;
 	private int modelsCount;
 	private String owner;
-	private String dockerImageUrl;
+	private String builder;
 	private Instant createDate;
 	private List<String> tagList;
 
@@ -90,11 +90,6 @@ public class Language {
 		return this;
 	}
 
-	public Language add(Operation operation) {
-		this.operations.add(operation);
-		return this;
-	}
-
 	public int modelsCount() {
 		return modelsCount;
 	}
@@ -113,12 +108,12 @@ public class Language {
 		return this;
 	}
 
-	public String dockerImageUrl() {
-		return dockerImageUrl;
+	public String builder() {
+		return builder;
 	}
 
-	public Language dockerImageUrl(String value) {
-		this.dockerImageUrl = value;
+	public Language builder(String value) {
+		this.builder = value;
 		return this;
 	}
 
@@ -131,11 +126,11 @@ public class Language {
 		return this;
 	}
 
-	public List<String> tagList() {
+	public List<String> tags() {
 		return tagList;
 	}
 
-	public Language tagList(List<String> tagList) {
+	public Language tags(List<String> tagList) {
 		this.tagList = tagList;
 		return this;
 	}

@@ -138,9 +138,10 @@ public class LanguageHeaderTemplate extends AbstractLanguageHeaderTemplate<ImeBo
 		Resource logo = settingsEditor.logo();
 		String description = settingsEditor.description();
 		boolean isPrivate = settingsEditor.isPrivate();
-		String dockerImageUrl = settingsEditor.dockerImageUrl();
+		String builder = settingsEditor.builder();
 		List<Operation> operations = settingsEditor.operations();
-		box().commands(LanguageCommands.class).save(language, description, isPrivate, dockerImageUrl, logo, operations, username());
+		List<String> tags = settingsEditor.tags();
+		box().commands(LanguageCommands.class).save(language, description, isPrivate, builder, logo, operations, tags, username());
 		saveSettingsListener.accept(true);
 		refresh();
 	}

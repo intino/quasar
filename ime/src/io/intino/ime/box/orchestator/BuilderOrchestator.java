@@ -60,7 +60,7 @@ public class BuilderOrchestator {
 	public List<io.intino.builderservice.schemas.Message> build(String user) {
 		try {
 			File taraFiles = taraFiles();
-			if (taraFiles == null) return new Message("Model files not found");
+			if (taraFiles == null) return Collections.emptyList(); // TODO JE return new Message("Model files not found");
 			runBuild(quassar.tara(), taraFiles); // TODO propagate errors of builders
 			for (String b : builders()) runBuild(b.trim(), taraFiles);
 			manager.commit(user);
@@ -68,7 +68,8 @@ public class BuilderOrchestator {
 			return Collections.emptyList();
 		} catch (Throwable t) {
 			Logger.error(t);
-			return new Message(t.getMessage()); // TODO error generico
+			// TODO JE return new Message(t.getMessage()); error generico
+			return Collections.emptyList();
 		}
 	}
 
@@ -79,7 +80,7 @@ public class BuilderOrchestator {
 			Thread.sleep(1000);
 			output = accessor.getOperationOutput(ticket);
 		}
-		output.messages()
+		// TODO JE output.messages()
 		doExtraction(ticket, output, quassar.pathOf(builder));
 		moveGraphJson();
 	}

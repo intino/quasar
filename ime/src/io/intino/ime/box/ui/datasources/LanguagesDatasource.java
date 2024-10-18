@@ -5,11 +5,9 @@ import io.intino.alexandria.ui.model.datasource.Group;
 import io.intino.alexandria.ui.model.datasource.PageDatasource;
 import io.intino.alexandria.ui.services.push.UISession;
 import io.intino.ime.box.ImeBox;
-import io.intino.ime.box.ui.model.SearchItem;
 import io.intino.ime.model.Language;
 import io.intino.ime.model.LanguageLevel;
 
-import javax.xml.crypto.Data;
 import java.util.*;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -108,7 +106,7 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 	private List<Language> filterTag(List<Language> languages, List<Filter> filters) {
 		List<String> tags = this.tag != null ? List.of(this.tag) : Collections.emptyList();
 		if (tags.isEmpty()) return languages;
-		return languages.stream().filter(l -> tags.stream().anyMatch(t -> l.tagList().contains(t))).collect(toList());
+		return languages.stream().filter(l -> tags.stream().anyMatch(t -> l.tags().contains(t))).collect(toList());
 	}
 
 	private List<Language> filterOwner(List<Language> languages, List<Filter> filters) {
