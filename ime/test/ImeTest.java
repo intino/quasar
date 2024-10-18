@@ -1,4 +1,5 @@
 import io.intino.ime.box.orchestator.BuilderOrchestator;
+import io.intino.ime.box.orchestator.ProjectCreator;
 import io.intino.ime.box.scaffolds.IntellijScaffold;
 import io.intino.ls.document.FileDocumentManager;
 import org.apache.http.HttpEntity;
@@ -14,12 +15,22 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+
+import static io.intino.ime.box.scaffolds.ScaffoldFactory.Scaffold.Intellij;
 
 public class ImeTest {
 
 	public static void main(String[] args) throws IOException, URISyntaxException {
+		//testCreateProject();
 		testBuilderService();
 		//testScaffold();
+	}
+
+	private static void testCreateProject() throws IOException {
+		new ProjectCreator("Tafat:1.0.0", "Meta:2.0.0", "io.tafat",
+				List.of(new ProjectCreator.CodeBucket("code/java/tafat", Intellij, "io.intino.magritte.builder:1.3.0")))
+				.create(new FileDocumentManager(new File("temp/projects/tafat")));
 	}
 
 	private static void testScaffold() throws IOException {
