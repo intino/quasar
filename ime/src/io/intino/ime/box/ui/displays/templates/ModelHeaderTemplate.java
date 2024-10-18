@@ -8,7 +8,9 @@ import io.intino.ime.box.commands.LanguageCommands;
 import io.intino.ime.box.commands.ModelCommands;
 import io.intino.ime.box.models.ModelManager;
 import io.intino.ime.box.ui.PathHelper;
+import io.intino.ime.box.ui.ViewMode;
 import io.intino.ime.box.ui.datasources.MemoryModelsDatasource;
+import io.intino.ime.box.util.LanguageHelper;
 import io.intino.ime.box.util.ModelHelper;
 import io.intino.ime.model.*;
 
@@ -21,6 +23,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<ImeBox> {
 	private Model model;
 	private String _title;
 	private Consumer<Model> openModelListener;
+	private Consumer<Language> openLanguageListener;
 
 	public ModelHeaderTemplate(ImeBox box) {
 		super(box);
@@ -34,8 +37,16 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<ImeBox> {
 		this._title = title;
 	}
 
+	public void onOpenSearch(Consumer<Boolean> listener) {
+		quassarHeader.onOpenSearch(listener);
+	}
+
 	public void onOpenModel(Consumer<Model> listener) {
 		this.openModelListener = listener;
+	}
+
+	public void onOpenLanguage(Consumer<Language> listener) {
+		this.openLanguageListener = listener;
 	}
 
 	@Override
@@ -44,41 +55,37 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<ImeBox> {
 		cancel.onExecute(e -> hideTitleEditor());
 		save.onExecute(e -> saveLabel());
 		titleField.onEnterPress(e -> saveLabel());
-		user.visible(session().user() != null);
 		cloneModelEditor.onClone(this::open);
-		login.onExecute(e -> {
-			session().add("callback", session().browser().requestUrl());
-			notifier.redirect(session().login(session().browser().baseUrl()));
-		});
 		publishDialog.onOpen(e -> refreshPublishDialog());
 		publish.onExecute(e -> publish());
 		build.onExecute(e -> build());
-		modelChildrenCatalog.onOpenModel(e -> openModelListener.accept(e));
+		modelChildrenCatalog.onOpenModel(this::notifyOpen);
+		quassarHeader.onChangeView(this::openLanguage);
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
+		refreshQuassarHeader();
+		refreshModelHeader();
+	}
+
+	private void refreshQuassarHeader() {
+		Language language = box().languageManager().get(model.modelingLanguage());
+		quassarHeader.canEditViewMode(ModelHelper.level(model, box()) != ModelLevel.M1);
+		quassarHeader.language(language);
+		quassarHeader.refresh();
+	}
+
+	private void refreshModelHeader() {
 		Release release = box().languageManager().lastRelease(model.modelingLanguage());
 		refreshModelsLinks();
-		login.visible(user() == null);
 		titleLink.title(_title);
-		titleLink.formats(ModelHelper.isMetamodel(model, box()) ? Set.of("h2", "appTitleStyle", "unselectable") : Set.of("h2", "appTitleStyle"));
+		titleLink.formats(ModelHelper.isMetamodel(model, box()) ? Set.of("appTitleStyle", "unselectable") : Set.of("appTitleStyle"));
 		titleLink.onExecute(e -> showTitleEditor());
 		refreshLanguagePill(release);
 		if (session().user() == null) return;
 		refreshOperations();
-		userHome.path(PathHelper.dashboardPath(session()));
-		settingsEditor.model(model);
-		settingsEditor.mode(ModelSettingsEditor.Mode.Small);
-		settingsEditor.refresh();
-		cloneModelEditor.model(model);
-		cloneModelEditor.mode(CloneModelEditor.Mode.Small);
-		cloneModelEditor.refresh();
-		cloneModelEditor.visible(ModelHelper.canClone(model, box()));
-		build.visible(ModelHelper.canBuild(model, username(), box()));
-		publishTrigger.visible(ModelHelper.canCreateRelease(model, username(), box()));
-		dashboard.visible(user() != null);
 	}
 
 	private void refreshLanguagePill(Release release) {
@@ -114,7 +121,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<ImeBox> {
 		m1Link.readonly(m1Readonly);
 		this.m1Children.visible(level != ModelLevel.M1 && languageLevel == LanguageLevel.L1 && !m1Children.isEmpty());
 		this.m1Children.onOpen(e -> refreshBrowserModelChildrenView(m1Children));
-		m1.visible(level == ModelLevel.M1 || (languageLevel == LanguageLevel.L1 && m1Children.isEmpty()));
+		m1.visible(level == ModelLevel.M1);
 	}
 
 	private void refreshModelChildrenView(String title, List<Model> children) {
@@ -136,12 +143,25 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<ImeBox> {
 	}
 
 	private void refreshStyles(boolean m1Readonly, boolean m2Readonly, boolean m3Readonly) {
-		if (m3Readonly) m3Link.formats(Set.of("modelLinkDisabled", "m3Style"));
-		if (m2Readonly) m2Link.formats(Set.of("modelLinkDisabled", "m2Style"));
-		if (m1Readonly) m1Link.formats(Set.of("modelLinkDisabled", "m1Style"));
+		if (m3Readonly) m3Link.formats(Set.of("linkDisabled", "m3l3Style"));
+		if (m2Readonly) m2Link.formats(Set.of("linkDisabled", "m2l2Style"));
+		if (m1Readonly) m1Link.formats(Set.of("linkDisabled", "m1l1Style"));
 	}
 
 	private void refreshOperations() {
+		refreshCustomOperations();
+		settingsEditor.model(model);
+		settingsEditor.mode(ModelSettingsEditor.Mode.Small);
+		settingsEditor.refresh();
+		cloneModelEditor.model(model);
+		cloneModelEditor.mode(CloneModelEditor.Mode.Small);
+		cloneModelEditor.refresh();
+		cloneModelEditor.visible(ModelHelper.canClone(model, box()));
+		build.visible(ModelHelper.canBuild(model, username(), box()));
+		publishTrigger.visible(ModelHelper.canCreateRelease(model, username(), box()));
+	}
+
+	private void refreshCustomOperations() {
 		List<Operation> operationList = ModelHelper.operations(model, box());
 		modelOperationsBlock.visible(!operationList.isEmpty());
 		operations.clear();
@@ -202,6 +222,16 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<ImeBox> {
 		// TODO MC
 		box().commands(ModelCommands.class).execute(model, operation, username());
 		notifyUser("Pendiente de implementar esta operación", UserMessage.Type.Warning);
+	}
+
+	private void openLanguage(ViewMode viewMode) {
+		openLanguageListener.accept(box().languageManager().get(model.releasedLanguage()));
+	}
+
+	private void notifyOpen(Model model) {
+		openModelListener.accept(model);
+		m2Children.closePopover();
+		m1Children.closePopover();
 	}
 
 }

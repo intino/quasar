@@ -8,13 +8,15 @@ import io.intino.ime.box.ui.PathHelper;
 import io.intino.ime.box.ui.ViewMode;
 import io.intino.ime.model.Language;
 
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class HeaderTemplate extends AbstractHeaderTemplate<ImeBox> {
-	private Consumer<String> searchListener;
+	private Consumer<Boolean> openSearchListener;
 	private Language language;
 	private Consumer<ViewMode> changeViewListener;
-	private boolean showDashboardButton = true;
+	private View view = View.Normal;
+	private boolean canEditViewMode = true;
 
 	public HeaderTemplate(ImeBox box) {
 		super(box);
@@ -24,12 +26,17 @@ public class HeaderTemplate extends AbstractHeaderTemplate<ImeBox> {
 		this.language = language;
 	}
 
-	public void showDashboardButton(boolean value) {
-		this.showDashboardButton = value;
+	public enum View { Home, Search, Dashboard, Normal }
+	public void view(View view) {
+		this.view = view;
 	}
 
-	public void onSearch(Consumer<String> listener) {
-		this.searchListener = listener;
+	public void canEditViewMode(boolean value) {
+		canEditViewMode = value;
+	}
+
+	public void onOpenSearch(Consumer<Boolean> listener) {
+		this.openSearchListener = listener;
 	}
 
 	public void onChangeView(Consumer<ViewMode> listener) {
@@ -39,10 +46,13 @@ public class HeaderTemplate extends AbstractHeaderTemplate<ImeBox> {
 	@Override
 	public void init() {
 		super.init();
-		searchField.onChange(e -> searchListener.accept(e.value()));
-		searchField.onEnterPress(e -> searchListener.accept(e.value()));
+		openSearch.onExecute(e -> notifyOpenSearch());
 		appViewSwitch.onToggle(this::changeView);
 		appViewSwitch.state(ToggleEvent.State.Off);
+		login.onExecute(e -> {
+			session().add("callback", session().browser().requestUrl());
+			notifier.redirect(session().login(session().browser().baseUrl()));
+		});
 	}
 
 	@Override
@@ -50,26 +60,46 @@ public class HeaderTemplate extends AbstractHeaderTemplate<ImeBox> {
 		super.refresh();
 		ViewMode viewMode = DisplayHelper.viewMode(session());
 		User loggedUser = session().user();
+		openSearch.visible(view != View.Search);
+		appViewBlock.visible(view != View.Home && view != View.Search);
+		logo.visible(view != View.Home && view != View.Search);
+		logoLink.visible(view != View.Home);
+		logoExpandedLink.visible(view == View.Search);
+		logoExpanded.visible(view == View.Home || view == View.Search);
+		content.formats(formats(viewMode));
+		appViewSwitch.readonly(!canEditViewMode);
 		appViewSwitch.state(viewMode == ViewMode.Languages ? ToggleEvent.State.Off : ToggleEvent.State.On);
-		appViewText.value(translate(viewMode == ViewMode.Languages ? "Languages" : "Models"));
+		appViewText.value(appViewLabel(viewMode));
 		login.visible(loggedUser == null);
-		dashboard.visible(showDashboardButton && user() != null);
+		dashboard.visible(view != View.Dashboard && user() != null);
 		user.visible(loggedUser != null);
 		notLoggedBlock.visible(loggedUser == null);
 		if (loggedUser == null) return;
-		userHome.visible(showDashboardButton);
+		userHome.visible(view != View.Dashboard);
 		userHome.path(PathHelper.dashboardPath(session()));
+	}
+
+	private String appViewLabel(ViewMode viewMode) {
+		if (viewMode == ViewMode.Languages) return translate(view == View.Dashboard ? "Languages" : "Language");
+		return translate(view == View.Dashboard ? "Models" : "Model");
+	}
+
+	private Set<String> formats(ViewMode viewMode) {
+		if (view == View.Search) return Set.of("headerStyle");
+		return viewMode == ViewMode.Languages ? Set.of("languagesHeaderStyle") : Set.of("modelsHeaderStyle");
 	}
 
 	private void changeView(ToggleEvent event) {
 		ViewMode viewMode = event.state() == ToggleEvent.State.On ? ViewMode.Models : ViewMode.Languages;
 		DisplayHelper.updateViewMode(viewMode, session());
-		if (changeViewListener != null) {
-			changeViewListener.accept(viewMode);
-			refresh();
-			return;
-		}
-		if (viewMode == ViewMode.Languages) notifier.redirect(PathHelper.languagesUrl(session(), language));
-		else notifier.redirect(PathHelper.modelsUrl(session(), language));
+		content.formats(viewMode == ViewMode.Languages ? Set.of("languagesHeaderStyle") : Set.of("modelsHeaderStyle"));
+		changeViewListener.accept(viewMode);
+		refresh();
 	}
+
+	private void notifyOpenSearch() {
+		if (openSearchListener == null) return;
+		openSearchListener.accept(true);
+	}
+
 }

@@ -102,6 +102,7 @@ public class LanguageManager {
 	}
 
 	public Release lastRelease(String language) {
+		if (language == null) return null;
 		return releases(language).stream().min((o1, o2) -> VersionNumberComparator.getInstance().compare(o2.version(), o1.version())).orElse(null);
 	}
 

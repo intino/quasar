@@ -1,14 +1,9 @@
 package io.intino.ime.box.util;
 
 import io.intino.alexandria.logger.Logger;
-import io.intino.alexandria.ui.services.push.UISession;
 import io.intino.alexandria.ui.services.push.User;
 import io.intino.ime.box.ImeBox;
-import io.intino.ime.box.ui.DisplayHelper;
-import io.intino.ime.box.ui.ViewMode;
-import io.intino.ime.model.Language;
-import io.intino.ime.model.LanguageLevel;
-import io.intino.ime.model.Release;
+import io.intino.ime.model.*;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -17,8 +12,45 @@ import java.util.function.Function;
 
 public class LanguageHelper {
 
-	public static String label(Language language) {
+	public static String label(Language language, Function<String, String> translator) {
+		return String.format(translator.apply("%s language"), language.name());
+	}
+
+	public static String shortLabel(Language language, Function<String, String> translator) {
 		return language.name();
+	}
+
+	public static LanguageLevel level(Language language, ImeBox box) {
+		Release release = box.languageManager().lastRelease(language.name());
+		if (release == null) return LanguageLevel.L1;
+		return release.level();
+	}
+
+	public static Language l3Parent(Language language, ImeBox box) {
+		if (level(language, box) == LanguageLevel.L3) return null;
+		return parent(language, LanguageLevel.L3, box);
+	}
+
+	public static Language l2Parent(Language language, ImeBox box) {
+		if (level(language, box) == LanguageLevel.L3) return null;
+		if (level(language, box) == LanguageLevel.L2) return null;
+		return parent(language, LanguageLevel.L2, box);
+	}
+
+	public static Language parent(Language language, LanguageLevel parentLevel, ImeBox box) {
+		Language result = parent(language, box);
+		if (result == null) return null;
+		LanguageLevel level = level(result, box);
+		while (level != parentLevel) {
+			result = parent(result, box);
+			if (result == null) return null;
+			level = level(result, box);
+		}
+		return result;
+	}
+
+	private static Language parent(Language language, ImeBox box) {
+		return language.parent() != null ? box.languageManager().get(language.parent()) : null;
 	}
 
 	public static String type(Release release, Function<String, String> translator) {
@@ -63,4 +95,10 @@ public class LanguageHelper {
 		return release != null && release.level() != LanguageLevel.L1 && !language.isFoundational();
 	}
 
+	public static String createLanguageLabel(Language language, Function<String, String> translator, ImeBox box) {
+		LanguageLevel level = level(language, box);
+		if (level == LanguageLevel.L3) return translator.apply("Create language (λ2 or λ1)");
+		if (level == LanguageLevel.L2) return translator.apply("Create language (λ1)");
+		return null;
+	}
 }

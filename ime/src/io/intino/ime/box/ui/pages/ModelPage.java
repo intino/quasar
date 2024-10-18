@@ -1,7 +1,10 @@
 package io.intino.ime.box.ui.pages;
 
 import io.intino.alexandria.ui.services.push.User;
+import io.intino.ime.box.ui.DisplayHelper;
 import io.intino.ime.box.ui.PathHelper;
+import io.intino.ime.box.ui.ViewMode;
+import io.intino.ime.box.ui.displays.templates.HomeTemplate;
 import io.intino.ime.box.ui.displays.templates.ModelTemplate;
 import io.intino.ime.model.Model;
 
@@ -34,12 +37,11 @@ public class ModelPage extends AbstractModelPage {
 		return new io.intino.alexandria.ui.Soul(session) {
 			@Override
 			public void personify() {
-				ModelTemplate component = new ModelTemplate(box);
-				component.model(id);
-				component.file(file);
+				DisplayHelper.updateViewMode(ViewMode.Models, session);
+				HomeTemplate component = new HomeTemplate(box);
 				register(component);
 				component.init();
-				component.refresh();
+				component.openModel(id, file);
 			}
 		};
 	}

@@ -31,10 +31,10 @@ Template languageSettingsEditor
 		Block(layout=Horizontal, format=airTop) > Button(title="Add operation", size=Small, highlight=Outline) addOperation as Action Readonly
 
 Template(layout=Horizontal) modelSettingsEditor
-	MaterialIconButton(title="Properties...", icon="Settings", size=Small, format=airRight, visible=false) smallIconInList as OpenDialog(settingsDialog)
-	MaterialIconButton(title="Properties...", icon="Settings", format=airRight, visible=false) largeIconInList as OpenDialog(settingsDialog)
-	MaterialIconButton(title="Properties...", icon="Settings", format=airRight, titlePosition=Bottom, size=Small, visible=false) smallIcon as OpenDialog(settingsDialog)
-	MaterialIconButton(title="Properties...", icon="Settings", format=airRight, titlePosition=Bottom, visible=false) largeIcon as OpenDialog(settingsDialog)
+	Button(title="Properties...", size=Small, visible=false) smallIconInList as OpenDialog(settingsDialog)
+	Button(title="Properties...", visible=false) largeIconInList as OpenDialog(settingsDialog)
+	Button(title="Properties...", size=Small, visible=false) smallIcon as OpenDialog(settingsDialog)
+	Button(title="Properties...", visible=false) largeIcon as OpenDialog(settingsDialog)
 
 	Dialog(title="Properties") settingsDialog as Absolute(width=500px, height=600px)
         Block as Relative(height=100%, offsetHeight=40px)
@@ -45,7 +45,7 @@ Template(layout=Horizontal) modelSettingsEditor
         		Text(value="Project access", translate=true, format=h5)
 	        	Switch(title="Project is private", format=airBottom) accessTypeField
         	Block(format=airBottom)
-        		Text(value="Remove project", translate=true, format=redColor h5)
+        		Text(value="Remove project", translate=true, format=h5)
         		Text(value="Removed projects cannot be restored!", format=greyColor middleAirBottom)
 				Block(layout=Horizontal) > Button(title="Remove project...", format=airRight redBackground whiteColor, highlight=Fill) removeModel as Action Readonly Affirmed("Are you sure to remove project?")
 		Divider
@@ -54,10 +54,10 @@ Template(layout=Horizontal) modelSettingsEditor
             Block(layout=Horizontal EndJustified) > Button(title="Apply", size=Small, highlight=Fill) saveSettings as Action
 
 Template(layout=Horizontal) cloneModelEditor
-	MaterialIconButton(title="Clone...", icon="FileCopy", size=Small, visible=false, format=airRight) smallIconInList as OpenDialog(modelDialog)
-	MaterialIconButton(title="Clone...", icon="FileCopy", visible=false, format=airRight) largeIconInList as OpenDialog(modelDialog)
-	MaterialIconButton(title="Clone...", icon="FileCopy", titlePosition=Bottom, format=airRight, size=Small, visible=false) smallIcon as OpenDialog(modelDialog)
-	MaterialIconButton(title="Clone...", icon="FileCopy", titlePosition=Bottom, format=airRight, visible=false) largeIcon as OpenDialog(modelDialog)
+	Button(title="Clone...", size=Small, visible=false) smallIconInList as OpenDialog(modelDialog)
+	Button(title="Clone...", visible=false) largeIconInList as OpenDialog(modelDialog)
+	Button(title="Clone...", size=Small, visible=false) smallIcon as OpenDialog(modelDialog)
+	Button(title="Clone...", visible=false) largeIcon as OpenDialog(modelDialog)
 
 	Dialog(title="Clone project") modelDialog as Absolute(width=400px, height=260px)
         Block as Relative(height=100%, offsetHeight=40px)

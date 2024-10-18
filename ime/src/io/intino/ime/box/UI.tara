@@ -1,5 +1,7 @@
 dsl Konos
 
+use Search
+use Editors
 use Languages
 use Language
 use Models
@@ -10,19 +12,52 @@ Service ImeElements as UI(port = "{port}", title = "{title}", favicon = "/icons/
 	Authentication(by="{federation-url}")
 
 	Resource(path = "/") home as Page(homeTemplate) Main
-	Resource(path = "/dashboard") dashboard as Page(dashboardTemplate) Confidential
-	Resource(path = "/languages") languages as Page(languagesTemplate) > Parameter filters
-	Resource(path = "/languages/:id") language as Page(languageTemplate)
-	Resource(path = "/models") models as Page(modelsTemplate) > Parameter filters
-	Resource(path = "/models/:id") model as Page(modelTemplate) > Parameter file
+	Resource(path = "/search") search as Page(homeTemplate) > Parameter condition
+	Resource(path = "/dashboard") dashboard as Page(homeTemplate) Confidential
+	Resource(path = "/languages/:id") language as Page(homeTemplate)
+	Resource(path = "/models/:id") model as Page(homeTemplate) > Parameter file
 	Resource(path = "/not-found") notFound as Page(notFoundTemplate) > Parameter model
 	Resource(path = "/permissions") permissions as Page(permissionsTemplate) > Parameter username; Parameter model; Parameter callback
 
 Template homeTemplate as Relative(height=100%, width=100%)
-	Block(layout=Vertical Flexible, visible=false) languagesBlock as Conditional > TemplateStamp(template=languagesTemplate) languagesTemplate
-	Block(layout=Vertical Flexible, visible=false) modelsBlock as Conditional > TemplateStamp(template=modelsTemplate) modelsTemplate
+	Link(title="") openSearchLayerTrigger as OpenLayer(Fade, showHeader=false) Addressable(ImeElements.search)
+
+	Block(layout=Vertical Flexible, visible=false) searchBlock as Conditional > TemplateStamp(template=searchTemplate) searchTemplate
+	Block(layout=Vertical Flexible, visible=false) languageBlock as Conditional > TemplateStamp(template=languageTemplate) languageTemplate
+	Block(layout=Vertical Flexible, visible=false) modelBlock as Conditional > TemplateStamp(template=modelTemplate) modelTemplate
+	Block(layout=Vertical Flexible, visible=false) dashboardBlock as Conditional > TemplateStamp(template=dashboardTemplate) dashboardTemplate
+
+	Block(layout=Vertical Flexible) homeBlock as Conditional
+		TemplateStamp(template=headerTemplate) header
+
+		Block(layout=Vertical Flexible) panels as Relative(width=100%, height=100%)
+
+			Block(layout=Horizontal Flexible, format=dashboardFullPanelStyle) as Parallax("images/landscape.png") Absolute(height=550px)
+				Block(layout=Vertical Flexible Center)
+					Text(value="Low code software production made easy", format=cardTitle)
+					Text(value="Experts developing software side by side with you", format=cardSubtitle)
+					Block(layout=Vertical Flexible CenterCenter) as Relative(width=100%)
+						Block(format=searchBox largeAirTop autoHeight) as Relative(width=60%)
+							Link(title="Search...", format=searchBoxBackground) openSearchDialog as Action
+
+			Block(layout=Horizontal Flexible, format=dashboardFullPanelStyle) as Parallax("images/landscape2.png") Absolute(height=550px)
+				Block(layout=Vertical Flexible, format=doubleAirLeft)
+					Text(value="Features", format=cardTitle darkCardShadow)
+
+			Block(layout=Horizontal Flexible, format=dashboardFullPanelStyle) as Parallax("images/landscape3.png") Absolute(height=550px)
+				Block(layout=Vertical Flexible, format=doubleAirLeft)
+					Text(value="Documentation", format=cardTitle darkCardShadow)
+
+			Block(layout=Horizontal Flexible, format=dashboardFullPanelStyle)
+				Block(layout=Vertical Flexible, format=doubleAirLeft)
+					Text(value="About us", format=cardTitle darkCardShadow)
+
+		Block(layout=Horizontal, format=blackBackground) footer
+			Block(layout=Vertical Flexible, format=spaced) > Text(value="all rights reserverd ®", format=white, translate=true)
 
 Template dashboardTemplate as Relative(height=100%, width=100%)
+	Link(title="") openSearchLayerTrigger as OpenLayer(Fade, showHeader=false) Addressable(ImeElements.search)
+
 	TemplateStamp(template=headerTemplate) header
 
 	Block(layout=Vertical Flexible CenterCenter, visible=false) openingModelBlock
@@ -48,27 +83,31 @@ Template dashboardTemplate as Relative(height=100%, width=100%)
 			Block(layout=Horizontal, format=middleTopSpaced middleBottomSpaced airLeft airRight minPanelHeaderHeight)
 				Block(layout=Horizontal Flexible)
 					Text count
-			Block(layout=Vertical Flexible, format=mainPanelStyle) mainPanelBlock as Relative(height=100%,width=100%,offsetWidth=10px)
+			Block(layout=Vertical Flexible, format=dashboardMainPanelStyle) mainPanelBlock as Relative(height=100%,width=100%,offsetWidth=10px)
 				Block(layout=Vertical Flexible, visible=false) languagesCatalogBlock > TemplateStamp(template=languagesCatalog) languagesCatalog
 				Block(layout=Vertical Flexible, visible=false) modelsCatalogBlock > TemplateStamp(template=modelsCatalog) modelsCatalog
 
-Template(format=headerBackground middleTopSpaced middleBottomSpaced) headerTemplate
-	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)
+Template(format=headerBackground) headerTemplate
+
+	Block(layout=Horizontal) content as Relative(width=100%)
 		Block(layout=Horizontal Flexible Center, format=airLeft)
-			Link(title="", format=logoLink noLeft) logoLink as OpenPage(ImeElements.home)
-			Image(value="/logo-dark.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=50px, height=45px)
-			Block
-				Text(value="Languages", format=appViewTextStyle, translate=true) appViewText
+			Link(title="", format=logoLink noLeft, visible=false) logoLink as OpenPage(ImeElements.home)
+			Link(title="", format=logoExpandedLink noLeft, visible=false) logoExpandedLink as OpenPage(ImeElements.home)
+			Image(value="/logo-dark.png", format=airRight, mobileReduceFactor=75%, visible=false) logo as Absolute(width=38px, height=35px)
+			Image(value="/logo-expanded-dark.png", format=airRight, mobileReduceFactor=75%, visible=false) logoExpanded as Absolute(width=150px, height=35px)
+			Block(layout=Horizontal, visible=false) appViewBlock
+				Text(value="Language", format=appViewTextStyle, translate=true) appViewText
 				Switch(title="") appViewSwitch
 			Block(layout=Vertical Flexible)
-				Block(layout=Vertical CenterCenter) > Block(format=searchBox) as Relative(width=60%) > Text(format=searchBoxBackground) searchField as Editable(placeholder="Search")
+
 		Block(layout=Horizontal Center EndJustified)
-			Link(title="LOG IN", format=white airRight, visible=false) login as OpenPage(ImeElements.dashboard)
-			MaterialIconButton(title="Dashboard", icon="Home", titlePosition=Bottom, format=airRight iconButtonColor, size=Small, visible=false) dashboard as OpenPage(ImeElements.dashboard)
+			Button(title="Search...", format=airRight, visible=false) openSearch as Action
+			Button(title="Log in", format=airRight, visible=false) login as Action
+			Button(title="Dashboard", format=airRight, size=Small, visible=false) dashboard as OpenPage(ImeElements.dashboard)
 			Block(layout=Horizontal Center, visible=false) notLoggedBlock
 				MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
 				MaterialIconButton(title="Set light mode", format=airRight, icon="Brightness7", size=Small) as SetLightMode
-			User(mode=OnlyPhoto, visible=false, format=relative) user
+			User(mode=OnlyPhoto, visible=false, format=relative veryLargeIconSize airRight) user
 				Block(layout=Horizontal EndJustified, format=userToolbar)
 					MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
 					MaterialIconButton(title="Set light mode", format=airRight, icon="Brightness7", size=Small) as SetLightMode

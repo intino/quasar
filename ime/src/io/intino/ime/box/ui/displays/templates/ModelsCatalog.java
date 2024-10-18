@@ -82,12 +82,15 @@ public class ModelsCatalog extends AbstractModelsCatalog<ImeBox> {
 		addModelTrigger.onExecute(e -> openAddModel());
 		modelTable.onAddItem(this::refresh);
 		removeSelection.onExecute(this::removeSelection);
+		searchBox.onChange(e -> filter(e.value()));
+		searchBox.onEnterPress(e -> filter(e.value()));
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
 		title.value(translate(_title));
+		toolbar.visible(!readonly || embedded);
 		addModelTrigger.visible(!readonly);
 		removeSelection.visible(!readonly);
 		searchBox.visible(embedded);
@@ -168,10 +171,10 @@ public class ModelsCatalog extends AbstractModelsCatalog<ImeBox> {
 	private void refreshLanguage(AddItemEvent event) {
 		Language language = event.item();
 		LanguageTableRow row = event.component();
-		row.ltLogoItem.logo.value(LanguageHelper.logo(language, box()));
-		row.ltNameItem.name.value(language.name());
-		row.ltDescriptionItem.description.value(language.description());
-		row.ltOwnerItem.owner.value(language.owner());
+		row.lteLogoItem.logo.value(LanguageHelper.logo(language, box()));
+		row.lteNameItem.name.value(language.name());
+		row.lteDescriptionItem.description.value(language.description());
+		row.lteOwnerItem.owner.value(language.owner());
 	}
 
 	private void createLanguageModel() {

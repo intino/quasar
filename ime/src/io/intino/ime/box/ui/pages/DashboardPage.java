@@ -11,10 +11,10 @@ public class DashboardPage extends AbstractDashboardPage {
 		return new io.intino.alexandria.ui.Soul(session) {
 			@Override
 			public void personify() {
-				DashboardTemplate component = new DashboardTemplate(box);
+				HomeTemplate component = new HomeTemplate(box);
 				register(component);
 				component.init();
-				component.refresh();
+				component.openDashboard();
 			}
 		};
 	}

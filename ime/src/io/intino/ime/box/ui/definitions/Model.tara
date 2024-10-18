@@ -7,6 +7,8 @@ use UI
 use Theme
 
 Template modelTemplate as Relative(height=100%, width=100%)
+	Link(title="") openSearchLayerTrigger as OpenLayer(Fade, showHeader=false) Addressable(ImeElements.search)
+
 	TemplateStamp(template=modelHeaderTemplate) header
 
 	Block(layout=Vertical Flexible CenterCenter, visible=false) openingModelBlock
@@ -15,21 +17,15 @@ Template modelTemplate as Relative(height=100%, width=100%)
 
 	Block(layout=Horizontal Flexible) bodyBlock
 		Block(layout=Vertical, format=greyLightBackground) browserBlock as Relative(width=20%)
-			Block(layout=Horizontal, format=headerPanel leftSpaced rightSpaced rightBordered)
+			Block(layout=Horizontal, format=headerPanel greyLightBackground leftSpaced rightSpaced)
 				Block(layout=Horizontal Flexible) > Text(value="Project", format=h6, translate=true)
-				Block(layout=Horizontal EndJustified)
+				Block(layout=Horizontal, format=smallAirLeft)
 					MaterialIconButton(title="Operations...", icon="MoreVert", size=Small) operationsTrigger as OpenPopover(workspaceDialog)
 					// TODO MaterialIconButton(title="collapse", icon="Close") as CloseBlock()
 			DisplayStamp(display=intinoFileBrowser, format=displayHeaderPanel) intinoFileBrowser
-			Block(layout=Horizontal Center, format=leftPanelBackground spaced relative)
-				Link(title="", format=poweredLink) poweredLink as OpenPage(page=ImeElements.language)
-				Image(format=airRight, colorInvertedWithDarkMode=true) poweredByImage as Absolute(height=50px, width=50px)
-				Block
-					Text(value="Defined with", format=greyColor)
-					Text(format=h6) poweredByText
 
 		Block(layout=Vertical Flexible)
-			Block(layout=Horizontal, format=headerPanel leftSpaced rightSpaced)
+			Block(layout=Horizontal, format=leftBordered headerPanel greyLightBackground leftSpaced rightSpaced)
 				Block(layout=Horizontal Flexible)
 					Text(value="", format=h6, translate=true) filename
 					Block(layout=Horizontal, visible=false, format=airLeft) fileModifiedMessage > Text(value="modified", translate=true, format=airRight redColor bold)
@@ -74,46 +70,35 @@ Template modelTemplate as Relative(height=100%, width=100%)
 				Button(title="Don't save", size=Small, format=airRight) continueWithoutSavingFile as Action
 				Button(title="Save", size=Small, highlight=Fill) continueSavingFile as Action
 
-Template(format=headerBackground middleTopSpaced middleBottomSpaced) modelHeaderTemplate
-	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)
-		Block(layout=Horizontal Flexible Center, format=airLeft)
-			Link(title="", format=logoLink noLeft) logoLink as OpenPage(ImeElements.home)
-			Image(value="/logo-dark.png", format=airRight, mobileReduceFactor=75%) logo as Absolute(width=50px, height=45px)
-			Block
-				Block(layout=Horizontal)
-					Link(title="M3", format=modelLink m3Style, visible=false) m3Link as OpenPage(ImeElements.model)
-					Text(value="M3", format=modelText m3Style, visible=false) m3
-					Link(title="M2", format=modelLink m2Style, visible=false) m2Link as OpenPage(ImeElements.model)
-					Link(title="M2", format=modelLink m2Style, visible=false) m2Children as OpenPopover(modelChildrenView)
-					Text(value="M2", format=modelText m2Style, visible=false) m2
-					Link(title="M1", format=modelLink m1Style, visible=false) m1Link as OpenPage(ImeElements.model)
-					Link(title="M1", format=modelLink m1Style, visible=false) m1Children as OpenPopover(modelChildrenView)
-					Text(value="M1", format=modelText m1Style, visible=false) m1
-				Link(format=h2 appTitleStyle, title="Model") titleLink
+Template(format=headerBackground) modelHeaderTemplate
+	TemplateStamp(template=headerTemplate) quassarHeader
+	Block(layout=Horizontal Wrap, format=centered rightSpaced middleTopSpaced middleBottomSpaced headerPanelBackground) content as Relative(width=100%)
+		Block(layout=Horizontal Flexible Center Wrap, format=airLeft)
+			Block(layout=Horizontal Center, format=airRight)
+				Block(layout=Horizontal, format=airRight)
+					Link(title="M3", format=modelLink m3l3Style, visible=false) m3Link as OpenPage(ImeElements.model)
+					Text(value="M3", format=modelText m3l3Style, visible=false) m3
+					Link(title="M2", format=modelLink m2l2Style, visible=false) m2Link as OpenPage(ImeElements.model)
+					Link(title="M2", format=modelLink m2l2Style, visible=false) m2Children as OpenPopover(modelChildrenView)
+					Text(value="M2", format=modelText m2l2Style, visible=false) m2
+					Link(title="M1", format=modelLink m1l1Style, visible=false) m1Link as OpenPage(ImeElements.model)
+					Link(title="M1", format=modelLink m1l1Style, visible=false) m1Children as OpenPopover(modelChildrenView)
+					Text(value="M1", format=modelText m1l1Style, visible=false) m1
+				Link(format=appTitleStyle, title="Model") titleLink
 				Block(layout=Horizontal Center, format=middleAirBottom, visible=false) titleEditor
 					Text(value="Browser", format=h6 whiteBackground airRight minTitleEditorWidth) titleField as Editable
 					Link(title="Cancel", format=airRight) cancel as Action
 					Link(title="Save") save as Action
-			Block(layout=Horizontal, format=airLeft)
-		Block(layout=Horizontal Center EndJustified)
+		Block(layout=Horizontal Center EndJustified, format=airLeft)
 			Block(layout=Horizontal Center)
-				MaterialIconButton(title="Build", titlePosition=Bottom, format=airRight iconButtonColor, icon="Build", size=Small) build as Action
-				MaterialIconButton(title="Publish", titlePosition=Bottom, format=airRight iconButtonColor, icon="Publish", size=Small) publishTrigger as OpenDialog(publishDialog)
+				Button(title="Build", format=iconButtonColor, size=Small) build as Action
+				Button(title="Publish...", format=iconButtonColor, size=Small) publishTrigger as OpenDialog(publishDialog)
 				Block(format=languageOperationsStyle relative, visible=false) modelOperationsBlock
 					Text(value="", format=modelOperationsTextStyle, translate=true)
 					TemplateStamp(template=modelOperation) operations as Multiple(noItemsMessage="", arrangement=Horizontal)
-				IconButton(title="Language", titlePosition=Bottom, format=airRight, icon="/icons/language.png", darkIcon="/icons/language-dark.png", size=Small) languagePath as OpenPage(ImeElements.language)
+				Button(title="Open language...", size=Small) languagePath as OpenPage(ImeElements.language)
 				TemplateStamp(template=cloneModelEditor) cloneModelEditor
 				TemplateStamp(template=modelSettingsEditor) settingsEditor
-			Link(title="LOG IN", format=white airRight, visible=false) login as Action
-			MaterialIconButton(title="Dashboard", icon="Home", titlePosition=Bottom, format=airRight iconButtonColor, size=Small, visible=false) dashboard as OpenPage(ImeElements.dashboard)
-			User(mode=OnlyPhoto, visible=false, format=relative) user
-				Block(layout=Horizontal EndJustified, format=userToolbar)
-					MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
-					MaterialIconButton(title="Set light mode", format=airRight, icon="Brightness7", size=Small) as SetLightMode
-				Selector as ListBox
-					Block as Option > Link(title="Home") as OpenPage(page=ImeElements.home)
-					Block as Option > Link(title="Dashboard") userHome as OpenPage(page=ImeElements.dashboard)
 
 	Block(format=spaced) modelChildrenView as Popover Absolute(width=800px, height=400px)
 		TemplateStamp(template=modelsCatalog) modelChildrenCatalog
@@ -127,7 +112,7 @@ Template(format=headerBackground middleTopSpaced middleBottomSpaced) modelHeader
 			Button(title="Create", size=Small, highlight=Fill) publish as Action
 
 Template modelOperation
-	MaterialIconButton(title="", icon="HelpOutline", titlePosition=Bottom, format=airRight, size=Small) trigger as Action
+	Button(title="", size=Small) trigger as Action
 
 Display intinoFileBrowser
 	Notification refresh as Object(intinoFileBrowserInfo)

@@ -1,6 +1,7 @@
 package io.intino.ime.box.ui.displays.templates;
 
 import io.intino.alexandria.Resource;
+import io.intino.alexandria.ui.displays.components.Layer;
 import io.intino.alexandria.ui.services.push.User;
 import io.intino.alexandria.ui.utils.DelayerUtil;
 import io.intino.ime.box.ImeBox;
@@ -8,14 +9,15 @@ import io.intino.ime.box.commands.LanguageCommands;
 import io.intino.ime.box.commands.ModelCommands;
 import io.intino.ime.box.ui.DisplayHelper;
 import io.intino.ime.box.ui.PathHelper;
+import io.intino.ime.box.ui.datasources.LanguageModelsDatasource;
+import io.intino.ime.box.ui.datasources.ChildrenLanguagesDatasource;
 import io.intino.ime.box.util.LanguageHelper;
 import io.intino.ime.box.util.ModelHelper;
 import io.intino.ime.model.Language;
 import io.intino.ime.model.Model;
-import io.intino.ime.model.Operation;
 import io.intino.ime.model.Release;
 
-import java.util.List;
+import java.util.UUID;
 
 public class LanguageTemplate extends AbstractLanguageTemplate<ImeBox> {
 	private Language language;
@@ -34,19 +36,25 @@ public class LanguageTemplate extends AbstractLanguageTemplate<ImeBox> {
 	@Override
 	public void init() {
 		super.init();
-		header.onChangeViewMode(e -> refresh());
+		header.onOpenSearch(e -> openSearch());
+		header.onOpenLanguage(this::open);
+		header.onOpenModel(e -> openModelOf(language));
+		header.onSaveSettings(e -> refresh());
+		header.onChangeView(e -> refresh());
 		addModel.onExecute(e -> createModel(lastRelease));
 		addPrivateModelDialog.onOpen(e -> refreshAddPrivateModelDialog());
-		openModel.onExecute(e -> openModelOf(language));
 		createModel.onExecute(e -> createModel());
 		releasesBlock.onOpen(e -> refreshReleasesDialog());
 		releasesCatalog.onCreateLanguage(e -> createLanguage(e, user()));
 		releasesCatalog.onCreateModel(e -> createModel(e, user()));
-		settingsDialog.onOpen(e -> refreshSettingsDialog());
-		saveSettings.onExecute(e -> saveSettings());
 		titleField.onEnterPress(e -> createModel());
 		createLanguageDialog.onOpen(e -> refreshCreateLanguageDialog());
 		createLanguage.onExecute(e -> createLanguage(lastRelease));
+		openSearchLayerTrigger.onOpen(e -> openSearch(e.layer()));
+		modelExamplesDialog.onOpen(e -> refreshModelExamplesDialog());
+		modelsCatalog.onOpenModel(this::open);
+		languagesExamplesDialog.onOpen(e -> refreshlanguageExamplesDialog());
+		languagesCatalog.onOpenModel(this::open);
 	}
 
 	@Override
@@ -55,29 +63,15 @@ public class LanguageTemplate extends AbstractLanguageTemplate<ImeBox> {
 		header.language(language);
 		header.refresh();
 		logo.value(LanguageHelper.logo(language, box()));
-		name.value(LanguageHelper.label(language));
+		name.value(LanguageHelper.shortLabel(language, this::translate));
 		release.title(lastRelease != null ? lastRelease.version() : ModelHelper.FirstReleaseVersion);
 		description.value(language.description());
-		viewModelExamples.path(PathHelper.modelsPath(language));
 		viewModelExamples.visible(LanguageHelper.canViewExampleModels(language, lastRelease));
-		viewLanguageExamples.path(PathHelper.languagesPath(language));
 		viewLanguageExamples.visible(LanguageHelper.canViewExampleLanguages(language, lastRelease));
 		createLanguageTrigger.visible(LanguageHelper.canCreateLanguage(language, lastRelease, user()));
-		openModel.visible(ModelHelper.canOpenModel(language, lastRelease, user()));
+		if (createLanguageTrigger.isVisible()) createLanguageTrigger.title(LanguageHelper.createLanguageLabel(language, this::translate, box()));
 		addModel.visible(ModelHelper.canAddModel(lastRelease) && user() == null);
 		addPrivateModel.visible(ModelHelper.canAddModel(lastRelease) && user() != null);
-		viewSettings.visible(LanguageHelper.canEdit(language, lastRelease, user()));
-		ownerBlock.visible(LanguageHelper.canEdit(language, lastRelease, user()));
-		refreshPoweredBy();
-	}
-
-	private void refreshPoweredBy() {
-		Language parent = language.parent() != null ? box().languageManager().get(language.parent()) : null;
-		poweredBlock.visible(parent != null);
-		if (parent == null) return;
-		poweredLink.path(PathHelper.languagePath(parent));
-		poweredByImage.value(LanguageHelper.logo(parent, box()));
-		poweredByText.value(String.format(translate("defined with %s"), LanguageHelper.label(parent)));
 	}
 
 	private void refreshAddPrivateModelDialog() {
@@ -89,12 +83,6 @@ public class LanguageTemplate extends AbstractLanguageTemplate<ImeBox> {
 	private void refreshReleasesDialog() {
 		releasesCatalog.language(language);
 		releasesCatalog.refresh();
-	}
-
-	private void refreshSettingsDialog() {
-		settingsDialog.title(String.format(translate("%s properties"), language.name()));
-		settingsEditor.language(language);
-		settingsEditor.refresh();
 	}
 
 	private void createModel() {
@@ -122,7 +110,7 @@ public class LanguageTemplate extends AbstractLanguageTemplate<ImeBox> {
 		String description = languageEditor.description();
 		Resource logo = languageEditor.logo();
 		boolean isPrivate = languageEditor.isPrivate();
-		openModelOf(box().commands(LanguageCommands.class).create(name, selectedRelease, description, logo, isPrivate, username()));
+		open(box().commands(LanguageCommands.class).create(name, selectedRelease, description, logo, isPrivate, username()));
 	}
 
 	private void createModel(Release release, User user) {
@@ -150,33 +138,65 @@ public class LanguageTemplate extends AbstractLanguageTemplate<ImeBox> {
 		open(box().modelManager().modelWith(language.name()));
 	}
 
+	private void open(Language language) {
+		notifyOpening(language);
+		DelayerUtil.execute(this, v -> notifier.redirect(PathHelper.languageUrl(session(), language)), 600);
+	}
+
 	private void open(Model model) {
-		notifyOpeningModel(model);
+		modelExamplesDialog.close();
+		languagesExamplesDialog.close();
+		notifyOpening(model);
 		DelayerUtil.execute(this, v -> notifier.redirect(PathHelper.modelUrl(session(), model)), 600);
 	}
 
-	private void notifyOpeningModel(Model model) {
+	private void notifyOpening(Model model) {
 		bodyBlock.hide();
 		openingModelMessage.value(String.format(translate("Opening %s"), ModelHelper.label(model, language(), box())));
 		searchingModelsBlock.show();
 	}
 
+	private void notifyOpening(Language language) {
+		bodyBlock.hide();
+		openingModelMessage.value(String.format(translate("Opening %s"), LanguageHelper.label(language, this::translate)));
+		searchingModelsBlock.show();
+	}
+
 	private void refreshCreateLanguageDialog() {
+		createLanguageDialog.title(LanguageHelper.createLanguageLabel(language, this::translate, box()));
 		languageEditor.onAccept(e -> createLanguage(lastRelease));
 		languageEditor.parent(language);
 		languageEditor.reset();
 	}
 
-	private void saveSettings() {
-		if (!settingsEditor.check()) return;
-		settingsDialog.close();
-		Resource logo = settingsEditor.logo();
-		String description = settingsEditor.description();
-		boolean isPrivate = settingsEditor.isPrivate();
-		String dockerImageUrl = settingsEditor.dockerImageUrl();
-		List<Operation> operations = settingsEditor.operations();
-		box().commands(LanguageCommands.class).save(language, description, isPrivate, dockerImageUrl, logo, operations, username());
-		refresh();
+	private void openSearch() {
+		openSearchLayerTrigger.address(path -> PathHelper.searchPath());
+		openSearchLayerTrigger.launch();
+	}
+
+	private void openSearch(Layer<?, ?> layer) {
+		HomeTemplate template = new HomeTemplate(box());
+		template.id(UUID.randomUUID().toString());
+		layer.template(template);
+		template.page(HomeTemplate.Page.Search);
+		template.refresh();
+	}
+
+	private void refreshModelExamplesDialog() {
+		modelExamplesDialog.title(String.format(translate("Models created with %s"), LanguageHelper.label(language, this::translate)));
+		modelsCatalog.readonly(true);
+		modelsCatalog.embedded(true);
+		modelsCatalog.language(language);
+		modelsCatalog.source(new LanguageModelsDatasource(box(), session(), language));
+		modelsCatalog.refresh();
+	}
+
+	private void refreshlanguageExamplesDialog() {
+		languagesExamplesDialog.title(String.format(translate("Languages defined with %s"), LanguageHelper.label(language, this::translate)));
+		languagesCatalog.readonly(true);
+		languagesCatalog.embedded(true);
+		languagesCatalog.source(new ChildrenLanguagesDatasource(box(), session(), language));
+		languagesCatalog.refresh();
 	}
 
 }

@@ -7,18 +7,21 @@ import java.util.List;
 public class Language {
 	private String name;
 	private String description;
-	private boolean isPrivate = true;
+	private boolean isPrivate;
 	private String parent;
-	private List<Operation> operations = new ArrayList<>();
+	private List<Operation> operations;
 	private int modelsCount;
 	private String owner;
 	private String dockerImageUrl;
 	private Instant createDate;
-	private LanguageLevel level;
+	private List<String> tagList;
 
 	public Language(String name) {
 		this.name = name;
+		isPrivate = true;
+		operations = new ArrayList<>();
 		createDate = Instant.now();
+		tagList = new ArrayList<>();
 	}
 
 	public static String nameOf(String id) {
@@ -125,6 +128,15 @@ public class Language {
 
 	public Language createDate(Instant createDate) {
 		this.createDate = createDate;
+		return this;
+	}
+
+	public List<String> tagList() {
+		return tagList;
+	}
+
+	public Language tagList(List<String> tagList) {
+		this.tagList = tagList;
 		return this;
 	}
 }

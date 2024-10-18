@@ -3,6 +3,7 @@ package io.intino.ime.box.ui.displays.templates;
 import io.intino.alexandria.Resource;
 import io.intino.alexandria.logger.Logger;
 import io.intino.alexandria.ui.displays.UserMessage;
+import io.intino.alexandria.ui.displays.components.Layer;
 import io.intino.alexandria.ui.utils.DelayerUtil;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.commands.ModelCommands;
@@ -55,11 +56,14 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 	@Override
 	public void init() {
 		super.init();
-		header.onOpenModel(this::notifyOpeningModel);
+		header.onOpenSearch(e -> openSearch());
+		header.onOpenModel(this::open);
+		header.onOpenLanguage(this::open);
 		initFileBrowser();
 		initFileEditor();
 		initFileModifiedDialog();
 		workspaceDialog.onOpen(e -> refreshWorkspaceDialog());
+		openSearchLayerTrigger.onOpen(e -> openSearch(e.layer()));
 	}
 
 	private void initFileModifiedDialog() {
@@ -91,7 +95,6 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 		super.refresh();
 		refreshHeader();
 		refreshFileBrowser();
-		refreshPoweredBy();
 		refreshFileEditor();
 	}
 
@@ -107,13 +110,6 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 		browser.items(fileBrowserItems());
 		if (selectedFile != null) browser.select(itemOf(selectedFile));
 		browser.refresh();
-	}
-
-	private void refreshPoweredBy() {
-		Language language = box().languageManager().get(model.modelingLanguage());
-		poweredLink.path(PathHelper.languagePath(language));
-		poweredByImage.value(LanguageHelper.logo(language, box()));
-		poweredByText.value(String.format(translate("%s %s"), LanguageHelper.label(language), Language.versionOf(model.modelingLanguage())));
 	}
 
 	private void refreshFileEditor() {
@@ -337,10 +333,41 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 		refresh();
 	}
 
-	private void notifyOpeningModel(Model model) {
+	private void notifyOpening(Model model) {
+		notifyOpening(ModelHelper.label(model, language(), box()));
+	}
+
+	private void notifyOpening(Language language) {
+		notifyOpening(LanguageHelper.label(language, this::translate));
+	}
+
+	private void notifyOpening(String element) {
 		bodyBlock.hide();
-		openingModelMessage.value(String.format(translate("Opening %s"), ModelHelper.label(model, language(), box())));
+		openingModelMessage.value(String.format(translate("Opening %s"), element));
 		openingModelBlock.show();
+	}
+
+	private void open(Language language) {
+		notifyOpening(language);
+		DelayerUtil.execute(this, v -> notifier.redirect(PathHelper.languageUrl(session(), language)), 600);
+	}
+
+	private void open(Model model) {
+		notifyOpening(model);
+		DelayerUtil.execute(this, v -> notifier.redirect(PathHelper.modelUrl(session(), model)), 600);
+	}
+
+	private void openSearch() {
+		openSearchLayerTrigger.address(path -> PathHelper.searchPath());
+		openSearchLayerTrigger.launch();
+	}
+
+	private void openSearch(Layer<?, ?> layer) {
+		HomeTemplate template = new HomeTemplate(box());
+		template.id(UUID.randomUUID().toString());
+		layer.template(template);
+		template.page(HomeTemplate.Page.Search);
+		template.refresh();
 	}
 
 }

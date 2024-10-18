@@ -3,9 +3,11 @@ package io.intino.ime.box.ui;
 import io.intino.alexandria.Json;
 import io.intino.alexandria.ui.services.push.UISession;
 import io.intino.alexandria.ui.services.push.User;
+import io.intino.ime.box.ui.model.Owner;
+import io.intino.ime.box.ui.model.SearchItem;
+import io.intino.ime.box.ui.model.Tag;
 import io.intino.ime.model.Language;
 import io.intino.ime.model.Model;
-import org.eclipse.jetty.util.UrlEncoded;
 
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -25,44 +27,30 @@ public class PathHelper {
 		return session.browser().baseUrl() + "/" + (session.isLogged() ? "dashboard" : "");
 	}
 
-	public static String languagesUrl(UISession session) {
-		return session.browser().baseUrl() + "/languages";
+	public static String searchPath() {
+		return searchPath(null);
 	}
 
-	public static String languagesUrl(UISession session, Language parent) {
-		return session.browser().baseUrl() + languagesPath(parent);
+	public static String searchPath(String value) {
+		String result = "/search";
+		return value != null && !value.isEmpty() ? result + "?condition=" + URLEncoder.encode(value, StandardCharsets.UTF_8) : result;
 	}
 
-	private record LanguageFilters(String parent) { }
-	public static String languagesPath(Language language) {
-		if (language == null) return "";
-		return "/languages?filters=" + stringify(new LanguageFilters(language.name()));
+	public static String languageUrl(UISession session, Language language) {
+		return languageUrl(session, language.name());
+	}
+
+	public static String languageUrl(UISession session, String language) {
+		return session.browser().baseUrl() + "/languages/" + language;
 	}
 
 	public static String languagePath(Language language) {
+		if (language == null) return null;
 		return languagePath(language.name());
 	}
 
 	public static String languagePath(String language) {
 		return "/languages/" + language;
-	}
-
-	public static String modelsUrl(UISession session) {
-		return session.browser().baseUrl() + "/models";
-	}
-
-	public static String modelsUrl(UISession session, Language language) {
-		if (language == null) return "";
-		return session.browser().baseUrl() + modelsPath(language);
-	}
-
-	public static String modelsPath(Language language) {
-		return modelsPath(language.name());
-	}
-
-	private record ModelFilters(String language) { }
-	public static String modelsPath(String language) {
-		return "/models?filters="+ stringify(new ModelFilters(language));
 	}
 
 	public static String modelUrl(UISession session, Model model) {

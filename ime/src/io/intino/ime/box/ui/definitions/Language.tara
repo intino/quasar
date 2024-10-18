@@ -1,20 +1,24 @@
 dsl Konos
 
+use Models
+use Search
 use Languages
 use Editors
 use UI
 use Theme
 
 Template languageTemplate as Relative(height=100%, width=100%)
+	Link(title="") openSearchLayerTrigger as OpenLayer(Fade, showHeader=false) Addressable(ImeElements.search)
+
+	TemplateStamp(template=languageHeaderTemplate) header
 
 	Block(layout=Vertical Flexible CenterCenter, visible=false) searchingModelsBlock
 		Spinner(mode=Ring, color="secondary")
 		Text(value="" , translate=true, format=h3 airTop) openingModelMessage
 
 	Block(layout=Vertical Flexible Center, format=greyBackground) bodyBlock as Relative(width=100%)
-		Block(layout=Vertical, format=autoHeight) as Relative(width=100%)> TemplateStamp(template=languageHeaderTemplate) header
 
-		Block(layout=Vertical CenterCenter Flexible, format=whiteBackground topSpaced leftSpaced) as Relative(width=100%)
+		Block(layout=Vertical CenterCenter Flexible, format=mainPanelStyle) as Relative(width=100%)
 			Image(colorInvertedWithDarkMode=true) logo as Absolute(height=100px, width=100px)
 			Block(layout=Horizontal Center, format=airTop)
 				Text(format=h1 airRight) name
@@ -24,19 +28,22 @@ Template languageTemplate as Relative(height=100%, width=100%)
 				Button(title="Create language", size=Large, highlight=Fill, visible=false, format=largeButton airBottom) createLanguageTrigger as OpenDialog(createLanguageDialog)
 				Button(title="Start modeling", size=Large, highlight=Fill, visible=false, format=largeButton airBottom) addModel as Action
 				Button(title="Start modeling", size=Large, highlight=Fill, visible=false, format=largeButton airBottom) addPrivateModel as OpenDialog(addPrivateModelDialog)
-				Link(title="View examples...", visible=false, format=airRight) viewModelExamples as OpenPage(ImeElements.models)
-				Link(title="View examples...", visible=false, format=airRight) viewLanguageExamples as OpenPage(ImeElements.languages)
-//				Link(title="Releases...", format=airRight) viewReleases as OpenDialog(dialog=releasesDialog)
-				Block(layout=Horizontal Center, format=doubleAirTop, visible=false) ownerBlock
-					Link(title="metamodel", format=airRight) openModel as Action
-					Text(value="-", format=airRight)
-					Link(title="properties", format=airRight) viewSettings as OpenDialog(dialog=settingsDialog)
+				Link(title="View examples...", visible=false, format=airRight) viewModelExamples as OpenDialog(modelExamplesDialog)
+				Link(title="View examples...", visible=false, format=airRight) viewLanguageExamples as OpenDialog(languagesExamplesDialog)
 
-		Block(layout=Vertical EndJustified, format=autoHeight) as Relative(width=100%)
-			Block(layout=Horizontal CenterJustified, format=headerBackground middleTopSpaced middleBottomSpaced relative, visible=false) poweredBlock
-				Link(title="", format=poweredLink whiteColor) poweredLink as OpenPage(page=ImeElements.language)
-				Image(format=airRight, colorInvertedWithDarkMode=true) poweredByImage as Absolute(height=50px, width=50px)
-				Text(format=h4 whiteColor) poweredByText
+	Dialog(title="Models created with %s") modelExamplesDialog as Relative(width=90%, height=70%)
+        Block as Relative(height=100%, offsetHeight=40px)
+			TemplateStamp(template=modelsCatalog) modelsCatalog
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Close", size=Small, highlight=Fill) as CloseDialog(modelExamplesDialog)
+
+	Dialog(title="Languages defined with %s") languagesExamplesDialog as Relative(width=90%, height=70%)
+        Block as Relative(height=100%, offsetHeight=40px)
+			TemplateStamp(template=languagesCatalog) languagesCatalog
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Close", size=Small, highlight=Fill) as CloseDialog(languagesExamplesDialog)
 
 	Block(format=spaced) releasesBlock as Popover Absolute(width=500px, height=300px)
 		TemplateStamp(template=languageReleasesCatalog) releasesCatalog
@@ -60,6 +67,29 @@ Template languageTemplate as Relative(height=100%, width=100%)
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addPrivateModelDialog)
             Button(title="Start", size=Small, highlight=Fill) createModel as Action
 
+Template(format=headerBackground) languageHeaderTemplate
+	TemplateStamp(template=headerTemplate) quassarHeader
+	Block(layout=Horizontal Wrap, format=centered rightSpaced middleTopSpaced middleBottomSpaced headerPanelBackground) content as Relative(width=100%)
+		Block(layout=Horizontal Flexible Center Wrap, format=airLeft)
+			Block(layout=Horizontal Center, format=airRight)
+				Block(layout=Horizontal, format=airRight)
+					Link(title="λ3", format=modelLink m3l3Style, visible=false) l3Link as OpenPage(ImeElements.model)
+					Text(value="λ3", format=modelText m3l3Style, visible=false) l3
+					Link(title="λ2", format=modelLink m2l2Style, visible=false) l2Link as OpenPage(ImeElements.model)
+					Link(title="λ2", format=modelLink m2l2Style, visible=false) l2Children as OpenPopover(languageChildrenView)
+					Text(value="λ2", format=modelText m2l2Style, visible=false) l2
+					Link(title="λ1", format=modelLink m1l1Style, visible=false) l1Link as OpenPage(ImeElements.model)
+					Link(title="λ1", format=modelLink m1l1Style, visible=false) l1Children as OpenPopover(languageChildrenView)
+					Text(value="λ1", format=modelText m1l1Style, visible=false) l1
+			Text(format=appTitleStyle) title
+		Block(layout=Horizontal Center EndJustified, format=airLeft)
+			Block(layout=Horizontal Center)
+				Button(title="Open metamodel...", size=Small) openModel as Action
+				Button(title="Properties...", size=Small) viewSettings as OpenDialog(dialog=settingsDialog)
+
+	Block(format=spaced) languageChildrenView as Popover Absolute(width=800px, height=400px)
+		TemplateStamp(template=languagesCatalogTable) languageChildrenCatalog
+
 	Dialog(title="Settings") settingsDialog as Absolute(width=800px, height=450px)
         Block as Relative(height=100%, offsetHeight=40px)
         	TemplateStamp(template=languageSettingsEditor) settingsEditor
@@ -67,19 +97,3 @@ Template languageTemplate as Relative(height=100%, width=100%)
         Block(layout=Horizontal)
         	Block(layout=Horizontal StartJustified Flexible) > Button(title="Close", size=Small, format=airRight) as CloseDialog(settingsDialog)
             Block(layout=Horizontal EndJustified) > Button(title="Apply", size=Small, highlight=Fill) saveSettings as Action
-
-Template(format=headerBackground middleTopSpaced middleBottomSpaced) languageHeaderTemplate
-	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)
-		Block(layout=Horizontal Flexible Center, format=airLeft)
-			Link(title="", format=logoLink noLeft) logoLink as OpenPage(ImeElements.home)
-			Image(value="/logo-dark.png", format=airRight, mobileReduceFactor=75%) logo as Absolute(width=50px, height=45px)
-		Block(layout=Horizontal Center EndJustified)
-			Link(title="LOG IN", format=white airRight, visible=false) login as Action
-			MaterialIconButton(title="Dashboard", icon="Home", titlePosition=Bottom, format=airRight iconButtonColor, size=Small, visible=false) dashboard as OpenPage(ImeElements.dashboard)
-			User(mode=OnlyPhoto, visible=false, format=relative) user
-				Block(layout=Horizontal EndJustified, format=userToolbar)
-					MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
-					MaterialIconButton(title="Set light mode", format=airRight, icon="Brightness7", size=Small) as SetLightMode
-				Selector as ListBox
-					Block as Option > Link(title="Home") as OpenPage(page=ImeElements.home)
-					Block as Option > Link(title="Dashboard") userHome as OpenPage(page=ImeElements.dashboard)

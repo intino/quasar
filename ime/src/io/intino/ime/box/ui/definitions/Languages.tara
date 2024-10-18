@@ -7,18 +7,21 @@ use Theme
 Template(layout=Vertical Flexible) languagesCatalog as Relative(height=100%, width=100%)
 	Text(format=h4 middleAirBottom, visible=false) title
 
+	Toolbar(format=dialog greyBackground, visible=false) toolbar
+		Block as Absolute(width=400px) > Text(visible=false) searchBox as Editable(placeholder="Search...")
+
 	Magazine(itemClass="io.intino.ime.model.Language") languagesMagazine
 		noItemsMessage = "No languages"
 		Mold
 			Item(height=100px) languageMagazineItem
-				Block(format=languageMagazine)
+				Block(format=dashboardItemStyle)
 					Block(format=relative)
 						Link(title="", format=magazineLinkStyle) languageLink as OpenPage(ImeElements.language)
 						Block(layout=Horizontal)
 							Block(format=airRight) > Image(colorInvertedWithDarkMode=true) logo as Absolute(height=50px, width=50px)
 							Block(layout=Vertical Flexible)
 								Block(layout=Horizontal)
-									Block(layout=Vertical Flexible) > Link(title="", format=orange) owner as Action
+									Block(layout=Vertical Flexible) > Text(format=orange) owner
 									Block(layout=Horizontal EndJustified) > Text(visible=false) privatePill as Highlighted(textColor="white", backgroundColor="#777")
 								Link(title="", format=h5) languageTitleLink as OpenPage(ImeElements.language)
 						Text(format=greyColor middleAirTop, cropWithEllipsis=40Chars) description
@@ -61,35 +64,26 @@ Template(layout=Vertical Flexible) languagesCatalog as Relative(height=100%, wid
 		Block(layout=Horizontal EndJustified)
 			Button(title="Close", size=Small, highlight=Outline) as CloseDialog(releasesDialog)
 
-Template languagesTemplate as Relative(height=100%, width=100%)
-	TemplateStamp(template=headerTemplate) header
+Template(layout=Vertical Flexible) languagesCatalogTable as Relative(height=100%, width=100%)
+	Text(format=h4 middleAirBottom, visible=false) title
 
-	Block(layout=Vertical Flexible CenterCenter, visible=false) searchingModelsBlock
-		Spinner(mode=Ring, color="secondary")
-		Text(value="" , translate=true, format=h3 airTop) openingModelMessage
+	Toolbar(format=dialog greyBackground) toolbar
+		Block as Absolute(width=400px) > Text searchBox as Editable(placeholder="Search...")
 
-	Block(layout=Horizontal Flexible Center, format=greyBackground) bodyBlock as Relative(width=100%)
-		Block(format=airLeft airRight) as Relative(width=20%, offsetWidth=10px)
-			Block(layout=Horizontal, format=middleTopSpaced middleBottomSpaced minPanelHeaderHeight)
-				Block(layout=Horizontal Center, format=tag, visible=false) navigationDialog
-					Text(format=blackColor) navigationDialogTitle
-					MaterialIconButton(icon="Clear", size=Small, title="Show all", format=smallIconSize middleAirLeft blackColor) navigationDialogRemove
-			Block(layout=Vertical Flexible, format=leftPanelStyle languagesStyle)
-				Block(format=airLeft airRight airBottom) > Text search as Editable(placeholder="Filter...")
-				Grouping(collections = empty) owner as Labeled("Owner")
-
-		Block(layout=Vertical Flexible) as Relative(height=100%)
-			Block(layout=Horizontal, format=middleTopSpaced middleBottomSpaced airLeft airRight autoHeight)
-				Block(layout=Horizontal Flexible)
-					Text countLanguages
-				Block(layout=Horizontal EndJustified)
-					Link(title="most used", format=airRight, visible=false) mostUsedLink as Action
-					Text(value="most used", format=airRight, translate=true) mostUsedText
-					Link(title="most recents", format=airRight) mostRecentsLink as Action
-					Text(value="most recents", format=airRight, visible=false, translate=true) mostRecentsText
-
-			Block(layout=Vertical Flexible, format=mainPanelStyle languagesStyle)
-				TemplateStamp(template=languagesCatalog) languagesCatalog
+	Table(itemClass="io.intino.ime.model.Language") languagesCatalogCollection
+		noItemsMessage = "No languages"
+		Mold
+			Heading lccLogoHeading
+			Item(height=30px, width=10%) lccLogoItem > Image logo as Absolute(height=25px, width=25px)
+		Mold
+			Heading lccNameHeading > Text(value="Name", translate=true) //Sorting(collections=languagesCatalogCollection) labelSorting as OrderBy Labeled("Name")
+			Item(height=30px, width=20%) lccNameItem > Link(title="") name as Action
+		Mold
+			Heading lccDescriptionHeading > Text(value="Description", translate=true) //Sorting(collections=languagesCatalogCollection) descriptionSorting as OrderBy Labeled("Description")
+			Item(height=30px, width=40%) lccDescriptionItem > Text(cropWithEllipsis=40 Chars) description
+		Mold
+			Heading lccOwnerHeading > Text(value="Owner", translate=true) //Sorting(collections=languagesCatalogCollection) ownerSorting as OrderBy Labeled("Owner")
+			Item(height=30px, width=30%) lccOwnerItem > Text owner
 
 Template(layout=Vertical Flexible) languageReleasesCatalog as Relative(height=100%, width=100%)
 

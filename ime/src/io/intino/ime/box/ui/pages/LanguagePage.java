@@ -1,5 +1,8 @@
 package io.intino.ime.box.ui.pages;
 
+import io.intino.ime.box.ui.DisplayHelper;
+import io.intino.ime.box.ui.ViewMode;
+import io.intino.ime.box.ui.displays.templates.HomeTemplate;
 import io.intino.ime.box.ui.displays.templates.LanguageTemplate;
 
 public class LanguagePage extends AbstractLanguagePage {
@@ -9,11 +12,11 @@ public class LanguagePage extends AbstractLanguagePage {
 		return new io.intino.alexandria.ui.Soul(session) {
 			@Override
 			public void personify() {
-				LanguageTemplate component = new LanguageTemplate(box);
-				component.language(id);
+				DisplayHelper.updateViewMode(ViewMode.Languages, session);
+				HomeTemplate component = new HomeTemplate(box);
 				register(component);
 				component.init();
-				component.refresh();
+				component.openLanguage(id);
 			}
 		};
 	}

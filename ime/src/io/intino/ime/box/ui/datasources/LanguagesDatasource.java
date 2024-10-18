@@ -5,13 +5,12 @@ import io.intino.alexandria.ui.model.datasource.Group;
 import io.intino.alexandria.ui.model.datasource.PageDatasource;
 import io.intino.alexandria.ui.services.push.UISession;
 import io.intino.ime.box.ImeBox;
+import io.intino.ime.box.ui.model.SearchItem;
 import io.intino.ime.model.Language;
 import io.intino.ime.model.LanguageLevel;
 
 import javax.xml.crypto.Data;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
@@ -19,7 +18,8 @@ import static java.util.stream.Collectors.toList;
 public class LanguagesDatasource extends PageDatasource<Language> {
 	protected final ImeBox box;
 	protected final UISession session;
-	private final String owner;
+	private String tag;
+	private String owner;
 	private String condition;
 	private List<Filter> filters;
 	private Boolean isPrivate = null;
@@ -50,7 +50,15 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 		this.level = level;
 	}
 
-	public enum Sorting { MostUsed, MostRecent }
+	public void tag(String tag) {
+		this.tag = tag;
+	}
+
+	public void owner(String owner) {
+		this.owner = owner;
+	}
+
+	public enum Sorting { MostUsed, MostRecent, Name, Description, Owner }
 	public void sort(Sorting sorting) {
 		this.sorting = sorting;
 	}
@@ -85,6 +93,7 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 
 	private List<Language> load(String condition, List<Filter> filters) {
 		List<Language> languages = load();
+		languages = filterTag(languages, filters);
 		languages = filterOwner(languages, filters);
 		languages = filterPrivate(languages);
 		languages = filterCondition(languages, condition);
@@ -94,6 +103,12 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 	protected List<Language> load() {
 		Map<String, List<Language>> groupedLanguages = box.languageManager().publicLanguages(username()).stream().collect(groupingBy(Language::name));
 		return groupedLanguages.values().stream().map(List::getLast).collect(toList());
+	}
+
+	private List<Language> filterTag(List<Language> languages, List<Filter> filters) {
+		List<String> tags = this.tag != null ? List.of(this.tag) : Collections.emptyList();
+		if (tags.isEmpty()) return languages;
+		return languages.stream().filter(l -> tags.stream().anyMatch(t -> l.tagList().contains(t))).collect(toList());
 	}
 
 	private List<Language> filterOwner(List<Language> languages, List<Filter> filters) {
@@ -119,6 +134,9 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 
 	private List<Language> sort(List<Language> languages, List<String> sortings) {
 		if (sorting == Sorting.MostRecent) return languages.stream().sorted((o1, o2) -> o2.createDate().compareTo(o1.createDate())).toList();
+		else if (sortings.contains(Sorting.Name.name())) return languages.stream().sorted(Comparator.comparing(Language::name)).toList();
+		else if (sortings.contains(Sorting.Description.name())) return languages.stream().sorted(Comparator.comparing(Language::description)).toList();
+		else if (sortings.contains(Sorting.Owner.name())) return languages.stream().sorted(Comparator.comparing(Language::owner)).toList();
 		return languages.stream().sorted((o1, o2) -> Integer.compare(o2.modelsCount(), o1.modelsCount())).toList();
 	}
 

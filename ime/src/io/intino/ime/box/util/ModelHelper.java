@@ -125,4 +125,5 @@ public class ModelHelper {
 	public static boolean isMetamodel(Model model, ImeBox box) {
 		return level(model, box) != ModelLevel.M1;
 	}
+
 }

@@ -41,10 +41,12 @@ public class ImeBrowser implements Browser {
 	}
 
 	private Language languageOf(String language) {
+		if (language == null) return null;
 		return languageOf(box.languageManager().get(language));
 	}
 
 	private Language languageOf(io.intino.ime.model.Language language) {
+		if (language == null) return null;
 		return new Language() {
 			@Override
 			public String name() {

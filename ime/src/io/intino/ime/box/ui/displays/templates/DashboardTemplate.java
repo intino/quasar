@@ -1,8 +1,10 @@
 package io.intino.ime.box.ui.displays.templates;
 
+import io.intino.alexandria.ui.displays.components.Layer;
 import io.intino.alexandria.ui.displays.events.SelectionEvent;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.ui.DisplayHelper;
+import io.intino.ime.box.ui.PathHelper;
 import io.intino.ime.box.ui.ViewMode;
 import io.intino.ime.box.ui.datasources.LanguagesDatasource;
 import io.intino.ime.box.ui.datasources.ModelsDatasource;
@@ -10,8 +12,8 @@ import io.intino.ime.box.util.Formatters;
 import io.intino.ime.box.util.ModelHelper;
 import io.intino.ime.model.Model;
 
-import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class DashboardTemplate extends AbstractDashboardTemplate<ImeBox> {
 
@@ -22,19 +24,21 @@ public class DashboardTemplate extends AbstractDashboardTemplate<ImeBox> {
 	@Override
 	public void init() {
 		super.init();
+		header.onOpenSearch(e -> openSearch());
 		header.onChangeView(e -> refresh());
 		languageGroupSelector.onSelect(this::selectLanguageGroupOption);
 		modelGroupSelector.onSelect(this::selectModelGroupOption);
 		languageGroupSelector.onShow(e -> languageGroupSelector.select("allLanguagesOption"));
 		modelGroupSelector.onShow(e -> modelGroupSelector.select("allModelsOption"));
-		languagesCatalog.onOpenLanguage(this::notifyOpeningModel);
+		languagesCatalog.onOpenModel(this::notifyOpeningModel);
 		modelsCatalog.onOpenModel(this::notifyOpeningModel);
+		openSearchLayerTrigger.onOpen(e -> openSearch(e.layer()));
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
-		header.showDashboardButton(false);
+		header.view(HeaderTemplate.View.Dashboard);
 		header.refresh();
 		ViewMode viewMode = DisplayHelper.viewMode(session());
 		languageGroupSelector.visible(viewMode == ViewMode.Languages);
@@ -45,16 +49,16 @@ public class DashboardTemplate extends AbstractDashboardTemplate<ImeBox> {
 
 	private void selectLanguageGroupOption(SelectionEvent event) {
 		String selected = event.selection().isEmpty() ? "allLanguagesOption" : (String) event.selection().getFirst();
-		if (selected.equals("allLanguagesOption")) refreshLanguages("All languages", new LanguagesDatasource(box(), session(), username()));
-		else if (selected.equals("publicLanguagesOption")) refreshLanguages("Public languages", new LanguagesDatasource(box(), session(), username(), false));
-		else refreshLanguages("Private languages", new LanguagesDatasource(box(), session(), username(), true));
+		if (selected.equals("allLanguagesOption")) refreshLanguages("My languages", new LanguagesDatasource(box(), session(), username()));
+		else if (selected.equals("publicLanguagesOption")) refreshLanguages("My public languages", new LanguagesDatasource(box(), session(), username(), false));
+		else refreshLanguages("My private languages", new LanguagesDatasource(box(), session(), username(), true));
 	}
 
 	private void selectModelGroupOption(SelectionEvent event) {
 		String selected = event.selection().isEmpty() ? "allModelsOption" : (String) event.selection().getFirst();
-		if (selected.equals("publicModelsOption")) refreshModels("Public models", new ModelsDatasource(box(), session(), false));
-		else if (selected.equals("privateModelsOption")) refreshModels("Private models", new ModelsDatasource(box(), session(), true));
-		else refreshModels("All models", new ModelsDatasource(box(), session(), null));
+		if (selected.equals("publicModelsOption")) refreshModels("My public models", new ModelsDatasource(box(), session(), false));
+		else if (selected.equals("privateModelsOption")) refreshModels("My private models", new ModelsDatasource(box(), session(), true));
+		else refreshModels("My models", new ModelsDatasource(box(), session(), null));
 	}
 
 	private void refreshLanguages(String title, LanguagesDatasource source) {
@@ -63,7 +67,7 @@ public class DashboardTemplate extends AbstractDashboardTemplate<ImeBox> {
 		languagesCatalog.source(source);
 		languagesCatalog.refresh();
 		leftPanelBlock.formats(Set.of("leftPanelStyle", "languagesStyle"));
-		mainPanelBlock.formats(Set.of("mainPanelStyle", "languagesStyle"));
+		mainPanelBlock.formats(Set.of("dashboardMainPanelStyle", "languagesStyle"));
 		count.value(Formatters.countMessage(languagesCatalog.itemCount(), "language", "languages", language()));
 	}
 
@@ -73,7 +77,7 @@ public class DashboardTemplate extends AbstractDashboardTemplate<ImeBox> {
 		modelsCatalog.source(source);
 		modelsCatalog.refresh();
 		leftPanelBlock.formats(Set.of("leftPanelStyle", "modelsStyle"));
-		mainPanelBlock.formats(Set.of("mainPanelStyle", "modelsStyle"));
+		mainPanelBlock.formats(Set.of("dashboardMainPanelStyle", "modelsStyle"));
 		count.value(Formatters.countMessage(modelsCatalog.itemCount(), "model", "models", language()));
 	}
 
@@ -91,6 +95,19 @@ public class DashboardTemplate extends AbstractDashboardTemplate<ImeBox> {
 		bodyBlock.hide();
 		openingModelMessage.value(String.format(translate("Opening %s"), ModelHelper.label(model, language(), box())));
 		openingModelBlock.show();
+	}
+
+	private void openSearch() {
+		openSearchLayerTrigger.address(path -> PathHelper.searchPath());
+		openSearchLayerTrigger.launch();
+	}
+
+	private void openSearch(Layer<?, ?> layer) {
+		HomeTemplate template = new HomeTemplate(box());
+		template.id(UUID.randomUUID().toString());
+		layer.template(template);
+		template.page(HomeTemplate.Page.Search);
+		template.refresh();
 	}
 
 }

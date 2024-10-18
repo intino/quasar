@@ -1,9 +1,8 @@
 package io.intino.ime.box.ui.displays.templates;
 
 import io.intino.alexandria.Resource;
-import io.intino.alexandria.ui.displays.components.Grouping;
 import io.intino.alexandria.ui.displays.events.AddItemEvent;
-import io.intino.alexandria.ui.displays.notifiers.GroupingNotifier;
+import io.intino.alexandria.ui.displays.events.collection.RefreshCountEvent;
 import io.intino.alexandria.ui.services.push.User;
 import io.intino.alexandria.ui.utils.DelayerUtil;
 import io.intino.ime.box.ImeBox;
@@ -14,6 +13,9 @@ import io.intino.ime.box.ui.PathHelper;
 import io.intino.ime.box.ui.datasources.DatasourceHelper;
 import io.intino.ime.box.ui.datasources.LanguagesDatasource;
 import io.intino.ime.box.ui.displays.items.LanguageMagazineItem;
+import io.intino.ime.box.ui.model.Owner;
+import io.intino.ime.box.ui.model.SearchItem;
+import io.intino.ime.box.ui.model.Tag;
 import io.intino.ime.box.util.LanguageHelper;
 import io.intino.ime.box.util.ModelHelper;
 import io.intino.ime.model.Language;
@@ -30,6 +32,8 @@ public class LanguagesCatalog extends AbstractLanguagesCatalog<ImeBox> {
 	private Consumer<Long> filterListener;
 	private Language selectedLanguage;
 	private Release selectedRelease;
+	private boolean readonly = false;
+	private boolean embedded = false;
 
 	public LanguagesCatalog(ImeBox box) {
 		super(box);
@@ -43,7 +47,7 @@ public class LanguagesCatalog extends AbstractLanguagesCatalog<ImeBox> {
 		this.source = source;
 	}
 
-	public void onOpenLanguage(Consumer<Model> listener) {
+	public void onOpenModel(Consumer<Model> listener) {
 		this.openModelListener = listener;
 	}
 
@@ -51,17 +55,28 @@ public class LanguagesCatalog extends AbstractLanguagesCatalog<ImeBox> {
 		this.filterListener = listener;
 	}
 
-	public void bindTo(Grouping<GroupingNotifier, ImeBox> grouping) {
-		grouping.bindTo(languagesMagazine);
-	}
-
 	public void sort(LanguagesDatasource.Sorting sorting) {
 		source.sort(sorting);
 		languagesMagazine.reload();
 	}
 
+	public void readonly(boolean value) {
+		this.readonly = value;
+	}
+
+	public void embedded(boolean value) {
+		this.embedded = value;
+	}
+
 	public long itemCount() {
 		return languagesMagazine.itemCount();
+	}
+
+	public void filter(SearchItem item) {
+		LanguagesDatasource source = languagesMagazine.source();
+		source.tag(item instanceof Tag ? item.name() : null);
+		source.owner(item instanceof Owner ? item.name() : null);
+		languagesMagazine.reload();
 	}
 
 	public void filter(String condition) {
@@ -84,14 +99,18 @@ public class LanguagesCatalog extends AbstractLanguagesCatalog<ImeBox> {
 		labelField.onEnterPress(e -> createModel());
 		createLanguageDialog.onOpen(e -> refreshCreateLanguageDialog());
 		createLanguage.onExecute(e -> createLanguage());
-		languagesMagazine.onRefreshItemCount(e -> filterListener.accept(e.count()));
+		languagesMagazine.onRefreshItemCount(this::refreshItemCount);
+		searchBox.onChange(e -> filter((String) e.value()));
+		searchBox.onEnterPress(e -> filter((String) e.value()));
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
 		title.visible(_title != null);
+		toolbar.visible(embedded);
 		if (title.isVisible()) title.value(translate(_title));
+		searchBox.visible(embedded);
 		languagesMagazine.source(source);
 	}
 
@@ -104,8 +123,7 @@ public class LanguagesCatalog extends AbstractLanguagesCatalog<ImeBox> {
 		item.languageTitleLink.path(PathHelper.languagePath(language));
 		item.description.value(language.description());
 		item.languageLink.path(PathHelper.languagePath(language));
-		item.owner.title(language.owner());
-		item.owner.onExecute(e -> filterOwner(language.owner()));
+		item.owner.value(language.owner());
 		item.privatePill.visible(language.isPrivate());
 		item.createDate.value(language.createDate());
 		item.modelsCount.value(language.modelsCount());
@@ -114,10 +132,10 @@ public class LanguagesCatalog extends AbstractLanguagesCatalog<ImeBox> {
 		item.createLanguageTrigger.bindTo(createLanguageDialog);
 		item.createLanguageTrigger.onOpen(e -> refreshCreateLanguageDialog(language));
 		item.addModel.onExecute(e -> createModel(lastRelease(language)));
-		item.addModel.visible(ModelHelper.canAddModel(release) && user() == null);
+		item.addModel.visible(!readonly && ModelHelper.canAddModel(release) && user() == null);
 		item.addPrivateModel.bindTo(addPrivateModelDialog);
 		item.addPrivateModel.onOpen(e -> refreshAddPrivateModelDialog(language));
-		item.addPrivateModel.visible(ModelHelper.canAddModel(release) && user() != null);
+		item.addPrivateModel.visible(!readonly && ModelHelper.canAddModel(release) && user() != null);
 		item.releasesDialogTrigger.bindTo(releasesDialog);
 		item.releasesDialogTrigger.onOpen(e -> refreshReleasesDialog(language));
 	}
@@ -146,6 +164,7 @@ public class LanguagesCatalog extends AbstractLanguagesCatalog<ImeBox> {
 	private void refreshReleasesDialog() {
 		if (selectedLanguage == null) return;
 		releasesDialog.title(String.format(translate("%s releases"), selectedLanguage.name()));
+		releasesCatalog.readonly(readonly);
 		releasesCatalog.language(selectedLanguage);
 		releasesCatalog.refresh();
 	}
@@ -223,6 +242,11 @@ public class LanguagesCatalog extends AbstractLanguagesCatalog<ImeBox> {
 		languageEditor.onAccept(e -> createLanguage(box().languageManager().lastRelease(selectedLanguage)));
 		languageEditor.parent(selectedLanguage);
 		languageEditor.reset();
+	}
+
+	private void refreshItemCount(RefreshCountEvent event) {
+		if (filterListener == null) return;
+		filterListener.accept(event.count());
 	}
 
 }

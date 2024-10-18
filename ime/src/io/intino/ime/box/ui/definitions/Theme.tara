@@ -6,7 +6,7 @@ Theme theme1
 	Typography
 		fontSize = 11px
 
-	Primary("#3377ff", "#fffb81")
+	Primary("#3377ff", "#9399ff")
 	Secondary("#ff9100")
 	Error("#f44336")
 
@@ -32,8 +32,7 @@ Format("fontWeight:'bold'") checkMarker
 Format("color:'#0188D1'") blueColor
 Format("color:'#4D9A51'") greenColor
 Format("color:'#616161'") labelColor
-Format("color:'black',height:'14px',width:'14px'") filterIconStyle
-Format("padding:'5px 10px',borderRadius:'5px',background:'white'") dialog
+Format("padding:'5px 10px',borderRadius:'5px',background:'white',width:'calc(100% - 10px)'") dialog
 Format("background:'white',borderRadius:'3px',height:'100%',border:'1px solid #efefef'") whiteBlock
 Format("width:'20px',height:'20px',borderRadius:'10px'") statusBadge
 Format("width:'48px',height:'24px'") statusIconStyle
@@ -53,14 +52,16 @@ Format("padding:'10px 30px',borderTop:'1px solid #aaa'") sliderFormat
 Format("color:'white',position:'absolute',top:0,left:0,marginLeft:'180px',marginTop:'6px',textTransform:'uppercase',fontSize:'9pt'") headerSubtitle
 Format("color:'white',background:'#272C34'") footerStyle
 Format("background:'white'", darkContent="background:'#1F1F1F'") whiteBackground
-Format("background:'white',color:'black'") searchBoxBackground
+Format("background:'white',color:'black',zIndex:'2'") searchBoxBackground
 Format("background:'#1B222C'") headerBackground
 Format("background:'#b9d1e3'", darkContent="background:'#2a3443'") leftPanelBackground
-Format("background:'#b9d1e3',height:'39px'", darkContent="background:'#2a3443'") headerPanel
-Format("height:'calc(100% - 109px)'") displayHeaderPanel
+Format("height:'39px'") headerPanel
+Format("background:'#b9d1e3'", darkContent="background:'#2a3443'") headerPanelBackground
+Format("height:'calc(100% - 40px)'") displayHeaderPanel
 Format("background:'#000'") blackBackground
 Format("background:'transparent'") noBackground
 Format("padding:'10px'") spaced
+Format("padding:'20px'") doubleSpaced
 Format("padding:'10px 10px 10px 10px'") observableSpaced
 Format("padding:'5px'") middleSpaced
 Format("paddingLeft:'10px'") leftSpaced
@@ -83,6 +84,7 @@ Format("margin:'10px'") air
 Format("marginTop:'10px'") airTop
 Format("marginTop:'15px'") mediumAirTop
 Format("marginTop:'20px'") doubleAirTop
+Format("marginTop:'60px'") largeAirTop
 Format("marginBottom:'10px'") airBottom
 Format("borderBottom:'1px solid #efefef',padding:'10px'") header
 Format("marginBottom:'20px'") doubleAirBottom
@@ -120,7 +122,7 @@ Format("position:'absolute'") absolute
 Format("border:'1px solid #efefef'") bordered
 Format("border:'1px solid #999'") imageBordered
 Format("borderColor:'#afafae'") strongBordered
-Format("borderLeft:'1px solid #efefef'") leftBordered
+Format("borderLeft:'1px solid #efefef'", darkContent="borderLeft:'1px solid #1f1f1f'") leftBordered
 Format("borderRight:'1px solid #efefef'") rightBordered
 Format("borderRight:'1px solid #145c9f'") blueRightBordered
 Format("borderTop:'1px solid #efefef'") topBordered
@@ -138,6 +140,7 @@ Format("minHeight:'100%'") minHeight
 Format("minHeight:'38px'") minPeriodHeight
 Format("minHeight:'300px',height:'300px'") minMapHeight
 Format("minHeight:'200px'") minPanelHeight
+Format("minHeight:'350px'") minSearchPanelHeight
 Format("minHeight:'880px'") minCatalogHeight
 Format("minHeight:'20px'") progressHeight
 Format("minWidth:'300px'") minTitleEditorWidth
@@ -186,6 +189,7 @@ Format("bottom:'-10px',textAlign:'center',width:'100%',color:'red',marginLeft:'1
 Format("position:'absolute',bottom:'0',top:'0',width:'100%',height:'100%',zIndex:'0'") backgroundLogin
 Format("filter:'brightness(0) invert(1)',position:'absolute',margin:'30px'") logoLogin
 Format("position:'absolute',zIndex:'10',width:'85px',height:'65px',top:'0',left:'0'") logoLink
+Format("position:'absolute',zIndex:'10',width:'150px',height:'65px',top:'0',left:'0'") logoExpandedLink
 Format("position:'absolute',zIndex:'10',width:'100%',height:'100%',top:'0',left:'0'") poweredLink
 Format("left:'auto'") noLeft
 Format("zIndex:'1'") visible
@@ -216,9 +220,11 @@ Format("fontSize:'11px',padding:'0 10px',margin:'0 0 12px 15px'") legendAll
 Format("minWidth:'450px'") histogramStyle
 Format("height:'auto'") autoHeight
 Format("borderRadius:'10px'") rounded
-Format("borderRadius:'10px 10px 0 0'") topRounded
-Format("border:'1px solid #bdbdbd',borderBottom:'0'") languagesStyle
-Format("border:'1px solid #b16401',borderBottom:'0'") modelsStyle
+Format("paddingTop:'5px',paddingBottom:'6px'") headerStyle
+Format("borderBottom:'4px solid #bdbdbd',paddingTop:'5px',paddingBottom:'6px'") languagesHeaderStyle
+Format("borderBottom:'4px solid #b16401',paddingTop:'5px',paddingBottom:'6px'") modelsHeaderStyle
+//Format("border:'1px solid #bdbdbd',borderBottom:'0'") languagesStyle
+//Format("border:'1px solid #b16401',borderBottom:'0'") modelsStyle
 Format("width:'auto'") autoWidth
 Format("height:'30px'") summaryHeight
 Format("height:'100%'") fullHeight
@@ -233,6 +239,7 @@ Format("width:'10px',height:'10px'") verySmallIconSize
 Format("width:'16px',height:'16px'") smallIconSize
 Format("width:'21px',height:'21px'") mediumIconSize
 Format("width:'24px',height:'24px'") largeIconSize
+Format("width:'36px',height:'36px'") veryLargeIconSize
 Format("background:'black url(trooper-elements/res/login-background.jpg) no-repeat center'") loginBackground
 Format("padding:'20px'") loginLoading
 Format("transform:'rotate(270deg)'") rotate
@@ -256,18 +263,32 @@ Format("background:'#efefef',padding:'10px 30px',borderTop:'1px solid #aaa'") te
 Format("width:'100px',height:'100px',background:'white',border:'1px solid #ddd'") stageStyle
 Format("position:'absolute',marginLeft:'60px',bottom:'0',marginBottom:'10px'") footerDateNavigator
 Format("minWidth:'300px',minHeight:'100px'") popoverStyle
-Format("background:'white',borderRadius:'25px',padding:'5px 20px'") searchBox
-Format("width:'275px',height:'200px',background:'#f6f7ff',padding:'10px',margin:'10px 0',borderRadius:'4px'", darkContent="background:'#333'") languageMagazine
+Format("height:'95px',zIndex:'1'") searchHeaderRow
+Format("position:'absolute',top:'0',marginTop:'5px',width:'100%'") searchHeaderBox
+Format("position:'absolute',right:'0',top:'0',marginRight:'15px',marginTop:'14px'") searchHeaderToolbar
+Format("background:'white',width:'45%',borderRadius:'25px',padding:'12px 20px',position:'relative',zIndex:'2'") searchBox
+Format("position:'absolute',left:'0',top:'0',marginTop:'4px',color:'transparent'") filterIconStyle
+Format("position:'absolute',background:'white',width:'100%',height:'400px',top:'0',marginTop:'21px',zIndex:'1',left:'0',borderRadius:'0 0 15px 15px',padding:'0'") filtersDialogStyle
+Format("background:'#efefef',padding:'10px',marginTop:'15px',borderRadius:'0 0 10px 10px'", darkContent="background:'#404348'") filtersDialogContentStyle
+
 Format("padding:'15px 40px'") largeButton
 Format("position:'absolute',bottom:'0',left:'0',marginLeft:'6px',marginBottom:'7px'") userToolbar
-Format("color:'#3377ff'", "color:'#fffb81'") iconButtonColor
-Format("marginLeft:'10px',marginBottom:'-8px',fontSize:'15pt',color:'white'") appViewTextStyle
+Format("color:'#3377ff'", "color:'#9399ff'") iconButtonColor
+Format("fontSize:'15pt',color:'white'") appViewTextStyle
 Format("height:'28px'") minPanelHeaderHeight
-Format("background:'white',padding:'10px 0 0 10px',borderRadius:'10px 10px 0 0',marginRight:'10px'", darkContent="background:'#1F1F1F'") mainPanelStyle
+Format("background:'white',minHeight:'400px'", darkContent="background:'#1F1F1F'") dashboardFullPanelStyle
+Format("background:'white',padding:'20px'", darkContent="background:'#1F1F1F'") dashboardPanelStyle
+Format("width:'275px',height:'200px',background:'#f6f7ff',padding:'10px',margin:'10px 0',borderRadius:'4px'", darkContent="background:'#333'") dashboardItemStyle
+Format("width:'275px',height:'100px'") smallDashboardItem
+Format("background:'white'", darkContent="background:'#1F1F1F'") mainPanelStyle
+Format("background:'white',padding:'10px 0 0 10px',borderRadius:'10px 10px 0 0',marginRight:'10px'", darkContent="background:'#1F1F1F'") dashboardMainPanelStyle
 Format("background:'white',padding:'10px',borderRadius:'10px 10px 0 0'", darkContent="background:'#1F1F1F'") leftPanelStyle
 
 // Cards
-Format("textAlign:'left',color:'#B71A1C',padding:'10px'") cardTitle
+Format("color:'black',fontSize:'40pt',textShadow:'2px 2px 2px #fff',marginTop:'30px'") cardTitle
+Format("textShadow:'2px 2px 2px #555',color:'white'") darkCardShadow
+Format("color:'black',fontSize:'25pt',textShadow:'2px 2px 2px #fff'") cardSubtitle
+Format("fontSize:'25pt'") categoryTitle
 Format("textAlign:'left',padding:'10px'") cardContent
 Format("background:'#efefef'") lateralPanelStyle
 Format("height:'calc(100vh - 100px)',overflow:'auto'") panelStyle
@@ -285,7 +306,7 @@ Format("position:'absolute',bottom:'0px',marginBottom:'-5px',marginLeft:'-3px'")
 Format("width:'300px',padding:'4px 5px 4px',background:'#efefef',textAlign:'right',marginRight:'10px'") parameterName
 Format("height:'60px'") logoStyle
 Format("background:'#9db7d2',borderRadius:'3px',padding:'2px'") cyclesArrivalStyle
-Format("color:'white'") appTitleStyle
+Format("color:'white',fontSize:'14pt',whiteSpace:'nowrap'") appTitleStyle
 Format("paddingRight:'10px'") eventlineStyle
 Format("paddingRight:'10px',minWidth:'640px'") measurementsStyle
 Format("minWidth:'30px'") measurementsToolbarStyle
@@ -301,11 +322,11 @@ Format("marginLeft:'18px',marginTop:'10px'") indicatorFilterSelectorStyle
 Format("position:'absolute',height:'100%',width:'100%',zIndex:'100',background:'white'") mapGroupFilterNotAvailableStyle
 Format("position:'absolute',height:'100%',width:'100%',zIndex:'100',top:'0'") imageLinkStyle
 Format("position:'absolute',width:'100%',height:'calc(100% - 20px)',cursor:'pointer',marginTop:'20px'") magazineLinkStyle
-Format("padding:'0 15px',color:'#fffb81'") modelLink
-Format("borderRadius:'6px 0 0 6px',border:'1px solid white',borderRight:'0'") m3Style
-Format("borderRadius:'0',border:'1px solid white',borderRight:'0'") m2Style
-Format("borderRadius:'0 6px 6px 0',border:'1px solid white'") m1Style
-Format("padding:'0 15px',color:'silver'") modelLinkDisabled
+Format("padding:'0 15px',color:'#9399ff'") modelLink
+Format("borderRadius:'6px 0 0 6px',border:'1px solid white',borderRight:'0'") m3l3Style
+Format("borderRadius:'0',border:'1px solid white',borderRight:'0'") m2l2Style
+Format("borderRadius:'0 6px 6px 0',border:'1px solid white'") m1l1Style
+Format("padding:'0 15px',color:'silver'") linkDisabled
 Format("padding:'0 15px',background:'white',color:'black',fontWeight:'bold'") modelText
 Format("padding:'0 10px',borderRadius:'6px',textAlign:'center',color:'black'") modelDescriptionStyle
 Format("background:'transparent'") languageOperationsStyle

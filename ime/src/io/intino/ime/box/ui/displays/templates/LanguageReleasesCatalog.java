@@ -15,6 +15,7 @@ public class LanguageReleasesCatalog extends AbstractLanguageReleasesCatalog<Ime
 	private Language language;
 	private Consumer<Release> createLanguageListener;
 	private Consumer<Release> createModelListener;
+	private boolean readonly = false;
 
 	public LanguageReleasesCatalog(ImeBox box) {
 		super(box);
@@ -31,6 +32,10 @@ public class LanguageReleasesCatalog extends AbstractLanguageReleasesCatalog<Ime
 
 	public void onCreateModel(Consumer<Release> listener) {
 		this.createModelListener = listener;
+	}
+
+	public void readonly(boolean readonly) {
+		this.readonly = readonly;
 	}
 
 	@Override
@@ -52,10 +57,9 @@ public class LanguageReleasesCatalog extends AbstractLanguageReleasesCatalog<Ime
 	private void refresh(Release release, LanguageReleasesTableRow row) {
 		row.lrcVersionItem.version.value(release.version());
 		row.lrcLevelItem.level.value(translate(release.level().label()));
-		row.lrcOperationsItem.createLanguage.visible(LanguageHelper.canCreateLanguage(language, release, user()));
+		row.lrcOperationsItem.createLanguage.visible(!readonly && LanguageHelper.canCreateLanguage(language, release, user()));
 		row.lrcOperationsItem.createLanguage.onExecute(e -> createLanguageListener.accept(release));
-		row.lrcOperationsItem.addModelWithRelease.visible(ModelHelper.canAddModel(release));
+		row.lrcOperationsItem.addModelWithRelease.visible(!readonly && ModelHelper.canAddModel(release));
 		row.lrcOperationsItem.addModelWithRelease.onExecute(e -> createModelListener.accept(release));
 	}
-
 }

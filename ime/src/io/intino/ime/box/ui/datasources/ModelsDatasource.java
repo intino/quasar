@@ -22,11 +22,17 @@ public class ModelsDatasource extends PageDatasource<Model> {
 	private final Boolean onlyPrivate;
 	private String condition;
 	private List<Filter> filters;
+	private Sorting sorting;
 
 	public ModelsDatasource(ImeBox box, UISession session, Boolean onlyPrivate) {
 		this.box = box;
 		this.session = session;
 		this.onlyPrivate = onlyPrivate;
+	}
+
+	public enum Sorting { MostUsed, MostRecent }
+	public void sort(Sorting sorting) {
+		this.sorting = sorting;
 	}
 
 	public long itemCount() {

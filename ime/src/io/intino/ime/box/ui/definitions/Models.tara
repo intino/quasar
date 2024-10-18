@@ -4,51 +4,20 @@ use Editors
 use UI
 use Theme
 
-Template modelsTemplate as Relative(height=100%, width=100%)
-	TemplateStamp(template=modelsHeaderTemplate) header
-
-	Block(layout=Vertical Flexible CenterCenter, visible=false) openingModelBlock
-		Spinner(mode=Ring, color="secondary")
-		Text(value="" , translate=true, format=h3 airTop) openingModelMessage
-
-	Block(layout=Horizontal Flexible Center, format=greyBackground) bodyBlock as Relative(width=100%)
-		Block(format=airLeft airRight) as Relative(width=20%, offsetWidth=10px)
-			Block(layout=Horizontal, format=middleTopSpaced middleBottomSpaced minPanelHeaderHeight)
-				Block(layout=Horizontal Center, format=tag, visible=false) navigationDialog
-					Text(format=blackColor) navigationDialogTitle
-					MaterialIconButton(icon="Clear", size=Small, title="Show all", format=smallIconSize middleAirLeft blackColor) navigationDialogRemove
-			Block(layout=Vertical Flexible, format=leftPanelStyle modelsStyle)
-				Block(format=airLeft airRight airBottom) > Text search as Editable(placeholder="Filter...")
-				Grouping(collections = empty) owner as Labeled("Owner")
-
-		Block(layout=Vertical Flexible) as Relative(height=100%)
-			Block(layout=Horizontal, format=middleTopSpaced middleBottomSpaced airLeft airRight autoHeight)
-				Block(layout=Horizontal Flexible)
-					Text countLanguages
-				Block(layout=Horizontal EndJustified)
-					Link(title="most used", format=airRight, visible=false) mostUsedLink as Action
-					Text(value="most used", format=airRight, translate=true) mostUsedText
-					Link(title="most recents", format=airRight) mostRecentsLink as Action
-					Text(value="most recents", format=airRight, visible=false, translate=true) mostRecentsText
-
-			Block(layout=Vertical Flexible, format=mainPanelStyle modelsStyle)
-				TemplateStamp(template=modelsCatalog) modelsCatalog
-
-
 Template(layout=Vertical Flexible) modelsCatalog as Relative(height=100%, width=100%)
 	Text(format=h4 middleAirBottom) title
 
-	Toolbar(format=dialog greyBackground) as Linked(to=body.modelTable)
+	Toolbar(format=dialog greyBackground, visible=false) toolbar as Linked(to=body.modelTable)
 		Button(title="Start modeling", highlight=Fill, format=airRight, visible=false) addModelTrigger as Action
 		Button(title="Remove selection", highlight=Outline, size=Small, format=airRight, visible=false) removeSelection as Action(context=Selection) Affirmed("Are you sure to remove selected models?")
-		SearchBox(visible=false, collections=body.modelTable) searchBox
+		Block as Absolute(width=400px) > Text(visible=false) searchBox as Editable(placeholder="Search...")
 
 	Block(layout=Vertical Flexible) body
 		Table(itemClass="io.intino.ime.model.Model") modelTable as Selectable(multiple=true)
 			noItemsMessage = "No models"
 			Mold
 				Heading modelLabelHeading > Text(value="Title") labelSorting
-				Item(height=30px, width=55%) modelLabelItem
+				Item(height=30px, width=45%) modelLabelItem
 					Block(layout=Horizontal)
 						Link(title="") label as Action
 						Text(value="is example", format=pill airLeft, visible=false) accessType as Highlighted(textColor="white", backgroundColor="#777")
@@ -59,9 +28,9 @@ Template(layout=Vertical Flexible) modelsCatalog as Relative(height=100%, width=
 				Heading modelOwnerHeading > Sorting(collections=modelTable) ownerSorting as OrderBy Labeled("Owner")
 				Item(height=30px, width=20%) modelOwnerItem > Text owner
 			Mold
-				Heading operationsHeading > Text(value="Operations", translate=true)
-				Item(height=30px, width=10%) operationsItem
-					Block(layout=Horizontal, visible=false) operationsToolbar
+				Heading operationsHeading > Block(layout=Horizontal EndJustified) > Text(value="Operations", translate=true)
+				Item(height=30px, width=20%) operationsItem
+					Block(layout=Horizontal EndJustified, visible=false) operationsToolbar
 						TemplateStamp(template=cloneModelEditor) cloneModelEditor
 						MaterialIconButton(title="Remove model", icon="Delete", size=Small) removeModel as Action Affirmed("Are you sure to remove model?") Readonly
 						TemplateStamp(template=modelSettingsEditor) settingsEditor
@@ -75,17 +44,17 @@ Template(layout=Vertical Flexible) modelsCatalog as Relative(height=100%, width=
 	        		Table(itemClass="io.intino.ime.model.Language") languageTable as Selectable
 	        			noItemsMessage = "No languages"
 	        			Mold
-	        				Heading ltLogoHeading
-	        				Item(height=30px, width=10%) ltLogoItem > Image logo as Absolute(height=50px, width=50px)
+	        				Heading lteLogoHeading
+	        				Item(height=30px, width=10%) lteLogoItem > Image logo as Absolute(height=50px, width=50px)
 	        			Mold
-	        				Heading ltNameHeading > Text(value="Name", translate=true)
-	        				Item(height=30px, width=20%) ltNameItem > Text name
+	        				Heading lteNameHeading > Text(value="Name", translate=true)
+	        				Item(height=30px, width=20%) lteNameItem > Text name
 	        			Mold
-	        				Heading ltDescriptionHeading > Text(value="Description", translate=true)
-	        				Item(height=30px, width=40%) ltDescriptionItem > Text(cropWithEllipsis=40 Chars) description
+	        				Heading lteDescriptionHeading > Text(value="Description", translate=true)
+	        				Item(height=30px, width=40%) lteDescriptionItem > Text(cropWithEllipsis=40 Chars) description
 	        			Mold
-	        				Heading ltOwnerHeading > Text(value="Owner", translate=true)
-	        				Item(height=30px, width=30%) ltOwnerItem > Text owner
+	        				Heading lteOwnerHeading > Text(value="Owner", translate=true)
+	        				Item(height=30px, width=30%) lteOwnerItem > Text owner
 		Divider
         Block(layout=Horizontal EndJustified)
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addModelDialog)
@@ -101,24 +70,3 @@ Template(layout=Vertical Flexible) modelsCatalog as Relative(height=100%, width=
         Block(layout=Horizontal EndJustified)
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addLanguageModelDialog)
             Button(title="Start", size=Small, highlight=Fill) createLanguageModel as Action
-
-Template(format=headerBackground middleTopSpaced middleBottomSpaced) modelsHeaderTemplate
-	Block(layout=Horizontal, format=centered rightSpaced) content as Relative(width=100%)
-		Block(layout=Horizontal Flexible Center, format=airLeft relative)
-			Link(title="", format=logoLink) logoLink as OpenPage(ImeElements.home)
-			Image(value="/logo-dark.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=50px, height=45px)
-			Block
-				Text(value="Models", format=appViewTextStyle)
-				Switch(title="", state=On) appViewSwitch
-			Block(layout=Vertical Flexible, format=airLeft)
-				Block(layout=Vertical CenterCenter) > Block(format=searchBox) as Relative(width=60%) > Text(format=searchBoxBackground) searchField as Editable(placeholder="Search")
-		Block(layout=Horizontal Center EndJustified)
-			Link(title="LOG IN", format=white airRight, visible=false) login as OpenPage(ImeElements.dashboard)
-			MaterialIconButton(title="Dashboard", icon="Home", titlePosition=Bottom, format=airRight iconButtonColor, size=Small, visible=false) dashboard as OpenPage(ImeElements.dashboard)
-			User(mode=OnlyPhoto, visible=false, format=relative) user
-				Block(layout=Horizontal EndJustified, format=userToolbar)
-					MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
-					MaterialIconButton(title="Set light mode", format=airRight, icon="Brightness7", size=Small) as SetLightMode
-				Selector as ListBox
-					Block as Option > Link(title="Home") as OpenPage(page=ImeElements.home)
-					Block as Option > Link(title="Dashboard") userHome as OpenPage(page=ImeElements.dashboard)
