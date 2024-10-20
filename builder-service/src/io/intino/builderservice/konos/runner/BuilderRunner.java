@@ -32,7 +32,7 @@ public class BuilderRunner {
 	}
 
 	public AbstractMap.SimpleEntry<String, List<File>> run(RunOperationContext params, InputStream tarSources) throws IOException {
-		BuilderInfo info = store.get(params.builderId());
+		BuilderInfo info = store.get(params.imageURL());
 		String ticket = UUID.randomUUID().toString();
 		ProjectDirectory hostProject = ProjectDirectory.of(workspace.getCanonicalFile(), ticket);
 		List<File> srcFiles = moveFiles(tarSources, hostProject.root());
@@ -40,7 +40,7 @@ public class BuilderRunner {
 		ProjectDirectory containerProject = new ProjectDirectory(new File(PROJECT_BIND));
 		RunConfigurationRenderer renderer = new RunConfigurationRenderer(params, containerProject, srcPaths, new File(M2_BIND));
 		Files.writeString(hostProject.argsFile().toPath().toAbsolutePath(), renderer.build());
-		String container = manager.createContainer(info.imageName(), ticket,
+		String container = manager.createContainer(info.imageURL(), ticket,
 				new Bind(hostProject.root().getCanonicalFile().getAbsolutePath(), new Volume(PROJECT_BIND)),
 				new Bind(languagesRepository.getAbsolutePath(), new Volume(M2_BIND)));
 		manager.start(container);

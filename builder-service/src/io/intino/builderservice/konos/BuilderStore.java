@@ -1,14 +1,16 @@
 package io.intino.builderservice.konos;
 
-import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.command.PullImageResultCallback;
-import com.github.dockerjava.core.DockerClientBuilder;
 import com.google.gson.reflect.TypeToken;
 import io.intino.alexandria.Json;
 import io.intino.alexandria.logger.Logger;
 import io.intino.builderservice.konos.schemas.BuilderInfo;
+import io.intino.builderservice.konos.schemas.RegisterBuilder;
+import io.intino.builderservice.konos.utils.DockerManager;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,20 +41,16 @@ public class BuilderStore {
 		}
 	}
 
-	public void put(BuilderInfo info) {
+	public void put(RegisterBuilder info) {
 		try {
-			this.index.put(info.id(), info);
-			download(info);
+			this.index.put(info.imageURL(), new BuilderInfo().imageURL(info.imageURL()));
+			DockerManager.download(info.imageURL(), info.registryToken());
 			saveIndex();
 		} catch (InterruptedException | IOException e) {
 			Logger.error(e);
 		}
 	}
 
-	private void download(BuilderInfo info) throws InterruptedException, IOException {
-		DockerClient dockerClient = DockerClientBuilder.getInstance().build();
-		dockerClient.pullImageCmd(info.imageName()).exec(new PullImageResultCallback()).awaitCompletion();
-	}
 
 	public synchronized void saveIndex() {
 		try {

@@ -7,16 +7,15 @@ import java.util.*;
 import io.intino.builderservice.konos.schemas.*;
 
 public class PostBuildersAction implements io.intino.alexandria.rest.RequestErrorHandler {
-	public io.intino.builderservice.konos.schemas.BuilderInfo builderInfo;
+	public io.intino.builderservice.konos.schemas.RegisterBuilder info;
 	public BuilderServiceBox box;
 	public io.intino.alexandria.http.spark.SparkContext context;
 
 	public void execute() {
-		box.builderStore().put(builderInfo);
+		box.builderStore().put(info);
 	}
 
 	public void onMalformedRequest(Throwable e) throws AlexandriaException {
-		//TODO
 		throw new BadRequest("Malformed request");
 	}
 }
