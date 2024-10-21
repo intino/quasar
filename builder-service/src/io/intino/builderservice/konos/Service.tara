@@ -11,6 +11,7 @@ Service builder-service as REST(host = "", port = "{port}")
 	Resource(path = "/builders/info") builderInfo
 		Get
 			Parameter(in = query) imageURL as Text
+			Parameter(in = body) registryToken as Text
 			Response as Object(schema = BuilderInfo)
 			Exception(code = Conflict)
 	Resource("/operations/run") runOperation

@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 public class GetBuilderInfoAction implements io.intino.alexandria.rest.RequestErrorHandler {
+	public String registryToken;
 	public BuilderServiceBox box;
 	public io.intino.alexandria.http.spark.SparkContext context;
 	public String imageURL;
@@ -27,7 +28,7 @@ public class GetBuilderInfoAction implements io.intino.alexandria.rest.RequestEr
 
 	private BuilderInfo findBuilder() throws Conflict, NotFound {
 		try {
-			DockerManager.download(imageURL);
+			DockerManager.download(imageURL, registryToken);
 			BuilderInfo builderInfo = DockerManager.builderInfo(imageURL);
 			return builderInfo;
 		} catch (InterruptedException | IOException e) {
