@@ -85,6 +85,6 @@ public class ApiTest {
 				.project("konos")
 				.projectVersion("13.0.1")
 				.generationPackage("model")
-				.builderId("io.intino.tara.builder:1.3.0");
+				.imageURL("octavioroncal/io.intino.tara.builder:1.3.0");
 	}
 }
