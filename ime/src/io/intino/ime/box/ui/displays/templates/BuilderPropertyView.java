@@ -1,23 +1,24 @@
 package io.intino.ime.box.ui.displays.templates;
 
-import io.intino.builderservice.schemas.BuilderInfo;
 import io.intino.ime.box.ImeBox;
 
 public class BuilderPropertyView extends AbstractBuilderPropertyView<ImeBox> {
-	private BuilderInfo.Properties property;
+	private String _property;
+	private String _value;
 
 	public BuilderPropertyView(ImeBox box) {
 		super(box);
 	}
 
-	public void property(BuilderInfo.Properties property) {
-		this.property = property;
+	public void property(String property, String value) {
+		this._property = property;
+		this._value = value;
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
-		name.value(property.name());
-		value.value(property.value());
+		name.value(_property);
+		value.value(_value);
 	}
 }

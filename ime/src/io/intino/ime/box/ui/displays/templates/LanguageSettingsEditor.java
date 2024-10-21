@@ -16,7 +16,6 @@ import io.intino.ime.model.Release;
 import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
-import static org.apache.commons.lang3.BooleanUtils.forEach;
 
 public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBox> {
 	private Language language;
@@ -181,17 +180,17 @@ public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBo
 	private void refreshBuilderDetailsDialog() {
 		builderProperties.clear();
 		if (info == null) return;
-		info.propertiesList().forEach(p -> fill(p, builderProperties.add()));
+		info.properties().forEach((key, value) -> fill(key, value, builderProperties.add()));
 	}
 
-	private void fill(BuilderInfo.Properties property, BuilderPropertyView display) {
-		display.property(property);
+	private void fill(String property, String value, BuilderPropertyView display) {
+		display.property(property, value);
 		display.refresh();
 	}
 
 	private void loadBuilderInfo() {
 		try {
-			this.info = box().builderService().getCheck(language.builder());
+			this.info = box().builderService().getBuilders(language.builder()).stream().findFirst().orElse(null);
 		} catch (InternalServerError e) {
 			Logger.error(e);
 			this.info = null;
