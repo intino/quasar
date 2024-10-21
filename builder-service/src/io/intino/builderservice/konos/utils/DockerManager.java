@@ -44,7 +44,7 @@ public class DockerManager {
 					.creationDate(imageInfo.getCreated())
 					.targetLanguages(List.of(targets))
 					.operations(List.of(operations))
-					.tags(labels);
+					.properties(labels);
 		}
 	}
 }
