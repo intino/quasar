@@ -11,6 +11,14 @@ Template(layout=Horizontal) languageEditor
 		Text(format=doubleAirBottom) descriptionField as Editable Labeled("Title")
 		Switch(title="Language is private", format=doubleAirBottom, state=On) accessTypeField
 
+Template userSettingsEditor
+	Block dockerHubBlock
+		Block(layout=Horizontal)
+			Image(value="")
+		Text dockerHubUsernameField as Editable Labeled("Username")
+		Text dockerHubTokenField as Editable Labeled("Personal Access Token")
+
+
 Template languageSettingsEditor
 	Selector(format=tabsStyle) tabSelector as Tabs
 		Text(value="General", translate=true) propertiesOption as Option
