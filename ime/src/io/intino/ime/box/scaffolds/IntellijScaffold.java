@@ -85,6 +85,26 @@ public class IntellijScaffold implements Scaffold {
 
 	}
 
+	@Override
+	public String srcPath() {
+		return "src";
+	}
+
+	@Override
+	public String outPath() {
+		return "out";
+	}
+
+	@Override
+	public String genPath() {
+		return "gen";
+	}
+
+	@Override
+	public String resPath() {
+		return "res";
+	}
+
 	private String process(String projectIml) {
 		return projectIml
 				.replace("$project_name$", quassar.projectName())

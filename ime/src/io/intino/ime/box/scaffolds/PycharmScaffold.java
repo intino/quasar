@@ -109,4 +109,24 @@ public class PycharmScaffold implements Scaffold {
 	private URI path(String subPath) throws URISyntaxException {
 		return new URI(path + subPath);
 	}
+
+	@Override
+	public String srcPath() {
+		return "src";
+	}
+
+	@Override
+	public String outPath() {
+		return "out";
+	}
+
+	@Override
+	public String genPath() {
+		return "gen";
+	}
+
+	@Override
+	public String resPath() {
+		return "res";
+	}
 }

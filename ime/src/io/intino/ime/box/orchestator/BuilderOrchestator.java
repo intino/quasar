@@ -9,8 +9,11 @@ import io.intino.builderservice.schemas.BuilderInfo;
 import io.intino.builderservice.schemas.Message;
 import io.intino.builderservice.schemas.OperationResult;
 import io.intino.builderservice.schemas.RunOperationContext;
+import io.intino.ime.box.scaffolds.Scaffold;
+import io.intino.ime.box.scaffolds.ScaffoldFactory;
 import io.intino.ls.document.DocumentManager;
 
+import javax.print.attribute.standard.PresentationDirection;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -29,22 +32,11 @@ public class BuilderOrchestator {
 	private final DocumentManager manager;
 	private final QuassarBuilderServiceAccessor accessor;
 	private final QuassarParser quassar;
-	private final List<String> builders;
 
 	public BuilderOrchestator(URL builderedServiceUrl, DocumentManager manager) {
 		this.manager = manager;
 		this.accessor = new QuassarBuilderServiceAccessor(builderedServiceUrl);
 		this.quassar = new QuassarParser(quassarContent());
-		this.builders = getBuilders();
-	}
-
-	private List<String> getBuilders() {
-		try {
-			return accessor.getBuilders().stream().map(BuilderInfo::id).toList();
-		} catch (InternalServerError e) {
-			Logger.error(e);
-			return Collections.emptyList();
-		}
 	}
 
 	private String quassarContent() {
@@ -89,17 +81,25 @@ public class BuilderOrchestator {
 			Thread.sleep(1000);
 			output = accessor.getOperationOutput(ticket);
 		}
-		// TODO return messages
-		doExtraction(ticket, output, quassar.pathOf(builder));
+		if(!output.success()) return output.messages();
+		doExtraction(ticket, output, quassar.pathOf(builder), scaffoldOf(builder));
 		//moveGraphJson();
 		return Collections.emptyList();
 	}
 
-	private void doExtraction(String ticket, OperationResult output, String builderPath) throws InternalServerError, NotFound, IOException {
-		extractFiles(ticket, output.genRef(), builderPath + "/gen", true);
-		extractFiles(ticket, output.srcRef(), builderPath + "/src", false);
-		extractFiles(ticket, output.outRef(), builderPath + "/out", true);
-		extractFiles(ticket, output.resRef(), builderPath + "/res", true);
+	private Scaffold scaffoldOf(String builder) {
+		ArchetypeEntry entry = quassar.paths().stream()
+				.filter(e -> e.builders().stream().anyMatch(b -> b.contains(builder)))
+				.findFirst()
+				.orElse(null);
+		return entry != null && entry.scaffold() != null ? ScaffoldFactory.scaffoldOf(ScaffoldFactory.Scaffold.valueOf(entry.scaffold()), manager, "") : null;
+	}
+
+	private void doExtraction(String ticket, OperationResult output, String builderPath, Scaffold scaffold) throws InternalServerError, NotFound, IOException {
+		extractFiles(ticket, output.genRef(), builderPath + "/" + (scaffold != null ? scaffold.genPath() : "gen"), true);
+		extractFiles(ticket, output.srcRef(), builderPath + "/" + (scaffold != null ? scaffold.srcPath() : "src"), false);
+		extractFiles(ticket, output.outRef(), builderPath + "/" + (scaffold != null ? scaffold.outPath() : "out"), true);
+		extractFiles(ticket, output.resRef(), builderPath + "/" + (scaffold != null ? scaffold.resPath() : "res"), true);
 	}
 
 	private void moveGraphJson() throws URISyntaxException {
@@ -136,16 +136,12 @@ public class BuilderOrchestator {
 
 	private RunOperationContext context(String builder) {
 		return new RunOperationContext()
-				.builderId(imageOf(builder.split("@")[0]))
+				.imageURL(builder)
 				.generationPackage(quassar.codePackage())
 				.language(quassar.langQn())
 				.languageVersion(quassar.langVersion())
 				.project(quassar.projectName())
 				.projectVersion(quassar.projectVersion());
-	}
-
-	private String imageOf(String builder) {
-		return builders.stream().filter(b -> b.contains(builder)).findFirst().get();
 	}
 
 }
