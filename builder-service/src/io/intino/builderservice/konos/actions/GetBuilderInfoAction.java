@@ -22,15 +22,13 @@ public class GetBuilderInfoAction implements io.intino.alexandria.rest.RequestEr
 		Optional<BuilderInfo> info = box.builderStore().all().stream()
 				.filter(b -> b.imageURL().equalsIgnoreCase(imageURL))
 				.findFirst();
-		if (info.isPresent()) return info.get();
-		return findBuilder();
+		return info.isPresent() ? info.get() : findBuilder();
 	}
 
 	private BuilderInfo findBuilder() throws Conflict, NotFound {
 		try {
 			DockerManager.download(imageURL, registryToken);
-			BuilderInfo builderInfo = DockerManager.builderInfo(imageURL);
-			return builderInfo;
+			return DockerManager.builderInfo(imageURL);
 		} catch (InterruptedException | IOException e) {
 			Logger.error(e);
 			throw new NotFound(e.getMessage());
