@@ -51,7 +51,6 @@ Schema BuilderInfo
 	Attribute operations as Text List
 	Attribute targetLanguages as Text List
 	Attribute creationDate as Text
-	Attribute valid as Bool
 	Attribute properties as Map
 		Key as Text
 		Value as Text

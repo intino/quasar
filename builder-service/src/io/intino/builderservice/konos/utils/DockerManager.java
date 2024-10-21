@@ -35,12 +35,12 @@ public class DockerManager {
 			if (imageInfo.getConfig() == null || imageInfo.getConfig().getLabels() == null)
 				throw new Conflict("Configuration not found");
 			Map<String, String> labels = imageInfo.getConfig().getLabels();
-			if (!labels.containsKey("target")) throw new Conflict("No target label found");
+			if (!labels.containsKey("targets")) throw new Conflict("No target label found");
 			if (!labels.containsKey("operations")) throw new Conflict("No operations label found");
-			labels.remove("target");
+			var targets = labels.get("targets").split(",");
+			var operations = labels.get("targets").split(",");
+			labels.remove("targets");
 			labels.remove("operations");
-			var targets = labels.get("target").split(",");
-			var operations = labels.get("target").split(",");
 			return builderInfo
 					.imageURL(imageURL)
 					.creationDate(imageInfo.getCreated())

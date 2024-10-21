@@ -74,9 +74,9 @@ public class HeaderTemplate extends AbstractHeaderTemplate<ImeBox> {
 		dashboard.visible(view != View.Dashboard && user() != null);
 		user.visible(loggedUser != null);
 		notLoggedBlock.visible(loggedUser == null);
-		if (loggedUser == null) return;
-		userHome.visible(view != View.Dashboard);
-		userHome.path(PathHelper.dashboardPath(session()));
+		userSettings.visible(loggedUser != null);
+		userHome.visible(loggedUser != null && view != View.Dashboard);
+		if (userHome.isVisible()) userHome.path(PathHelper.dashboardPath(session()));
 	}
 
 	private String appViewLabel(ViewMode viewMode) {

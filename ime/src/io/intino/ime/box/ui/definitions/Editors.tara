@@ -13,11 +13,9 @@ Template(layout=Horizontal) languageEditor
 
 Template userSettingsEditor
 	Block dockerHubBlock
-		Block(layout=Horizontal)
-			Image(value="")
+		Image(value="images/docker-logo-blue.png", colorInvertedWithDarkMode=true)
 		Text dockerHubUsernameField as Editable Labeled("Username")
 		Text dockerHubTokenField as Editable Labeled("Personal Access Token")
-
 
 Template languageSettingsEditor
 	Selector(format=tabsStyle) tabSelector as Tabs
@@ -40,7 +38,7 @@ Template languageSettingsEditor
 	Block builderBlock as Conditional(tabSelector.builderOption)
 		Block(format=airTop doubleAirBottom)
 			Block(layout=Horizontal Center)
-				Text builderField as Editable Labeled("Docker image name")
+				Text builderField as Editable(placeholder="[username]/[builder]:[version]") Labeled("Docker image name")
 				MaterialIcon(icon="CheckCircle", format=airTop greenColor, visible=false) validBuilderIcon
 				MaterialIcon(icon="Help", format=airTop, visible=false) noBuilderInfoIcon
 				MaterialIcon(icon="Cancel", format=airTop redColor, visible=false) invalidBuilderIcon
@@ -60,7 +58,8 @@ Template languageSettingsEditor
 
 	Dialog(title="Builder details") builderDetailsDialog as Absolute(width=500px, height=350px)
         Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
-        	TemplateStamp(template=builderPropertyView) builderProperties as Multiple(noItemsMessage="No information")
+        	Text(visible=false) errorMessage
+        	Block(visible=false) builderPropertiesBlock > TemplateStamp(template=builderPropertyView) builderProperties as Multiple(noItemsMessage="No information")
 		Divider
         Block(layout=Horizontal EndJustified)
             Button(title="Close", size=Small, format=airRight, highlight=Outline) as CloseDialog(builderDetailsDialog)
