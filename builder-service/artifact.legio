@@ -16,10 +16,14 @@ Artifact("io.intino", "1.0.0-SNAPSHOT") builder-service
 		Test("io.intino", "quassar-builder-service-accessor", "1.0.0-SNAPSHOT")
 
 	Package(mode = ModulesAndLibrariesLinkedByManifest) as Runnable(mainClass = "io.intino.builderservice.konos.Main")
+
 	Parameter("language-repository")
-	Parameter(name = "port")
-	Parameter(name = "home")
-	Parameter(name = "dockerhub-auth-file")
-	Parameter(name = "file")
+	Parameter("port")
+	Parameter("home")
+	Parameter("dockerhub-auth-file")
 
 RunConfiguration local
+	Argument("port", "9002")
+	Argument("home", "./temp")
+	Argument("language-repository", "$HOME/.m2")
+	Argument("dockerhub-auth-file", "./temp/configuration/dockerhub.properties")

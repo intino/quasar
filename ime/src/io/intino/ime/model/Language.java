@@ -16,12 +16,16 @@ public class Language {
 	private Instant createDate;
 	private List<String> tagList;
 
-	public Language(String name) {
-		this.name = name;
+	public Language() {
 		isPrivate = true;
 		operations = new ArrayList<>();
 		createDate = Instant.now();
 		tagList = new ArrayList<>();
+	}
+
+	public Language(String name) {
+		this();
+		this.name = name;
 	}
 
 	public static String nameOf(String id) {

@@ -1,8 +1,8 @@
 package io.intino.ime.box.ui.displays.templates;
 
 import io.intino.alexandria.Resource;
+import io.intino.alexandria.exceptions.Conflict;
 import io.intino.alexandria.exceptions.InternalServerError;
-import io.intino.alexandria.logger.Logger;
 import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.displays.events.actionable.ToggleEvent;
 import io.intino.builderservice.schemas.BuilderInfo;
@@ -23,6 +23,7 @@ public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBo
 	private Map<String, Operation> operationMap;
 	private Set<String> tagSet;
 	private BuilderInfo info;
+	private String error;
 
 	public LanguageSettingsEditor(ImeBox box) {
 		super(box);
@@ -38,7 +39,7 @@ public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBo
 		if (!DisplayHelper.check(descriptionField, this::translate)) return false;
 		if (builderField == null) return true;
 		String builder = builderField.value();
-		if ((info == null && builder != null && !builder.isEmpty()) || (info != null && !info.valid())) {
+		if (info == null && builder != null && !builder.isEmpty()) {
 			notifyUser(translate("Docker image name is not valid"), UserMessage.Type.Error);
 			return false;
 		}
@@ -111,6 +112,7 @@ public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBo
 	}
 
 	private void updateInfo() {
+		error = builderField.value() == null || builderField.value().isEmpty() ? null : error;
 		info = builderField.value() == null || builderField.value().isEmpty() ? null : info;
 		refreshBuilderInfo(info);
 		updateOperations(info);
@@ -126,7 +128,7 @@ public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBo
 
 	private void refreshBuilder() {
 		builderField.value(language.builder());
-		loadBuilderInfo();
+		loadBuilderInfo(language.builder());
 		refreshBuilderInfo(info);
 		refreshOperations();
 	}
@@ -159,9 +161,9 @@ public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBo
 
 	private void refreshBuilderInfo(BuilderInfo info) {
 		String name = builderField.value();
-		validBuilderIcon.visible(info != null && info.valid());
-		noBuilderInfoIcon.visible(info == null);
-		invalidBuilderIcon.visible(info != null && !info.valid());
+		validBuilderIcon.visible(isValidBuilder());
+		noBuilderInfoIcon.visible(hasNoBuilderInformation());
+		invalidBuilderIcon.visible(isInvalidBuilder());
 		checkBuilder.readonly(name == null || name.isEmpty());
 		showBuilderInfo.readonly(name == null || name.isEmpty() || info == null);
 	}
@@ -178,8 +180,11 @@ public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBo
 	}
 
 	private void refreshBuilderDetailsDialog() {
+		builderPropertiesBlock.visible(isValidBuilder());
+		errorMessage.visible(isInvalidBuilder());
+		errorMessage.value(error);
+		if (!builderPropertiesBlock.isVisible()) return;
 		builderProperties.clear();
-		if (info == null) return;
 		info.properties().forEach((key, value) -> fill(key, value, builderProperties.add()));
 	}
 
@@ -188,22 +193,34 @@ public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBo
 		display.refresh();
 	}
 
-	private void loadBuilderInfo() {
+	private void loadBuilderInfo(String builder) {
 		try {
-			this.info = box().builderService().getBuilders(language.builder()).stream().findFirst().orElse(null);
-		} catch (InternalServerError e) {
-			Logger.error(e);
+			this.error = null;
+			this.info = box().builderService().getBuilderInfo(builder);
+		} catch (InternalServerError | Conflict e) {
+			this.error = builderField.value() != null && !builderField.value().isEmpty() ? e.getMessage() : null;
 			this.info = null;
 		}
 	}
 
 	private void checkBuilder() {
-		info = null;
+		refreshBuilderInfo(null);
+		loadBuilderInfo(builderField.value());
 		refreshBuilderInfo(info);
-		loadBuilderInfo();
-		if (info == null) info = new BuilderInfo().valid(false);;
-		refreshBuilderInfo(info);
+		refreshOperations();
 		builderDetailsDialog.open();
+	}
+
+	private boolean isValidBuilder() {
+		return info != null;
+	}
+
+	private boolean hasNoBuilderInformation() {
+		return info == null && error == null;
+	}
+
+	private boolean isInvalidBuilder() {
+		return info == null && error != null;
 	}
 
 }

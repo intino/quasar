@@ -4,6 +4,8 @@ import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.command.PullImageResultCallback;
 import com.github.dockerjava.core.DockerClientBuilder;
+import io.intino.alexandria.exceptions.Conflict;
+import io.intino.alexandria.logger.Logger;
 import io.intino.builderservice.konos.schemas.BuilderInfo;
 
 import java.io.IOException;
@@ -26,19 +28,19 @@ public class DockerManager {
 		}
 	}
 
-	public static BuilderInfo builderInfo(String imageURL) throws IOException {
+	public static BuilderInfo builderInfo(String imageURL) throws Conflict, IOException {
 		try (DockerClient dockerClient = DockerClientBuilder.getInstance().build()) {
 			InspectImageResponse imageInfo = dockerClient.inspectImageCmd(imageURL).exec();
 			BuilderInfo builderInfo = new BuilderInfo();
 			if (imageInfo.getConfig() == null || imageInfo.getConfig().getLabels() == null)
-				throw new IOException("Configuration not found");
+				throw new Conflict("Configuration not found");
 			Map<String, String> labels = imageInfo.getConfig().getLabels();
-			if (!labels.containsKey("target")) throw new IOException("No target label found");
-			if (!labels.containsKey("operations")) throw new IOException("No operations label found");
-			labels.remove("target");
+			if (!labels.containsKey("targets")) throw new Conflict("No target label found");
+			if (!labels.containsKey("operations")) throw new Conflict("No operations label found");
+			var targets = labels.get("targets").split(",");
+			var operations = labels.get("targets").split(",");
+			labels.remove("targets");
 			labels.remove("operations");
-			var targets = labels.get("target").split(",");
-			var operations = labels.get("target").split(",");
 			return builderInfo
 					.imageURL(imageURL)
 					.creationDate(imageInfo.getCreated())

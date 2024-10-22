@@ -114,6 +114,15 @@ Template(format=headerBackground) headerTemplate
 				Selector as ListBox
 					Block as Option > Link(title="Home") home as OpenPage(page=ImeElements.home)
 					Block as Option > Link(title="Dashboard", visible=false) userHome as OpenPage(page=ImeElements.dashboard)
+					Block as Option > Link(title="Settings", visible=false) userSettings as OpenDialog(dialog=settingsDialog)
+
+	Dialog(title="Settings") settingsDialog as Relative(width=60%, height=80%)
+        Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
+        	TemplateStamp(template=userSettingsEditor) settingsEditor
+		Divider
+        Block(layout=Horizontal)
+        	Block(layout=Horizontal StartJustified Flexible) > Button(title="Close", size=Small, format=airRight) as CloseDialog(settingsDialog)
+            Block(layout=Horizontal EndJustified) > Button(title="Apply", size=Small, highlight=Fill) saveSettings as Action
 
 Template(layout=Vertical Flexible) permissionsTemplate as Relative(height=100%,width=100%)
 	Block(layout=Vertical CenterCenter, format=grey) as Relative(height=100%,width=100%)

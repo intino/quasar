@@ -3,12 +3,17 @@ dsl Konos
 Service builder-service as REST(host = "", port = "{port}")
 	Resource(path = "/builders") builders
 		Get
-			Parameter(in = query) imageURL as Text
 			Response as Object(schema = BuilderInfo) List
 		Post
 			Parameter(in = body) info as Object(schema = RegisterBuilder)
 			Response(code ="201")
 
+	Resource(path = "/builders/info") builderInfo
+		Get
+			Parameter(in = query) imageURL as Text
+			Parameter(in = body) registryToken as Text
+			Response as Object(schema = BuilderInfo)
+			Exception(code = Conflict)
 	Resource("/operations/run") runOperation
 		Post
 			Parameter(in = form) runOperationContext as Object(schema = RunOperationContext)
@@ -47,7 +52,6 @@ Schema BuilderInfo
 	Attribute operations as Text List
 	Attribute targetLanguages as Text List
 	Attribute creationDate as Text
-	Attribute valid as Bool
 	Attribute properties as Map
 		Key as Text
 		Value as Text
