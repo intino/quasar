@@ -5,7 +5,6 @@ import io.intino.alexandria.exceptions.InternalServerError;
 import io.intino.alexandria.exceptions.NotFound;
 import io.intino.alexandria.logger.Logger;
 import io.intino.builderservice.QuassarBuilderServiceAccessor;
-import io.intino.builderservice.schemas.BuilderInfo;
 import io.intino.builderservice.schemas.Message;
 import io.intino.builderservice.schemas.OperationResult;
 import io.intino.builderservice.schemas.RunOperationContext;
@@ -13,7 +12,6 @@ import io.intino.ime.box.scaffolds.Scaffold;
 import io.intino.ime.box.scaffolds.ScaffoldFactory;
 import io.intino.ls.document.DocumentManager;
 
-import javax.print.attribute.standard.PresentationDirection;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -48,6 +46,23 @@ public class BuilderOrchestator {
 		}
 	}
 
+	public List<Message> exec(String user, String builder, String operation) {
+		try {
+			File taraFiles = taraFiles();
+			if (taraFiles == null)
+				return List.of(new Message().kind(Message.Kind.ERROR).content("Model files not found"));
+			List<Message> messages = runBuild(builder, taraFiles, operation);
+			if(!messages.isEmpty()) return messages;
+			manager.commit(user);
+			manager.push();
+		} catch (Throwable t) {
+			Logger.error(t);
+			return List.of(new Message().kind(Message.Kind.ERROR).content("Unknown error"));
+		}
+		return Collections.emptyList();
+	}
+
+
 	public List<Message> build(String user) {
 		try {
 			File taraFiles = taraFiles();
@@ -65,17 +80,17 @@ public class BuilderOrchestator {
 	}
 
 	private List<Message> doBuild(File taraFiles) throws InternalServerError, IOException, NotFound, InterruptedException, URISyntaxException {
-		List<Message> messages = runBuild(quassar.tara(), taraFiles);
+		List<Message> messages = runBuild(quassar.tara(), taraFiles, "Build");
 		if (!messages.isEmpty()) return messages;
 		for (String b : builders()) {
-			messages = runBuild(b.trim(), taraFiles);
+			messages = runBuild(b.trim(), taraFiles, "Build");
 			if (!messages.isEmpty()) return messages;
 		}
 		return Collections.emptyList();
 	}
 
-	private List<Message> runBuild(String builder, File taraFiles) throws InternalServerError, IOException, NotFound, InterruptedException, URISyntaxException {
-		String ticket = accessor.postRunOperation(context(builder).operation("Build"), Resource.InputStreamProvider.of(taraFiles));
+	private List<Message> runBuild(String builder, File taraFiles, String operation) throws InternalServerError, IOException, NotFound, InterruptedException, URISyntaxException {
+		String ticket = accessor.postRunOperation(context(builder).operation(operation), Resource.InputStreamProvider.of(taraFiles));
 		OperationResult output = accessor.getOperationOutput(ticket);
 		while (output.state() == Running) {
 			Thread.sleep(1000);
