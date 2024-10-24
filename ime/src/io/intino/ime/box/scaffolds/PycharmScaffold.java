@@ -14,47 +14,31 @@ public class PycharmScaffold implements Scaffold {
 	private final DocumentManager manager;
 	private final String path;
 	private final QuassarParser quassar;
-	private String projectIml = """
-			<?xml version="1.0" encoding="UTF-8"?>
-			<module type="JAVA_MODULE" version="4">
-			  <component name="NewModuleRootManager" inherit-compiler-output="true">
-			    <exclude-output />
-			    <content url="file:/$PROJECT_DIR$">
-			      <sourceFolder url="file:/$PROJECT_DIR$src" isTestSource="false" />
-			    </content>
-			    <orderEntry type="inheritedJdk" />
-			    <orderEntry type="sourceFolder" forTests="false" />
-			  </component>
-			</module>
-			""";
+	private final String projectFile = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <project version="4">
+              <component name="ProjectRootManager" version="2" languageLevel="Python 3.8" default="false" project-jdk-name="$python_version$" project-jdk-type="Python SDK" />
+            </project>
+            """;
 
-	private String miscFile = """
-			<?xml version="1.0" encoding="UTF-8"?>
-			<project version="4">
-			  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="false" project-jdk-name="$java_version$" project-jdk-type="JavaSDK" />
-			</project>
-			""";
+	private final String modulesFile = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <project version="4">
+              <component name="ProjectModuleManager">
+                <modules>
+                  <module fileurl="file:/$PROJECT_DIR$/$project_name$.iml" filepath="$PROJECT_DIR$/$project_name$.iml" />
+                </modules>
+              </component>
+            </project>
+            """;
 
-	private String modulesFile = """
-			<?xml version="1.0" encoding="UTF-8"?>
-			<project version="4">
-			  <component name="ProjectModuleManager">
-			    <modules>
-			      <module fileurl="file:/$PROJECT_DIR$/$project_name$.iml" filepath="$PROJECT_DIR$/$project_name$.iml" />
-			    </modules>
-			  </component>
-			</project>
-			""";
-
-	private String mainCode = """
-			package $package_name$;
-			
-			public class Main {
-			    public static void main(String[] args) {
-			        System.out.println("Hello, World!");
-			    }
-			}
-			""";
+	private final String mainCode = """
+            def main():
+                print("Hello, World!")
+           
+            if __name__ == "__main__":
+                main()
+            """;
 
 	public PycharmScaffold(DocumentManager manager, String path){
 		this.manager = manager;
@@ -71,43 +55,15 @@ public class PycharmScaffold implements Scaffold {
 		}
 	}
 
-
 	@Override
 	public void build(){
 		try {
-			manager.upsertDocument(path(quassar.projectName() + ".iml"), process(projectIml));
-			manager.upsertDocument(path(".idea/misc.xml"), process(miscFile));
+			manager.upsertDocument(path(quassar.projectName() + ".iml"), process(projectFile));
 			manager.upsertDocument(path(".idea/modules.xml"), process(modulesFile));
-			manager.upsertDocument(path("src/" + qn().toLowerCase().replace(".", "/") + "/Main.java"), process(mainCode));
+			manager.upsertDocument(path("src/" + quassar.codePackage().toLowerCase().replace(".", "/") + "/main.py"), process(mainCode));
 		} catch (URISyntaxException e) {
 			Logger.error(e);
 		}
-
-	}
-
-	private String process(String projectIml) {
-		return projectIml
-				.replace("$project_name$", quassar.projectName())
-				.replace("$java_version$", "21")
-				.replace("$package_name$", qn())
-				.replace("$PROJECT_DIR$", projectDir());
-	}
-
-	private String projectDir() {
-		try {
-			return new URI(manager.root().getPath() + path).getPath();
-		} catch (URISyntaxException e) {
-			Logger.error(e);
-			return null;
-		}
-	}
-
-	private String qn() {
-		return "io.intino.quassar." + quassar.projectName();
-	}
-
-	private URI path(String subPath) throws URISyntaxException {
-		return new URI(path + subPath);
 	}
 
 	@Override
@@ -128,5 +84,25 @@ public class PycharmScaffold implements Scaffold {
 	@Override
 	public String resPath() {
 		return "res";
+	}
+
+	private String process(String projectFile) {
+		return projectFile
+				.replace("$project_name$", quassar.projectName())
+				.replace("$python_version$", "3.8")
+				.replace("$PROJECT_DIR$", projectDir());
+	}
+
+	private String projectDir() {
+		try {
+			return new URI(manager.root().getPath() + path).getPath();
+		} catch (URISyntaxException e) {
+			Logger.error(e);
+			return null;
+		}
+	}
+
+	private URI path(String subPath) throws URISyntaxException {
+		return new URI(path + subPath);
 	}
 }
