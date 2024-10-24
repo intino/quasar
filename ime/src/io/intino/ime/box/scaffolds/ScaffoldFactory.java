@@ -10,14 +10,16 @@ public class ScaffoldFactory {
 
 
 	private final Map<Language, List<Scaffold>> map = new HashMap<>() {{
-		put(Language.Java, List.of(Scaffold.Intellij));
+		put(Language.Java, List.of(Scaffold.Intellij, Scaffold.MavenIntellij));
 		put(Language.Python, List.of(Scaffold.Pycharm));
 	}};
 
 	;
 
 	public static io.intino.ime.box.scaffolds.Scaffold scaffoldOf(Scaffold scaffold, DocumentManager manager, String path) {
-		return scaffold == Scaffold.Intellij ? new IntellijScaffold(manager, path) : new PycharmScaffold(manager, path);
+		return scaffold == Scaffold.Intellij ? new IntellijScaffold(manager, path) :
+				scaffold == Scaffold.MavenIntellij ? new MavenIntellijScaffold(manager, path) :
+						new PycharmScaffold(manager, path);
 	}
 
 	public List<Language> languages() {
@@ -30,6 +32,6 @@ public class ScaffoldFactory {
 
 	public enum Language {Java, Python;}
 
-	public enum Scaffold {Intellij, Pycharm;}
+	public enum Scaffold {Intellij, MavenIntellij, Pycharm}
 
 }

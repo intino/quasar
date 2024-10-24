@@ -78,7 +78,7 @@ public class IntellijScaffold implements Scaffold {
 			manager.upsertDocument(path(quassar.projectName() + ".iml"), process(projectIml));
 			manager.upsertDocument(path(".idea/misc.xml"), process(miscFile));
 			manager.upsertDocument(path(".idea/modules.xml"), process(modulesFile));
-			manager.upsertDocument(path("src/" + qn().toLowerCase().replace(".", "/") + "/Main.java"), process(mainCode));
+			manager.upsertDocument(path("src/" + quassar.codePackage().toLowerCase().replace(".", "/") + "/Main.java"), process(mainCode));
 		} catch (URISyntaxException e) {
 			Logger.error(e);
 		}
@@ -109,7 +109,7 @@ public class IntellijScaffold implements Scaffold {
 		return projectIml
 				.replace("$project_name$", quassar.projectName())
 				.replace("$java_version$", "21")
-				.replace("$package_name$", qn())
+				.replace("$package_name$", quassar.codePackage())
 				.replace("$PROJECT_DIR$", projectDir());
 	}
 
@@ -120,10 +120,6 @@ public class IntellijScaffold implements Scaffold {
 			Logger.error(e);
 			return null;
 		}
-	}
-
-	private String qn() {
-		return "io.intino.quassar." + quassar.projectName();
 	}
 
 	private URI path(String subPath) throws URISyntaxException {
