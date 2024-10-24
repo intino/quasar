@@ -2,13 +2,16 @@ package io.intino.ime.model;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Language {
 	private String name;
 	private String description;
 	private boolean isPrivate;
 	private String parent;
+	private Set<String> programmingLanguages;
 	private List<Operation> operations;
 	private int modelsCount;
 	private String owner;
@@ -18,6 +21,7 @@ public class Language {
 
 	public Language() {
 		isPrivate = true;
+		programmingLanguages = new HashSet<>();
 		operations = new ArrayList<>();
 		createDate = Instant.now();
 		tagList = new ArrayList<>();
@@ -91,6 +95,15 @@ public class Language {
 
 	public Language operations(List<Operation> operations) {
 		this.operations = operations;
+		return this;
+	}
+
+	public boolean hasProgrammingLanguage(String language) {
+		return programmingLanguages.contains(language);
+	}
+
+	public Language programmingLanguages(List<String> languages) {
+		this.programmingLanguages = new HashSet<>(languages);
 		return this;
 	}
 

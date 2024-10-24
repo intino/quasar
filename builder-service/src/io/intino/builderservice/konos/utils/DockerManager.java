@@ -38,7 +38,7 @@ public class DockerManager {
 			if (!labels.containsKey("targets")) throw new Conflict("No target label found");
 			if (!labels.containsKey("operations")) throw new Conflict("No operations label found");
 			var targets = labels.get("targets").split(",");
-			var operations = labels.get("targets").split(",");
+			var operations = labels.get("operations").split(",");
 			labels.remove("targets");
 			labels.remove("operations");
 			return builderInfo

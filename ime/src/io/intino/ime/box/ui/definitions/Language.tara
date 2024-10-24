@@ -84,13 +84,13 @@ Template(format=headerBackground) languageHeaderTemplate
 			Text(format=appTitleStyle) title
 		Block(layout=Horizontal Center EndJustified, format=airLeft)
 			Block(layout=Horizontal Center)
-				Button(title="Open metamodel...", size=Small) openModel as Action
+				Button(title="Open metamodel...", size=Small, format=airRight) openModel as Action
 				Button(title="Properties...", size=Small) viewSettings as OpenDialog(dialog=settingsDialog)
 
 	Block(format=spaced) languageChildrenView as Popover Absolute(width=800px, height=400px)
 		TemplateStamp(template=languagesCatalogTable) languageChildrenCatalog
 
-	Dialog(title="Settings") settingsDialog as Relative(width=60%, height=80%)
+	Dialog(title="Settings") settingsDialog as Relative(width=60%, height=80%) Modal
         Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
         	TemplateStamp(template=languageSettingsEditor) settingsEditor
 		Divider

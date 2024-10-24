@@ -1,4 +1,4 @@
-package io.intino.ime.box.lsp;
+package io.intino.ime.box.languages;
 
 import io.intino.alexandria.logger.Logger;
 import io.intino.ls.IntinoLanguageServer;

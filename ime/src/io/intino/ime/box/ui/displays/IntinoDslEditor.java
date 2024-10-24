@@ -59,6 +59,7 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<ImeBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
+		if (model == null) return;
 		notifier.refresh(file());
 	}
 

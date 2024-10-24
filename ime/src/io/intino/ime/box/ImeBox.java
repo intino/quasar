@@ -9,17 +9,16 @@ import io.intino.ime.box.commands.CommandsFactory;
 import io.intino.ime.box.languages.LanguageLoader;
 import io.intino.ime.box.languages.LanguageManager;
 import io.intino.ime.box.languages.LanguageServerManager;
-import io.intino.ime.box.lsp.LanguageServerWebSocketHandler;
+import io.intino.ime.box.languages.LanguageServerWebSocketHandler;
 import io.intino.ime.box.models.ModelManager;
+import io.intino.ime.box.users.TokenProvider;
 import io.intino.ime.box.util.ModelSequence;
 import io.intino.ime.model.Model;
 import io.intino.languagearchetype.Archetype;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.lsp4j.FileOperationFilter;
 import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.io.IOException;
-import java.util.List;
 
 public class ImeBox extends AbstractBox {
 	private Archetype archetype;
@@ -30,6 +29,7 @@ public class ImeBox extends AbstractBox {
 	private AmidasOauthAccessor amidasOauthAccessor;
 	private LanguageServerManager serverManager;
 	private QuassarBuilderServiceAccessor builderServiceAccessor;
+	private TokenProvider tokenProvider;
 
 	public ImeBox(String[] args) {
 		this(new ImeConfiguration(args));
@@ -54,6 +54,7 @@ public class ImeBox extends AbstractBox {
 		serverManager = new LanguageServerManager(languageLoader, model -> modelManager.workspace(model));
 		modelManager = new ModelManager(archetype, serverManager);
 		builderServiceAccessor = new QuassarBuilderServiceAccessor(url(configuration.builderServiceUrl()));
+		tokenProvider = new TokenProvider(archetype.configuration().userTokens());
 		ModelSequence.init(archetype.configuration().modelSequence());
 	}
 
@@ -64,6 +65,10 @@ public class ImeBox extends AbstractBox {
 
 	public QuassarBuilderServiceAccessor builderService() {
 		return builderServiceAccessor;
+	}
+
+	public TokenProvider tokenProvider() {
+		return tokenProvider;
 	}
 
 	private LanguageServer serverFor(Session s) {

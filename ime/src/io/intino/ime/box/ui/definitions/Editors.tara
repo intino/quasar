@@ -12,10 +12,17 @@ Template(layout=Horizontal) languageEditor
 		Switch(title="Language is private", format=doubleAirBottom, state=On) accessTypeField
 
 Template userSettingsEditor
-	Block dockerHubBlock
-		Image(value="images/docker-logo-blue.png", colorInvertedWithDarkMode=true)
-		Text dockerHubUsernameField as Editable Labeled("Username")
-		Text dockerHubTokenField as Editable Labeled("Personal Access Token")
+	Block(format=doubleAirBottom) credentialsBlock
+		Text(value="Credentials used in Quassar", translate=true, format=h5 airBottom)
+		Block(layout=Vertical, format=doubleSpaced whiteBackground rounded airBottom)
+			Image(format=airBottom, colorInvertedWithDarkMode=true) dockerHubImage as Absolute(width=120px, height=27px)
+			Text(value="Go to your settings in Docker Hub to create a new personal access token for Quassar", translate=true, format=greyColor airBottom)
+			Text dockerHubTokenField as Editable Password Labeled("Personal Access Token") Focused
+		Block(layout=Vertical, format=doubleSpaced whiteBackground rounded airBottom)
+			Block(layout=Horizontal Center)
+				Image(format=airBottom, colorInvertedWithDarkMode=true) githubImage as Absolute(width=37px, height=37px)
+				Text(value="github", format=airLeft h3)
+			Text githubTokenField as Editable Password Labeled("Personal Access Token") Focused
 
 Template languageSettingsEditor
 	Selector(format=tabsStyle) tabSelector as Tabs
@@ -44,9 +51,16 @@ Template languageSettingsEditor
 				MaterialIcon(icon="Cancel", format=airTop redColor, visible=false) invalidBuilderIcon
 			Block(layout=Horizontal, format=airTop)
 				Button(title="Check", highlight=Outline, size=Small, format=airRight) checkBuilder as Readonly
-				Button(title="Details", size=Small, highlight=Outline) showBuilderInfo as OpenDialog(dialog=builderDetailsDialog) Readonly
-		Block
-			TemplateStamp(template=operationEditor) operations as Multiple("No operations")
+		Block(visible=false) loadingBlock
+			Text(value="Loading builder information...", format=orange) builderState
+		Block(visible=false) builderInfoBlock
+			Block(format=doubleAirBottom) operationsBlock
+				Text(value="Operations", format=h5, translate=true)
+				TemplateStamp(template=operationEditor) operations as Multiple("No operations defined")
+			Block(format=doubleAirBottom) builderDetailsBlock
+				Text(value="Details", format=h5 airBottom, translate=true)
+				Text(visible=false) errorMessage
+				Block(visible=false) builderPropertiesBlock > TemplateStamp(template=builderPropertyView) builderProperties as Multiple(noItemsMessage="No information")
 
 	Dialog(title="Add tag") addTagDialog as Absolute(width=280px, height=200px)
         Block as Relative(height=100%, offsetHeight=40px)
@@ -56,21 +70,13 @@ Template languageSettingsEditor
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addTagDialog)
             Button(title="Accept", size=Small, highlight=Fill) addTag as Action
 
-	Dialog(title="Builder details") builderDetailsDialog as Absolute(width=500px, height=350px)
-        Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
-        	Text(visible=false) errorMessage
-        	Block(visible=false) builderPropertiesBlock > TemplateStamp(template=builderPropertyView) builderProperties as Multiple(noItemsMessage="No information")
-		Divider
-        Block(layout=Horizontal EndJustified)
-            Button(title="Close", size=Small, format=airRight, highlight=Outline) as CloseDialog(builderDetailsDialog)
-
 Template(layout=Horizontal) modelSettingsEditor
-	Button(title="Properties...", size=Small, visible=false) smallIconInList as OpenDialog(settingsDialog)
-	Button(title="Properties...", visible=false) largeIconInList as OpenDialog(settingsDialog)
-	Button(title="Properties...", size=Small, visible=false) smallIcon as OpenDialog(settingsDialog)
-	Button(title="Properties...", visible=false) largeIcon as OpenDialog(settingsDialog)
+	Button(title="Properties...", format=airRight, size=Small, visible=false) smallIconInList as OpenDialog(settingsDialog)
+	Button(title="Properties...", format=airRight, visible=false) largeIconInList as OpenDialog(settingsDialog)
+	Button(title="Properties...", format=airRight, size=Small, visible=false) smallIcon as OpenDialog(settingsDialog)
+	Button(title="Properties...", format=airRight, visible=false) largeIcon as OpenDialog(settingsDialog)
 
-	Dialog(title="Properties") settingsDialog as Relative(width=60%, height=80%)
+	Dialog(title="Properties") settingsDialog as Relative(width=60%, height=80%) Modal
         Block as Relative(height=100%, offsetHeight=40px)
         	Block(format=airBottom)
         		Text(value="Attributes", translate=true, format=h5)
@@ -88,10 +94,10 @@ Template(layout=Horizontal) modelSettingsEditor
             Block(layout=Horizontal EndJustified) > Button(title="Apply", size=Small, highlight=Fill) saveSettings as Action
 
 Template(layout=Horizontal) cloneModelEditor
-	Button(title="Clone...", size=Small, visible=false) smallIconInList as OpenDialog(modelDialog)
-	Button(title="Clone...", visible=false) largeIconInList as OpenDialog(modelDialog)
-	Button(title="Clone...", size=Small, visible=false) smallIcon as OpenDialog(modelDialog)
-	Button(title="Clone...", visible=false) largeIcon as OpenDialog(modelDialog)
+	Button(title="Clone...", format=airRight, size=Small, visible=false) smallIconInList as OpenDialog(modelDialog)
+	Button(title="Clone...", format=airRight, visible=false) largeIconInList as OpenDialog(modelDialog)
+	Button(title="Clone...", format=airRight, size=Small, visible=false) smallIcon as OpenDialog(modelDialog)
+	Button(title="Clone...", format=airRight, visible=false) largeIcon as OpenDialog(modelDialog)
 
 	Dialog(title="Clone project") modelDialog as Absolute(width=400px, height=260px)
         Block as Relative(height=100%, offsetHeight=40px)
@@ -116,9 +122,13 @@ Template releaseEditor
 		Text(value="Level 1") level1Option as Option
 		Text(value="Level 2") level2Option as Option
 
-Template(layout=Horizontal Center, format=airTop airBottom) operationEditor
-	Block(format=airRight) as Absolute(width=200px) > Text nameField as Labeled("Name")
-	Block(format=airRight) as Absolute(width=270px) > Selector(format=doubleAirTop) typeField as ComboBox(view=TextView) Focused
+Template(layout=Horizontal Center, format=airTop airBottom whiteBackground spaced rounded) operationEditor
+	Block(format=airRight) as Absolute(width=200px)
+		Text(value="Name", translate=true, format=label)
+		Text nameField
+	Block
+		Text(value="Icon", translate=true, format=label airLeft)
+		Block as Absolute(width=270px) > Selector typeField as ComboBox(view=TextView) Focused
 
 	TemplateStamp(template=operationTypeView, visible=false)
 
@@ -131,5 +141,5 @@ Template(layout=Horizontal Center) operationTypeView
 	Block(layout=Horizontal EndJustified) > MaterialIconButton(title="", icon="HelpOutline", size=Small) iconField as Action
 
 Template(layout=Horizontal) builderPropertyView
-	Block as Relative(width=30%) > Text name
-	Block as Relative(width=70%) > Text value
+	Block as Relative(width=25%) > Text name
+	Block as Relative(width=75%) > Text value

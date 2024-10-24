@@ -4,6 +4,8 @@ import io.intino.alexandria.Resource;
 import io.intino.alexandria.exceptions.Conflict;
 import io.intino.alexandria.exceptions.InternalServerError;
 import io.intino.alexandria.ui.displays.UserMessage;
+import io.intino.alexandria.ui.displays.components.Block;
+import io.intino.alexandria.ui.displays.components.Text;
 import io.intino.alexandria.ui.displays.events.actionable.ToggleEvent;
 import io.intino.builderservice.schemas.BuilderInfo;
 import io.intino.ime.box.ImeBox;
@@ -15,11 +17,10 @@ import io.intino.ime.model.Release;
 
 import java.util.*;
 
-import static java.util.stream.Collectors.toMap;
-
 public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBox> {
 	private Language language;
 	private Resource logo;
+	private List<String> programmingLanguages;
 	private Map<String, Operation> operationMap;
 	private Set<String> tagSet;
 	private BuilderInfo info;
@@ -31,7 +32,6 @@ public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBo
 
 	public void language(Language language) {
 		this.language = language;
-		this.operationMap = language.operations().stream().collect(toMap(o -> UUID.randomUUID().toString(), o -> o, (a,b) -> b, LinkedHashMap::new));
 		this.tagSet = new HashSet<>(language.tags());
 	}
 
@@ -66,6 +66,10 @@ public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBo
 		return new ArrayList<>(operationMap.values());
 	}
 
+	public List<String> programmingLanguages() {
+		return programmingLanguages;
+	}
+
 	public List<String> tags() {
 		return new ArrayList<>(tagSet);
 	}
@@ -78,7 +82,6 @@ public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBo
 		builderBlock.onInit(e -> initBuilder());
 		builderBlock.onShow(e -> refreshBuilder());
 		addTagDialog.onOpen(e -> refreshTagDialog());
-		builderDetailsDialog.onOpen(e -> refreshBuilderDetailsDialog());
 	}
 
 	@Override
@@ -107,30 +110,14 @@ public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBo
 	}
 
 	private void initBuilder() {
-		builderField.onChange(e -> updateInfo());
+		builderField.onEnterPress(e -> checkBuilder());
 		checkBuilder.onExecute(e -> checkBuilder());
-	}
-
-	private void updateInfo() {
-		error = builderField.value() == null || builderField.value().isEmpty() ? null : error;
-		info = builderField.value() == null || builderField.value().isEmpty() ? null : info;
-		refreshBuilderInfo(info);
-		updateOperations(info);
-	}
-
-	private void updateOperations(BuilderInfo info) {
-		if (info == null) return;
-		List<String> operations = info.operations();
-		operationMap = operationMap.entrySet().stream().filter(o -> !operations.contains(o.getKey())).collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new));
-		operations.forEach(o -> operationMap.putIfAbsent(o, new Operation(o)));
-		refreshOperations();
 	}
 
 	private void refreshBuilder() {
 		builderField.value(language.builder());
-		loadBuilderInfo(language.builder());
-		refreshBuilderInfo(info);
-		refreshOperations();
+		loadBuilder(language.builder());
+		refreshBuilder(info);
 	}
 
 	private Release lastRelease() {
@@ -154,20 +141,6 @@ public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBo
 		refreshTags();
 	}
 
-	private void refreshOperations() {
-		operations.clear();
-		operationMap.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(o -> fill(o, operations.add()));
-	}
-
-	private void refreshBuilderInfo(BuilderInfo info) {
-		String name = builderField.value();
-		validBuilderIcon.visible(isValidBuilder());
-		noBuilderInfoIcon.visible(hasNoBuilderInformation());
-		invalidBuilderIcon.visible(isInvalidBuilder());
-		checkBuilder.readonly(name == null || name.isEmpty());
-		showBuilderInfo.readonly(name == null || name.isEmpty() || info == null);
-	}
-
 	private void addTag() {
 		if (!DisplayHelper.check(tagField, this::translate)) return;
 		addTagDialog.close();
@@ -179,13 +152,29 @@ public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBo
 		tagField.value(null);
 	}
 
-	private void refreshBuilderDetailsDialog() {
-		builderPropertiesBlock.visible(isValidBuilder());
-		errorMessage.visible(isInvalidBuilder());
-		errorMessage.value(error);
+	private void refreshBuilder(BuilderInfo info) {
+		refreshBuilderInfo(info);
+		refreshDetails(info);
+		refreshOperations(info);
+	}
+
+	private void refreshBuilderInfo(BuilderInfo info) {
+		String name = builderField.value();
+		validBuilderIcon.visible(isValidBuilder(info));
+		noBuilderInfoIcon.visible(hasNoBuilderInformation(info));
+		invalidBuilderIcon.visible(isInvalidBuilder(info));
+		checkBuilder.readonly(name == null || name.isEmpty());
+	}
+
+	private void refreshDetails(BuilderInfo info) {
+		BuilderBlock.BuilderInfoBlock.BuilderDetailsBlock.BuilderPropertiesBlock builderPropertiesBlock = builderBlock.builderInfoBlock.builderDetailsBlock.builderPropertiesBlock;
+		Text<?, ?> errorMessageComponent = builderBlock.builderInfoBlock.builderDetailsBlock.errorMessage;
+		builderPropertiesBlock.visible(isValidBuilder(info));
+		errorMessageComponent.visible(isInvalidBuilder(info));
+		errorMessageComponent.value(error);
 		if (!builderPropertiesBlock.isVisible()) return;
-		builderProperties.clear();
-		info.properties().forEach((key, value) -> fill(key, value, builderProperties.add()));
+		builderPropertiesBlock.builderProperties.clear();
+		info.properties().forEach((key, value) -> fill(key, value, builderPropertiesBlock.builderProperties.add()));
 	}
 
 	private void fill(String property, String value, BuilderPropertyView display) {
@@ -193,34 +182,70 @@ public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBo
 		display.refresh();
 	}
 
-	private void loadBuilderInfo(String builder) {
+	private void refreshOperations(BuilderInfo info) {
+		builderBlock.builderInfoBlock.operationsBlock.visible(info != null);
+		if (info == null) return;
+		operations.clear();
+		operationMap.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(o -> fill(o, operations.add()));
+	}
+
+	private void loadBuilder(String builder) {
 		try {
+			showLoading();
+			checkBuilder.readonly(true);
 			this.error = null;
-			this.info = box().builderService().getBuilderInfo(builder);
+			this.info = box().builderService().getBuilderInfo(builder, box().tokenProvider().of(username()).dockerHubToken());
+			this.operationMap = loadOperations();
+			this.programmingLanguages = info.targetLanguages();
 		} catch (InternalServerError | Conflict e) {
-			this.error = builderField.value() != null && !builderField.value().isEmpty() ? e.getMessage() : null;
+			this.error = builderField.value() != null && !builderField.value().isEmpty() ? e.getMessage().isEmpty() ? translate("No information") : e.getMessage() : null;
 			this.info = null;
+			this.operationMap = new HashMap<>();
+			this.programmingLanguages = new ArrayList<>();
+		}
+		finally {
+			hideLoading();
+			checkBuilder.readonly(false);
 		}
 	}
 
-	private void checkBuilder() {
-		refreshBuilderInfo(null);
-		loadBuilderInfo(builderField.value());
-		refreshBuilderInfo(info);
-		refreshOperations();
-		builderDetailsDialog.open();
+	private void showLoading() {
+		builderBlock.loadingBlock.visible(true);
+		builderBlock.builderInfoBlock.visible(false);
 	}
 
-	private boolean isValidBuilder() {
+	private void hideLoading() {
+		builderBlock.loadingBlock.visible(false);
+		builderBlock.builderInfoBlock.visible(true);
+	}
+
+	private void checkBuilder() {
+		refreshBuilder(null);
+		loadBuilder(builderField.value());
+		refreshBuilder(info);
+	}
+
+	private boolean isValidBuilder(BuilderInfo info) {
 		return info != null;
 	}
 
-	private boolean hasNoBuilderInformation() {
+	private boolean hasNoBuilderInformation(BuilderInfo info) {
 		return info == null && error == null;
 	}
 
-	private boolean isInvalidBuilder() {
+	private boolean isInvalidBuilder(BuilderInfo info) {
 		return info == null && error != null;
+	}
+
+	private Map<String, Operation> loadOperations() {
+		Map<String, Operation> result = new HashMap<>();
+		info.operations().forEach(o -> result.putIfAbsent(o, languageOperationOf(o)));
+		return result;
+	}
+
+	private Operation languageOperationOf(String name) {
+		Operation operation = language.operation(name);
+		return operation != null ? operation : new Operation(name);
 	}
 
 }

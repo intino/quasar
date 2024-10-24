@@ -83,10 +83,6 @@ public class ModelHelper {
 		return !ModelHelper.isMetamodel(model, box);
 	}
 
-	public static boolean canBuild(Model model, String user, ImeBox box) {
-		return true;
-	}
-
 	public static boolean canCreateRelease(Model model, String user, ImeBox box) {
 		if (user == null) return false;
 		if (!model.owner().equals(user)) return false;

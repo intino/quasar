@@ -23,13 +23,14 @@ public class LanguageCommands extends Commands {
 		return command.execute();
 	}
 
-	public void save(Language language, String description, boolean isPrivate, String builder, Resource logo, List<Operation> operations, List<String> tags, String username) {
+	public void save(Language language, String description, boolean isPrivate, String builder, Resource logo, List<Operation> operations, List<String> programmingLanguages, List<String> tags, String username) {
 		SaveLanguageCommand command = setup(new SaveLanguageCommand(box), username);
 		command.language = language;
 		command.description = description;
 		command.isPrivate = isPrivate;
 		command.builder = builder;
 		command.logo = logo;
+		command.programmingLanguages = programmingLanguages;
 		command.operations = operations;
 		command.tags = tags;
 		command.execute();

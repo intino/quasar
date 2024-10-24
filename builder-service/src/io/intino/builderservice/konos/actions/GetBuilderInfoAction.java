@@ -29,8 +29,7 @@ public class GetBuilderInfoAction implements io.intino.alexandria.rest.RequestEr
 	private BuilderInfo findBuilder() throws Conflict, NotFound {
 		try {
 			DockerManager.download(imageURL, registryToken);
-			BuilderInfo builderInfo = DockerManager.builderInfo(imageURL);
-			return builderInfo;
+			return DockerManager.builderInfo(imageURL);
 		} catch (InterruptedException | IOException e) {
 			Logger.error(e);
 			throw new NotFound(e.getMessage());

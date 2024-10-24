@@ -2,6 +2,7 @@ TARGETS:{editor}
 
 + configuration
     - modelSequence() in "model-sequence.tsv"
+    - userTokens() in "user-tokens.triples"
 
 + languages in "languages"
     - releases(language) in "{language}/releases.json"

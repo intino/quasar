@@ -1,8 +1,10 @@
 package io.intino.ime.box.ui.displays.templates;
 
+import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.displays.events.actionable.ToggleEvent;
 import io.intino.alexandria.ui.services.push.User;
 import io.intino.ime.box.ImeBox;
+import io.intino.ime.box.commands.UserCommands;
 import io.intino.ime.box.ui.DisplayHelper;
 import io.intino.ime.box.ui.PathHelper;
 import io.intino.ime.box.ui.ViewMode;
@@ -53,6 +55,8 @@ public class HeaderTemplate extends AbstractHeaderTemplate<ImeBox> {
 			session().add("callback", session().browser().requestUrl());
 			notifier.redirect(session().login(session().browser().baseUrl()));
 		});
+		settingsDialog.onOpen(e -> refreshSettingsDialog());
+		saveSettings.onExecute(e -> saveSettings());
 	}
 
 	@Override
@@ -71,7 +75,6 @@ public class HeaderTemplate extends AbstractHeaderTemplate<ImeBox> {
 		appViewSwitch.state(viewMode == ViewMode.Languages ? ToggleEvent.State.Off : ToggleEvent.State.On);
 		appViewText.value(appViewLabel(viewMode));
 		login.visible(loggedUser == null);
-		dashboard.visible(view != View.Dashboard && user() != null);
 		user.visible(loggedUser != null);
 		notLoggedBlock.visible(loggedUser == null);
 		userSettings.visible(loggedUser != null);
@@ -102,4 +105,14 @@ public class HeaderTemplate extends AbstractHeaderTemplate<ImeBox> {
 		openSearchListener.accept(true);
 	}
 
+	private void refreshSettingsDialog() {
+		settingsEditor.refresh();
+	}
+
+	private void saveSettings() {
+		if (!settingsEditor.check()) return;
+		settingsDialog.close();
+		box().commands(UserCommands.class).save(settingsEditor.tokens(), username());
+		notifyUser(translate("Saved successfully"), UserMessage.Type.Success);
+	}
 }

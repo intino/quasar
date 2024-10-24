@@ -91,12 +91,11 @@ Template(format=headerBackground) modelHeaderTemplate
 					Link(title="Save") save as Action
 		Block(layout=Horizontal Center EndJustified, format=airLeft)
 			Block(layout=Horizontal Center)
-				Button(title="Build", format=iconButtonColor, size=Small) build as Action
-				Button(title="Publish...", format=iconButtonColor, size=Small) publishTrigger as OpenDialog(publishDialog)
 				Block(format=languageOperationsStyle relative, visible=false) modelOperationsBlock
 					Text(value="", format=modelOperationsTextStyle, translate=true)
 					TemplateStamp(template=modelOperation) operations as Multiple(noItemsMessage="", arrangement=Horizontal)
-				Button(title="Open language...", size=Small) languagePath as OpenPage(ImeElements.language)
+				Button(title="Publish...", format=iconButtonColor airRight, size=Small) publishTrigger as OpenDialog(publishDialog)
+				Button(title="Open language...", size=Small, format=airRight) languagePath as OpenPage(ImeElements.language)
 				TemplateStamp(template=cloneModelEditor) cloneModelEditor
 				TemplateStamp(template=modelSettingsEditor) settingsEditor
 
@@ -112,7 +111,7 @@ Template(format=headerBackground) modelHeaderTemplate
 			Button(title="Create", size=Small, highlight=Fill) publish as Action
 
 Template modelOperation
-	Button(title="", size=Small) trigger as Action
+	Button(title="", size=Small, format=airRight) trigger as Action
 
 Display intinoFileBrowser
 	Notification refresh as Object(intinoFileBrowserInfo)

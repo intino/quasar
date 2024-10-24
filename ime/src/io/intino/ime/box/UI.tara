@@ -103,7 +103,6 @@ Template(format=headerBackground) headerTemplate
 		Block(layout=Horizontal Center EndJustified)
 			Button(title="Search...", format=airRight, visible=false) openSearch as Action
 			Button(title="Log in", format=airRight, visible=false) login as Action
-			Button(title="Dashboard", format=airRight, size=Small, visible=false) dashboard as OpenPage(ImeElements.dashboard)
 			Block(layout=Horizontal Center, visible=false) notLoggedBlock
 				MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
 				MaterialIconButton(title="Set light mode", format=airRight, icon="Brightness7", size=Small) as SetLightMode
@@ -113,10 +112,10 @@ Template(format=headerBackground) headerTemplate
 					MaterialIconButton(title="Set light mode", format=airRight, icon="Brightness7", size=Small) as SetLightMode
 				Selector as ListBox
 					Block as Option > Link(title="Home") home as OpenPage(page=ImeElements.home)
-					Block as Option > Link(title="Dashboard", visible=false) userHome as OpenPage(page=ImeElements.dashboard)
-					Block as Option > Link(title="Settings", visible=false) userSettings as OpenDialog(dialog=settingsDialog)
+					Block as Option > Link(title="Dashboard") userHome as OpenPage(page=ImeElements.dashboard)
+					Block as Option > Link(title="Settings") userSettings as OpenDialog(dialog=settingsDialog)
 
-	Dialog(title="Settings") settingsDialog as Relative(width=60%, height=80%)
+	Dialog(title="Settings") settingsDialog as Relative(width=60%, height=80%) Modal
         Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
         	TemplateStamp(template=userSettingsEditor) settingsEditor
 		Divider

@@ -39,6 +39,7 @@ public class OperationEditor extends AbstractOperationEditor<ImeBox> {
 	public void refresh() {
 		super.refresh();
 		nameField.value(operation.name());
+		typeField.readonly(false);
 		refreshIcons();
 	}
 

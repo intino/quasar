@@ -58,7 +58,6 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<ImeBox> {
 		cloneModelEditor.onClone(this::open);
 		publishDialog.onOpen(e -> refreshPublishDialog());
 		publish.onExecute(e -> publish());
-		build.onExecute(e -> build());
 		modelChildrenCatalog.onOpenModel(this::notifyOpen);
 		quassarHeader.onChangeView(this::openLanguage);
 	}
@@ -157,7 +156,6 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<ImeBox> {
 		cloneModelEditor.mode(CloneModelEditor.Mode.Small);
 		cloneModelEditor.refresh();
 		cloneModelEditor.visible(ModelHelper.canClone(model, box()));
-		build.visible(ModelHelper.canBuild(model, username(), box()));
 		publishTrigger.visible(ModelHelper.canCreateRelease(model, username(), box()));
 	}
 
@@ -205,11 +203,6 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<ImeBox> {
 		releaseEditor.refresh();
 	}
 
-	private void build() {
-		box().commands(ModelCommands.class).build(model, username());
-		notifyUser(translate("Model built"), UserMessage.Type.Success);
-	}
-
 	private void publish() {
 		if (!releaseEditor.check()) return;
 		publishDialog.close();
@@ -219,9 +212,8 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<ImeBox> {
 	}
 
 	private void execute(Operation operation) {
-		// TODO MC
 		box().commands(ModelCommands.class).execute(model, operation, username());
-		notifyUser("Pendiente de implementar esta operación", UserMessage.Type.Warning);
+		notifyUser(translate("Operation execution finished"), UserMessage.Type.Success);
 	}
 
 	private void openLanguage(ViewMode viewMode) {

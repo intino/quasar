@@ -14,6 +14,7 @@ public class SaveLanguageCommand extends Command<Boolean> {
 	public boolean isPrivate;
 	public String builder;
 	public Resource logo;
+	public List<String> programmingLanguages;
 	public List<Operation> operations;
 	public List<String> tags;
 
@@ -26,6 +27,7 @@ public class SaveLanguageCommand extends Command<Boolean> {
 		language.description(description);
 		language.isPrivate(isPrivate);
 		language.builder(builder);
+		language.programmingLanguages(programmingLanguages);
 		language.operations(operations);
 		language.tags(tags);
 		box.languageManager().save(language);
