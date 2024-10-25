@@ -21,7 +21,7 @@ public class QuassarBuilderRunner {
 		try {
 			if (checkArgumentsNumber(args) || (!checkConfigurationFile(args[0])))
 				throw new TaraException("Error finding args file");
-			new TaraCompilerRunner(false, operations).run(new File(args[0]));
+			new TaraCompilerRunner(true, operations).run(new File(args[0]));
 		} catch (Exception e) {
 			LOG.println(e.getMessage() == null ? e.getStackTrace()[0].toString() : e.getMessage());
 			System.exit(1);

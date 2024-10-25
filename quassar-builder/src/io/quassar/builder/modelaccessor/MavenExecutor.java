@@ -1,4 +1,4 @@
-package modelaccessor;
+package io.quassar.builder.modelaccessor;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -1,5 +1,6 @@
 import io.intino.tara.builder.utils.FileSystemUtils;
 import io.quassar.QuassarBuilderRunner;
+import io.quassar.builder.QuassarcRunner;
 import org.junit.Ignore;
 import org.junit.Test;
 

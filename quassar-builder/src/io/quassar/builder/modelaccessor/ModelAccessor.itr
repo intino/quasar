@@ -1,4 +1,4 @@
-rule type(modelaccessor)
+rule type(io.quassar.builder.modelaccessor)
 	package $package;
 
     import io.flogo.model.$outDsl+firstUpperCase~Graph;

@@ -1,3 +1,5 @@
+package io.quassar.builder;
+
 import io.intino.builder.CompilerConfiguration;
 import io.intino.magritte.builder.compiler.operations.LayerGenerationOperation;
 import io.intino.tara.Language;
@@ -8,7 +10,7 @@ import io.intino.tara.builder.core.errorcollection.TaraException;
 import io.intino.tara.builder.core.operation.model.ModelOperation;
 import io.intino.tara.model.Level;
 import io.intino.tara.processors.model.Model;
-import modelaccessor.ModelAccessorGenerator;
+import io.quassar.builder.modelaccessor.ModelAccessorGenerator;
 
 import java.io.File;
 import java.io.IOException;

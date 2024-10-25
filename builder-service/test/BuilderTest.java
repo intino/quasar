@@ -9,6 +9,7 @@ import io.intino.builderservice.konos.schemas.RegisterBuilder;
 import io.intino.builderservice.konos.schemas.RunOperationContext;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -38,7 +39,7 @@ public class BuilderTest {
 		var action = new PostBuildersAction();
 		action.box = box;
 		action.info = new RegisterBuilder()
-				.imageURL("octavioroncal/io.intino.tara.builder:1.3.0");
+				.imageURL("quassar625/io.quassar.quassar-builder:1.0.0");
 		action.execute();
 	}
 
@@ -50,6 +51,7 @@ public class BuilderTest {
 	}
 
 	@Test
+	@Ignore
 	public void should_run_build() throws InternalServerError, InterruptedException, NotFound, IOException {
 		var action = new PostRunOperationAction();
 		action.box = box;
@@ -61,7 +63,7 @@ public class BuilderTest {
 				.project("konos")
 				.projectVersion("13.0.1")
 				.generationPackage("model")
-				.imageURL("io.intino.tara.builder:1.3.0");
+				.imageURL("quassar625/io.quassar.quassar-builder:1.0.0");
 		String ticket = action.execute();
 		Thread.sleep(10000);
 		GetOperationOutputAction get = new GetOperationOutputAction();

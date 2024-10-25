@@ -1,4 +1,4 @@
-package modelaccessor;
+package io.quassar.builder.modelaccessor;
 
 import io.intino.itrules.template.Rule;
 import io.intino.itrules.template.Template;

@@ -1,4 +1,4 @@
-package modelaccessor;
+package io.quassar.builder.modelaccessor;
 
 import io.intino.builder.CompilerConfiguration;
 import io.intino.itrules.Engine;

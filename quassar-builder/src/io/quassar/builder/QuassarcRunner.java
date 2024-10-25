@@ -1,3 +1,5 @@
+package io.quassar.builder;
+
 import io.quassar.QuassarBuilderRunner;
 
 public class QuassarcRunner {
