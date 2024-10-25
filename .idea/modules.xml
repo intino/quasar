@@ -3,11 +3,13 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/archetype/archetype.iml" filepath="$PROJECT_DIR$/archetype/archetype.iml" />
-      <module fileurl="file://$PROJECT_DIR$/builder-service/builder-service.iml" filepath="$PROJECT_DIR$/builder-service/builder-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/builder-sdk/builder-sdk.iml" filepath="$PROJECT_DIR$/builder-sdk/builder-sdk.iml" group="builder-service" />
+      <module fileurl="file://$PROJECT_DIR$/builder-service/builder-service.iml" filepath="$PROJECT_DIR$/builder-service/builder-service.iml" group="builder-service" />
       <module fileurl="file://$PROJECT_DIR$/ime/ime.iml" filepath="$PROJECT_DIR$/ime/ime.iml" />
       <module fileurl="file://$PROJECT_DIR$/ime-elements/ime-elements.iml" filepath="$PROJECT_DIR$/ime-elements/ime-elements.iml" />
       <module fileurl="file://$PROJECT_DIR$/language-server/language-server.iml" filepath="$PROJECT_DIR$/language-server/language-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/monaco/monaco.iml" filepath="$PROJECT_DIR$/monaco/monaco.iml" />
+      <module fileurl="file://$PROJECT_DIR$/quassar-builder/quassar-builder.iml" filepath="$PROJECT_DIR$/quassar-builder/quassar-builder.iml" group="builder-service" />
     </modules>
   </component>
 </project>

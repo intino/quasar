@@ -1,0 +1,77 @@
+rule type(pom)
+	<?xml version="1.0" encoding="UTF-8"?>
+    <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<modelVersion>4.0.0</modelVersion>
+		<groupId>$groupId</groupId>
+		<artifactId>$name~-model-accessor</artifactId>
+		<version>$version</version>
+		<properties>
+			<maven.compiler.source>21</maven.compiler.source>
+			<maven.compiler.target>21</maven.compiler.target>
+		</properties>
+		<repositories>
+			<repository>
+				<id>intino-maven</id>
+				<name>intino-maven-releases</name>
+				<url>https://artifactory.intino.io/artifactory/release-libraries</url>
+			</repository>
+		</repositories>
+
+		<build>
+			<outputDirectory>out/production/$name~-model-accessor</outputDirectory>
+			<directory>out/build/$name~-model-accessor</directory>
+			<plugins>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>3.4.0</version>
+					<executions>
+						<execution>
+							<id>add-source</id>
+							<phase>generate-sources</phase>
+							<goals>
+								<goal>add-source</goal>
+							</goals>
+							<configuration>
+								<sources>
+									<source>gen</source>
+									<source>src</source>
+
+								</sources>
+							</configuration>
+						</execution>
+						<execution>
+							<id>add-test-source</id>
+							<phase>generate-test-sources</phase>
+							<goals>
+								<goal>add-test-source</goal>
+							</goals>
+							<configuration>
+								<sources>
+									<source>test</source>
+									<source>test-gen</source>
+
+								</sources>
+							</configuration>
+							</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+
+		<dependencies>
+			<dependency>
+				<groupId>io.intino.magritte</groupId>
+				<artifactId>builder</artifactId>
+				<version>8.0.0</version>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
+				<groupId>io.intino.magritte</groupId>
+				<artifactId>framework</artifactId>
+				<version>5.2.1</version>
+				<scope>compile</scope>
+			</dependency>
+		</dependencies>
+    </project>

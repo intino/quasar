@@ -5,7 +5,6 @@ import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.command.PullImageResultCallback;
 import com.github.dockerjava.core.DockerClientBuilder;
 import io.intino.alexandria.exceptions.Conflict;
-import io.intino.alexandria.logger.Logger;
 import io.intino.builderservice.konos.schemas.BuilderInfo;
 
 import java.io.IOException;

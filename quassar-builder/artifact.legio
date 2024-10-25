@@ -1,0 +1,11 @@
+dsl Legio
+
+Artifact("io.quassar", "1.0.0") quassar-builder
+	Imports
+		Compile("io.quassar", "builder-sdk", "1.0.0")
+		Compile("io.intino.magritte", "builder", "8.0.0")
+		Compile("io.intino.itrules", "engine", "2.0.0")
+		Test("junit", "junit", "4.13")
+	Package(mode = ModulesAndLibrariesLinkedByManifest)
+		finalName = "builder"
+RunConfiguration local

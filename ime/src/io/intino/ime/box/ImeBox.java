@@ -15,11 +15,9 @@ import io.intino.ime.box.util.ModelSequence;
 import io.intino.ime.model.Model;
 import io.intino.languagearchetype.Archetype;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.lsp4j.FileOperationFilter;
 import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.io.IOException;
-import java.util.List;
 
 public class ImeBox extends AbstractBox {
 	private Archetype archetype;

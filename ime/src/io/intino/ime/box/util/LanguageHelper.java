@@ -2,7 +2,6 @@ package io.intino.ime.box.util;
 
 import io.intino.alexandria.logger.Logger;
 import io.intino.alexandria.ui.services.push.User;
-import io.intino.builderservice.schemas.BuilderInfo;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.model.*;
 
