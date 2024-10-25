@@ -3,8 +3,6 @@ package io.intino.builderservice.konos.runner;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.InspectContainerResponse;
-import com.github.dockerjava.api.exception.ConflictException;
-import com.github.dockerjava.api.exception.NotFoundException;
 import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.core.DockerClientBuilder;
 import io.intino.alexandria.logger.Logger;

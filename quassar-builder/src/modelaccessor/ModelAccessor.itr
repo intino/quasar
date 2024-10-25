@@ -1,0 +1,18 @@
+rule type(modelaccessor)
+	package $package;
+
+    import io.flogo.model.$outDsl+firstUpperCase~Graph;
+    import io.intino.magritte.builder.StashBuilder;
+
+    import java.io.File;
+    import java.util.List;
+
+    public class ModelAccessor {
+    	public static $outDsl+firstUpperCase~Graph load(File $outDsl~File) {
+    		return load(List.of($outDsl~File));
+    	}
+
+    	public static $outDsl+firstUpperCase~Graph load(List<File> $outDsl~Files) {
+    		return $outDsl+firstUpperCase~Graph.load(new StashBuilder($outDsl~Files, "$outDsl~", "$version", "accessor", System.out).build());
+    	}
+    }
