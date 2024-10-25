@@ -4,7 +4,6 @@ import io.intino.alexandria.Resource;
 import io.intino.alexandria.exceptions.Conflict;
 import io.intino.alexandria.exceptions.InternalServerError;
 import io.intino.alexandria.ui.displays.UserMessage;
-import io.intino.alexandria.ui.displays.components.Block;
 import io.intino.alexandria.ui.displays.components.Text;
 import io.intino.alexandria.ui.displays.events.actionable.ToggleEvent;
 import io.intino.builderservice.schemas.BuilderInfo;

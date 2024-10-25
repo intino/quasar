@@ -5,6 +5,7 @@ import io.intino.alexandria.logger.Logger;
 import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.displays.components.Layer;
 import io.intino.alexandria.ui.utils.DelayerUtil;
+import io.intino.builderservice.schemas.Message;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.commands.ModelCommands;
 import io.intino.ime.box.models.ModelContainer;
@@ -17,6 +18,7 @@ import io.intino.ime.box.util.LanguageHelper;
 import io.intino.ime.box.util.ModelHelper;
 import io.intino.ime.model.Language;
 import io.intino.ime.model.Model;
+import io.intino.ime.model.Operation;
 
 import java.io.IOException;
 import java.util.*;
@@ -58,6 +60,7 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 		super.init();
 		header.onOpenSearch(e -> openSearch());
 		header.onOpenModel(this::open);
+		header.onExecuteOperation(this::executeOperation);
 		header.onOpenLanguage(this::open);
 		initFileBrowser();
 		initFileEditor();
@@ -368,6 +371,14 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 		layer.template(template);
 		template.page(HomeTemplate.Page.Search);
 		template.refresh();
+	}
+
+	private void executeOperation(Operation operation) {
+		console.clear();
+		console.messages(box().commands(ModelCommands.class).execute(model, operation, username()));
+		console.refresh();
+		console.show();
+		notifyUser(translate("Operation execution finished"), UserMessage.Type.Success);
 	}
 
 }

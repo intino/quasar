@@ -35,6 +35,7 @@ Template modelTemplate as Relative(height=100%, width=100%)
 				Text(value="Select file on left panel to open it")
 			Block(layout=Vertical Flexible, visible=false) fileSelectedBlock
 				DisplayStamp(display=intinoDslEditor, format=fullHeight) intinoDslEditor
+				TemplateStamp(template=consoleTemplate, visible=false) console
 
 	Block(format=spaced) workspaceDialog as Popover Absolute(width=200px)
 		Block(layout=Vertical Start)
@@ -112,6 +113,9 @@ Template(format=headerBackground) modelHeaderTemplate
 
 Template modelOperation
 	Button(title="", size=Small, format=airRight) trigger as Action
+
+Template consoleTemplate
+	Text(value="Soy los problems")
 
 Display intinoFileBrowser
 	Notification refresh as Object(intinoFileBrowserInfo)

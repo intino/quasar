@@ -1,5 +1,6 @@
 package io.intino.ime.box.commands;
 
+import io.intino.builderservice.schemas.Message;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.commands.model.*;
 import io.intino.ime.box.models.ModelContainer;
@@ -7,6 +8,8 @@ import io.intino.ime.model.Language;
 import io.intino.ime.model.Model;
 import io.intino.ime.model.Operation;
 import io.intino.ime.model.Release;
+
+import java.util.List;
 
 public class ModelCommands extends Commands {
 
@@ -113,7 +116,7 @@ public class ModelCommands extends Commands {
 		command.execute();
 	}
 
-	public String execute(Model model, Operation operation, String username) {
+	public List<Message> execute(Model model, Operation operation, String username) {
 		ExecuteModelOperationCommand command = setup(new ExecuteModelOperationCommand(box), username);
 		command.model = model;
 		command.operation = operation;

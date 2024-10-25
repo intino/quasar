@@ -2,6 +2,7 @@ package io.intino.ime.box.ui.displays.templates;
 
 import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.utils.DelayerUtil;
+import io.intino.builderservice.schemas.Message;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.ImeBrowser;
 import io.intino.ime.box.commands.LanguageCommands;
@@ -24,6 +25,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<ImeBox> {
 	private String _title;
 	private Consumer<Model> openModelListener;
 	private Consumer<Language> openLanguageListener;
+	private Consumer<Operation> executeOperationListener;
 
 	public ModelHeaderTemplate(ImeBox box) {
 		super(box);
@@ -47,6 +49,10 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<ImeBox> {
 
 	public void onOpenLanguage(Consumer<Language> listener) {
 		this.openLanguageListener = listener;
+	}
+
+	public void onExecuteOperation(Consumer<Operation> listener) {
+		this.executeOperationListener = listener;
 	}
 
 	@Override
@@ -212,8 +218,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<ImeBox> {
 	}
 
 	private void execute(Operation operation) {
-		box().commands(ModelCommands.class).execute(model, operation, username());
-		notifyUser(translate("Operation execution finished"), UserMessage.Type.Success);
+		executeOperationListener.accept(operation);
 	}
 
 	private void openLanguage(ViewMode viewMode) {

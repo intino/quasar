@@ -9,7 +9,7 @@ Artifact(groupId = "io.intino", version = "1.0.0") ime
 			Exclude("io.intino.tara","language")
 		Compile("io.intino.alexandria", "core-framework", "2.2.0")
 		Compile("io.intino.alexandria", "logger4j", "1.0.1")
-		Compile("io.intino", "language-server", "1.0.0")
+		Compile("io.intino", "language-server", "1.0.0-SNAPSHOT")
 		Compile("io.intino.amidas", "accessor", "4.1.1")
 		Compile("org.apache.commons", "commons-compress", "1.21")
 		Compile("io.intino", "quassar-builder-service-accessor", "1.0.0-SNAPSHOT")
@@ -17,7 +17,16 @@ Artifact(groupId = "io.intino", version = "1.0.0") ime
 		Web("io.intino", "ime-elements", "1.0.0")
 
 		Test("junit", "junit", "4.13.2")
+
 	Package(mode = ModulesAndLibrariesLinkedByManifest) as Runnable(mainClass="io.intino.ime.box.Main")
+
+    Distribution
+        Artifactory("intino-maven")
+			Release("https://artifactory.intino.io/artifactory/release-libraries")
+			Snapshot("https://artifactory.intino.io/artifactory/snapshot-libraries")
+
+	Deployment(server = deploy-quassar-dev, runConfiguration = dev)
+
 	Parameter("home")
 	Parameter("port")
 	Parameter("url")
@@ -35,3 +44,15 @@ RunConfiguration local
 	Argument("title", "Intino Language editor")
 	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
 	Argument("builder-service-url", "http://localhost:9002")
+
+RunConfiguration dev
+	Argument("home", "/home/intino")
+	Argument("url", "https://dev.quassar.io")
+	Argument("port", "8080")
+	Argument("federation-url", "https://cosmos.monentia.es/login")
+//	Argument("federation-url", "")
+	Argument("title", "Intino Language editor")
+	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
+	Argument("builder-service-url", "http://localhost:9002")
+
+Server(type=Dev) deploy-quassar-dev
