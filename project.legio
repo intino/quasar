@@ -1,5 +1,11 @@
 dsl Legio
 
 Project("describes here your project") intino-language-server
+
 	Repository("intino-maven")
 		Release("https://artifactory.intino.io/artifactory/releases")
+		Snapshot("https://artifactory.intino.io/artifactory/snapshots")
+
+	Repository("monentia-maven")
+		Release("https://artifactory.monentia.es/artifactory/releases")
+		Snapshot("https://artifactory.monentia.es/artifactory/snapshots")
