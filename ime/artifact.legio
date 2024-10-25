@@ -41,7 +41,7 @@ RunConfiguration local
 	Argument("port", "8080")
 	Argument("federation-url", "https://cosmos.monentia.es/login")
 //	Argument("federation-url", "")
-	Argument("title", "Intino Language editor")
+	Argument("title", "Quassar")
 	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
 	Argument("builder-service-url", "http://localhost:9002")
 
@@ -51,7 +51,7 @@ RunConfiguration dev
 	Argument("port", "8080")
 	Argument("federation-url", "https://cosmos.monentia.es/login")
 //	Argument("federation-url", "")
-	Argument("title", "Intino Language editor")
+	Argument("title", "Quassar")
 	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
 	Argument("builder-service-url", "http://localhost:9002")
 
