@@ -1,5 +1,6 @@
 package io.intino.ime.box.ui.displays.templates;
 
+import io.intino.alexandria.ui.displays.events.AddCollectionItemEvent;
 import io.intino.alexandria.ui.displays.events.AddItemEvent;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.ui.datasources.LanguageReleasesDatasource;
@@ -50,7 +51,7 @@ public class LanguageReleasesCatalog extends AbstractLanguageReleasesCatalog<Ime
 		languageReleasesTable.reload();
 	}
 
-	private void refresh(AddItemEvent event) {
+	private void refresh(AddCollectionItemEvent event) {
 		refresh(event.item(), event.component());
 	}
 

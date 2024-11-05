@@ -12,9 +12,13 @@ import java.net.URL;
 public class GitDocumentManager extends FileDocumentManager {
 	private final GitRepository repository;
 
-	public GitDocumentManager(File root, String branch, URL gitUrl, CredentialsProvider credentialsProvider) throws IOException, GitAPIException, URISyntaxException {
+	public GitDocumentManager(File root, String branch, URL gitUrl, String username, String token) throws IOException, GitAPIException, URISyntaxException {
 		super(root);
-		this.repository = new GitRepository(root, gitUrl.toString(),credentialsProvider,  branch);
+		this.repository = new GitRepository(root, gitUrl.toString(), credentialsProviderOf(username, token),  branch);
+	}
+
+	private CredentialsProvider credentialsProviderOf(String username, String token) {
+		return null; // TODO OR
 	}
 
 	@Override

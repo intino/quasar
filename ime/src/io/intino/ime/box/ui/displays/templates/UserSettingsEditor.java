@@ -12,11 +12,12 @@ public class UserSettingsEditor extends AbstractUserSettingsEditor<ImeBox> {
 
 	public boolean check() {
 		if (!DisplayHelper.check(dockerHubTokenField, this::translate)) return false;
+		if (!DisplayHelper.check(gitHubTokenField, this::translate)) return false;
 		return true;
 	}
 
 	public TokenProvider.Record tokens() {
-		return new TokenProvider.Record(username()).dockerHubToken(dockerHubTokenField.value());
+		return new TokenProvider.Record(username()).dockerHubToken(dockerHubTokenField.value()).gitHubToken(gitHubTokenField.value());
 	}
 
 	@Override
@@ -26,5 +27,6 @@ public class UserSettingsEditor extends AbstractUserSettingsEditor<ImeBox> {
 		dockerHubImage.value(UserSettingsEditor.class.getResource("/images/docker.png"));
 		githubImage.value(UserSettingsEditor.class.getResource("/images/github.png"));
 		dockerHubTokenField.value(record.dockerHubToken());
+		gitHubTokenField.value(record.gitHubToken());
 	}
 }

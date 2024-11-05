@@ -1,6 +1,7 @@
 package io.intino.ime.box.ui.displays.templates;
 
 import io.intino.alexandria.Resource;
+import io.intino.alexandria.ui.displays.events.AddCollectionItemEvent;
 import io.intino.alexandria.ui.displays.events.AddItemEvent;
 import io.intino.alexandria.ui.displays.events.collection.RefreshCountEvent;
 import io.intino.alexandria.ui.services.push.User;
@@ -114,7 +115,7 @@ public class LanguagesCatalog extends AbstractLanguagesCatalog<ImeBox> {
 		languagesMagazine.source(source);
 	}
 
-	private void refresh(AddItemEvent event) {
+	private void refresh(AddCollectionItemEvent event) {
 		Language language = event.item();
 		Release release = box().languageManager().lastRelease(language);
 		LanguageMagazineItem item = event.component();

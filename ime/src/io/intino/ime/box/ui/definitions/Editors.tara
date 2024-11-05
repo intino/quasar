@@ -22,7 +22,7 @@ Template userSettingsEditor
 			Block(layout=Horizontal Center)
 				Image(format=airBottom, colorInvertedWithDarkMode=true) githubImage as Absolute(width=37px, height=37px)
 				Text(value="github", format=airLeft h3)
-			Text githubTokenField as Editable Password Labeled("Personal Access Token") Focused
+			Text gitHubTokenField as Editable Password Labeled("Personal Access Token") Focused
 
 Template languageSettingsEditor
 	Selector(format=tabsStyle) tabSelector as Tabs
@@ -77,16 +77,20 @@ Template(layout=Horizontal) modelSettingsEditor
 	Button(title="Properties...", format=airRight, visible=false) largeIcon as OpenDialog(settingsDialog)
 
 	Dialog(title="Properties") settingsDialog as Relative(width=60%, height=80%) Modal
-        Block as Relative(height=100%, offsetHeight=40px)
-        	Block(format=airBottom)
-        		Text(value="Attributes", translate=true, format=h5)
-	        	Text(format=doubleAirBottom) settingsTitleField as Editable Labeled("Title")
-        	Block(format=airBottom)
-        		Text(value="Project access", translate=true, format=h5)
-	        	Switch(title="Project is private", format=airBottom) accessTypeField
-        	Block(format=airBottom)
-        		Text(value="Remove project", translate=true, format=h5)
-        		Text(value="Removed projects cannot be restored!", format=greyColor middleAirBottom)
+        Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
+        	Block
+        		Text(value="Attributes", translate=true, format=h5 middleAirBottom doubleAirTop)
+	        	Text(format=doubleAirBottom) settingsTitleField as Editable(shrink=true) Labeled("Title")
+        	Block
+        		Text(value="Project access", translate=true, format=h5 middleAirBottom doubleAirTop)
+	        	Switch(title="Project is private", format=doubleAirBottom) accessTypeField
+        	Block
+        		Text(value="Git settings", translate=true, format=h5 middleAirBottom doubleAirTop)
+	        	Text(format=doubleAirBottom) settingsGitUrlField as Editable(shrink=true) Labeled("URL")
+	        	Text(format=doubleAirBottom) settingsGitBranchField as Editable(shrink=true) Labeled("Branch")
+        	Block
+        		Text(value="Remove project", translate=true, format=h5 doubleAirTop)
+        		Text(value="Removed projects cannot be restored!", format=greyColor airBottom)
 				Block(layout=Horizontal) > Button(title="Remove project...", format=airRight redBackground whiteColor, highlight=Fill) removeModel as Action Readonly Affirmed("Are you sure to remove project?")
 		Divider
         Block(layout=Horizontal)

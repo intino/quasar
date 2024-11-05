@@ -9,11 +9,13 @@ import io.intino.ime.model.Release;
 import io.intino.ime.model.WorkspaceProperties;
 import io.intino.languagearchetype.Archetype;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
@@ -214,7 +216,7 @@ public class ModelManager {
 	private LanguageServer server(Model model) {
 		try {
 			return serverManager.get(model);
-		} catch (IOException e) {
+		} catch (IOException | GitAPIException | URISyntaxException e) {
 			Logger.error(e);
 			return null;
 		}

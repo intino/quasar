@@ -16,9 +16,11 @@ import io.intino.ime.box.util.ModelSequence;
 import io.intino.ime.model.Model;
 import io.intino.languagearchetype.Archetype;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 public class ImeBox extends AbstractBox {
 	private Archetype archetype;
@@ -51,7 +53,7 @@ public class ImeBox extends AbstractBox {
 		commandsFactory = new CommandsFactory(this);
 		languageLoader = new LanguageLoader(archetype.repository().languages().root(), url(configuration.languageArtifactory()));
 		languageManager = new LanguageManager(archetype);
-		serverManager = new LanguageServerManager(languageLoader, model -> modelManager.workspace(model));
+		serverManager = new LanguageServerManager(languageLoader, model -> modelManager.workspace(model), user -> tokenProvider.of(user).gitHubToken());
 		modelManager = new ModelManager(archetype, serverManager);
 		builderServiceAccessor = new QuassarBuilderServiceAccessor(url(configuration.builderServiceUrl()));
 		tokenProvider = new TokenProvider(archetype.configuration().userTokens());
@@ -71,11 +73,15 @@ public class ImeBox extends AbstractBox {
 		return tokenProvider;
 	}
 
-	private LanguageServer serverFor(Session s) {
+	public LanguageServerManager serverManager() {
+		return serverManager;
+	}
+
+	private LanguageServer serverFor(Session session) {
 		try {
-			Model model = modelManager.model(s.getUpgradeRequest().getParameterMap().get("model").getFirst());
+			Model model = modelManager.model(session.getUpgradeRequest().getParameterMap().get("model").getFirst());
 			return serverManager.get(model);
-		} catch (IOException e) {
+		} catch (IOException | GitAPIException | URISyntaxException e) {
 			Logger.error(e);
 			return null;
 		}

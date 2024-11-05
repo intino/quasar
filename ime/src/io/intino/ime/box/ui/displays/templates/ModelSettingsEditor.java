@@ -68,6 +68,7 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<ImeBox> {
 		boolean isPrivate = accessTypeField.state() == ToggleEvent.State.On;
 		settingsDialog.close();
 		saveAccessType(isPrivate);
+		saveGitSettings();
 		if (saveTitleListener != null) saveTitleListener.accept(settingsTitleField.value());
 		if (saveAccessTypeListener != null) saveAccessTypeListener.accept(isPrivate);
 	}
@@ -75,6 +76,10 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<ImeBox> {
 	private void saveAccessType(boolean isPrivate) {
 		if (isPrivate) box().commands(ModelCommands.class).makePrivate(model, username());
 		else box().commands(ModelCommands.class).makePublic(model, username());
+	}
+
+	private void saveGitSettings() {
+		box().commands(ModelCommands.class).saveGitSettings(model, settingsGitUrlField.value(), settingsGitBranchField.value(), username());
 	}
 
 	private void removeModel() {

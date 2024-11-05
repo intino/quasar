@@ -6,6 +6,7 @@ public final class Model {
 	private String modelingLanguage;
 	private String releasedLanguage;
 	private String owner;
+	private GitSettings gitSettings = GitSettings.Empty();
 	private boolean isPrivate = true;
 
 	public static final String DefaultOwner = "anonymous";
@@ -72,6 +73,26 @@ public final class Model {
 		return this;
 	}
 
+	public GitSettings gitSettings() {
+		return gitSettings;
+	}
+
+	public Model gitSettings(GitSettings gitSettings) {
+		this.gitSettings = gitSettings;
+		return this;
+	}
+
+	public record GitSettings(String url, String branch) {
+		public static GitSettings Empty() {
+			return new GitSettings(null, null);
+		}
+
+		public boolean equals(GitSettings settings) {
+			return url != null && settings.url != null && url.equals(settings.url) &&
+				   branch != null && settings.branch != null && branch.equals(settings.branch);
+		}
+	}
+
 	public static Model clone(Model model) {
 		Model result = new Model();
 		result.label = model.label();
@@ -79,6 +100,7 @@ public final class Model {
 		result.releasedLanguage = model.releasedLanguage();
 		result.owner = model.owner();
 		result.isPrivate = true;
+		result.gitSettings = model.gitSettings();
 		return result;
 	}
 

@@ -4,7 +4,6 @@ import io.intino.builderservice.schemas.Message;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.commands.model.*;
 import io.intino.ime.box.models.ModelContainer;
-import io.intino.ime.model.Language;
 import io.intino.ime.model.Model;
 import io.intino.ime.model.Operation;
 import io.intino.ime.model.Release;
@@ -123,4 +122,11 @@ public class ModelCommands extends Commands {
 		return command.execute();
 	}
 
+	public void saveGitSettings(Model model, String url, String branch, String username) {
+		SaveModelGitSettingsCommand command = setup(new SaveModelGitSettingsCommand(box), username);
+		command.model = model;
+		command.url = url;
+		command.branch = branch;
+		command.execute();
+	}
 }

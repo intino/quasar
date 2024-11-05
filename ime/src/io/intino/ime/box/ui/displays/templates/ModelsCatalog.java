@@ -2,6 +2,7 @@ package io.intino.ime.box.ui.displays.templates;
 
 import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.displays.components.Grouping;
+import io.intino.alexandria.ui.displays.events.AddCollectionItemEvent;
 import io.intino.alexandria.ui.displays.events.AddItemEvent;
 import io.intino.alexandria.ui.displays.events.SelectionEvent;
 import io.intino.alexandria.ui.displays.notifiers.GroupingNotifier;
@@ -97,7 +98,7 @@ public class ModelsCatalog extends AbstractModelsCatalog<ImeBox> {
 		modelTable.source(source);
 	}
 
-	private void refresh(AddItemEvent event) {
+	private void refresh(AddCollectionItemEvent event) {
 		Model model = event.item();
 		ModelTableRow row = event.component();
 		row.modelLabelItem.accessType.visible(!model.isPrivate());
@@ -168,7 +169,7 @@ public class ModelsCatalog extends AbstractModelsCatalog<ImeBox> {
 		languageModelLabelField.value(null);
 	}
 
-	private void refreshLanguage(AddItemEvent event) {
+	private void refreshLanguage(AddCollectionItemEvent event) {
 		Language language = event.item();
 		LanguageTableRow row = event.component();
 		row.lteLogoItem.logo.value(LanguageHelper.logo(language, box()));

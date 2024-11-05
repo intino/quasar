@@ -23,6 +23,7 @@ public class TokenProvider {
 
 	private static final Map<String, BiConsumer<Record, String>> setters = new HashMap<>() {{
 		put("dockerhub.token", (r, v) -> r.dockerHubToken = v);
+		put("github.token", (r, v) -> r.gitHubToken = v);
 	}};
 
 	public void load() {
@@ -65,6 +66,7 @@ public class TokenProvider {
 	public static class Record {
 		private final String username;
 		private String dockerHubToken;
+		private String gitHubToken;
 
 		public Record(String username) {
 			this.username = username;
@@ -78,8 +80,17 @@ public class TokenProvider {
 			return dockerHubToken;
 		}
 
-		public Record dockerHubToken(String dockerHubToken) {
-			this.dockerHubToken = dockerHubToken;
+		public Record dockerHubToken(String value) {
+			this.dockerHubToken = value;
+			return this;
+		}
+
+		public String gitHubToken() {
+			return gitHubToken;
+		}
+
+		public Record gitHubToken(String value) {
+			this.gitHubToken = value;
 			return this;
 		}
 	}
@@ -95,7 +106,10 @@ public class TokenProvider {
 
 	private static final String Triple = "%s	%s	%s";
 	private String serialize(Record record) {
-		return String.format(Triple, record.username, "dockerhub.token", record.dockerHubToken);
+		StringBuilder result = new StringBuilder();
+		result.append(String.format(Triple, record.username, "dockerhub.token", record.dockerHubToken)).append("\n");
+		result.append(String.format(Triple, record.username, "github.token", record.gitHubToken));
+		return result.toString();
 	}
 
 	private Record emptyRecord(String username) {
