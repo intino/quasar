@@ -8,6 +8,8 @@ import io.intino.ime.model.Model;
 import io.intino.ime.model.Release;
 import io.intino.ime.model.WorkspaceProperties;
 import io.intino.languagearchetype.Archetype;
+import io.intino.ls.document.DocumentManager;
+import io.intino.ls.document.FileDocumentManager;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.lsp4j.services.LanguageServer;

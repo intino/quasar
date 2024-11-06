@@ -33,6 +33,7 @@ Artifact(groupId = "io.intino", version = "1.0.0-SNAPSHOT") ime
 	Parameter("title")
 	Parameter("language-artifactory")
 	Parameter("federation-url")
+	Parameter("default-builder")
 	Parameter("builder-service-url")
 
 RunConfiguration local
@@ -43,6 +44,7 @@ RunConfiguration local
 //	Argument("federation-url", "")
 	Argument("title", "Quassar")
 	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
+	Argument("default-builder", "quassar625/io.quassar.quassar-builder:1.0.0")
 	Argument("builder-service-url", "http://localhost:9002")
 
 RunConfiguration dev
@@ -53,6 +55,7 @@ RunConfiguration dev
 //	Argument("federation-url", "")
 	Argument("title", "Quassar")
 	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
+	Argument("default-builder", "quassar625/io.quassar.quassar-builder:1.0.0")
 	Argument("builder-service-url", "http://localhost:9002")
 
 Server(type=Dev) deploy-quassar-dev

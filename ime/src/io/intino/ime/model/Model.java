@@ -91,6 +91,10 @@ public final class Model {
 			return url != null && settings.url != null && url.equals(settings.url) &&
 				   branch != null && settings.branch != null && branch.equals(settings.branch);
 		}
+
+		public boolean defined() {
+			return url != null && branch != null;
+		}
 	}
 
 	public static Model clone(Model model) {

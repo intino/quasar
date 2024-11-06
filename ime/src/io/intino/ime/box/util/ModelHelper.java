@@ -5,7 +5,15 @@ import io.intino.alexandria.Timetag;
 import io.intino.alexandria.ui.services.push.User;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.model.*;
+import io.intino.ls.document.DocumentManager;
+import io.intino.ls.document.FileDocumentManager;
+import io.intino.ls.document.GitDocumentManager;
+import org.eclipse.jgit.api.errors.GitAPIException;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.Collections;
@@ -17,6 +25,14 @@ import java.util.function.Function;
 public class ModelHelper {
 
 	public static final String FirstReleaseVersion = "1.0.0";
+
+	public static DocumentManager documentManager(Model model, String username, ImeBox box) throws GitAPIException, IOException, URISyntaxException {
+		Model.GitSettings gitSettings = model.gitSettings();
+		File workspace = new File(box.modelManager().workspace(model));
+		String token = box.tokenProvider().of(username).gitHubToken();
+		if (token == null || !gitSettings.defined()) return new FileDocumentManager(workspace);
+		return new GitDocumentManager(workspace, gitSettings.branch(), new URI(gitSettings.url()).toURL(), username, box.tokenProvider().of(username).gitHubToken());
+	}
 
 	public static String label(Model model, String language, ImeBox box) {
 		if (isMetamodel(model, box)) return String.format(box.translatorService().translate("%s metamodel", language), model.label());
