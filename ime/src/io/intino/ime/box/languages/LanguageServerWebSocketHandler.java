@@ -74,7 +74,8 @@ public class LanguageServerWebSocketHandler {
 			byte[] buffer = new byte[2048];
 			while ((bytesRead = serverInput.read(buffer)) != -1) {
 				String content = new String(buffer, 0, bytesRead);
-				content = content.substring(content.indexOf("\n"));
+				if (content.contains("\n"))
+					content = content.substring(content.indexOf("\n"));
 				session.getRemote().sendString(content.trim());
 			}
 		} catch (Throwable e) {

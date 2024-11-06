@@ -6,12 +6,12 @@ import io.intino.ime.model.LanguageLevel;
 import io.intino.ime.model.Model;
 import io.intino.ime.model.Release;
 
-public class CreateLanguageReleaseCommand extends Command<Release> {
+public class PublishCommand extends Command<Release> {
 	public Model model;
 	public LanguageLevel level;
 	public String version;
 
-	public CreateLanguageReleaseCommand(ImeBox box) {
+	public PublishCommand(ImeBox box) {
 		super(box);
 	}
 
