@@ -52,7 +52,7 @@ public class BuilderOrchestator {
 			if (taraFiles == null)
 				return List.of(new Message().kind(Message.Kind.ERROR).content("Model files not found"));
 			List<Message> messages = runBuild(builder, taraFiles, operation);
-			if(!messages.isEmpty()) return messages;
+			if (messages.stream().noneMatch(m -> m.kind().equals(Message.Kind.ERROR))) return messages;
 			manager.commit(user);
 			manager.push();
 		} catch (Throwable t) {
@@ -96,7 +96,7 @@ public class BuilderOrchestator {
 			Thread.sleep(1000);
 			output = accessor.getOperationOutput(ticket);
 		}
-		if(!output.success()) return output.messages();
+		if (!output.success()) return output.messages();
 		doExtraction(ticket, output, quassar.pathOf(builder), scaffoldOf(builder));
 		//moveGraphJson();
 		return Collections.emptyList();

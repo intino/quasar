@@ -43,7 +43,7 @@ public class LanguageCommands extends Commands {
 	}
 
 	public Release publish(Model model, LanguageLevel level, String version, String username) {
-		PublishCommand command = setup(new PublishCommand(box), username);
+		PublishLanguageCommand command = setup(new PublishLanguageCommand(box), username);
 		command.model = model;
 		command.level = level;
 		command.version = version;
