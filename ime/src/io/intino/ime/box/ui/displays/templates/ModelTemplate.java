@@ -65,7 +65,7 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 		header.onPublish(this::refreshConsole);
 		header.onExecuteOperation(this::executeOperation);
 		header.onOpenLanguage(this::open);
-		console.onClose(e -> console.hide());
+		console.onClose(e -> consoleBlock.hide());
 		initFileBrowser();
 		initFileEditor();
 		initFileModifiedDialog();
@@ -390,6 +390,7 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 	}
 
 	private void executeOperation(Operation operation) {
+		notifyUser(String.format(translate("Executing %s..."), operation.name().toLowerCase()), UserMessage.Type.Loading);
 		ExecutionResult result = box().commands(ModelCommands.class).execute(model, operation, username());
 		refreshConsole(result.messages());
 		if (result.success()) notifyUser(translate("Operation execution finished"), UserMessage.Type.Success);
@@ -401,6 +402,7 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 	}
 
 	private void refreshConsole(List<Message> messages) {
+		consoleBlock.show();
 		console.messages(messages);
 		console.refresh();
 		console.show();

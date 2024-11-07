@@ -285,7 +285,7 @@ Format("background:'white'", darkContent="background:'#1F1F1F'") mainPanelStyle
 Format("background:'white',padding:'10px 0 0 10px',borderRadius:'10px 10px 0 0',marginRight:'10px'", darkContent="background:'#1F1F1F'") dashboardMainPanelStyle
 Format("background:'white',padding:'10px',borderRadius:'10px 10px 0 0'", darkContent="background:'#1F1F1F'") leftPanelStyle
 Format("position:'absolute',right:'0',top:'0',marginRight:'5px',marginTop:'5px'") closeIcon
-Format("position:'relative',minHeight:'400px',overflow:'auto',background:'white'", darkContent="background:'#1F1F1F'") consoleStyle
+Format("position:'relative',marginTop:'5px',minHeight:'400px',overflow:'auto',background:'white'", darkContent="background:'#1F1F1F'") consoleStyle
 
 // Cards
 Format("color:'black',fontSize:'40pt',textShadow:'2px 2px 2px #fff',marginTop:'30px'") cardTitle

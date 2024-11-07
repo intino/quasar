@@ -176,7 +176,7 @@ public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBo
 	}
 
 	private void refreshDetails(BuilderInfo info) {
-		BuilderBlock.BuilderInfoBlock.BuilderDetailsBlock.BuilderPropertiesBlock builderPropertiesBlock = builderBlock.builderInfoBlock.builderDetailsBlock.builderPropertiesBlock;
+		Main.BuilderBlock.BuilderInfoBlock.BuilderDetailsBlock.BuilderPropertiesBlock builderPropertiesBlock = builderBlock.builderInfoBlock.builderDetailsBlock.builderPropertiesBlock;
 		Text<?, ?> errorMessageComponent = builderBlock.builderInfoBlock.builderDetailsBlock.errorMessage;
 		builderPropertiesBlock.visible(isValidBuilder(info));
 		errorMessageComponent.visible(isInvalidBuilder(info));

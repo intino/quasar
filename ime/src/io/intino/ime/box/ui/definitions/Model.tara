@@ -35,7 +35,7 @@ Template modelTemplate as Relative(height=100%, width=100%)
 				Text(value="Select file on left panel to open it")
 			Block(layout=Vertical Flexible, visible=false) fileSelectedBlock
 				DisplayStamp(display=intinoDslEditor, format=fullHeight) intinoDslEditor
-				TemplateStamp(template=consoleTemplate, visible=false) console
+			Block(visible=false) consoleBlock > TemplateStamp(template=consoleTemplate) console
 
 	Block(format=spaced) workspaceDialog as Popover Absolute(width=200px)
 		Block(layout=Vertical Start)

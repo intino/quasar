@@ -33,7 +33,7 @@ public class ExecuteModelOperationCommand extends Command<Command.ExecutionResul
 			FileDocumentManager documentManager = new FileDocumentManager(new File(box.modelManager().workspace(model)));
 			BuilderOrchestator orchestator = new BuilderOrchestator(builderServiceUrl, documentManager);
 			return ExecutionResult.build(orchestator.exec(author, language.builder(), operation.name()));
-		} catch (IOException e) {
+		} catch (Throwable e) {
 			Logger.error(e);
 			return ExecutionResult.build(List.of(new Message().content(e.getMessage())));
 		}

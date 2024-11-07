@@ -69,42 +69,43 @@ Template languageSettingsEditor
 		Text(value="General", translate=true) propertiesOption as Option
 		Text(value="Builder", translate=true) builderOption as Option
 
-	Block(layout=Horizontal Flexible, format=doubleAirTop) propertiesBlock as Conditional(tabSelector.propertiesOption)
-		Block as Absolute(width=170px)
-			Image(format=doubleAirBottom) logoField as Editable Absolute(height=150px, width=150px)
-		Block(layout=Vertical Flexible)
-			Block(format=doubleAirBottom) > Text(value="Name", translate=true, format=labelColor); Text nameField
-			Block(format=doubleAirBottom) > Text(value="Group", translate=true, format=labelColor); Text groupField as Editable Focused
-			Block(format=doubleAirBottom) > Text(value="Description", translate=true, format=labelColor); Text descriptionField as Editable
-			Switch(title="Language is private", format=doubleAirBottom) accessTypeField
-			Block(format=doubleAirBottom)
-				Text(value="Tags", translate=true, format=h5 middleAirBottom)
-				TemplateStamp(template=tagEditor) tags as Multiple("No tags", arrangement=Horizontal, spacing=DP8)
-				Block(layout=Horizontal, format=airTop) > Button(title="Add tag", size=Small, highlight=Outline) as OpenDialog(addTagDialog)
-			Block(format=doubleAirBottom)
-				Text(value="Remove language", translate=true, format=h5 middleAirBottom)
-				Text(value="Removed languages cannot be restored!", format=greyColor airBottom, translate=true)
-				Block(layout=Horizontal) > Button(title="Remove language...", format=airRight redBackground whiteColor, highlight=Fill) removeLanguage as Action Readonly Affirmed("Are you sure to remove language?")
+	Block(layout=Vertical Center) main as Relative(width=100%)
+		Block(layout=Horizontal Flexible, format=doubleAirTop) propertiesBlock as Relative(width=95%) Conditional(tabSelector.propertiesOption)
+			Block as Absolute(width=170px)
+				Image(format=doubleAirBottom) logoField as Editable Absolute(height=150px, width=150px)
+			Block(layout=Vertical Flexible)
+				Block(format=doubleAirBottom) > Text(value="Name", translate=true, format=labelColor); Text nameField
+				Block(format=doubleAirBottom) > Text(value="Group", translate=true, format=labelColor); Text groupField as Editable Focused
+				Block(format=doubleAirBottom) > Text(value="Description", translate=true, format=labelColor); Text descriptionField as Editable
+				Switch(title="Language is private", format=doubleAirBottom) accessTypeField
+				Block(format=doubleAirBottom doubleAirTop)
+					Text(value="Tags", translate=true, format=h5 middleAirBottom)
+					TemplateStamp(template=tagEditor) tags as Multiple("No tags", arrangement=Horizontal, spacing=DP8)
+					Block(layout=Horizontal, format=airTop) > Button(title="Add tag", size=Small, highlight=Outline) as OpenDialog(addTagDialog)
+				Block(format=doubleAirBottom doubleAirTop)
+					Text(value="Remove language", translate=true, format=h5 middleAirBottom)
+					Text(value="Removed languages cannot be restored!", format=greyColor airBottom, translate=true)
+					Block(layout=Horizontal) > Button(title="Remove language...", format=airRight redBackground whiteColor, highlight=Fill) removeLanguage as Action Readonly Affirmed("Are you sure to remove language?")
 
-	Block builderBlock as Conditional(tabSelector.builderOption)
-		Block(format=airTop doubleAirBottom)
-			Block(layout=Horizontal Center)
-				Text builderField as Editable(placeholder="[username]/[builder]:[version]") Labeled("Docker image name")
-				MaterialIcon(icon="CheckCircle", format=airTop greenColor, visible=false) validBuilderIcon
-				MaterialIcon(icon="Help", format=airTop, visible=false) noBuilderInfoIcon
-				MaterialIcon(icon="Cancel", format=airTop redColor, visible=false) invalidBuilderIcon
-			Block(layout=Horizontal, format=airTop)
-				Button(title="Check", highlight=Outline, size=Small, format=airRight) checkBuilder as Readonly
-		Block(visible=false) loadingBlock
-			Text(value="Loading builder information...", format=orangeColor) builderState
-		Block(visible=false) builderInfoBlock
-			Block(format=doubleAirBottom) operationsBlock
-				Text(value="Operations", format=h5, translate=true)
-				TemplateStamp(template=operationEditor) operations as Multiple("No operations defined")
-			Block(format=doubleAirBottom) builderDetailsBlock
-				Text(value="Details", format=h5 airBottom, translate=true)
-				Text(visible=false) errorMessage
-				Block(visible=false) builderPropertiesBlock > TemplateStamp(template=builderPropertyView) builderProperties as Multiple(noItemsMessage="No information")
+		Block(layout=Vertical Flexible, format=doubleAirTop) builderBlock as Relative(width=95%) Conditional(tabSelector.builderOption)
+			Block(layout=Vertical Flexible, format=doubleAirBottom)
+				Block(layout=Horizontal Flexible Center)
+					Block(layout=Vertical Flexible) > Text(value="Docker image name", translate=true, format=labelColor); Text builderField as Editable(placeholder="[username]/[builder]:[version]")
+					MaterialIcon(icon="CheckCircle", format=airTop greenColor, visible=false) validBuilderIcon
+					MaterialIcon(icon="Help", format=airTop, visible=false) noBuilderInfoIcon
+					MaterialIcon(icon="Cancel", format=airTop redColor, visible=false) invalidBuilderIcon
+				Block(layout=Horizontal, format=airTop)
+					Button(title="Check", highlight=Outline, size=Small, format=airRight) checkBuilder as Readonly
+			Block(visible=false) loadingBlock
+				Text(value="Loading builder information...", format=orangeColor) builderState
+			Block(visible=false) builderInfoBlock
+				Block(format=doubleAirBottom) operationsBlock
+					Text(value="Operations", format=h5, translate=true)
+					TemplateStamp(template=operationEditor) operations as Multiple("No operations defined")
+				Block(format=doubleAirBottom) builderDetailsBlock
+					Text(value="Details", format=h5 airBottom, translate=true)
+					Text(visible=false) errorMessage
+					Block(visible=false) builderPropertiesBlock > TemplateStamp(template=builderPropertyView) builderProperties as Multiple(noItemsMessage="No information")
 
 	Dialog(title="Add tag") addTagDialog as Absolute(width=280px, height=200px)
         Block as Relative(height=100%, offsetHeight=40px)
@@ -122,15 +123,14 @@ Template(layout=Horizontal) modelSettingsDialog
 
 	Dialog(title="Properties") settingsDialog as Relative(width=60%, height=80%) Modal
         Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
-        	Selector settingsTabSelector as Tabs
+        	Selector settingsTabSelector as Tabs(format=tabsStyle)
         		Text(value="General") generalOption as Option
         		Text(value="Git") gitOption as Option
-        		Text(value="Build") buildOption as Option
         	Block(layout=Vertical Center) as Relative(width=100%)
-        		Block generalBlock as Relative(width=80%) Conditional(settingsTabSelector.generalOption)
+        		Block generalBlock as Relative(width=95%) Conditional(settingsTabSelector.generalOption)
 					Block
-						Text(value="Attributes", translate=true, format=h5 middleAirBottom doubleAirTop)
-						Text(format=doubleAirBottom) settingsTitleField as Editable(shrink=true) Labeled("Title")
+						Text(value="Title", translate=true, format=labelColor middleAirBottom doubleAirTop)
+						Text(format=doubleAirBottom) settingsTitleField as Editable
 					Block
 						Text(value="Model access", translate=true, format=h5 middleAirBottom doubleAirTop)
 						Switch(title="Project is private", format=doubleAirBottom) accessTypeField
@@ -138,14 +138,10 @@ Template(layout=Horizontal) modelSettingsDialog
 						Text(value="Remove model", translate=true, format=h5 doubleAirTop)
 						Text(value="Removed models cannot be restored!", format=greyColor airBottom, translate=true)
 						Block(layout=Horizontal) > Button(title="Remove model...", format=airRight redBackground whiteColor, highlight=Fill) removeModel as Action Readonly Affirmed("Are you sure to remove model?")
-        		Block gitBlock as Relative(width=80%) Conditional(settingsTabSelector.gitOption)
+        		Block gitBlock as Relative(width=95%) Conditional(settingsTabSelector.gitOption)
 					Block
-						Text(value="Git settings", translate=true, format=h5 middleAirBottom doubleAirTop)
-						Text(format=doubleAirBottom) settingsGitUrlField as Editable(shrink=true) Labeled("URL")
-						Text(format=doubleAirBottom) settingsGitBranchField as Editable(shrink=true) Labeled("Branch")
-        		Block buildBlock as Relative(width=80%) Conditional(settingsTabSelector.buildOption)
-					Block
-						Text(value="Aquí van los scaffolds")
+						Block(format=doubleAirTop doubleAirBottom) > Text(value="Url", format=labelColor, translate=true); Text settingsGitUrlField as Editable(shrink=true)
+						Block(format=doubleAirBottom) > Text(value="Branch", format=labelColor, translate=true); Text settingsGitBranchField as Editable(shrink=true)
 		Divider
         Block(layout=Horizontal)
         	Block(layout=Horizontal StartJustified Flexible) > Button(title="Close", size=Small, format=airRight) as CloseDialog(settingsDialog)
