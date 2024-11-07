@@ -1,26 +1,19 @@
 package io.intino.ime.box.ui.displays.templates;
 
-import io.intino.alexandria.Resource;
 import io.intino.alexandria.ui.utils.DelayerUtil;
 import io.intino.ime.box.ImeBox;
-import io.intino.ime.box.commands.LanguageCommands;
-import io.intino.ime.box.commands.ModelCommands;
-import io.intino.ime.box.ui.DisplayHelper;
 import io.intino.ime.box.ui.PathHelper;
-import io.intino.ime.box.ui.datasources.DatasourceHelper;
-import io.intino.ime.box.ui.displays.items.LanguageMagazineItem;
 import io.intino.ime.box.util.LanguageHelper;
 import io.intino.ime.box.util.ModelHelper;
 import io.intino.ime.model.Language;
 import io.intino.ime.model.Model;
 import io.intino.ime.model.Release;
 
-import java.util.List;
 import java.util.function.Consumer;
 
 public class LanguageItemTemplate extends AbstractLanguageItemTemplate<ImeBox> {
 	private Language language;
-	private Release selectedRelease;
+	private Consumer<Language> openLanguageListener;
 	private Consumer<Model> openModelListener;
 
 	public LanguageItemTemplate(ImeBox box) {
@@ -31,16 +24,21 @@ public class LanguageItemTemplate extends AbstractLanguageItemTemplate<ImeBox> {
 		this.language = language;
 	}
 
-	public void onOpenLanguage(Consumer<Model> listener) {
+	public void onOpenModel(Consumer<Model> listener) {
 		this.openModelListener = listener;
+	}
+
+	public void onOpenLanguage(Consumer<Language> listener) {
+		this.openLanguageListener = listener;
 	}
 
 	@Override
 	public void init() {
 		super.init();
-		createLanguageTrigger.onOpen(e -> refreshCreateLanguageDialog());
-		addModel.onExecute(e -> createModel(lastRelease()));
-		addPrivateModel.onOpen(e -> refreshAddPrivateModelDialog());
+		languageDialog.onCreate(this::languageCreated);
+		modelDialog.onCreate(this::modelCreated);
+		addLanguage.onExecute(e -> openLanguageDialog());
+		addModel.onExecute(e -> openModelDialog());
 		releasesDialogTrigger.onOpen(e -> refreshReleasesDialog());
 	}
 
@@ -58,65 +56,48 @@ public class LanguageItemTemplate extends AbstractLanguageItemTemplate<ImeBox> {
 		createDate.value(language.createDate());
 		modelsCount.value(language.modelsCount());
 		parent.value(!language.isFoundational() ? language.parent() : "-");
-		createLanguageTrigger.visible(LanguageHelper.canCreateLanguage(language, release, user()));
-		addModel.visible(ModelHelper.canAddModel(release) && user() == null);
-		addPrivateModel.visible(ModelHelper.canAddModel(release) && user() != null);
-	}
-
-	private void refreshCreateLanguageDialog() {
-		this.selectedRelease = box().languageManager().lastRelease(language);
-		languageEditor.onAccept(e -> createLanguage(box().languageManager().lastRelease(language)));
-		languageEditor.parent(language);
-		languageEditor.reset();
-	}
-
-	private void createLanguage(Release release) {
-		selectedRelease = release;
-		createLanguage();
-	}
-
-	private void createLanguage() {
-		if (!languageEditor.check()) return;
-		createLanguageDialog.close();
-		String name = languageEditor.name();
-		String description = languageEditor.description();
-		Resource logo = languageEditor.logo();
-		boolean isPrivate = languageEditor.isPrivate();
-		openModelOf(box().commands(LanguageCommands.class).create(name, selectedRelease, description, logo, isPrivate, username()));
-	}
-
-	private void createModel(Release release) {
-		createModel(release, ModelHelper.proposeName(), translate("(no name)"));
-	}
-
-	private void createModel(Release release, String name, String title) {
-		open(box().commands(ModelCommands.class).create(name, title, release, DisplayHelper.user(session()), username()));
-	}
-
-	private void open(Model model) {
-		openModelListener.accept(model);
-		DelayerUtil.execute(this, v -> notifier.redirect(PathHelper.modelUrl(session(), model)), 600);
-	}
-
-	private void openModelOf(Language language) {
-		open(box().modelManager().modelWith(language));
+		addLanguage.visible(LanguageHelper.canCreateLanguage(language, release, user()));
+		addModel.visible(ModelHelper.canAddModel(release));
 	}
 
 	private Release lastRelease() {
 		return box().languageManager().lastRelease(language);
 	}
 
-	private void refreshAddPrivateModelDialog() {
-		this.selectedRelease = lastRelease();
-		if (selectedRelease == null) return;
-		languageField.value(selectedRelease.id());
-		labelField.value(null);
-	}
-
 	private void refreshReleasesDialog() {
 		releasesDialog.title(String.format(translate("%s releases"), language.name()));
 		releasesCatalog.language(language);
 		releasesCatalog.refresh();
+	}
+
+	private void openLanguageDialog() {
+		languageDialog.parent(language);
+		languageDialog.release(lastRelease());
+		languageDialog.open();
+	}
+
+	private void languageCreated(Language language) {
+		open(language);
+	}
+
+	private void open(Language language) {
+		if (openLanguageListener != null) openLanguageListener.accept(language);
+		DelayerUtil.execute(this, v -> notifier.redirect(PathHelper.languageUrl(session(), language)), 600);
+	}
+
+	private void openModelDialog() {
+		modelDialog.language(language);
+		modelDialog.release(lastRelease());
+		modelDialog.open();
+	}
+
+	private void modelCreated(Model model) {
+		open(model);
+	}
+
+	private void open(Model model) {
+		if (openModelListener != null) openModelListener.accept(model);
+		DelayerUtil.execute(this, v -> notifier.redirect(PathHelper.modelUrl(session(), model)), 600);
 	}
 
 }

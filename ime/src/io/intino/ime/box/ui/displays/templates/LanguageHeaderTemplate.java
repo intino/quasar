@@ -136,13 +136,14 @@ public class LanguageHeaderTemplate extends AbstractLanguageHeaderTemplate<ImeBo
 		if (!settingsEditor.check()) return;
 		settingsDialog.close();
 		Resource logo = settingsEditor.logo();
+		String group = settingsEditor.group();
 		String description = settingsEditor.description();
 		boolean isPrivate = settingsEditor.isPrivate();
 		String builder = settingsEditor.builder();
 		List<Operation> operations = settingsEditor.operations();
 		List<String> tags = settingsEditor.tags();
 		List<String> programmingLanguages = settingsEditor.programmingLanguages();
-		box().commands(LanguageCommands.class).save(language, description, isPrivate, builder, logo, operations, programmingLanguages, tags, username());
+		box().commands(LanguageCommands.class).save(language, group, description, isPrivate, builder, logo, operations, programmingLanguages, tags, username());
 		saveSettingsListener.accept(true);
 		refresh();
 	}

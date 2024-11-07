@@ -43,13 +43,13 @@ public class LanguageServerManager {
 	}
 
 	public LanguageServer get(Model model) throws IOException, GitAPIException, URISyntaxException {
-		if (!servers.containsKey(model.modelingLanguage()))
-			servers.put(model.modelingLanguage(), create(model));
-		return servers.get(model.modelingLanguage());
+		if (!servers.containsKey(model.id()))
+			servers.put(model.id(), create(model));
+		return servers.get(model.id());
 	}
 
 	public void remove(Model model) {
-		servers.remove(model.modelingLanguage());
+		servers.remove(model.id());
 	}
 
 	private LanguageServer create(Model model) throws IOException, GitAPIException, URISyntaxException {

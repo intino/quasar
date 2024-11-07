@@ -3,13 +3,53 @@ dsl Konos
 use UI
 use Theme
 
-Template(layout=Horizontal) languageEditor
-	Block as Absolute(width=170px)
-		Image(format=doubleAirBottom) logoField as Editable Absolute(height=150px, width=150px)
-	Block(layout=Vertical Flexible)
-		Text(format=doubleAirBottom) nameField as Editable(helperText="Only alphanumeric characters are allowed") Labeled("Name") Focused
-		Text(format=doubleAirBottom) descriptionField as Editable Labeled("Title")
-		Switch(title="Language is private", format=doubleAirBottom, state=On) accessTypeField
+Template modelDialog
+
+	Dialog(title="Start modeling") dialog as Absolute(height=360px, width=400px)
+        Block as Relative(height=100%, offsetHeight=40px)
+			Block(format=doubleAirBottom)
+				Text(value="Language", translate=true, format=labelColor)
+				Text(visible=false) languageTitle
+				Selector(visible=false) languageSelector as CollectionBox(placeholder="Select language")
+					Table(itemClass="io.intino.ime.model.Language") languageTable as Selectable
+						noItemsMessage = "No languages"
+						Mold
+							Heading lteLogoHeading
+							Item(height=30px, width=10%) lteLogoItem > Image logo as Absolute(height=25px, width=25px)
+						Mold
+							Heading lteNameHeading > Text(value="Name", translate=true)
+							Item(height=30px, width=20%) lteNameItem > Text name
+						Mold
+							Heading lteDescriptionHeading > Text(value="Description", translate=true)
+							Item(height=30px, width=40%) lteDescriptionItem > Text(cropWithEllipsis=40 Chars) description
+						Mold
+							Heading lteOwnerHeading > Text(value="Owner", translate=true)
+							Item(height=30px, width=30%) lteOwnerItem > Text owner
+			Block(format=doubleAirBottom, visible=false) titleBlock > Text(value="Title", format=labelColor, translate=true); Text titleField as Editable
+        	Block(format=doubleAirBottom, visible=false) programmingLanguageBlock > Text(value="Programming language", format=labelColor, translate=true); Selector programmingLanguageSelector as ComboBox(placeholder="Select programming language")
+        	Block(format=doubleAirBottom, visible=false) scaffoldBlock > Text(value="Build system", format=labelColor, translate=true); Selector scaffoldSelector as ComboBox(placeholder="Select build system")
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(dialog)
+            Button(title="Start", size=Small, highlight=Fill) create as Action
+
+Template(layout=Horizontal) languageDialog
+
+	Dialog(title="Create language") dialog as Absolute(height=490px, width=600px)
+        Block(layout=Horizontal) as Relative(height=100%, offsetHeight=40px)
+			Block as Absolute(width=170px)
+				Image(format=doubleAirBottom) logoField as Editable Absolute(height=150px, width=150px)
+			Block(layout=Vertical Flexible)
+				Block(format=doubleAirBottom) > Text(value="Name", format=labelColor, translate=true); Text nameField as Editable(helperText="Only alphanumeric characters are allowed") Focused
+				Block(format=doubleAirBottom) > Text(value="Group", format=labelColor, translate=true); Text groupField as Editable
+				Block(format=doubleAirBottom) programmingLanguageBlock > Text(value="Programming language", format=labelColor, translate=true); Selector programmingLanguageSelector as ComboBox(placeholder="Select programming language")
+				Block(format=doubleAirBottom) scaffoldBlock > Text(value="Build system", format=labelColor, translate=true); Selector scaffoldSelector as ComboBox(placeholder="Select build system")
+				Block(format=doubleAirBottom) > Text(value="Title", format=labelColor, translate=true); Text descriptionField as Editable
+				Switch(title="Language is private", format=doubleAirBottom, state=On) accessTypeField
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(dialog)
+            Button(title="Create", size=Small, highlight=Fill) create as Action
 
 Template userSettingsEditor
 	Block(format=doubleAirBottom) credentialsBlock
@@ -33,14 +73,18 @@ Template languageSettingsEditor
 		Block as Absolute(width=170px)
 			Image(format=doubleAirBottom) logoField as Editable Absolute(height=150px, width=150px)
 		Block(layout=Vertical Flexible)
-			Text(value="Name", translate=true, format=label)
-			Text(format=doubleAirBottom) nameField
-			Text(format=doubleAirBottom) descriptionField as Editable Labeled("Description") Focused
+			Block(format=doubleAirBottom) > Text(value="Name", translate=true, format=labelColor); Text nameField
+			Block(format=doubleAirBottom) > Text(value="Group", translate=true, format=labelColor); Text groupField as Editable Focused
+			Block(format=doubleAirBottom) > Text(value="Description", translate=true, format=labelColor); Text descriptionField as Editable
 			Switch(title="Language is private", format=doubleAirBottom) accessTypeField
-			Block
-				Text(value="Tags", translate=true, format=label middleAirBottom)
+			Block(format=doubleAirBottom)
+				Text(value="Tags", translate=true, format=h5 middleAirBottom)
 				TemplateStamp(template=tagEditor) tags as Multiple("No tags", arrangement=Horizontal, spacing=DP8)
 				Block(layout=Horizontal, format=airTop) > Button(title="Add tag", size=Small, highlight=Outline) as OpenDialog(addTagDialog)
+			Block(format=doubleAirBottom)
+				Text(value="Remove language", translate=true, format=h5 middleAirBottom)
+				Text(value="Removed languages cannot be restored!", format=greyColor airBottom, translate=true)
+				Block(layout=Horizontal) > Button(title="Remove language...", format=airRight redBackground whiteColor, highlight=Fill) removeLanguage as Action Readonly Affirmed("Are you sure to remove language?")
 
 	Block builderBlock as Conditional(tabSelector.builderOption)
 		Block(format=airTop doubleAirBottom)
@@ -70,7 +114,7 @@ Template languageSettingsEditor
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addTagDialog)
             Button(title="Accept", size=Small, highlight=Fill) addTag as Action
 
-Template(layout=Horizontal) modelSettingsEditor
+Template(layout=Horizontal) modelSettingsDialog
 	Button(title="Properties...", format=airRight, size=Small, visible=false) smallIconInList as OpenDialog(settingsDialog)
 	Button(title="Properties...", format=airRight, visible=false) largeIconInList as OpenDialog(settingsDialog)
 	Button(title="Properties...", format=airRight, size=Small, visible=false) smallIcon as OpenDialog(settingsDialog)
@@ -78,26 +122,36 @@ Template(layout=Horizontal) modelSettingsEditor
 
 	Dialog(title="Properties") settingsDialog as Relative(width=60%, height=80%) Modal
         Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
-        	Block
-        		Text(value="Attributes", translate=true, format=h5 middleAirBottom doubleAirTop)
-	        	Text(format=doubleAirBottom) settingsTitleField as Editable(shrink=true) Labeled("Title")
-        	Block
-        		Text(value="Project access", translate=true, format=h5 middleAirBottom doubleAirTop)
-	        	Switch(title="Project is private", format=doubleAirBottom) accessTypeField
-        	Block
-        		Text(value="Git settings", translate=true, format=h5 middleAirBottom doubleAirTop)
-	        	Text(format=doubleAirBottom) settingsGitUrlField as Editable(shrink=true) Labeled("URL")
-	        	Text(format=doubleAirBottom) settingsGitBranchField as Editable(shrink=true) Labeled("Branch")
-        	Block
-        		Text(value="Remove project", translate=true, format=h5 doubleAirTop)
-        		Text(value="Removed projects cannot be restored!", format=greyColor airBottom)
-				Block(layout=Horizontal) > Button(title="Remove project...", format=airRight redBackground whiteColor, highlight=Fill) removeModel as Action Readonly Affirmed("Are you sure to remove project?")
+        	Selector settingsTabSelector as Tabs
+        		Text(value="General") generalOption as Option
+        		Text(value="Git") gitOption as Option
+        		Text(value="Build") buildOption as Option
+        	Block(layout=Vertical Center) as Relative(width=100%)
+        		Block generalBlock as Relative(width=80%) Conditional(settingsTabSelector.generalOption)
+					Block
+						Text(value="Attributes", translate=true, format=h5 middleAirBottom doubleAirTop)
+						Text(format=doubleAirBottom) settingsTitleField as Editable(shrink=true) Labeled("Title")
+					Block
+						Text(value="Model access", translate=true, format=h5 middleAirBottom doubleAirTop)
+						Switch(title="Project is private", format=doubleAirBottom) accessTypeField
+					Block
+						Text(value="Remove model", translate=true, format=h5 doubleAirTop)
+						Text(value="Removed models cannot be restored!", format=greyColor airBottom, translate=true)
+						Block(layout=Horizontal) > Button(title="Remove model...", format=airRight redBackground whiteColor, highlight=Fill) removeModel as Action Readonly Affirmed("Are you sure to remove model?")
+        		Block gitBlock as Relative(width=80%) Conditional(settingsTabSelector.gitOption)
+					Block
+						Text(value="Git settings", translate=true, format=h5 middleAirBottom doubleAirTop)
+						Text(format=doubleAirBottom) settingsGitUrlField as Editable(shrink=true) Labeled("URL")
+						Text(format=doubleAirBottom) settingsGitBranchField as Editable(shrink=true) Labeled("Branch")
+        		Block buildBlock as Relative(width=80%) Conditional(settingsTabSelector.buildOption)
+					Block
+						Text(value="Aquí van los scaffolds")
 		Divider
         Block(layout=Horizontal)
         	Block(layout=Horizontal StartJustified Flexible) > Button(title="Close", size=Small, format=airRight) as CloseDialog(settingsDialog)
             Block(layout=Horizontal EndJustified) > Button(title="Apply", size=Small, highlight=Fill) saveSettings as Action
 
-Template(layout=Horizontal) cloneModelEditor
+Template(layout=Horizontal) cloneModelDialog
 	Button(title="Clone...", format=airRight, size=Small, visible=false) smallIconInList as OpenDialog(modelDialog)
 	Button(title="Clone...", format=airRight, visible=false) largeIconInList as OpenDialog(modelDialog)
 	Button(title="Clone...", format=airRight, size=Small, visible=false) smallIcon as OpenDialog(modelDialog)

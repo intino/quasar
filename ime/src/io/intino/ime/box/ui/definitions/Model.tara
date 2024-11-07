@@ -97,8 +97,8 @@ Template(format=headerBackground) modelHeaderTemplate
 					TemplateStamp(template=modelOperation) operations as Multiple(noItemsMessage="", arrangement=Horizontal)
 				Button(title="Publish...", format=iconButtonColor airRight, size=Small) publishTrigger as OpenDialog(publishDialog)
 				Button(title="Open language...", size=Small, format=airRight) languagePath as OpenPage(ImeElements.language)
-				TemplateStamp(template=cloneModelEditor) cloneModelEditor
-				TemplateStamp(template=modelSettingsEditor) settingsEditor
+				TemplateStamp(template=cloneModelDialog) cloneModelEditor
+				TemplateStamp(template=modelSettingsDialog) settingsEditor
 
 	Block(format=spaced) modelChildrenView as Popover Absolute(width=800px, height=400px)
 		TemplateStamp(template=modelsCatalog) modelChildrenCatalog
@@ -139,6 +139,7 @@ Schema intinoFileBrowserMoveInfo
 Schema intinoFileBrowserItem
 	Attribute id as Integer
 	Attribute name as Text
+	Attribute uri as Text
 	Attribute type as Word("Folder" "File")
 	Attribute isRoot as Bool
 	Attribute parents as Text List

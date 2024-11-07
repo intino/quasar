@@ -12,9 +12,9 @@ Template languageTemplate as Relative(height=100%, width=100%)
 
 	TemplateStamp(template=languageHeaderTemplate) header
 
-	Block(layout=Vertical Flexible CenterCenter, visible=false) searchingModelsBlock
+	Block(layout=Vertical Flexible CenterCenter, visible=false) openingBlock
 		Spinner(mode=Ring, color="secondary")
-		Text(value="" , translate=true, format=h3 airTop) openingModelMessage
+		Text(value="" , translate=true, format=h3 airTop) openingMessage
 
 	Block(layout=Vertical Flexible Center, format=greyBackground) bodyBlock as Relative(width=100%)
 
@@ -25,9 +25,8 @@ Template languageTemplate as Relative(height=100%, width=100%)
 				Link(title="1.0.0", format=h1) release as OpenPopover(releasesBlock)
 			Text(format=h3 greyColor) description
 			Block(layout=Vertical Center, format=topSpaced)
-				Button(title="Create language", size=Large, highlight=Fill, visible=false, format=largeButton airBottom) createLanguageTrigger as OpenDialog(createLanguageDialog)
+				Button(title="Create language", size=Large, highlight=Fill, visible=false, format=largeButton airBottom) addLanguage as Action
 				Button(title="Start modeling", size=Large, highlight=Fill, visible=false, format=largeButton airBottom) addModel as Action
-				Button(title="Start modeling", size=Large, highlight=Fill, visible=false, format=largeButton airBottom) addPrivateModel as OpenDialog(addPrivateModelDialog)
 				Link(title="View examples...", visible=false, format=airRight) viewModelExamples as OpenDialog(modelExamplesDialog)
 				Link(title="View examples...", visible=false, format=airRight) viewLanguageExamples as OpenDialog(languagesExamplesDialog)
 
@@ -48,24 +47,8 @@ Template languageTemplate as Relative(height=100%, width=100%)
 	Block(format=spaced) releasesBlock as Popover Absolute(width=500px, height=300px)
 		TemplateStamp(template=languageReleasesCatalog) releasesCatalog
 
-	Dialog(title="Create language") createLanguageDialog as Absolute(height=360px, width=600px)
-        Block as Relative(height=100%, offsetHeight=40px)
-			TemplateStamp(template=languageEditor) languageEditor
-		Divider
-        Block(layout=Horizontal EndJustified)
-            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(createLanguageDialog)
-            Button(title="Create", size=Small, highlight=Fill) createLanguage as Action
-
-	Dialog(title="Start modeling") addPrivateModelDialog as Absolute(height=360px, width=400px)
-        Block as Relative(height=100%, offsetHeight=40px)
-        	Block(format=doubleAirBottom)
-        		Text(value="Language", translate=true, format=labelColor)
-        		Text languageField
-        	Text(format=doubleAirBottom) titleField as Editable Labeled("Title") Focused
-		Divider
-        Block(layout=Horizontal EndJustified)
-            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addPrivateModelDialog)
-            Button(title="Start", size=Small, highlight=Fill) createModel as Action
+	TemplateStamp(template=modelDialog) modelDialog
+	TemplateStamp(template=languageDialog) languageDialog
 
 Template(format=headerBackground) languageHeaderTemplate
 	TemplateStamp(template=headerTemplate) quassarHeader

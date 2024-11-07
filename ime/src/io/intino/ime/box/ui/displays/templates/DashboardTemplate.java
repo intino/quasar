@@ -9,7 +9,9 @@ import io.intino.ime.box.ui.ViewMode;
 import io.intino.ime.box.ui.datasources.LanguagesDatasource;
 import io.intino.ime.box.ui.datasources.ModelsDatasource;
 import io.intino.ime.box.util.Formatters;
+import io.intino.ime.box.util.LanguageHelper;
 import io.intino.ime.box.util.ModelHelper;
+import io.intino.ime.model.Language;
 import io.intino.ime.model.Model;
 
 import java.util.Set;
@@ -30,8 +32,9 @@ public class DashboardTemplate extends AbstractDashboardTemplate<ImeBox> {
 		modelGroupSelector.onSelect(this::selectModelGroupOption);
 		languageGroupSelector.onShow(e -> languageGroupSelector.select("allLanguagesOption"));
 		modelGroupSelector.onShow(e -> modelGroupSelector.select("allModelsOption"));
-		languagesCatalog.onOpenModel(this::notifyOpeningModel);
-		modelsCatalog.onOpenModel(this::notifyOpeningModel);
+		languagesCatalog.onOpenLanguage(this::notifyOpening);
+		languagesCatalog.onOpenModel(this::notifyOpening);
+		modelsCatalog.onOpenModel(this::notifyOpening);
 		openSearchLayerTrigger.onOpen(e -> openSearch(e.layer()));
 	}
 
@@ -91,10 +94,16 @@ public class DashboardTemplate extends AbstractDashboardTemplate<ImeBox> {
 		languagesCatalogBlock.hide();
 	}
 
-	private void notifyOpeningModel(Model model) {
+	private void notifyOpening(Language language) {
 		bodyBlock.hide();
-		openingModelMessage.value(String.format(translate("Opening %s"), ModelHelper.label(model, language(), box())));
-		openingModelBlock.show();
+		openingMessage.value(String.format(translate("Opening %s"), LanguageHelper.label(language, this::translate)));
+		openingBlock.show();
+	}
+
+	private void notifyOpening(Model model) {
+		bodyBlock.hide();
+		openingMessage.value(String.format(translate("Opening %s"), ModelHelper.label(model, language(), box())));
+		openingBlock.show();
 	}
 
 	private void openSearch() {

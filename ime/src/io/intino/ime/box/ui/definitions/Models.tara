@@ -31,42 +31,8 @@ Template(layout=Vertical Flexible) modelsCatalog as Relative(height=100%, width=
 				Heading operationsHeading > Block(layout=Horizontal EndJustified) > Text(value="Operations", translate=true)
 				Item(height=30px, width=20%) operationsItem
 					Block(layout=Horizontal EndJustified, visible=false) operationsToolbar
-						TemplateStamp(template=cloneModelEditor) cloneModelEditor
+						TemplateStamp(template=cloneModelDialog) cloneModelEditor
 						MaterialIconButton(title="Remove model", icon="Delete", size=Small) removeModel as Action Affirmed("Are you sure to remove model?") Readonly
-						TemplateStamp(template=modelSettingsEditor) settingsEditor
+						TemplateStamp(template=modelSettingsDialog) settingsEditor
 
-	Dialog(title="Start modeling") addModelDialog as Absolute(width=800px, height=600px)
-        Block as Relative(height=100%, offsetHeight=40px)
-			Text(format=doubleAirBottom) labelField as Editable Labeled("Title") Focused
-        	Block
-        		Text(value="Language", translate=true, format=labelColor)
-	        	Selector(format=doubleAirBottom) languageField as CollectionBox(placeholder="Select language")
-	        		Table(itemClass="io.intino.ime.model.Language") languageTable as Selectable
-	        			noItemsMessage = "No languages"
-	        			Mold
-	        				Heading lteLogoHeading
-	        				Item(height=30px, width=10%) lteLogoItem > Image logo as Absolute(height=25px, width=25px)
-	        			Mold
-	        				Heading lteNameHeading > Text(value="Name", translate=true)
-	        				Item(height=30px, width=20%) lteNameItem > Text name
-	        			Mold
-	        				Heading lteDescriptionHeading > Text(value="Description", translate=true)
-	        				Item(height=30px, width=40%) lteDescriptionItem > Text(cropWithEllipsis=40 Chars) description
-	        			Mold
-	        				Heading lteOwnerHeading > Text(value="Owner", translate=true)
-	        				Item(height=30px, width=30%) lteOwnerItem > Text owner
-		Divider
-        Block(layout=Horizontal EndJustified)
-            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addModelDialog)
-            Button(title="Start", size=Small, highlight=Fill) createModel as Action
-
-	Dialog(title="Start modeling") addLanguageModelDialog as Absolute(height=360px, width=400px)
-        Block as Relative(height=100%, offsetHeight=40px)
-        	Block(format=doubleAirBottom)
-        		Text(value="Language", translate=true, format=labelColor)
-        		Text languageModelField
-			Text(format=doubleAirBottom) languageModelLabelField as Editable Labeled("Title") Focused
-		Divider
-        Block(layout=Horizontal EndJustified)
-            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addLanguageModelDialog)
-            Button(title="Start", size=Small, highlight=Fill) createLanguageModel as Action
+	TemplateStamp(template=modelDialog) modelDialog

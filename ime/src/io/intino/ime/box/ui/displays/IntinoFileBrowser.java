@@ -6,13 +6,14 @@ import io.intino.ime.box.schemas.IntinoFileBrowserItem;
 import io.intino.ime.box.schemas.IntinoFileBrowserMoveInfo;
 import io.intino.ime.box.schemas.IntinoFileBrowserRenameInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class IntinoFileBrowser extends AbstractIntinoFileBrowser<ImeBox> {
 	private List<IntinoFileBrowserItem> items;
-	private Consumer<String> openListener;
+	private Consumer<IntinoFileBrowserItem> openListener;
 	private BiConsumer<IntinoFileBrowserItem, String> renameListener;
 	private BiConsumer<IntinoFileBrowserItem, IntinoFileBrowserItem> moveListener;
 	private String itemsAddress;
@@ -30,7 +31,7 @@ public class IntinoFileBrowser extends AbstractIntinoFileBrowser<ImeBox> {
 		this.items = items;
 	}
 
-	public void onOpen(Consumer<String> listener) {
+	public void onOpen(Consumer<IntinoFileBrowserItem> listener) {
 		this.openListener = listener;
 	}
 
@@ -43,7 +44,7 @@ public class IntinoFileBrowser extends AbstractIntinoFileBrowser<ImeBox> {
 	}
 
 	public void open(String item) {
-		openListener.accept(item);
+		openListener.accept(items.stream().filter(i -> i.uri().equals(item)).findFirst().orElse(null));
 	}
 
 	public void select(IntinoFileBrowserItem item) {
@@ -67,11 +68,22 @@ public class IntinoFileBrowser extends AbstractIntinoFileBrowser<ImeBox> {
 	public void refresh() {
 		super.refresh();
 		notifier.refresh(info());
-		notifier.select(selectedItem);
+		if (selectedItem != null) notifier.select(selectedItem);
 	}
 
 	private IntinoFileBrowserInfo info() {
-		return new IntinoFileBrowserInfo().itemAddress(itemsAddress).items(withRoot(items));
+		return new IntinoFileBrowserInfo().itemAddress(itemsAddress).items(withRoot(fix(items)));
+	}
+
+	private List<IntinoFileBrowserItem> fix(List<IntinoFileBrowserItem> items) {
+		items.forEach(IntinoFileBrowser::fix);
+		return items;
+	}
+
+	private static void fix(IntinoFileBrowserItem item) {
+		List<String> parents = new ArrayList<>();
+		for (int i = 0; i < item.parents().size(); i++) parents.add(String.join("/", item.parents().subList(0, i + 1)));
+		item.parents(parents);
 	}
 
 	private List<IntinoFileBrowserItem> withRoot(List<IntinoFileBrowserItem> items) {
@@ -81,7 +93,7 @@ public class IntinoFileBrowser extends AbstractIntinoFileBrowser<ImeBox> {
 	}
 
 	private IntinoFileBrowserItem rootItem(List<IntinoFileBrowserItem> children) {
-		return new IntinoFileBrowserItem().name("root").type(IntinoFileBrowserItem.Type.Folder).children(children.stream().map(IntinoFileBrowserItem::name).toList());
+		return new IntinoFileBrowserItem().name("root").uri("root").type(IntinoFileBrowserItem.Type.Folder).children(children.stream().map(IntinoFileBrowserItem::name).toList());
 	}
 
 }

@@ -2,8 +2,11 @@ package io.intino.ime.box.util;
 
 import io.intino.alexandria.Scale;
 import io.intino.alexandria.Timetag;
+import io.intino.alexandria.logger.Logger;
 import io.intino.alexandria.ui.services.push.User;
 import io.intino.ime.box.ImeBox;
+import io.intino.ime.box.orchestator.ProjectCreator;
+import io.intino.ime.box.scaffolds.ScaffoldFactory;
 import io.intino.ime.model.*;
 import io.intino.ls.document.DocumentManager;
 import io.intino.ls.document.FileDocumentManager;
@@ -16,15 +19,37 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 public class ModelHelper {
 
 	public static final String FirstReleaseVersion = "1.0.0";
+
+	public static void createProject(Model model, Language language, ScaffoldFactory.Language programmingLanguage, ScaffoldFactory.Scaffold scaffold, String user, ImeBox box) {
+		try {
+			ProjectCreator.CodeBucket bucket = bucket(language, programmingLanguage, scaffold, box);
+			new ProjectCreator(language.name() + ":1.0.0", model.modelingLanguage(), language.group(), List.of(bucket))
+					.create(ModelHelper.documentManager(model, user, box));
+		} catch (GitAPIException | IOException | URISyntaxException e) {
+			Logger.error(e);
+		}
+	}
+
+	public static List<ScaffoldFactory.Scaffold> scaffolds(ScaffoldFactory.Language programmingLanguage) {
+		return new ScaffoldFactory().scaffoldsOf(programmingLanguage);
+	}
+
+	public static List<ProjectCreator.CodeBucket> buckets(Language language, ScaffoldFactory.Language programmingLanguage, List<ScaffoldFactory.Scaffold> scaffolds, ImeBox box) {
+		return scaffolds.stream().map(s -> bucket(language, programmingLanguage, s, box)).collect(toList());
+	}
+
+	public static ProjectCreator.CodeBucket bucket(Language language, ScaffoldFactory.Language programmingLanguage, ScaffoldFactory.Scaffold scaffold, ImeBox box) {
+		return new ProjectCreator.CodeBucket("code/" + programmingLanguage.name().toLowerCase() + "/" + language.name(), scaffold, box.configuration().defaultBuilder());
+	}
 
 	public static DocumentManager documentManager(Model model, String username, ImeBox box) throws GitAPIException, IOException, URISyntaxException {
 		Model.GitSettings gitSettings = model.gitSettings();

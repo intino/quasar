@@ -2,7 +2,6 @@ package io.intino.ime.box.ui.displays.templates;
 
 import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.utils.DelayerUtil;
-import io.intino.builderservice.schemas.Message;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.ImeBrowser;
 import io.intino.ime.box.commands.LanguageCommands;
@@ -11,7 +10,6 @@ import io.intino.ime.box.models.ModelManager;
 import io.intino.ime.box.ui.PathHelper;
 import io.intino.ime.box.ui.ViewMode;
 import io.intino.ime.box.ui.datasources.MemoryModelsDatasource;
-import io.intino.ime.box.util.LanguageHelper;
 import io.intino.ime.box.util.ModelHelper;
 import io.intino.ime.model.*;
 
@@ -156,10 +154,10 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<ImeBox> {
 	private void refreshOperations() {
 		refreshCustomOperations();
 		settingsEditor.model(model);
-		settingsEditor.mode(ModelSettingsEditor.Mode.Small);
+		settingsEditor.mode(ModelSettingsDialog.Mode.Small);
 		settingsEditor.refresh();
 		cloneModelEditor.model(model);
-		cloneModelEditor.mode(CloneModelEditor.Mode.Small);
+		cloneModelEditor.mode(CloneModelDialog.Mode.Small);
 		cloneModelEditor.refresh();
 		cloneModelEditor.visible(ModelHelper.canClone(model, box()));
 		publishTrigger.visible(ModelHelper.canCreateRelease(model, username(), box()));

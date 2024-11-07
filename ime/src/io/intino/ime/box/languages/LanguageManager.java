@@ -51,8 +51,9 @@ public class LanguageManager {
 		return allLanguages().stream().filter(l -> l.isPrivate() && user.equals(l.owner())).collect(toList());
 	}
 
-	public Language create(String name, String description, Resource logo, Release parent, String owner, boolean isPrivate) {
+	public Language create(String name, String group, String description, Resource logo, Release parent, String owner, boolean isPrivate) {
 		Language language = new Language(name);
+		language.group(group);
 		language.description(description);
 		language.isPrivate(isPrivate);
 		language.parent(parent.id());

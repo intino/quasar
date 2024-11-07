@@ -60,19 +60,19 @@ class IntinoFileBrowser extends AbstractIntinoFileBrowser {
 
     select = (item) => {
         const items = this._itemsOf(this.state.items);
-        const parents = items[item.name] != null ? items[item.name].parents : [];
-        this.setState({selectedItems: [item.name], expandedItems: [...this.state.expandedItems, ...parents]});
+        const parents = items[item.uri] != null ? items[item.uri].parents : [];
+        this.setState({selectedItems: [item.uri], expandedItems: [...this.state.expandedItems, ...parents]});
     };
 
     _itemsOf = (items) => {
         const result = {};
-        items.forEach(i => result[i.name] = this._itemOf(i));
+        items.forEach(i => result[i.uri] = this._itemOf(i));
         return result;
     };
 
     _itemOf = (item) => {
         return {
-            index: item.name,
+            index: item.uri,
             data: item.name,
             id: item.id,
             isFolder: item.type == "Folder",

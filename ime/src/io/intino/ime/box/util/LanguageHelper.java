@@ -8,6 +8,7 @@ import io.intino.ime.model.*;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.function.Function;
 
 public class LanguageHelper {
@@ -76,6 +77,10 @@ public class LanguageHelper {
 		if (!language.isPublic() && !language.owner().equals(user.username())) return false;
 		if (release == null) return false;
 		return release.level() != LanguageLevel.L1;
+	}
+
+	public static boolean canRemoveLanguage(Language language, ImeBox box) {
+		return box.languageManager().releases(language.name()).isEmpty();
 	}
 
 	public static boolean canViewExampleModels(Language language, Release lastRelease) {

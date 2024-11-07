@@ -3,23 +3,17 @@ package io.intino.ime.box.ui.displays.templates;
 import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.displays.components.Grouping;
 import io.intino.alexandria.ui.displays.events.AddCollectionItemEvent;
-import io.intino.alexandria.ui.displays.events.AddItemEvent;
 import io.intino.alexandria.ui.displays.events.SelectionEvent;
 import io.intino.alexandria.ui.displays.notifiers.GroupingNotifier;
 import io.intino.alexandria.ui.utils.DelayerUtil;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.commands.ModelCommands;
 import io.intino.ime.box.languages.LanguageManager;
-import io.intino.ime.box.ui.DisplayHelper;
 import io.intino.ime.box.ui.PathHelper;
-import io.intino.ime.box.ui.datasources.LanguagesDatasource;
 import io.intino.ime.box.ui.datasources.ModelsDatasource;
-import io.intino.ime.box.ui.displays.rows.LanguageTableRow;
 import io.intino.ime.box.ui.displays.rows.ModelTableRow;
-import io.intino.ime.box.util.LanguageHelper;
 import io.intino.ime.box.util.ModelHelper;
 import io.intino.ime.model.Language;
-import io.intino.ime.model.LanguageLevel;
 import io.intino.ime.model.Model;
 import io.intino.ime.model.Release;
 
@@ -78,8 +72,7 @@ public class ModelsCatalog extends AbstractModelsCatalog<ImeBox> {
 	@Override
 	public void init() {
 		super.init();
-		initAddModelDialog();
-		initAddLanguageModelDialog();
+		modelDialog.onCreate(this::modelCreated);
 		addModelTrigger.onExecute(e -> openAddModel());
 		modelTable.onAddItem(this::refresh);
 		removeSelection.onExecute(this::removeSelection);
@@ -110,14 +103,14 @@ public class ModelsCatalog extends AbstractModelsCatalog<ImeBox> {
 		row.modelOwnerItem.owner.value(model.owner());
 		row.modelLanguageItem.language.value(model.modelingLanguage());
 		row.operationsItem.cloneModelEditor.model(model);
-		row.operationsItem.cloneModelEditor.mode(CloneModelEditor.Mode.Small);
-		row.operationsItem.cloneModelEditor.view(CloneModelEditor.View.List);
+		row.operationsItem.cloneModelEditor.mode(CloneModelDialog.Mode.Small);
+		row.operationsItem.cloneModelEditor.view(CloneModelDialog.View.List);
 		row.operationsItem.cloneModelEditor.onClone(e -> refresh());
 		row.operationsItem.cloneModelEditor.refresh();
 		row.operationsItem.settingsEditor.model(model);
 		row.operationsItem.settingsEditor.onSaveAccessType(isPrivate -> row.modelLabelItem.accessType.visible(!isPrivate));
-		row.operationsItem.settingsEditor.mode(ModelSettingsEditor.Mode.Small);
-		row.operationsItem.settingsEditor.view(ModelSettingsEditor.View.List);
+		row.operationsItem.settingsEditor.mode(ModelSettingsDialog.Mode.Small);
+		row.operationsItem.settingsEditor.view(ModelSettingsDialog.View.List);
 		row.operationsItem.settingsEditor.refresh();
 		row.operationsItem.operationsToolbar.visible(!readonly);
 		row.operationsItem.removeModel.readonly(!ModelHelper.canRemove(model, box()));
@@ -146,56 +139,8 @@ public class ModelsCatalog extends AbstractModelsCatalog<ImeBox> {
 		refresh();
 	}
 
-	private void initAddModelDialog() {
-		addModelDialog.onOpen(e -> refreshAddModelDialog());
-		createModel.onExecute(e -> createModel());
-	}
-
-	private void initAddLanguageModelDialog() {
-		languageModelLabelField.onEnterPress(e -> createLanguageModel());
-		addLanguageModelDialog.onOpen(e -> refreshAddLanguageModelDialog());
-		createLanguageModel.onExecute(e -> createLanguageModel());
-	}
-
-	private void refreshAddModelDialog() {
-		labelField.value(null);
-		languageField.valueProvider(l -> ((Language)l).name());
-		languageField.source(new LanguagesDatasource(box(), session(), LanguageLevel.L1));
-		languageTable.onAddItem(this::refreshLanguage);
-	}
-
-	private void refreshAddLanguageModelDialog() {
-		languageModelField.value(lastRelease(language).id());
-		languageModelLabelField.value(null);
-	}
-
-	private void refreshLanguage(AddCollectionItemEvent event) {
-		Language language = event.item();
-		LanguageTableRow row = event.component();
-		row.lteLogoItem.logo.value(LanguageHelper.logo(language, box()));
-		row.lteNameItem.name.value(language.name());
-		row.lteDescriptionItem.description.value(language.description());
-		row.lteOwnerItem.owner.value(language.owner());
-	}
-
-	private void createLanguageModel() {
-		if (!DisplayHelper.check(languageModelLabelField, this::translate)) return;
-		addLanguageModelDialog.close();
-		String name = ModelHelper.proposeName();
-		open(box().commands(ModelCommands.class).create(name, languageModelLabelField.value(), lastRelease(language), DisplayHelper.user(session()), username()));
-		modelTable.reload();
-	}
-
-	private void createModel() {
-		if (!DisplayHelper.check(labelField, this::translate)) return;
-		if (this.language == null && !DisplayHelper.check(languageField)) {
-			notifyUser("Language field is required", UserMessage.Type.Warning);
-			return;
-		}
-		addModelDialog.close();
-		String name = ModelHelper.proposeName();
-		Language language = this.language != null ? this.language : (Language)languageField.selection().getFirst();
-		open(box().commands(ModelCommands.class).create(name, labelField.value(), lastRelease(language), DisplayHelper.user(session()), username()));
+	private void modelCreated(Model model) {
+		open(model);
 		modelTable.reload();
 	}
 
@@ -209,8 +154,9 @@ public class ModelsCatalog extends AbstractModelsCatalog<ImeBox> {
 	}
 
 	private void openAddModel() {
-		if (language != null) addLanguageModelDialog.open();
-		else addModelDialog.open();
+		modelDialog.language(language);
+		modelDialog.release(lastRelease(language));
+		modelDialog.open();
 	}
 
 }

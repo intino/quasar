@@ -34,28 +34,8 @@ Template(layout=Vertical Flexible) languagesCatalog as Relative(height=100%, wid
 						Block(layout=Horizontal Flexible)
 							Link(title="Releases...", format=airRight) releasesDialogTrigger as OpenDialog(dialog=empty)
 						Block(layout=Horizontal EndJustified)
-							Link(title="Create language", size=Small, visible=false, format=airRight) createLanguageTrigger as OpenDialog(empty)
+							Link(title="Create language", size=Small, visible=false, format=airRight) addLanguage as Action
 							Link(title="Start modeling", size=Small, visible=false, format=airRight) addModel as Action
-							Link(title="Start modeling", size=Small, visible=false, format=airRight) addPrivateModel as OpenDialog(empty)
-
-	Dialog(title="Create language") createLanguageDialog as Absolute(height=360px, width=600px)
-        Block as Relative(height=100%, offsetHeight=40px)
-			TemplateStamp(template=languageEditor) languageEditor
-		Divider
-        Block(layout=Horizontal EndJustified)
-            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(createLanguageDialog)
-            Button(title="Create", size=Small, highlight=Fill) createLanguage as Action
-
-	Dialog(title="Start modeling") addPrivateModelDialog as Absolute(height=360px, width=400px)
-        Block as Relative(height=100%, offsetHeight=40px)
-        	Block(format=doubleAirBottom)
-        		Text(value="Language", translate=true, format=labelColor)
-        		Text languageField
-        	Text(format=doubleAirBottom) labelField as Editable Labeled("Title") Focused
-		Divider
-        Block(layout=Horizontal EndJustified)
-            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addPrivateModelDialog)
-            Button(title="Start", size=Small, highlight=Fill) createModel as Action
 
 	Dialog(title="Releases") releasesDialog as Absolute(width=500px, height=600px)
         Block as Relative(height=100%, offsetHeight=40px)
@@ -63,6 +43,9 @@ Template(layout=Vertical Flexible) languagesCatalog as Relative(height=100%, wid
 		Divider
 		Block(layout=Horizontal EndJustified)
 			Button(title="Close", size=Small, highlight=Outline) as CloseDialog(releasesDialog)
+
+	TemplateStamp(template=modelDialog) modelDialog
+	TemplateStamp(template=languageDialog) languageDialog
 
 Template(layout=Vertical Flexible) languagesCatalogTable as Relative(height=100%, width=100%)
 	Text(format=h4 middleAirBottom, visible=false) title

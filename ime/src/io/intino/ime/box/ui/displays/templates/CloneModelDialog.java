@@ -8,13 +8,13 @@ import io.intino.ime.model.Model;
 
 import java.util.function.Consumer;
 
-public class CloneModelEditor extends AbstractCloneModelEditor<ImeBox> {
+public class CloneModelDialog extends AbstractCloneModelDialog<ImeBox> {
 	private Model model;
 	private Mode mode = Mode.Large;
 	private View view = View.Default;
 	private Consumer<Model> cloneListener;
 
-	public CloneModelEditor(ImeBox box) {
+	public CloneModelDialog(ImeBox box) {
 		super(box);
 	}
 

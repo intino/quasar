@@ -10,14 +10,14 @@ import io.intino.ime.model.Model;
 
 import java.util.function.Consumer;
 
-public class ModelSettingsEditor extends AbstractModelSettingsEditor<ImeBox> {
+public class ModelSettingsDialog extends AbstractModelSettingsDialog<ImeBox> {
 	private Model model;
 	private Mode mode = Mode.Large;
 	private View view = View.Default;
 	private Consumer<String> saveTitleListener;
 	private Consumer<Boolean> saveAccessTypeListener;
 
-	public ModelSettingsEditor(ImeBox box) {
+	public ModelSettingsDialog(ImeBox box) {
 		super(box);
 	}
 
@@ -42,7 +42,8 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<ImeBox> {
 	@Override
 	public void init() {
 		super.init();
-		removeModel.onExecute(e -> removeModel());
+		generalBlock.onInit(e -> initGeneralBlock());
+		generalBlock.onShow(e -> refreshGeneralBlock());
 		settingsDialog.onOpen(e -> refreshDialog());
 		saveSettings.onExecute(e -> saveSettings());
 	}
@@ -56,7 +57,15 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<ImeBox> {
 		smallIconInList.visible(mode == Mode.Small && view == View.List);
 	}
 
-	public void refreshDialog() {
+	private void refreshDialog() {
+		settingsTabSelector.select(0);
+	}
+
+	private void initGeneralBlock() {
+		removeModel.onExecute(e -> removeModel());
+	}
+
+	private void refreshGeneralBlock() {
 		settingsTitleField.value(ModelHelper.label(model, language(), box()));
 		settingsTitleField.readonly(ModelHelper.isMetamodel(model, box()));
 		removeModel.readonly(ModelHelper.canRemove(model, box()));

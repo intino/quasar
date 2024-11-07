@@ -60,9 +60,9 @@ Template dashboardTemplate as Relative(height=100%, width=100%)
 
 	TemplateStamp(template=headerTemplate) header
 
-	Block(layout=Vertical Flexible CenterCenter, visible=false) openingModelBlock
+	Block(layout=Vertical Flexible CenterCenter, visible=false) openingBlock
 		Spinner(mode=Ring, color="secondary")
-		Text(value="" , translate=true, format=h3 airTop) openingModelMessage
+		Text(value="" , translate=true, format=h3 airTop) openingMessage
 
 	Block(layout=Horizontal Flexible Center, format=greyBackground) bodyBlock as Relative(width=100%)
 		Block(format=airLeft airRight) as Relative(width=20%, offsetWidth=10px)

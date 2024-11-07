@@ -14,6 +14,7 @@ import java.util.List;
 
 public class SaveLanguageCommand extends Command<Boolean> {
 	public Language language;
+	public String group;
 	public String description;
 	public boolean isPrivate;
 	public String builder;
@@ -49,6 +50,7 @@ public class SaveLanguageCommand extends Command<Boolean> {
 	}
 
 	private void saveLanguage() {
+		language.group(group);
 		language.description(description);
 		language.isPrivate(isPrivate);
 		language.builder(builder);

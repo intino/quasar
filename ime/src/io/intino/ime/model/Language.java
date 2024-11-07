@@ -8,6 +8,7 @@ import java.util.Set;
 
 public class Language {
 	private String name;
+	private String group;
 	private String description;
 	private boolean isPrivate;
 	private String parent;
@@ -20,6 +21,7 @@ public class Language {
 	private List<String> tagList;
 
 	public Language() {
+		group = "";
 		isPrivate = true;
 		programmingLanguages = new HashSet<>();
 		operations = new ArrayList<>();
@@ -47,6 +49,15 @@ public class Language {
 
 	public Language name(String name) {
 		this.name = name;
+		return this;
+	}
+
+	public String group() {
+		return group;
+	}
+
+	public Language group(String group) {
+		this.group = group;
 		return this;
 	}
 
@@ -102,6 +113,10 @@ public class Language {
 		return programmingLanguages.contains(language);
 	}
 
+	public List<String> programmingLanguages() {
+		return new ArrayList<>(programmingLanguages);
+	}
+
 	public Language programmingLanguages(List<String> languages) {
 		this.programmingLanguages = new HashSet<>(languages);
 		return this;
@@ -151,4 +166,5 @@ public class Language {
 		this.tagList = tagList;
 		return this;
 	}
+
 }

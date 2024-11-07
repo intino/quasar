@@ -4,6 +4,7 @@ import io.intino.builderservice.schemas.Message;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.commands.model.*;
 import io.intino.ime.box.models.ModelContainer;
+import io.intino.ime.box.scaffolds.ScaffoldFactory;
 import io.intino.ime.model.Model;
 import io.intino.ime.model.Operation;
 import io.intino.ime.model.Release;
@@ -16,11 +17,13 @@ public class ModelCommands extends Commands {
 		super(box);
 	}
 
-	public Model create(String id, String label, Release release, String owner, String username) {
+	public Model create(String id, String label, Release release, ScaffoldFactory.Language programmingLanguage, ScaffoldFactory.Scaffold scaffold, String owner, String username) {
 		CreateModelCommand command = setup(new CreateModelCommand(box), username);
 		command.id = id;
 		command.label = label;
 		command.release = release;
+		command.programmingLanguage = programmingLanguage;
+		command.scaffold = scaffold;
 		command.owner = owner;
 		return command.execute();
 	}

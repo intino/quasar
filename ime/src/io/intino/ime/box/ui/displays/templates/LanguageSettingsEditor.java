@@ -5,10 +5,13 @@ import io.intino.alexandria.exceptions.Conflict;
 import io.intino.alexandria.exceptions.InternalServerError;
 import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.displays.components.Text;
+import io.intino.alexandria.ui.displays.events.SelectionEvent;
 import io.intino.alexandria.ui.displays.events.actionable.ToggleEvent;
 import io.intino.builderservice.schemas.BuilderInfo;
 import io.intino.ime.box.ImeBox;
+import io.intino.ime.box.commands.LanguageCommands;
 import io.intino.ime.box.ui.DisplayHelper;
+import io.intino.ime.box.ui.PathHelper;
 import io.intino.ime.box.util.LanguageHelper;
 import io.intino.ime.model.Language;
 import io.intino.ime.model.Operation;
@@ -47,6 +50,10 @@ public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBo
 
 	public Resource logo() {
 		return logo;
+	}
+
+	public String group() {
+		return groupField.value();
 	}
 
 	public String description() {
@@ -93,14 +100,17 @@ public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBo
 		logoField.onChange(e -> logo = e.value());
 		addTag.onExecute(e -> addTag());
 		tagField.onEnterPress(e -> addTag());
+		removeLanguage.onExecute(e -> removeLanguage());
 	}
 
 	private void refreshProperties() {
 		logoField.value(LanguageHelper.logo(language, box()));
 		nameField.value(language.name());
+		groupField.value(language.group());
 		descriptionField.value(language.description());
 		accessTypeField.state(language.isPrivate() ? ToggleEvent.State.On : ToggleEvent.State.Off);
 		refreshTags();
+		removeLanguage.readonly(!LanguageHelper.canRemoveLanguage(language, box()));
 	}
 
 	private void refreshTags() {
@@ -245,6 +255,11 @@ public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBo
 	private Operation languageOperationOf(String name) {
 		Operation operation = language.operation(name);
 		return operation != null ? operation : new Operation(name);
+	}
+
+	private void removeLanguage() {
+		box().commands(LanguageCommands.class).remove(language, username());
+		notifier.redirect(user() != null ? PathHelper.dashboardUrl(session()) : PathHelper.homeUrl(session()));
 	}
 
 }

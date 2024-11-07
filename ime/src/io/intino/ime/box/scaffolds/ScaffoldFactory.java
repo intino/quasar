@@ -2,6 +2,7 @@ package io.intino.ime.box.scaffolds;
 
 import io.intino.ls.document.DocumentManager;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class ScaffoldFactory {
 	}
 
 	public List<Scaffold> scaffoldsOf(Language language) {
-		return map.get(language);
+		return map.getOrDefault(language, Collections.emptyList());
 	}
 
 	public enum Language {Java, Python;}

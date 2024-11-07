@@ -26,8 +26,8 @@ public class ModelContainer {
 		return new ModelContainerReader(model, server).files();
 	}
 
-	public File file(String name) {
-		return files().stream().filter(f -> f.name().equals(name)).findFirst().orElse(null);
+	public File file(String uri) {
+		return files().stream().filter(f -> f.uri().equals(uri)).findFirst().orElse(null);
 	}
 
 	public static class File {
