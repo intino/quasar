@@ -1,6 +1,7 @@
 package io.intino.ime.box.commands;
 
 import io.intino.ime.box.ImeBox;
+import io.intino.ime.box.orchestator.BuildException;
 import io.intino.ime.model.Model;
 
 import java.time.Clock;
@@ -17,7 +18,7 @@ public abstract class Command<T> {
 		this.box = box;
 	}
 
-	public abstract T execute();
+	public abstract T execute() throws BuildException;
 
 	protected static Instant ts() {
 		return Instant.now(Clock.systemUTC());
