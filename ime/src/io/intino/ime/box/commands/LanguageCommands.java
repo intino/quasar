@@ -2,6 +2,7 @@ package io.intino.ime.box.commands;
 
 import io.intino.alexandria.Resource;
 import io.intino.ime.box.ImeBox;
+import io.intino.ime.box.commands.Command.ExecutionResult;
 import io.intino.ime.box.commands.language.*;
 import io.intino.ime.box.scaffolds.ScaffoldFactory;
 import io.intino.ime.model.*;
@@ -47,7 +48,7 @@ public class LanguageCommands extends Commands {
 		return command.execute();
 	}
 
-	public Release publish(Model model, LanguageLevel level, String version, String username) {
+	public ExecutionResult publish(Model model, LanguageLevel level, String version, String username) {
 		PublishLanguageCommand command = setup(new PublishLanguageCommand(box), username);
 		command.model = model;
 		command.level = level;

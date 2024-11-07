@@ -4,6 +4,7 @@ import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.utils.DelayerUtil;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.ImeBrowser;
+import io.intino.ime.box.commands.Command.ExecutionResult;
 import io.intino.ime.box.commands.LanguageCommands;
 import io.intino.ime.box.commands.ModelCommands;
 import io.intino.ime.box.models.ModelManager;
@@ -24,6 +25,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<ImeBox> {
 	private Consumer<Model> openModelListener;
 	private Consumer<Language> openLanguageListener;
 	private Consumer<Operation> executeOperationListener;
+	private Consumer<ExecutionResult> publishListener;
 
 	public ModelHeaderTemplate(ImeBox box) {
 		super(box);
@@ -47,6 +49,10 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<ImeBox> {
 
 	public void onOpenLanguage(Consumer<Language> listener) {
 		this.openLanguageListener = listener;
+	}
+
+	public void onPublish(Consumer<ExecutionResult> listener) {
+		this.publishListener = listener;
 	}
 
 	public void onExecuteOperation(Consumer<Operation> listener) {
@@ -211,8 +217,10 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<ImeBox> {
 		if (!releaseEditor.check()) return;
 		publishDialog.close();
 		Release release = releaseEditor.release();
-		box().commands(LanguageCommands.class).publish(model, release.level(), release.version(), username());
-		notifyUser(String.format(translate("Release %s published"), release.version()), UserMessage.Type.Success);
+		ExecutionResult result = box().commands(LanguageCommands.class).publish(model, release.level(), release.version(), username());
+		if (result.success()) notifyUser(String.format(translate("Release %s published"), release.version()), UserMessage.Type.Success);
+		else notifyUser(String.format(translate("Release %s published"), release.version()), UserMessage.Type.Error);
+		publishListener.accept(result);
 	}
 
 	private void execute(Operation operation) {

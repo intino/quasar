@@ -17,7 +17,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
-public class ExecuteModelOperationCommand extends Command<List<Message>> {
+public class ExecuteModelOperationCommand extends Command<Command.ExecutionResult> {
 	public Model model;
 	public Operation operation;
 
@@ -26,16 +26,16 @@ public class ExecuteModelOperationCommand extends Command<List<Message>> {
 	}
 
 	@Override
-	public List<Message> execute() {
+	public ExecutionResult execute() {
 		try {
 			Language language = box.languageManager().get(model.modelingLanguage());
 			URL builderServiceUrl = URI.create(box.configuration().builderServiceUrl()).toURL();
 			FileDocumentManager documentManager = new FileDocumentManager(new File(box.modelManager().workspace(model)));
 			BuilderOrchestator orchestator = new BuilderOrchestator(builderServiceUrl, documentManager);
-			return orchestator.exec(author, language.builder(), operation.name());
+			return ExecutionResult.build(orchestator.exec(author, language.builder(), operation.name()));
 		} catch (IOException e) {
 			Logger.error(e);
-			return Collections.emptyList();
+			return ExecutionResult.build(List.of(new Message().content(e.getMessage())));
 		}
 	}
 

@@ -7,6 +7,8 @@ import io.intino.alexandria.ui.displays.components.Layer;
 import io.intino.alexandria.ui.utils.DelayerUtil;
 import io.intino.builderservice.schemas.Message;
 import io.intino.ime.box.ImeBox;
+import io.intino.ime.box.commands.Command;
+import io.intino.ime.box.commands.Command.ExecutionResult;
 import io.intino.ime.box.commands.ModelCommands;
 import io.intino.ime.box.models.ModelContainer;
 import io.intino.ime.box.schemas.IntinoFileBrowserItem;
@@ -60,6 +62,7 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 		super.init();
 		header.onOpenSearch(e -> openSearch());
 		header.onOpenModel(this::open);
+		header.onPublish(this::refreshConsole);
 		header.onExecuteOperation(this::executeOperation);
 		header.onOpenLanguage(this::open);
 		initFileBrowser();
@@ -382,11 +385,21 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 	}
 
 	private void executeOperation(Operation operation) {
+		ExecutionResult result = box().commands(ModelCommands.class).execute(model, operation, username());
+		refreshConsole(result.messages());
+		if (result.success()) notifyUser(translate("Operation execution finished"), UserMessage.Type.Success);
+		else notifyUser(translate("Errors detected during operation execution"), UserMessage.Type.Error);
+	}
+
+	private void refreshConsole(ExecutionResult result) {
+		refreshConsole(result.messages());
+	}
+
+	private void refreshConsole(List<Message> messages) {
 		console.clear();
-		console.messages(box().commands(ModelCommands.class).execute(model, operation, username()));
+		console.messages(messages);
 		console.refresh();
 		console.show();
-		notifyUser(translate("Operation execution finished"), UserMessage.Type.Success);
 	}
 
 }
