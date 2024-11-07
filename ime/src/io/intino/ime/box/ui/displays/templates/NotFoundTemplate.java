@@ -5,20 +5,20 @@ import io.intino.ime.box.ui.PathHelper;
 import io.intino.ime.model.Model;
 
 public class NotFoundTemplate extends AbstractNotFoundTemplate<ImeBox> {
-	private Model model;
+	private String type;
 
 	public NotFoundTemplate(ImeBox box) {
 		super(box);
 	}
 
-	public void model(String name) {
-		this.model = box().modelManager().model(name);
+	public void type(String type) {
+		this.type = type;
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
-		message.value(translate("Model was not found"));
+		message.value(String.format(translate("%s was not found"), type));
 		userHome.visible(session().user() != null);
 		userHome.path(PathHelper.dashboardPath(session()));
 	}

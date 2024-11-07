@@ -1,6 +1,7 @@
 package io.intino.ime.box.ui.pages;
 
 import io.intino.alexandria.ui.services.push.User;
+import io.intino.ime.box.I18n;
 import io.intino.ime.box.ui.DisplayHelper;
 import io.intino.ime.box.ui.PathHelper;
 import io.intino.ime.box.ui.ViewMode;
@@ -30,7 +31,7 @@ public class ModelPage extends AbstractModelPage {
 	public String redirectUrl() {
 		String callbackUrl = URLEncoder.encode(session.browser().requestUrl(), StandardCharsets.UTF_8);
 		Model model = box.modelManager().model(id);
-		return session.browser().baseUrl() + (model != null ? "/permissions" : "/not-found") + "?model=" + id + "&callback=" + callbackUrl;
+		return model != null ? PathHelper.permissionsUrl(model, callbackUrl, session) : PathHelper.notFoundUrl(I18n.translate("Model", session.discoverLanguage()), session);
 	}
 
 	public io.intino.alexandria.ui.Soul prepareSoul(io.intino.alexandria.ui.services.push.UIClient client) {

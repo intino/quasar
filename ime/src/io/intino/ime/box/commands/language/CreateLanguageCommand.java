@@ -41,6 +41,7 @@ public class CreateLanguageCommand extends Command<Language> {
 
 	private void save(BuilderInfo info, Language language) {
 		if (info == null) return;
+		language.builder(box.configuration().defaultBuilder());
 		language.operations(info.operations().stream().map(Operation::new).toList());
 		language.programmingLanguages(info.targetLanguages());
 		box.languageManager().save(language);

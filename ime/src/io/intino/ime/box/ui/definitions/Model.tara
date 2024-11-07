@@ -114,8 +114,19 @@ Template(format=headerBackground) modelHeaderTemplate
 Template modelOperation
 	Button(title="", size=Small, format=airRight) trigger as Action
 
-Template consoleTemplate
-	Text(value="Soy los problems")
+Template(format=consoleStyle) consoleTemplate
+	MaterialIconButton(title="Close", icon="Clear", size=Small, format=closeIcon) closeButton as Action
+	Text(value="Console", format=h6 airLeft middleAirTop, translate=true)
+	Block(format=airTop airLeft airRight middleAirBottom)
+		TemplateStamp(template=consoleEntryTemplate) entries as Multiple(noItemsMessage="No messages")
+
+Template(layout=Horizontal Center, format=middleAirBottom) consoleEntryTemplate
+	MaterialIcon(icon="Info", format=smallIconSize airRight blueColor, visible=false) infoIcon
+	MaterialIcon(icon="Warning", format=smallIconSize airRight orangeColor, visible=false) warningIcon
+	MaterialIcon(icon="Error", format=smallIconSize airRight redColor, visible=false) errorIcon
+	Text(format=airRight) file
+	Text(format=airRight) location
+	Text content
 
 Display intinoFileBrowser
 	Notification refresh as Object(intinoFileBrowserInfo)

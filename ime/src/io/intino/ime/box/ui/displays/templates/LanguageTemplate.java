@@ -24,7 +24,7 @@ public class LanguageTemplate extends AbstractLanguageTemplate<ImeBox> {
 
 	public void language(String name) {
 		this.language = box().languageManager().get(name);
-		this.lastRelease = box().languageManager().lastRelease(language);
+		this.lastRelease = language != null ? box().languageManager().lastRelease(language) : null;
 	}
 
 	@Override
@@ -53,6 +53,10 @@ public class LanguageTemplate extends AbstractLanguageTemplate<ImeBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
+		if (language == null) {
+			notifier.redirect(PathHelper.notFoundUrl(translate("Language"), session()));
+			return;
+		}
 		header.language(language);
 		header.refresh();
 		logo.value(LanguageHelper.logo(language, box()));

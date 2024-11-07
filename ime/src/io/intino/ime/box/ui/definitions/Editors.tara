@@ -96,7 +96,7 @@ Template languageSettingsEditor
 			Block(layout=Horizontal, format=airTop)
 				Button(title="Check", highlight=Outline, size=Small, format=airRight) checkBuilder as Readonly
 		Block(visible=false) loadingBlock
-			Text(value="Loading builder information...", format=orange) builderState
+			Text(value="Loading builder information...", format=orangeColor) builderState
 		Block(visible=false) builderInfoBlock
 			Block(format=doubleAirBottom) operationsBlock
 				Text(value="Operations", format=h5, translate=true)

@@ -89,7 +89,9 @@ public class LanguageDialog extends AbstractLanguageDialog<ImeBox> {
 		String name = nameField.value();
 		String group = groupField.value();
 		String description = descriptionField.value();
+		notifyUser(translate("Creating language..."), UserMessage.Type.Loading);
 		Language language = box().commands(LanguageCommands.class).create(name, release, group, programmingLanguage(), scaffold(), description, logo, isPrivate(), username());
+		hideUserNotification();
 		createListener.accept(language);
 	}
 

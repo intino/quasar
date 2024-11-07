@@ -258,6 +258,7 @@ public class LanguageSettingsEditor extends AbstractLanguageSettingsEditor<ImeBo
 	}
 
 	private void removeLanguage() {
+		notifyUser(translate("Removing language..."), UserMessage.Type.Loading);
 		box().commands(LanguageCommands.class).remove(language, username());
 		notifier.redirect(user() != null ? PathHelper.dashboardUrl(session()) : PathHelper.homeUrl(session()));
 	}

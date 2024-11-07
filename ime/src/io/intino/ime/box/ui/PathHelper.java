@@ -19,6 +19,14 @@ public class PathHelper {
 
 	public static final String PublicUser = "public";
 
+	public static String permissionsUrl(Model model, String callbackUrl, UISession session) {
+		return session.browser().baseUrl() + "/permissions?model=" + model.id() + "&callback=" + callbackUrl;
+	}
+
+	public static String notFoundUrl(String type, UISession session) {
+		return session.browser().baseUrl() + "/not-found?type=" + type;
+	}
+
 	public static String homeUrl(UISession session) {
 		return session.browser().baseUrl();
 	}

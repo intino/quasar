@@ -1,5 +1,6 @@
 package io.intino.ime.box.ui.displays.templates;
 
+import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.displays.events.actionable.ToggleEvent;
 import io.intino.ime.box.ImeBox;
 import io.intino.ime.box.commands.ModelCommands;
@@ -92,6 +93,7 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<ImeBox> {
 	}
 
 	private void removeModel() {
+		notifyUser(translate("Removing model..."), UserMessage.Type.Loading);
 		box().commands(ModelCommands.class).remove(model, username());
 		notifier.redirect(PathHelper.dashboardUrl(session()));
 	}

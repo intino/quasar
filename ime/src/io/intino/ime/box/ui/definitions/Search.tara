@@ -95,7 +95,7 @@ Template(format=dashboardItemStyle) languageItemTemplate
 			Block(format=airRight) > Image(colorInvertedWithDarkMode=true) logo as Absolute(height=50px, width=50px)
 			Block(layout=Vertical Flexible)
 				Block(layout=Horizontal)
-					Block(layout=Vertical Flexible) > Text(format=orange) owner
+					Block(layout=Vertical Flexible) > Text(format=orangeColor) owner
 					Block(layout=Horizontal EndJustified) > Text(visible=false) privatePill as Highlighted(textColor="white", backgroundColor="#777")
 				Link(title="", format=h5) languageTitleLink as OpenPage(ImeElements.language)
 		Text(format=greyColor middleAirTop, cropWithEllipsis=40Chars) description

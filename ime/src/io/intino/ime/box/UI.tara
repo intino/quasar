@@ -16,7 +16,7 @@ Service ImeElements as UI(port = "{port}", title = "{title}", favicon = "/icons/
 	Resource(path = "/dashboard") dashboard as Page(homeTemplate) Confidential
 	Resource(path = "/languages/:id") language as Page(homeTemplate)
 	Resource(path = "/models/:id") model as Page(homeTemplate) > Parameter file
-	Resource(path = "/not-found") notFound as Page(notFoundTemplate) > Parameter model
+	Resource(path = "/not-found") notFound as Page(notFoundTemplate) > Parameter type
 	Resource(path = "/permissions") permissions as Page(permissionsTemplate) > Parameter username; Parameter model; Parameter callback
 
 Template homeTemplate as Relative(height=100%, width=100%)

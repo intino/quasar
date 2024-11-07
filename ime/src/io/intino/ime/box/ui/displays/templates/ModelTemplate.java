@@ -44,8 +44,8 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 	public void model(String id) {
 		try {
 			this.model = box().modelManager().model(id);
-			modelContainer = box().modelManager().modelContainer(model);
-			if (model.modelingLanguage() == null) return;
+			this.modelContainer = model != null ? box().modelManager().modelContainer(model) : null;
+			if (model == null || model.modelingLanguage() == null) return;
 			box().languageProvider().get(model.modelingLanguage());
 		} catch (Throwable e) {
 			Logger.error(e);
@@ -65,6 +65,7 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 		header.onPublish(this::refreshConsole);
 		header.onExecuteOperation(this::executeOperation);
 		header.onOpenLanguage(this::open);
+		console.onClose(e -> console.hide());
 		initFileBrowser();
 		initFileEditor();
 		initFileModifiedDialog();
@@ -99,6 +100,10 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
+		if (model == null) {
+			notifier.redirect(PathHelper.notFoundUrl(translate("Model"), session()));
+			return;
+		}
 		refreshHeader();
 		refreshFileBrowser();
 		refreshFileEditor();
@@ -396,7 +401,6 @@ public class ModelTemplate extends AbstractModelTemplate<ImeBox> {
 	}
 
 	private void refreshConsole(List<Message> messages) {
-		console.clear();
 		console.messages(messages);
 		console.refresh();
 		console.show();
