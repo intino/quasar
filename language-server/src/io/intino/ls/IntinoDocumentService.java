@@ -147,8 +147,9 @@ public class IntinoDocumentService implements TextDocumentService {
 	@Override
 	public CompletableFuture<SemanticTokens> semanticTokensFull(SemanticTokensParams params) {
 		try {
-			return completedFuture(semanticTokens(URI.create(normalize(params.getTextDocument().getUri()))));
-		} catch (IOException e) {
+			SemanticTokens tokens = semanticTokens(URI.create(normalize(params.getTextDocument().getUri())));
+			return completedFuture(tokens);
+		} catch (Throwable e) {
 			Logger.error(e);
 		}
 		return completedFuture(new SemanticTokens());

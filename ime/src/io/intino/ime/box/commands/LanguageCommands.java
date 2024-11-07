@@ -47,8 +47,8 @@ public class LanguageCommands extends Commands {
 		return command.execute();
 	}
 
-	public Release createRelease(Model model, LanguageLevel level, String version, String username) {
-		CreateLanguageReleaseCommand command = setup(new CreateLanguageReleaseCommand(box), username);
+	public Release publish(Model model, LanguageLevel level, String version, String username) {
+		PublishLanguageCommand command = setup(new PublishLanguageCommand(box), username);
 		command.model = model;
 		command.level = level;
 		command.version = version;

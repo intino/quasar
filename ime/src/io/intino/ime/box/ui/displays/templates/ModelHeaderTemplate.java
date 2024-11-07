@@ -211,7 +211,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<ImeBox> {
 		if (!releaseEditor.check()) return;
 		publishDialog.close();
 		Release release = releaseEditor.release();
-		box().commands(LanguageCommands.class).createRelease(model, release.level(), release.version(), username());
+		box().commands(LanguageCommands.class).publish(model, release.level(), release.version(), username());
 		notifyUser(String.format(translate("Release %s published"), release.version()), UserMessage.Type.Success);
 	}
 
