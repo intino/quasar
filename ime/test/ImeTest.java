@@ -22,15 +22,17 @@ import static io.intino.ime.box.scaffolds.ScaffoldFactory.Scaffold.Intellij;
 public class ImeTest {
 
 	public static void main(String[] args) throws IOException, URISyntaxException {
-		//testCreateProject();
-		testBuilderService();
+		testCreateProject();
+		//testBuilderService();
 		//testScaffold();
 	}
 
 	private static void testCreateProject() throws IOException {
-		new ProjectCreator("Tafat:1.0.0", "Meta:2.0.0", "io.tafat",
-				List.of(new ProjectCreator.CodeBucket("code/java/tafat", Intellij, "io.intino.magritte.builder:1.3.0")))
-				.create(new FileDocumentManager(new File("temp/projects/tafat")));
+		File root = new File("temp/projects/example");
+		root.mkdirs();
+		new ProjectCreator("example:1.0.0", "meta:2.0.0", "io.example",
+				List.of(new ProjectCreator.CodeBucket("code/java/example", Intellij, "quassar625/io.quassar.quassar-builder:1.0.0")))
+				.create(new FileDocumentManager(root));
 	}
 
 	private static void testScaffold() throws IOException {

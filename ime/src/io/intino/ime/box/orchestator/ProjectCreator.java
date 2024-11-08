@@ -36,7 +36,7 @@ public class ProjectCreator {
 	}
 
 	private void buildScaffold(DocumentManager manager, CodeBucket bucket) {
-		ScaffoldFactory.scaffoldOf(bucket.scaffold, manager, bucket.path).build();
+		if (bucket.scaffold != null)  ScaffoldFactory.scaffoldOf(bucket.scaffold, manager, bucket.path).build();
 	}
 
 	private List<ArchetypeEntry> entries() {
