@@ -43,8 +43,8 @@ public class BuilderStore {
 
 	public void put(RegisterBuilder info) {
 		try {
-			this.index.put(info.imageURL(), new BuilderInfo().imageURL(info.imageURL()));
 			DockerManager.download(info.imageURL(), info.registryToken());
+			this.index.put(info.imageURL(), new BuilderInfo().imageURL(info.imageURL()));
 			saveIndex();
 		} catch (InterruptedException | IOException e) {
 			Logger.error(e);
