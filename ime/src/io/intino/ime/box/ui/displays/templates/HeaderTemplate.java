@@ -28,7 +28,7 @@ public class HeaderTemplate extends AbstractHeaderTemplate<ImeBox> {
 		this.language = language;
 	}
 
-	public enum View { Home, Search, Dashboard, Normal }
+	public enum View { Home, Documentation, Search, Dashboard, Normal }
 	public void view(View view) {
 		this.view = view;
 	}
@@ -65,11 +65,12 @@ public class HeaderTemplate extends AbstractHeaderTemplate<ImeBox> {
 		ViewMode viewMode = DisplayHelper.viewMode(session());
 		User loggedUser = session().user();
 		openSearch.visible(view != View.Search);
-		appViewBlock.visible(view != View.Home && view != View.Search);
-		logo.visible(view != View.Home && view != View.Search);
-		logoLink.visible(view != View.Home);
-		logoExpandedLink.visible(view == View.Search);
-		logoExpanded.visible(view == View.Home || view == View.Search);
+		openDocumentation.visible(view != View.Documentation);
+		appViewBlock.visible(view != View.Home && view != View.Documentation && view != View.Search);
+		logo.visible(view != View.Home && view != View.Documentation && view != View.Search);
+		logoLink.visible(view != View.Home && view != View.Documentation);
+		logoExpandedLink.visible(view == View.Search || view == View.Documentation);
+		logoExpanded.visible(view == View.Home || view == View.Documentation || view == View.Search);
 		content.formats(formats(viewMode));
 		appViewSwitch.readonly(!canEditViewMode);
 		appViewSwitch.state(viewMode == ViewMode.Languages ? ToggleEvent.State.Off : ToggleEvent.State.On);

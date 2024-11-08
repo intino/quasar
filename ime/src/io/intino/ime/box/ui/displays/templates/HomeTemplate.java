@@ -14,7 +14,7 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 	private String searchCondition;
 
 	public enum Page {
-		Search, Main, Language, Model, Dashboard;
+		Search, Main, Language, Model, Documentation, Dashboard;
 
 		public static Page from(String key) {
 			return Arrays.stream(values()).filter(v -> v.name().equalsIgnoreCase(key)).findFirst().orElse(null);
@@ -45,6 +45,11 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 	public void openDashboard() {
 		openPage(Page.Dashboard);
 		dashboardBlock.dashboardTemplate.refresh();
+	}
+
+	public void openDocumentation() {
+		openPage(Page.Documentation);
+		documentationBlock.documentationTemplate.refresh();
 	}
 
 	public HomeTemplate(ImeBox box) {
@@ -96,6 +101,10 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 		modelTemplate.refresh();
 	}
 
+	private void refreeshDocumentation() {
+		documentationBlock.refresh();
+	}
+
 	private void refreshDashboard() {
 		dashboardTemplate.refresh();
 	}
@@ -142,6 +151,7 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 		if (page == Page.Main) return Page.Main.name();
 		if (page == Page.Language) return Page.Language.name();
 		if (page == Page.Model) return Page.Model.name();
+		if (page == Page.Documentation) return Page.Documentation.name();
 		if (page == Page.Dashboard) return Page.Dashboard.name();
 		return page.name().toLowerCase();
 	}
@@ -151,6 +161,7 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 		if (homeBlock.isVisible()) homeBlock.hide();
 		if (languageBlock.isVisible()) languageBlock.hide();
 		if (modelBlock.isVisible()) modelBlock.hide();
+		if (documentationBlock.isVisible()) documentationBlock.hide();
 		if (dashboardBlock.isVisible()) dashboardBlock.hide();
 	}
 
@@ -159,6 +170,7 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 		if (page == Page.Main) return homeBlock;
 		if (page == Page.Language) return languageBlock;
 		if (page == Page.Model) return modelBlock;
+		if (page == Page.Documentation) return documentationBlock;
 		if (page == Page.Dashboard) return dashboardBlock;
 		return null;
 	}
@@ -168,6 +180,7 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 		if (current == Page.Main) refreshHome();
 		if (current == Page.Language) refreshLanguage();
 		if (current == Page.Model) refreshModel();
+		if (current == Page.Documentation) refreeshDocumentation();
 		if (current == Page.Dashboard) refreshDashboard();
 	}
 

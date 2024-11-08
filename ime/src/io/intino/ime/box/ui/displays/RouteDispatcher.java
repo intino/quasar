@@ -1,7 +1,6 @@
 package io.intino.ime.box.ui.displays;
 
 import io.intino.alexandria.ui.Soul;
-import io.intino.alexandria.ui.displays.components.Layer;
 import io.intino.ime.box.ui.displays.templates.HomeTemplate;
 
 import java.net.URLDecoder;
@@ -16,6 +15,11 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	@Override
 	public void dispatchSearch(Soul soul, String condition) {
 		soul.currentLayer(HomeTemplate.class).search(condition != null ? URLDecoder.decode(condition, StandardCharsets.UTF_8) : null);
+	}
+
+	@Override
+	public void dispatchDocumentation(Soul soul) {
+		soul.currentLayer(HomeTemplate.class).openDocumentation();
 	}
 
 	@Override

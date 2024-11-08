@@ -13,6 +13,7 @@ Service ImeElements as UI(port = "{port}", title = "{title}", favicon = "/icons/
 
 	Resource(path = "/") home as Page(homeTemplate) Main
 	Resource(path = "/search") search as Page(homeTemplate) > Parameter condition
+	Resource(path = "/documentation") documentation as Page(homeTemplate)
 	Resource(path = "/dashboard") dashboard as Page(homeTemplate) Confidential
 	Resource(path = "/languages/:id") language as Page(homeTemplate)
 	Resource(path = "/models/:id") model as Page(homeTemplate) > Parameter file
@@ -22,6 +23,7 @@ Service ImeElements as UI(port = "{port}", title = "{title}", favicon = "/icons/
 Template homeTemplate as Relative(height=100%, width=100%)
 	Link(title="") openSearchLayerTrigger as OpenLayer(Fade, showHeader=false) Addressable(ImeElements.search)
 
+	Block(layout=Vertical Flexible, visible=false) documentationBlock as Conditional > TemplateStamp(template=documentationTemplate) documentationTemplate
 	Block(layout=Vertical Flexible, visible=false) searchBlock as Conditional > TemplateStamp(template=searchTemplate) searchTemplate
 	Block(layout=Vertical Flexible, visible=false) languageBlock as Conditional > TemplateStamp(template=languageTemplate) languageTemplate
 	Block(layout=Vertical Flexible, visible=false) modelBlock as Conditional > TemplateStamp(template=modelTemplate) modelTemplate
@@ -46,14 +48,18 @@ Template homeTemplate as Relative(height=100%, width=100%)
 
 			Block(layout=Horizontal Flexible, format=dashboardFullPanelStyle) as Parallax("images/landscape3.png") Absolute(height=550px)
 				Block(layout=Vertical Flexible, format=doubleAirLeft)
-					Text(value="Documentation", format=cardTitle darkCardShadow)
-
-			Block(layout=Horizontal Flexible, format=dashboardFullPanelStyle)
-				Block(layout=Vertical Flexible, format=doubleAirLeft)
 					Text(value="About us", format=cardTitle darkCardShadow)
 
 		Block(layout=Horizontal, format=blackBackground) footer
 			Block(layout=Vertical Flexible, format=spaced) > Text(value="all rights reserverd ®", format=white, translate=true)
+
+Template documentationTemplate as Relative(height=100%, width=100%)
+	Link(title="") openSearchLayerTrigger as OpenLayer(Fade, showHeader=false) Addressable(ImeElements.search)
+
+	TemplateStamp(template=headerTemplate) header
+	Block(layout=Vertical Center Flexible) as Relative(width=100%)
+		Block as Relative(width=80%)
+			HtmlViewer documentationStamp
 
 Template dashboardTemplate as Relative(height=100%, width=100%)
 	Link(title="") openSearchLayerTrigger as OpenLayer(Fade, showHeader=false) Addressable(ImeElements.search)
@@ -102,6 +108,7 @@ Template(format=headerBackground) headerTemplate
 
 		Block(layout=Horizontal Center EndJustified)
 			Button(title="Search...", format=airRight, visible=false) openSearch as Action
+			Button(title="Documentation", format=airRight) openDocumentation as OpenPage(ImeElements.documentation)
 			Button(title="Log in", format=airRight, visible=false) login as Action
 			Block(layout=Horizontal Center, visible=false) notLoggedBlock
 				MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
