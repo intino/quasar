@@ -69,6 +69,7 @@ public class FileDocumentManager implements DocumentManager {
 		if (textDocumentItem != null) try {
 			documents.put(newUri, textDocumentItem);
 			Files.move(fileOf(oldUri).toPath(), fileOf(newUri).toPath());
+			documents.remove(oldUri);
 		} catch (IOException e) {
 			Logger.error(e);
 		}
