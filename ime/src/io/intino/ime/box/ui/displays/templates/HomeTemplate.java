@@ -64,6 +64,7 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 	public void init() {
 		super.init();
 		DisplayHelper.initViewMode(session());
+		redirectIfCallback();
 		homeBlock.onInit(e -> initHome());
 		homeBlock.onShow(e -> refreshHome());
 		openSearchLayerTrigger.onOpen(e -> refreshLayer(e.layer()));
@@ -182,6 +183,13 @@ public class HomeTemplate extends AbstractHomeTemplate<ImeBox> {
 		if (current == Page.Model) refreshModel();
 		if (current == Page.Documentation) refreeshDocumentation();
 		if (current == Page.Dashboard) refreshDashboard();
+	}
+
+	private void redirectIfCallback() {
+		String callback = session().preference("callback");
+		if (callback == null || callback.isEmpty()) return;
+		session().add("callback", "");
+		notifier.redirect(callback);
 	}
 
 }
