@@ -23,16 +23,13 @@ public class OperationOutputHandler {
 	private static final String COMPILER_IN_OPERATION = "Compiler in operation...";
 	private final List<OutputItem> compiledItems = new ArrayList<>();
 	private final List<CompilerMessage> compilerMessages = new ArrayList<>();
-	private final Sentinel sentinel;
 	private final List<File> srcFiles;
 	private final ProjectDirectory project;
 	private Consumer<String> statusUpdater;
 
 	public OperationOutputHandler(ProjectDirectory project, List<File> srcFiles) {
 		this.project = project;
-		this.sentinel = new Sentinel(project.logFile());
 		this.srcFiles = srcFiles;
-		this.sentinel.init(this::notifyTextAvailable);
 	}
 
 	public OperationOutputHandler statusUpdater(Consumer<String> statusUpdater) {
@@ -52,11 +49,17 @@ public class OperationOutputHandler {
 		return compilerMessages;
 	}
 
-	public void stop() {
-		sentinel.stop();
+	public void readOutput() {
+		try {
+			compiledItems.clear();
+			compilerMessages.clear();
+			readLog(Files.readString(project.logFile().toPath()));
+		} catch (IOException e) {
+			Logger.error(e);
+		}
 	}
 
-	private void notifyTextAvailable(final String text) {
+	private void readLog(final String text) {
 		final String trimmed = text.trim();
 		if (!trimmed.isEmpty()) for (String line : trimmed.split("\n")) {
 			if (line.startsWith(PRESENTABLE_MESSAGE)) {

@@ -31,13 +31,14 @@ public class GetOperationOutputAction implements io.intino.alexandria.rest.Reque
 		ProjectDirectory directory = ProjectDirectory.of(box.workspace(), ticket);
 		if (!directory.exists()) throw new NotFound("Ticket does not exist");
 		OperationOutputHandler handler = box.operationHandler(ticket);
+		handler.readOutput();
 		OperationResult result = new OperationResult();
 		if (emptyIfNull(directory.gen().listFiles()).length > 0) result.genRef(directory.gen().getName());
 		if (srcFiles(directory, handler).length > 0) result.srcRef(directory.src().getName());
 		if (emptyIfNull(directory.res().listFiles()).length > 0) result.resRef(directory.res().getName());
 		if (emptyIfNull(directory.out().listFiles()).length > 0) result.outRef(directory.out().getName());
 		result.messages(map(handler.compilerMessages(), directory));
-		result.success(result.messages().stream().anyMatch(m -> m.kind().equals(Kind.ERROR)));
+		result.success(result.messages().stream().noneMatch(m -> m.kind().equals(Kind.ERROR)));
 		result.state(box.containerManager().isRunning(ticket) ? Running : Finished);
 		return result;
 	}

@@ -52,14 +52,14 @@ public class BuilderOrchestrator {
 			if (taraFiles == null)
 				return List.of(new Message().kind(Message.Kind.ERROR).content("Model files not found"));
 			List<Message> messages = runBuild(builder, taraFiles, operation);
-			if (messages.stream().noneMatch(m -> m.kind().equals(Message.Kind.ERROR))) return messages;
+			if (messages.stream().anyMatch(m -> m.kind().equals(Message.Kind.ERROR))) return messages;
 			manager.commit(user);
 			manager.push();
+			return messages;
 		} catch (Throwable t) {
 			Logger.error(t);
 			return List.of(new Message().kind(Message.Kind.ERROR).content("Unknown error"));
 		}
-		return Collections.emptyList();
 	}
 
 
@@ -134,7 +134,9 @@ public class BuilderOrchestrator {
 
 	private File taraFiles() {
 		try {
-			return TarUtils.createTarFile(manager, modelUris(), Files.createTempFile("quassar", ".tar").toFile());
+			List<URI> uris = modelUris();
+			if (uris.isEmpty()) return null;
+			return TarUtils.createTarFile(manager, uris, Files.createTempFile("quassar", ".tar").toFile());
 		} catch (IOException e) {
 			Logger.error(e);
 			return null;
