@@ -24,14 +24,14 @@ import java.util.List;
 
 import static io.intino.builderservice.schemas.OperationResult.State.Running;
 
-public class BuilderOrchestator {
+public class BuilderOrchestrator {
 
 	public static final String QUASSAR_FILE = "quassar";
 	private final DocumentManager manager;
 	private final QuassarBuilderServiceAccessor accessor;
 	private final QuassarParser quassar;
 
-	public BuilderOrchestator(URL builderedServiceUrl, DocumentManager manager) {
+	public BuilderOrchestrator(URL builderedServiceUrl, DocumentManager manager) {
 		this.manager = manager;
 		this.accessor = new QuassarBuilderServiceAccessor(builderedServiceUrl);
 		this.quassar = new QuassarParser(quassarContent());

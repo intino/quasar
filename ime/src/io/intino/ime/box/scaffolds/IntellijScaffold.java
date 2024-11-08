@@ -7,7 +7,7 @@ import io.intino.ls.document.DocumentManager;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static io.intino.ime.box.orchestator.BuilderOrchestator.QUASSAR_FILE;
+import static io.intino.ime.box.orchestator.BuilderOrchestrator.QUASSAR_FILE;
 
 public class IntellijScaffold implements Scaffold {
 

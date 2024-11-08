@@ -1,4 +1,4 @@
-import io.intino.ime.box.orchestator.BuilderOrchestator;
+import io.intino.ime.box.orchestator.BuilderOrchestrator;
 import io.intino.ime.box.orchestator.ProjectCreator;
 import io.intino.ime.box.scaffolds.IntellijScaffold;
 import io.intino.ls.document.FileDocumentManager;
@@ -42,7 +42,7 @@ public class ImeTest {
 
 	private static void testBuilderService() throws IOException, URISyntaxException {
 		final FileDocumentManager fileDocumentManager = new FileDocumentManager(new File("temp/projects/tafat"));
-		new BuilderOrchestator(new URI("http://localhost:9000").toURL(), fileDocumentManager).build("");
+		new BuilderOrchestrator(new URI("http://localhost:9000").toURL(), fileDocumentManager).build("");
 	}
 
 
