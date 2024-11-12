@@ -53,7 +53,7 @@ public class OperationOutputHandler {
 		try {
 			compiledItems.clear();
 			compilerMessages.clear();
-			readLog(Files.readString(project.logFile().toPath()));
+			if (project.logFile().exists()) readLog(Files.readString(project.logFile().toPath()));
 		} catch (IOException e) {
 			Logger.error(e);
 		}
