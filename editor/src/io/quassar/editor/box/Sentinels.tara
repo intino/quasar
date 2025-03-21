@@ -1,0 +1,3 @@
+dsl konos
+
+Sentinel filesCleaner as ClockListener(pattern="0 0 4 1/1 * ? *", mean="Daily at 4am")

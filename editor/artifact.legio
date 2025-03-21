@@ -1,0 +1,32 @@
+dsl Legio
+
+Artifact(groupId = "io.quassar", version = "1.0.0") editor
+	Dsl("Konos", "13.2.5") > Builder(generationPackage = "box")
+	Archetype("io.quassar", "editor-archetype", "1.0.0-SNAPSHOT")
+
+	Imports
+		Compile("io.intino.alexandria", "core-framework", "2.2.2")
+		Compile("io.intino.alexandria", "logger4j", "1.1.0")
+		Compile("io.intino.alexandria", "ui-framework", "6.3.7")
+			Exclude("io.intino.tara","language")
+		Compile("io.intino", "language-server", "1.0.0-SNAPSHOT")
+
+		Web("io.quassar", "editor-elements", "1.0.0")
+
+		Test("junit", "junit", "4.13")
+		Compile(groupId = "io.intino.alexandria", artifactId = "scheduler-framework", version = "1.2.0")
+
+	Package(mode = ModulesAndLibrariesLinkedByManifest, finalName="editor") as Runnable(mainClass = "io.quassar.editor.box.Main")
+
+	Parameter("port")
+	Parameter("home")
+	Parameter("title")
+	Parameter("federation-url")
+	Parameter("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
+
+RunConfiguration local
+	Argument("port", "8080")
+	Argument("home", "./temp")
+	Argument("title", "Quassar")
+	Argument("federation-url", "")
+	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")

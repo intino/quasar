@@ -1,0 +1,369 @@
+{
+  "swagger": "2.0",
+  "host": "",
+  "basePath": "/api",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "text/plain; charset\u003dutf-8",
+    " application/json",
+    "multipart/form-data"
+  ],
+  "produces": [
+    "text/plain; charset\u003dutf-8",
+    " application/json",
+    "multipart/form-data"
+  ],
+  "paths": {
+    "/builders": {
+      "get": {
+        "operationId": "Service_5_2_01257029401",
+        "consumes": [
+          "text/plain; charset\u003dutf-8",
+          " application/json",
+          "multipart/form-data"
+        ],
+        "produces": [
+          "text/plain; charset\u003dutf-8",
+          " application/json",
+          "multipart/form-data"
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/BuilderInfo"
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "Service_7_2_0444708305",
+        "consumes": [
+          "text/plain; charset\u003dutf-8",
+          " application/json",
+          "multipart/form-data"
+        ],
+        "produces": [
+          "text/plain; charset\u003dutf-8",
+          " application/json",
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "info",
+            "in": "body",
+            "description": "",
+            "required": false,
+            "schema": {
+              "$ref": "#/definitions/RegisterBuilder"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/builders/info": {
+      "get": {
+        "operationId": "Service_12_2_1491838088",
+        "consumes": [
+          "text/plain; charset\u003dutf-8",
+          " application/json",
+          "multipart/form-data"
+        ],
+        "produces": [
+          "text/plain; charset\u003dutf-8",
+          " application/json",
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "imageURL",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "registryToken",
+            "in": "body",
+            "description": "",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/BuilderInfo"
+            }
+          },
+          "409": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/operations/run": {
+      "post": {
+        "operationId": "Service_18_2_1860402098",
+        "consumes": [
+          "text/plain; charset\u003dutf-8",
+          " application/json",
+          "multipart/form-data"
+        ],
+        "produces": [
+          "text/plain; charset\u003dutf-8",
+          " application/json",
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "runOperationContext",
+            "in": "formData",
+            "description": "",
+            "required": false,
+            "type": "object"
+          },
+          {
+            "name": "filesInTar",
+            "in": "formData",
+            "description": "",
+            "required": false,
+            "type": "file"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "operation/{ticket}/output": {
+      "get": {
+        "operationId": "Service_25_2_11923308223",
+        "consumes": [
+          "text/plain; charset\u003dutf-8",
+          " application/json",
+          "multipart/form-data"
+        ],
+        "produces": [
+          "text/plain; charset\u003dutf-8",
+          " application/json",
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "ticket",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/OperationResult"
+            }
+          }
+        }
+      }
+    },
+    "operation/{ticket}/outputs/{output}": {
+      "get": {
+        "operationId": "Service_29_2_1156810421",
+        "consumes": [
+          "text/plain; charset\u003dutf-8",
+          " application/json",
+          "multipart/form-data"
+        ],
+        "produces": [
+          "text/plain; charset\u003dutf-8",
+          " application/json",
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "ticket",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "output",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "excludeFilePattern",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "404": {
+            "description": ""
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "OperationResult": {
+      "required": [
+        "state",
+        "genRef",
+        "srcRef",
+        "resRef",
+        "outRef",
+        "success",
+        "messages"
+      ],
+      "properties": {
+        "state": {
+          "type": "string"
+        },
+        "genRef": {
+          "type": "string"
+        },
+        "srcRef": {
+          "type": "string"
+        },
+        "resRef": {
+          "type": "string"
+        },
+        "outRef": {
+          "type": "string"
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "messages": {
+          "type": "object",
+          "$ref": "#/definitions/Message"
+        }
+      }
+    },
+    "Message": {
+      "required": [
+        "type",
+        "kind",
+        "content",
+        "uri",
+        "line",
+        "column"
+      ],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "uri": {
+          "type": "string"
+        },
+        "line": {
+          "type": "integer"
+        },
+        "column": {
+          "type": "integer"
+        }
+      }
+    },
+    "RegisterBuilder": {
+      "required": [
+        "imageURL",
+        "registryToken"
+      ],
+      "properties": {
+        "imageURL": {
+          "type": "string"
+        },
+        "registryToken": {
+          "type": "string"
+        }
+      }
+    },
+    "RunOperationContext": {
+      "required": [
+        "imageURL",
+        "operation",
+        "project",
+        "projectVersion",
+        "language",
+        "languageVersion",
+        "generationPackage"
+      ],
+      "properties": {
+        "imageURL": {
+          "type": "string"
+        },
+        "operation": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "projectVersion": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "languageVersion": {
+          "type": "string"
+        },
+        "generationPackage": {
+          "type": "string"
+        }
+      }
+    },
+    "BuilderInfo": {
+      "required": [
+        "imageURL",
+        "operations",
+        "targetLanguages",
+        "creationDate",
+        "properties"
+      ],
+      "properties": {
+        "imageURL": {
+          "type": "string"
+        },
+        "operations": {
+          "type": "string"
+        },
+        "targetLanguages": {
+          "type": "string"
+        },
+        "creationDate": {
+          "type": "string"
+        },
+        "properties": {
+          "type": "java.util.map"
+        }
+      }
+    }
+  }
+}

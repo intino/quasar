@@ -1,21 +1,32 @@
-TARGETS:{ime}
+TARGETS:{ime editor}
 
 + configuration
     - modelSequence() in "model-sequence.tsv"
-    - userTokens() in "user-tokens.triples"
 
-+ languages in "languages"
-    - releases(language) in "{language}/releases.json"
-    - definition(language) in "{language}/definition.json"
+    + editor
+        - utilities in "utilities.txt"
 
-+ models in "models"
-    - definition(model) in "{model}/definition.json"
-    - workspace(model) in "{model}/workspace"
-    - getWorkspaceProperties(model) in "{model}/workspace/properties.json"
+- readme() in "readme.html"
+
++ languages in "dsls"
+    - language(name) in "{language}"
+    - dslFile(language) in "{language}/dsl.jar"
+    - logo(language) in "{language}/logo.png"
+    - readme(language) in "{language}/readme.html"
+    - properties(language) in "{language}/properties.json"
+    - models(language) in "{language}/models"
+    - model(language, name) in "{language}/models/{name}"
+    - properties(language, model) in "{language}/models/{model}/properties.json"
+    - workspace(language, model) in "{language}/models/{model}/workspace"
+    - versions(language, model) in "{language}/models/{model}/versions" with ".zip"
+    - version(language, model, version) in "{language}/models/{model}/versions/{version}.zip"
+
++ users in "users"
+    - user(username) in "{username}"
+    - photo(username) in "{username}/photo.png"
+    - properties(username) in "{username}/properties.json"
+    - projects(username) in "{username}/projects"
+    - project(username, name) in "{username}/projects/{name}.json"
 
 + tmp
-
-+ repository
-    + logos
-        - getLogo(language) in "{language}.png"
-	+ languages
+    - model(language, model) in "{language}/{model}"

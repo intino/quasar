@@ -1,0 +1,115 @@
+dsl Konos
+
+use UI
+use Theme
+
+Template modelDialog
+
+	Dialog(title="Add model") dialog as Absolute(height=360px, width=400px)
+        Block as Relative(height=100%, offsetHeight=40px)
+			Block
+				Text(value="Language", translate=true, format=h5 middleAirBottom)
+				Text languageTitle
+			Block(format=airTop)
+				Text(value="Name", translate=true, format=h5 middleAirBottom)
+				Text nameField as Editable(helperText="Only alphanumeric characters are allowed") Focused
+			Block(format=airTop)
+				Text(value="Title", translate=true, format=h5 middleAirBottom)
+				Text titleField as Editable
+			Block(format=airTop)
+				Text(value="Description", translate=true, format=h5 middleAirBottom)
+				Text descriptionField as Editable
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(dialog)
+            Button(title="Add", size=Small, highlight=Fill) create as Action
+
+Template(layout=Horizontal) publishModelDialog
+
+	Dialog(title="Publish model") dialog as Absolute(height=460px, width=650px)
+        Block(layout=Vertical) as Relative(height=100%, offsetHeight=40px)
+        	Block(layout=Horizontal, visible=false, format=doubleAirBottom doubleBottomSpaced) languagePropertiesBlock
+				Block as Absolute(width=170px)
+					Image logoField as Editable Absolute(height=150px, width=150px)
+				Block(layout=Vertical Flexible)
+					Block(format=airTop)
+						Text(value="Language level", translate=true, format=h5 middleAirBottom)
+						Selector levelSelector as RadioBox
+							Text(value="Level 1") level1Option as Option
+							Text(value="Level 2") level2Option as Option
+
+			Block(layout=Vertical, visible=false) versionPropertiesBlock
+				Block(layout=Vertical Flexible CenterCenter, format=bordered topSpaced bottomSpaced)
+					Text(value="New version number", format=middleAirBottom)
+					Text(format=veryLargeFontSize) version
+
+				Block(layout=Vertical EndJustified, format=doubleAirTop)
+					Selector versionTypeSelector as RadioBox
+						Text(value="Major version") majorVersionOption as Option
+						Text(value="Minor version") minorVersionOption as Option
+						Text(value="Revision") revisionOption as Option
+
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(dialog)
+            Button(title="Publish", size=Small, highlight=Fill) create as Action
+
+Template(layout=Horizontal) modelSettingsDialog
+
+	Dialog(title="Properties") dialog as Relative(width=60%, height=80%) Modal
+        Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
+        	Selector settingsTabSelector as Tabs(format=tabsStyle)
+        		Text(value="General") generalOption as Option
+        		Text(value="Language") languageOption as Option
+        		Text(value="Collaborators") collaboratorsOption as Option
+        	Block(layout=Vertical Center) as Relative(width=100%)
+        		Block(layout=Vertical Flexible, format=doubleTopSpaced) generalBlock as Relative(width=95%) Conditional(settingsTabSelector.generalOption)
+					Block
+						Text(value="Name", translate=true, format=h5 middleAirBottom)
+						Text(format=doubleAirBottom) modelNameField as Editable(helperText="Only alphanumeric characters are allowed") Focused
+					Block(format=airTop)
+						Text(value="Title", translate=true, format=h5 middleAirBottom)
+						Text(format=doubleAirBottom) modelTitleField as Editable
+					Block(format=airTop)
+						Text(value="Description", translate=true, format=h5 middleAirBottom)
+						Text(format=doubleAirBottom) modelDescriptionField as Editable
+					Block(format=airTop)
+						Text(value="Model access", translate=true, format=h5 middleAirBottom)
+						Switch(title="Model is private", format=doubleAirBottom) modelAccessTypeField
+					Block(format=airTop)
+						Text(value="Remove model", translate=true, format=h5)
+						Text(value="Removed models cannot be restored!", format=greyColor airBottom, translate=true)
+						Block(layout=Horizontal) > Button(title="Remove model...", format=airRight redBackground whiteColor, highlight=Fill) removeModel as Action Readonly Affirmed("Are you sure to remove model?")
+
+        		Block(layout=Horizontal Flexible, format=doubleTopSpaced) languageBlock as Relative(width=95%) Conditional(settingsTabSelector.languageOption)
+					Block as Absolute(width=170px)
+						Image logoField as Editable Absolute(height=150px, width=150px)
+					Block(layout=Vertical Flexible, format=doubleAirLeft)
+						Block(format=airTop)
+							Text(value="Level", translate=true, format=h5 middleAirBottom)
+							Selector languageLevelSelector as RadioBox
+								Text(value="Level 1") level1Option as Option
+								Text(value="Level 2") level2Option as Option
+						Block(format=doubleAirTop)
+							Text(value="Tags", translate=true, format=h5 middleAirBottom)
+							TemplateStamp(template=tagEditor) languageTags as Multiple("No tags", arrangement=Horizontal, spacing=DP8)
+							Block(layout=Horizontal, format=airTop) > Button(title="Add tag", size=Small, highlight=Outline) as OpenDialog(addTagDialog)
+
+        		Block(layout=Vertical Flexible, format=doubleTopSpaced) collaboratorsBlock as Relative(width=95%) Conditional(settingsTabSelector.collaboratorsOption)
+
+		Divider
+        Block(layout=Horizontal)
+        	Block(layout=Horizontal StartJustified Flexible) > Button(title="Close", size=Small, format=airRight) as CloseDialog(dialog)
+            Block(layout=Horizontal EndJustified) > Button(title="Apply", size=Small, highlight=Fill) saveSettings as Action
+
+	Dialog(title="Add tag") addTagDialog as Absolute(width=280px, height=200px)
+        Block as Relative(height=100%, offsetHeight=40px)
+        	Text tagField as Editable(placeholder="Indicate tag name") Labeled("Tag") Focused
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addTagDialog)
+            Button(title="Accept", size=Small, highlight=Fill) addTag as Action
+
+Template(layout=Horizontal Center, format=tag) tagEditor
+	Text(format=smallAirRight) nameField
+	MaterialIconButton(title="Delete", icon="Clear", size=Small, format=smallIconSize) delete as Action

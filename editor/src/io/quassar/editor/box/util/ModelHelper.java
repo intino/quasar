@@ -1,0 +1,52 @@
+package io.quassar.editor.box.util;
+
+import io.intino.alexandria.Scale;
+import io.intino.alexandria.Timetag;
+import io.intino.ls.document.DocumentManager;
+import io.intino.ls.document.FileDocumentManager;
+import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.ui.types.VersionType;
+import io.quassar.editor.model.Language;
+import io.quassar.editor.model.Model;
+
+import java.io.File;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
+public class ModelHelper {
+
+	public static final String DraftVersion = "draft";
+	public static final String FirstReleaseVersion = "1.0.0";
+
+	public static String label(Model model, String language, EditorBox box) {
+		return model.title() != null && !model.title().isEmpty() ? model.title() : model.name();
+	}
+
+	public static DocumentManager documentManager(Model model, String username, EditorBox box) throws IOException {
+		File workspace = new File(box.modelManager().workspace(model));
+		return new FileDocumentManager(workspace);
+	}
+
+	public static String proposeName() {
+		String uuid = UUID.randomUUID().toString();
+		return uuid.substring(uuid.lastIndexOf("-")+1) + new Timetag(Instant.now(), Scale.Month).value();
+	}
+
+	public static boolean isMetamodel(Model model, EditorBox box) {
+		Language language = box.languageManager().get(model.name());
+		return language != null && (language.level() == Language.Level.L2 || language.level() == Language.Level.L3);
+	}
+
+	private static final String VersionPattern = "%s.%s.%s";
+	public static String nextVersion(Model model, VersionType type, EditorBox box) {
+		List<String> lastVersion = box.modelManager().versions(model).stream().sorted((o1, o2) -> VersionNumberComparator.getInstance().compare(o1, o2)).toList();
+		if (lastVersion.isEmpty()) return FirstReleaseVersion;
+		String[] parts = lastVersion.getLast().split("\\.");
+		if (type == VersionType.MajorVersion) return String.format(VersionPattern, Integer.parseInt(parts[0])+1, 0, 0);
+		if (type == VersionType.MinorVersion) return String.format(VersionPattern, parts[0], Integer.parseInt(parts[1])+1, 0);
+		return String.format(VersionPattern, parts[0], parts[1], Integer.parseInt(parts[2])+1);
+	}
+
+}

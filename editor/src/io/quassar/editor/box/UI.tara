@@ -1,0 +1,140 @@
+dsl Konos
+
+use Editors
+use Models
+use Languages
+use Theme
+
+Service EditorElements as UI(port = "{port}", title = "{title}", favicon = "/icons/favicons/favicon.ico")
+	Authentication(by="{federation-url}")
+
+	Resource(path = "/") home as Page(homeTemplate) Main
+	Resource(path = "/languages") languages as Page(homeTemplate) > Parameter tab; Parameter view
+	Resource(path = "/languages/:language") language as Page(homeTemplate) > Parameter tab; Parameter view
+	Resource(path = "/languages/:language/models/:model") model as Page(homeTemplate) > Parameter version; Parameter file
+	Resource(path = "/languages/:language/models/:model/download") downloadModel as AssetPage > Parameter version
+	Resource(path = "/login") login as Page(loginTemplate)
+
+Template homeTemplate as Relative(height=100%, width=100%)
+	TemplateStamp(template=headerTemplate) header
+
+	Block(layout=Vertical Flexible)
+		Block(layout=Vertical, format=centered) as Relative(width=100%)
+			Block(layout=Vertical Flexible CenterCenter) loading > Spinner(format=secondary)
+			Block(layout=Vertical Flexible) languagesPage as Conditional > TemplateStamp(template=languagesTemplate) languagesStamp
+			Block(layout=Vertical Flexible) languagePage as Conditional > TemplateStamp(template=languageTemplate) languageStamp
+			Block(layout=Vertical Flexible) modelPage as Conditional > TemplateStamp(template=modelTemplate) modelStamp
+
+Template(layout=Horizontal Center, format=headerStyle) headerTemplate
+
+	Block(layout=Horizontal Flexible, format=middleAirTop middleAirBottom middleAirLeft) languageView
+		Link(title="", format=logoLink) as Action Addressable(EditorElements.home)
+		Image(value="/logo-expanded-dark.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=130px, height=30px)
+
+	Block(layout=Horizontal EndJustified)
+		Button(title="Log in", format=airRight whiteColor, visible=false) login as Action
+		Block(layout=Horizontal Center, visible=false) notLoggedBlock
+			MaterialIconButton(title="Set dark mode", format=airRight whiteColor, icon="Brightness4", size=Small) as SetDarkMode
+			MaterialIconButton(title="Set light mode", format=airRight whiteColor, icon="Brightness7", size=Small) as SetLightMode
+		User(mode=OnlyPhoto, visible=false, format=relative veryLargeIconSize airRight) user
+			Block(layout=Horizontal EndJustified, format=userToolbar)
+				MaterialIconButton(title="Set dark mode", format=airRight whiteColor, icon="Brightness4", size=Small) as SetDarkMode
+				MaterialIconButton(title="Set light mode", format=airRight whiteColor, icon="Brightness7", size=Small) as SetLightMode
+			Selector as ListBox
+				Block as Option > Link(title="Home") home as Action Addressable(EditorElements.home)
+
+Template(layout=Horizontal Center, format=subHeaderStyle) languagesHeaderTemplate
+
+	Block(layout=Horizontal Flexible)
+		Block(layout=Horizontal, visible=false) languagesToolbar as Relative(width=100%)
+			Button(title="public", format=airLeft airRight) publicLanguages as Action Addressable(EditorElements.languages)
+			Button(title="my languages", visible=false) myLanguages as Action Addressable(EditorElements.languages)
+
+	Block(layout=Horizontal EndJustified)
+		Button(title="Home", format=airRight) homeOperation as Action Addressable(EditorElements.languages)
+		Button(title="Languages", format=airRight) languagesOperation as Action Addressable(EditorElements.languages)
+
+Template(layout=Horizontal Center, format=subHeaderStyle) languageHeaderTemplate
+
+	Block(layout=Horizontal Flexible)
+		Block(layout=Horizontal, visible=false) modelsToolbar as Relative(width=100%)
+			Button(title="public", format=airLeft airRight) publicModels as Action Addressable(EditorElements.language)
+			Button(title="my models", visible=false) myModels as Action Addressable(EditorElements.language)
+
+	Block(layout=Horizontal EndJustified)
+		Button(title="Home", format=airRight) homeOperation as Action Addressable(EditorElements.language)
+		Button(title="Models", format=airRight) modelsOperation as Action Addressable(EditorElements.language)
+		Block(layout=Horizontal, format=doubleAirLeft)
+			Image(format=airRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) logo as Absolute(height=30px)
+			Text(format=languageViewTitle) title
+
+Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
+
+	Block(layout=Horizontal Center Flexible, visible=false) contentBlock
+		Block(layout=Horizontal Flexible)
+			AvatarIconButton(title="", size=Small, format=airRight, visible=false) projectModelSelector as Action
+			Text(format=modelViewTitle, translate=true) title
+			Block(layout=Horizontal Center, format=doubleAirLeft)
+				SplitButton(title="draft", format=airRight minSelectorWidth, options="draft", defaultOption = "draft") versionSelector as Action
+				Button(title="publish", format=airRight, visible=false) publishTrigger as Action
+				Button(title="download", format=airRight, visible=false) downloadTrigger as Download
+
+		Block(layout=Horizontal EndJustified)
+			Button(title="Home", format=airRight) homeOperation as Action Addressable(EditorElements.language)
+			Button(title="Models", format=airRight) modelsOperation as Action Addressable(EditorElements.language)
+			Block(layout=Horizontal, format=doubleAirLeft)
+				Image(format=airRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) languageLogo as Absolute(height=30px)
+				Text(format=languageViewTitle) languageTitle
+
+	TemplateStamp(template=publishModelDialog) modelPublishDialog
+
+Template(layout=Vertical Flexible) permissionsTemplate as Relative(height=100%,width=100%)
+	Block(layout=Vertical CenterCenter, format=grey) as Relative(height=100%,width=100%)
+		Block(format=visible) as Absolute(width=400px, height=400px) Paper
+			Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
+				Block(layout=Vertical CenterCenter)
+					Image(value="/logo-expanded-dark.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=340px, height=80px)
+					Text(value="You dont have access permissions", format=h4 airTop textCentered, translate=true) message
+			Block
+				Divider
+				Block(layout=Horizontal CenterJustified, format=middleAirTop)
+					Button(title="Home", highlight=Outline, format=airRight) gotoHome as Action Addressable(EditorElements.home)
+					Button(title="Login", visible=false, highlight=Outline, format=airRight) loginButton as Action
+					Button(title="Logout", visible=false, highlight=Outline) logoutButton as Action
+
+Template(layout=Vertical Flexible) notFoundTemplate as Relative(height=100%,width=100%)
+	Block(layout=Vertical CenterCenter, format=grey) as Relative(height=100%,width=100%)
+		Block(format=visible headerStyle) as Absolute(width=400px, height=400px) Paper
+			Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
+				Block(layout=Vertical CenterCenter)
+					Image(value="/logo-expanded-dark.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=340px, height=80px)
+					Text(value="Model not found", format=h4 airTop textCentered, translate=true) message
+			Block
+				Divider
+				Block(layout=Horizontal CenterJustified, format=middleAirTop)
+					Button(title="Home", highlight=Outline, format=airRight) gotoHome as Action Addressable(EditorElements.home)
+
+
+Template(layout=Vertical Flexible, format=radialBackground) loginTemplate as Relative(height=100%, width=100%)
+
+	Block(layout=Vertical CenterCenter, format=centered) content as Relative(width=80%)
+		Block(layout=Horizontal, format=relative)
+			Link(title="", format=fullSpaceLink) homeLink as Action
+			Image(value="/logo-expanded.png", format=airLeft airRight doubleAirBottom, mobileReduceFactor=75%) as Absolute(width=300px, height=70px)
+		Block
+			Block(layout=Vertical Center) as Absolute(width=400px)
+				Block(format=loginBlockStyle)
+					Block
+						Text(value="Login using...", format=bold, translate=true)
+						Selector userSelector as ListBox
+						Block(format=doubleAirBottom airLeft airRight) > Text usernameField as Editable(placeholder="new username...")
+					Text(value="User not found", translate=true, format=h6 redColor fullWidth textCentered airBottom, visible=false) notFoundUsernameMessage
+
+				Block(layout=Horizontal, format=doubleAirTop)
+					Button(title="Enter", highlight=Fill) login as Action
+
+	TemplateStamp(template=loginSelectorOption, visible=false)
+
+Template(layout=Horizontal Flexible Center) loginSelectorOption
+	Block(layout=Vertical Flexible) > Text username
+	Block(layout=Horizontal EndJustified) > MaterialIconButton(title="Remove", icon="Clear", size=Small) removeUser as Action

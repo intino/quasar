@@ -1,0 +1,61 @@
+dsl Konos
+
+use Models
+use UI
+use Theme
+
+Template languagesTemplate as Relative(height=100%, width=100%)
+	TemplateStamp(template=languagesHeaderTemplate) headerStamp
+
+	Block(layout=Vertical Flexible, format=whiteBackground) bodyBlock as Relative(width=100%) AutoSize
+		Block(layout=Vertical Flexible Center) contentBlock as Relative(width=80%)
+			Block(layout=Vertical Flexible, format=whiteBackground) as Relative(width=100%, height=100%)
+				Block(layout=Vertical Flexible) homeBlock as Conditional
+					HtmlViewer homeStamp
+
+				Block(layout=Vertical Flexible, format=doubleSpaced, visible=false) languagesBlock as Conditional
+					Magazine(itemClass="io.quassar.editor.model.Language") languagesMagazine
+						noItemsMessage = "No languages"
+						Mold
+							Item(height=100px) languageMagazineItem
+								Block(format=dashboardItemStyle)
+									Block(format=relative)
+										Link(title="", format=magazineLinkStyle) languageLink as Action Addressable(EditorElements.language)
+										Block(layout=Horizontal)
+											Block(format=airRight) > Image(colorInvertedWithDarkMode=true) logo as Absolute(height=50px, width=50px)
+											Block(layout=Vertical Flexible)
+												Block(layout=Horizontal)
+													Block(layout=Vertical Flexible) > Text(format=orangeColor) owner
+												Link(title="", format=h4) languageTitleLink as Action Addressable(EditorElements.language)
+										Text(format=greyColor middleAirTop, cropWithEllipsis=40Chars) description
+										Block(layout=Horizontal Start, format=airTop bottomSpaced)
+											Block(layout=Vertical Flexible)
+												Date(pattern="DD/MM/YYYY HH:mm") createDate as Labeled("Creation date")
+												Text parent as Labeled("Created with")
+												Number modelsCount as Labeled("Models count")
+									Block(layout=Horizontal Wrap, format=topBordered topSpaced)
+										Block(layout=Horizontal EndJustified)
+											Link(title="View models", size=Small, format=airRight) viewModels as Action Addressable(EditorElements.language) Readonly
+
+Template languageTemplate as Relative(height=100%, width=100%, offsetHeight=2px)
+	TemplateStamp(template=languageHeaderTemplate) headerStamp
+
+	Block(layout=Vertical Flexible CenterCenter, visible=false) openingBlock
+		Spinner(mode=Ring, color="secondary")
+		Text(value="" , translate=true, format=h3 airTop) openingMessage
+
+	Block(layout=Vertical Flexible, format=whiteBackground) bodyBlock as Relative(width=100%) AutoSize
+
+		Block(layout=Vertical Flexible CenterCenter, visible=false) notFoundBlock
+			Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
+				Block(layout=Vertical CenterCenter)
+					Image(value="/logo-expanded.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=340px, height=80px)
+					Text(value="Language not found", format=h4 airTop textCentered, translate=true) message
+
+		Block(layout=Vertical Flexible Center, visible=false) contentBlock as Relative(width=80%)
+			Block(layout=Vertical Flexible, format=whiteBackground) as Relative(width=100%, height=100%)
+				Block(layout=Vertical Flexible) homeBlock as Conditional
+					HtmlViewer homeStamp
+
+				Block(layout=Vertical Flexible, format=doubleSpaced) modelsBlock as Conditional
+					TemplateStamp(template=modelsTemplate) modelsStamp

@@ -1,0 +1,13 @@
+{
+  "urls": [
+	{
+	  "url": "./data/builder-service.json",
+	  "name": "builder-service"
+	}
+  ],
+  "title": "",
+  "subtitle": "",
+  "background": "",
+  "color": "",
+  "selectorBorderColor": ""
+}
