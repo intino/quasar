@@ -1,0 +1,1 @@
+QUASSAR_HOME=./temp QUASSAR_PORT=9000 docker-compose -f editor.compose.yml up -d

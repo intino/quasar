@@ -17,8 +17,6 @@ import io.quassar.editor.model.Model;
 import java.io.IOException;
 import java.util.*;
 
-import static io.quassar.editor.box.util.ModelHelper.DraftVersion;
-
 public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	private Model model;
 	private String version;
@@ -38,8 +36,8 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 
 	public void open(String language, String model, String version, String file) {
 		this.model = box().modelManager().get(language, model);
-		this.modelContainer = this.model != null ? box().modelManager().modelContainer(this.model) : null;
-		this.version = version != null ? version : DraftVersion;
+		this.version = version != null ? version : Model.DraftVersion;
+		this.modelContainer = this.model != null ? box().modelManager().modelContainer(this.model, this.version) : null;
 		this.selectedFile = file != null && modelContainer != null ? modelContainer.file(file) : null;
 		refresh();
 	}
@@ -70,6 +68,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 
 	private void initFileBrowser() {
 		initFileBrowserToolbar();
+		settingsDialog.onRename(e -> notifier.dispatch(PathHelper.modelPath(model)));
 		settingsDialog.onSave(e -> refresh());
 		createFileBrowser();
 	}
@@ -295,6 +294,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		if (!validFile) return;
 		IntinoDslEditor display = intinoDslEditor.display();
 		display.model(model);
+		display.version(version);
 		display.file(selectedFile.name(), selectedFile.uri(), selectedFile.extension(), selectedFile.language());
 		display.refresh();
 	}
@@ -336,7 +336,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	}
 
 	private void reload() {
-		modelContainer = box().modelManager().modelContainer(model);
+		modelContainer = box().modelManager().modelContainer(model, version);
 		refresh();
 	}
 

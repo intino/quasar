@@ -27,6 +27,7 @@ import java.util.function.Consumer;
 public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> {
 	private Model model;
 	private Set<String> tagSet;
+	private Consumer<Model> renameListener;
 	private Consumer<Model> saveListener;
 
 	public ModelSettingsDialog(EditorBox box) {
@@ -35,6 +36,10 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 
 	public void model(Model model) {
 		this.model = model;
+	}
+
+	public void onRename(Consumer<Model> listener) {
+		this.renameListener = listener;
 	}
 
 	public void onSave(Consumer<Model> listener) {
@@ -67,6 +72,7 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 	}
 
 	private void initGeneralBlock() {
+		modelNameField.onChange(e -> checkModelName());
 		removeModel.onExecute(e -> removeModel());
 	}
 
@@ -75,7 +81,7 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		modelTitleField.value(ModelHelper.label(model, language(), box()));
 		modelDescriptionField.value(model.description());
 		modelAccessTypeField.state(model.isPrivate() ? ToggleEvent.State.On : ToggleEvent.State.Off);
-		removeModel.readonly(PermissionsHelper.canRemove(model, session(), box()));
+		removeModel.readonly(!PermissionsHelper.canRemove(model, session(), box()));
 	}
 
 	private void initLanguageBlock() {
@@ -129,9 +135,11 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 	private void saveSettings() {
 		if (!check()) return;
 		dialog.close();
+		boolean renamed = !model.name().equals(modelNameField.value());
 		saveModel();
 		saveLanguage();
 		saveListener.accept(model);
+		if (renamed) renameListener.accept(model);
 	}
 
 	private boolean check() {
@@ -141,9 +149,14 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 	}
 
 	private boolean checkModel() {
-		if (!DisplayHelper.checkLanguageName(modelNameField, this::translate, box())) return false;
+		if (!checkModelName()) return false;
 		if (!DisplayHelper.check(modelTitleField, this::translate)) return false;
 		return DisplayHelper.check(modelDescriptionField, this::translate);
+	}
+
+	private boolean checkModelName() {
+		Language language = box().languageManager().get(model.language());
+		return DisplayHelper.checkLanguageName(modelNameField, language, this::translate, box());
 	}
 
 	private boolean checkLanguage() {

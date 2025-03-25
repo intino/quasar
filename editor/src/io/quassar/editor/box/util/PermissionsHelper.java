@@ -14,8 +14,8 @@ public class PermissionsHelper {
 		return !ModelHelper.isMetamodel(model, box);
 	}
 
-	public static boolean canPublish(Model model, UISession session, EditorBox box) {
-		return !box.modelManager().isWorkspaceEmpty(model);
+	public static boolean canPublish(Model model, String version, UISession session, EditorBox box) {
+		return !box.modelManager().isWorkspaceEmpty(model, version);
 	}
 
 }

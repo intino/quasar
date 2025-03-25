@@ -119,19 +119,21 @@ public class ModelManager {
 		result.name(name);
 		result.owner(owner);
 		save(result);
-		new ModelContainerWriter(model, server(model)).clone(result, server(result));
+		new ModelContainerWriter(model, server(model, Model.DraftVersion)).clone(result, server(result, Model.DraftVersion));
 		return get(languageOf(model), name);
 	}
 
-	public boolean isWorkspaceEmpty(Model model) {
-		File workspace = new File(workspace(model));
+	public boolean isWorkspaceEmpty(Model model, String version) {
+		File workspace = new File(workspace(model, version));
 		File[] files = workspace.exists() ? workspace.listFiles() : null;
 		return files == null || files.length == 0;
 	}
 
-	public URI workspace(Model model) {
+	public URI workspace(Model model, String version) {
 		try {
-			return archetype.languages().workspace(languageOf(model), model.name()).getAbsoluteFile().getCanonicalFile().toURI();
+			File workspace = archetype.languages().workspace(languageOf(model), model.name());
+			if (version != null) workspace = archetype.languages().versionWorkspace(languageOf(model), model.name(), version);
+			return workspace.getAbsoluteFile().getCanonicalFile().toURI();
 		} catch (IOException e) {
 			Logger.error(e);
 			return null;
@@ -139,14 +141,14 @@ public class ModelManager {
 	}
 
 	public ModelContainer.File copy(Model model, String filename, ModelContainer.File source) {
-		return new ModelContainerWriter(model, server(model)).copy(filename, source);
+		return new ModelContainerWriter(model, server(model, Model.DraftVersion)).copy(filename, source);
 	}
 
 	public OperationResult createVersion(Model model, String version) {
 		try {
-			if (isWorkspaceEmpty(model)) return OperationResult.Error("Workspace is empty");
+			if (isWorkspaceEmpty(model, Model.DraftVersion)) return OperationResult.Error("Workspace is empty");
 			File versionFile = archetype.languages().version(languageOf(model), model.name(), version);
-			ZipHelper.zipFolder(Paths.get(workspace(model)), versionFile.toPath());
+			ZipHelper.zipFolder(Paths.get(workspace(model, version)), versionFile.toPath());
 			return OperationResult.Success();
 		} catch (Exception e) {
 			Logger.error(e);
@@ -155,24 +157,24 @@ public class ModelManager {
 	}
 
 	public ModelContainer.File createFile(Model model, String name, String content, ModelContainer.File parent) {
-		return new ModelContainerWriter(model, server(model)).createFile(name, content, parent);
+		return new ModelContainerWriter(model, server(model, Model.DraftVersion)).createFile(name, content, parent);
 	}
 
 	public ModelContainer.File createFolder(Model model, String name, ModelContainer.File parent) {
-		return new ModelContainerWriter(model, server(model)).createFolder(name, parent);
+		return new ModelContainerWriter(model, server(model, Model.DraftVersion)).createFolder(name, parent);
 	}
 
 	public void save(Model model, ModelContainer.File file, String content) {
-		new ModelContainerWriter(model, server(model)).save(file, content);
+		new ModelContainerWriter(model, server(model, Model.DraftVersion)).save(file, content);
 	}
 
 	public ModelContainer.File rename(Model model, ModelContainer.File file, String newName) {
-		return new ModelContainerWriter(model, server(model)).rename(file, newName);
+		return new ModelContainerWriter(model, server(model, Model.DraftVersion)).rename(file, newName);
 	}
 
 	public ModelContainer.File move(Model model, ModelContainer.File file, ModelContainer.File directory) {
 		try {
-			return new ModelContainerWriter(model, server(model)).move(file, directory);
+			return new ModelContainerWriter(model, server(model, Model.DraftVersion)).move(file, directory);
 		} catch (Exception e) {
 			Logger.error(e);
 			return null;
@@ -198,7 +200,7 @@ public class ModelManager {
 	}
 
 	public void remove(Model model, ModelContainer.File file) {
-		new ModelContainerWriter(model, server(model)).remove(file);
+		new ModelContainerWriter(model, server(model, Model.DraftVersion)).remove(file);
 	}
 
 	public void remove(Model model) {
@@ -211,12 +213,12 @@ public class ModelManager {
 		}
 	}
 
-	public ModelContainer modelContainer(Model model) {
-		return new ModelContainer(model, server(model));
+	public ModelContainer modelContainer(Model model, String version) {
+		return new ModelContainer(model, server(model, version));
 	}
 
-	public String content(Model model, String uri) {
-		return new ModelContainerReader(model, server(model)).content(uri);
+	public String content(Model model, String version, String uri) {
+		return new ModelContainerReader(model, server(model, version)).content(uri);
 	}
 
 	private boolean belongsTo(Model model, String user) {
@@ -224,9 +226,9 @@ public class ModelManager {
 		return user != null && model.owner() != null && user.equals(model.owner());
 	}
 
-	private LanguageServer server(Model model) {
+	private LanguageServer server(Model model, String version) {
 		try {
-			return serverManager.get(model);
+			return serverManager.get(model, version);
 		} catch (IOException | GitAPIException | URISyntaxException e) {
 			Logger.error(e);
 			return null;

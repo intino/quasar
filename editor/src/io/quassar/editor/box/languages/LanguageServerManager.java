@@ -16,14 +16,15 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class LanguageServerManager {
 	private final LanguageLoader languageLoader;
-	private final Function<Model, URI> workspaceProvider;
+	private final BiFunction<Model, String, URI> workspaceProvider;
 	private final Map<String, LanguageServer> servers = new HashMap<>();
 
-	public LanguageServerManager(LanguageLoader languageLoader, Function<Model, URI> workspaceProvider) {
+	public LanguageServerManager(LanguageLoader languageLoader, BiFunction<Model, String, URI> workspaceProvider) {
 		this.languageLoader = languageLoader;
 		this.workspaceProvider = workspaceProvider;
 	}
@@ -40,9 +41,9 @@ public class LanguageServerManager {
 		return new IntinoLanguageServer(language, new GitDocumentManager(root, branch, gitUrl, username, token));
 	}
 
-	public LanguageServer get(Model model) throws IOException, GitAPIException, URISyntaxException {
+	public LanguageServer get(Model model, String version) throws IOException, GitAPIException, URISyntaxException {
 		if (!servers.containsKey(model.name()))
-			servers.put(model.name(), create(model));
+			servers.put(model.name(), create(model, version));
 		return servers.get(model.name());
 	}
 
@@ -50,9 +51,9 @@ public class LanguageServerManager {
 		servers.remove(model.name());
 	}
 
-	private LanguageServer create(Model model) throws IOException {
+	private LanguageServer create(Model model, String version) throws IOException {
 		Language language = languageLoader.get(model.language());
-		URI workspace = workspaceProvider.apply(model);
+		URI workspace = workspaceProvider.apply(model, version);
 		return create(language, workspace);
 	}
 

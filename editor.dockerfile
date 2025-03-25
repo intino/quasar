@@ -1,6 +1,6 @@
 FROM openjdk:21-jdk-slim
 
-WORKDIR /app
+WORKDIR /root/app
 
 COPY out/build/editor/dependency dependency
 COPY out/build/editor/editor.jar app.jar
@@ -14,7 +14,7 @@ ENV LANGUAGE_ARTIFACTORY=https://artifactory.intino.io/artifactory/releases
 
 EXPOSE ${PORT}
 
-COPY editor/entrypoint.sh ./entrypoint.sh
-RUN chmod +x entrypoint.sh
+COPY docker/run-editor.sh ./run-editor.sh
+RUN chmod +x run-editor.sh
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["./run-editor.sh"]

@@ -73,7 +73,7 @@ public class PublishModelDialog extends AbstractPublishModelDialog<EditorBox> {
 	}
 
 	private void refreshVersionBlock(String value) {
-		versionPropertiesBlock.visible(box().languageManager().exists(model.name()));
+		versionPropertiesBlock.visible(true);
 		if (!versionPropertiesBlock.isVisible()) return;
 		version.value(value);
 		versionTypeSelector.selection("revisionOption");

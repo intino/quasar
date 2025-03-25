@@ -20,6 +20,7 @@ TARGETS:{ime editor}
     - workspace(language, model) in "{language}/models/{model}/workspace"
     - versions(language, model) in "{language}/models/{model}/versions" with ".zip"
     - version(language, model, version) in "{language}/models/{model}/versions/{version}.zip"
+    - versionWorkspace(language, model, version) in "{language}/models/{model}/versions/{version}"
 
 + users in "users"
     - user(username) in "{username}"

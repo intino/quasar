@@ -1,13 +1,10 @@
 package io.quassar.editor.box;
 
-import io.intino.alexandria.http.AlexandriaHttpServer;
 import io.intino.alexandria.logger.Logger;
 import io.intino.alexandria.ui.AlexandriaUiServer;
-import io.javalin.Javalin;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.commands.Commands;
 import io.quassar.editor.box.commands.CommandsFactory;
-import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.languages.LanguageLoader;
 import io.quassar.editor.box.languages.LanguageManager;
 import io.quassar.editor.box.languages.LanguageServerManager;
@@ -24,11 +21,11 @@ import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 public class EditorBox extends AbstractBox {
 	private final Archetype archetype;
@@ -66,10 +63,14 @@ public class EditorBox extends AbstractBox {
 		commandsFactory = new CommandsFactory(this);
 		languageLoader = new LanguageLoader(new LocalLanguageArtifactory(archetype));
 		languageManager = new LanguageManager(archetype);
-		serverManager = new LanguageServerManager(languageLoader, model -> modelManager.workspace(model));
+		serverManager = new LanguageServerManager(languageLoader, (model, version) -> workSpaceOf(model, version));
 		modelManager = new ModelManager(archetype, serverManager);
 		userManager = new UserManager(archetype);
 		projectManager = new ProjectManager(archetype);
+	}
+
+	private URI workSpaceOf(Model model, String version) {
+		return modelManager.workspace(model, version);
 	}
 
 	public void afterStart() {
@@ -123,7 +124,7 @@ public class EditorBox extends AbstractBox {
 		try {
 			Map<String, List<String>> parameterMap = session.getUpgradeRequest().getParameterMap();
 			Model model = modelManager.get(parameterMap.get("dsl").getFirst(), parameterMap.get("model").getFirst());
-			return serverManager.get(model);
+			return serverManager.get(model, parameterMap.get("model-version").getFirst());
 		} catch (IOException | GitAPIException | URISyntaxException e) {
 			Logger.error(e);
 			return null;

@@ -7,6 +7,7 @@ import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class ModelDialog extends AbstractModelDialog<EditorBox> {
@@ -34,6 +35,7 @@ public class ModelDialog extends AbstractModelDialog<EditorBox> {
 		super.init();
 		dialog.onOpen(e -> refreshDialog());
 		create.onExecute(e -> create());
+		nameField.onChange(e -> checkName());
 		titleField.onEnterPress(e -> create());
 	}
 
@@ -41,8 +43,7 @@ public class ModelDialog extends AbstractModelDialog<EditorBox> {
 		languageTitle.value(language.name());
 		nameField.value(ModelHelper.proposeName());
 		titleField.value("(no name)");
-		descriptionField.value(null);
-		titleField.focus();
+		descriptionField.value("(no description)");
 	}
 
 	private void create() {
@@ -56,9 +57,13 @@ public class ModelDialog extends AbstractModelDialog<EditorBox> {
 	}
 
 	private boolean check() {
-		return DisplayHelper.check(nameField, this::translate) &&
+		return checkName() &&
 			   DisplayHelper.check(titleField, this::translate) &&
 			   DisplayHelper.check(descriptionField, this::translate);
+	}
+
+	private boolean checkName() {
+		return DisplayHelper.checkLanguageName(nameField, language, this::translate, box());
 	}
 
 }

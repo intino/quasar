@@ -17,8 +17,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.quassar.editor.box.util.ModelHelper.DraftVersion;
-
 public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> {
 	private Model model;
 	private String version;
@@ -54,9 +52,9 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		projectModelSelector.readonly(project == null);
 		title.value(ModelHelper.label(model, language(), box()));
 		refreshVersionSelector();
-		publishTrigger.visible(version == null || version.equals(translate(DraftVersion)));
-		publishTrigger.readonly(!PermissionsHelper.canPublish(model, session(), box()));
-		downloadTrigger.visible(version != null && !version.equals(translate(DraftVersion)));
+		publishTrigger.visible(version == null || version.equals(translate(Model.DraftVersion)));
+		publishTrigger.readonly(!PermissionsHelper.canPublish(model, version, session(), box()));
+		downloadTrigger.visible(ModelHelper.validVersion(version, this::translate));
 		homeOperation.address(a -> PathHelper.languagePath(a, language, LanguageTab.Home));
 		modelsOperation.address(a -> PathHelper.languagePath(a, language, LanguageTab.Models));
 		languageTitle.value(language.name());
@@ -66,13 +64,13 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	private void refreshVersionSelector() {
 		versionSelector.clear();
 		List<String> options = new ArrayList<>(box().modelManager().versions(model)).reversed();
-		options.addFirst(translate(DraftVersion));
+		options.addFirst(translate(Model.DraftVersion));
 		versionSelector.options(options);
 		versionSelector.option(version);
 	}
 
 	private void openVersion(String version) {
-		String versionName = version.equals(translate(DraftVersion)) ? DraftVersion : version;
+		String versionName = version.equals(translate(Model.DraftVersion)) ? Model.DraftVersion : version;
 		notifier.dispatch(PathHelper.modelPath(model, versionName));
 	}
 

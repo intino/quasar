@@ -3,7 +3,6 @@ package io.quassar.editor.model;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 public class Language {
 	private String name;
@@ -13,7 +12,7 @@ public class Language {
 	private String owner;
 	private List<String> tagList;
 	private Instant createDate;
-	private transient Function<Language, Long> modelsCountProvider;
+	private transient ModelsProvider modelsProvider;
 
 	public enum Level { L1, L2, L3 }
 
@@ -27,8 +26,8 @@ public class Language {
 		this.createDate = Instant.now();
 	}
 
-	public void modelsCountProvider(Function<Language, Long> provider) {
-		this.modelsCountProvider = provider;
+	public void modelsProvider(ModelsProvider provider) {
+		this.modelsProvider = provider;
 	}
 
 	public static String nameOf(String id) {
@@ -85,8 +84,12 @@ public class Language {
 		return this;
 	}
 
+	public List<String> models() {
+		return modelsProvider.models();
+	}
+
 	public long modelsCount() {
-		return modelsCountProvider.apply(this);
+		return modelsProvider.models().size();
 	}
 
 	public Instant createDate() {
@@ -109,6 +112,10 @@ public class Language {
 
 	public boolean isFoundational() {
 		return parent == null || parent.isEmpty();
+	}
+
+	public interface ModelsProvider {
+		List<String> models();
 	}
 
 }

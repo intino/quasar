@@ -52,11 +52,12 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 	private void refresh(Model model, ModelTableRow row) {
 		row.modelLabelItem.label.title(ModelHelper.label(model, language(), box()));
 		row.modelLabelItem.label.address(path -> PathHelper.modelPath(path, model));
+		row.modelDescriptionItem.description.value(model.description());
 		row.modelOwnerItem.owner.value(model.owner());
 		row.operationsItem.operationsToolbar.visible(true);
 		row.operationsItem.removeModelTrigger.onExecute(e -> removeModel(model));
 		row.operationsItem.settingsModelTrigger.onExecute(e -> openSettingsDialog(model, row));
-		row.operationsItem.publishModelTrigger.readonly(!PermissionsHelper.canPublish(model, session(), box()));
+		row.operationsItem.publishModelTrigger.readonly(!PermissionsHelper.canPublish(model, Model.DraftVersion, session(), box()));
 		row.operationsItem.publishModelTrigger.onExecute(e -> publishModel(model));
 	}
 

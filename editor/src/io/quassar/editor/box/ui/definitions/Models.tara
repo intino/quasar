@@ -13,11 +13,14 @@ Template modelsTemplate as Relative(height=100%, width=100%)
 		Table(itemClass="io.quassar.editor.model.Model") modelTable
 			noItemsMessage = "No models"
 			Mold
-				Heading modelLabelHeading > Text(value="Title") labelSorting
-				Item(height=30px, width=45%) modelLabelItem > Link(title="", format=relative bringToFront) label as Action Addressable(EditorElements.model)
+				Heading modelLabelHeading > Text(value="Title")
+				Item(height=30px, width=20%) modelLabelItem > Link(title="", format=relative bringToFront) label as Action Addressable(EditorElements.model)
+			Mold
+				Heading modelDescriptionHeading > Text(value="Description")
+				Item(height=30px, width=45%) modelDescriptionItem > Text description
 			Mold
 				Heading modelOwnerHeading > Sorting(collections=modelTable) ownerSorting as OrderBy Labeled("Owner")
-				Item(height=30px, width=35%) modelOwnerItem > Text owner
+				Item(height=30px, width=15%) modelOwnerItem > Text owner
 			Mold
 				Heading operationsHeading > Block(layout=Horizontal EndJustified)
 				Item(height=30px, width=20%) operationsItem
@@ -131,10 +134,16 @@ Schema intinoFileBrowserItem
 	Attribute children as Text List
 
 Display intinoDslEditor
+	Notification setup as Object(intinoDslEditorSetup)
 	Notification refresh as Object(intinoDslEditorFile)
 	Notification receiveContent
 	Request fileModified
 	Request fileContent as Text
+
+Schema intinoDslEditorSetup
+	Attribute dslName as Text
+	Attribute modelName as Text
+	Attribute modelVersion as Text
 
 Schema intinoDslEditorFile
 	Attribute name as Text
@@ -142,5 +151,5 @@ Schema intinoDslEditorFile
 	Attribute uri as Text
 	Attribute content as Text
 	Attribute language as Text
-	Attribute dslName as Text
 	Attribute extension as Text
+

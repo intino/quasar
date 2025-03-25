@@ -14,6 +14,7 @@ public class Model {
 	private final List<String> collaborators = new ArrayList<>();
 	private boolean isPrivate = false;
 
+	public static final String DraftVersion = "draft";
 	public static final String DefaultOwner = "anonymous";
 
 	public String name() {

@@ -14,7 +14,7 @@ public class NameHelper {
 	}
 
 	public static boolean modelInUse(Language language, String value, EditorBox box) {
-		return box.modelManager().exists(language, value);
+		return language != null && box.modelManager().exists(language, value);
 	}
 
 }

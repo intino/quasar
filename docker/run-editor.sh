@@ -1,5 +1,4 @@
-#!/bin/sh
-
+#!/bin/bash
 java --add-opens=java.base/sun.security.action=ALL-UNNAMED -cp dependency/*:app.jar io.quassar.editor.box.Main \
   port="${PORT}" \
   home="${HOME_DIR}" \

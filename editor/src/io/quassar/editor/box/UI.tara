@@ -34,12 +34,12 @@ Template(layout=Horizontal Center, format=headerStyle) headerTemplate
 	Block(layout=Horizontal EndJustified)
 		Button(title="Log in", format=airRight whiteColor, visible=false) login as Action
 		Block(layout=Horizontal Center, visible=false) notLoggedBlock
-			MaterialIconButton(title="Set dark mode", format=airRight whiteColor, icon="Brightness4", size=Small) as SetDarkMode
-			MaterialIconButton(title="Set light mode", format=airRight whiteColor, icon="Brightness7", size=Small) as SetLightMode
+			MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
+			MaterialIconButton(title="Set light mode", format=airRight, icon="Brightness7", size=Small) as SetLightMode
 		User(mode=OnlyPhoto, visible=false, format=relative veryLargeIconSize airRight) user
 			Block(layout=Horizontal EndJustified, format=userToolbar)
-				MaterialIconButton(title="Set dark mode", format=airRight whiteColor, icon="Brightness4", size=Small) as SetDarkMode
-				MaterialIconButton(title="Set light mode", format=airRight whiteColor, icon="Brightness7", size=Small) as SetLightMode
+				MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
+				MaterialIconButton(title="Set light mode", format=airRight, icon="Brightness7", size=Small) as SetLightMode
 			Selector as ListBox
 				Block as Option > Link(title="Home") home as Action Addressable(EditorElements.home)
 

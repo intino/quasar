@@ -114,7 +114,7 @@ public class LanguageManager {
 			File properties = archetype.languages().properties(Language.nameOf(id));
 			if (!properties.exists()) return null;
 			Language language = Json.fromJson(Files.readString(properties.toPath()), Language.class);
-			language.modelsCountProvider(this::modelsCount);
+			language.modelsProvider(modelsProvider(language));
 			return language;
 		} catch (IOException e) {
 			Logger.error(e);
@@ -122,9 +122,11 @@ public class LanguageManager {
 		}
 	}
 
-	private long modelsCount(Language language) {
-		File[] models = archetype.languages().models(language.name()).listFiles();
-		return models != null ? Arrays.stream(models).filter(d -> !d.getName().startsWith(".")).count() : 0;
+	private Language.ModelsProvider modelsProvider(Language language) {
+		return () -> {
+			File[] models = archetype.languages().models(language.name()).listFiles();
+			return models != null ? Arrays.stream(models).map(File::getName).filter(name -> !name.startsWith(".")).toList() : emptyList();
+		};
 	}
 
 }
