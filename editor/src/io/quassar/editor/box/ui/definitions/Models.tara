@@ -30,7 +30,7 @@ Template modelsTemplate as Relative(height=100%, width=100%)
 							MaterialIconButton(icon="CloudUpload", title="Publish", size=Small) publishModelTrigger as Action
 							MaterialIconButton(icon="Clear", title="Remove", size=Small) removeModelTrigger as Action Affirmed("Are you sure to remove model?")
 
-	TemplateStamp(template=modelDialog) modelDialog
+	TemplateStamp(template=addModelDialog) addModelDialog
 	TemplateStamp(template=modelSettingsDialog) modelSettingsDialog
 	TemplateStamp(template=publishModelDialog) modelPublishDialog
 

@@ -3,13 +3,10 @@ dsl Konos
 use UI
 use Theme
 
-Template modelDialog
+Template addModelDialog
 
 	Dialog(title="Add model") dialog as Absolute(height=450px, width=450px)
         Block as Relative(height=100%, offsetHeight=40px)
-			Block
-				Text(value="Language", translate=true, format=h5 middleAirBottom)
-				Text languageTitle
 			Block(format=doubleAirTop)
 				Text(value="Name", translate=true, format=h5 middleAirBottom)
 				Text nameField as Editable(helperText="Only alphanumeric characters are allowed") Focused

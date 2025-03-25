@@ -7,14 +7,13 @@ import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
-import java.util.List;
 import java.util.function.Consumer;
 
-public class ModelDialog extends AbstractModelDialog<EditorBox> {
+public class AddModelDialog extends AbstractAddModelDialog<EditorBox> {
 	private Language language;
 	private Consumer<Model> createListener;
 
-	public ModelDialog(EditorBox box) {
+	public AddModelDialog(EditorBox box) {
 		super(box);
 	}
 
@@ -40,7 +39,7 @@ public class ModelDialog extends AbstractModelDialog<EditorBox> {
 	}
 
 	private void refreshDialog() {
-		languageTitle.value(language.name());
+		dialog.title("Add model with %s".formatted(language.name()));
 		nameField.value(ModelHelper.proposeName());
 		titleField.value("(no name)");
 		descriptionField.value("(no description)");

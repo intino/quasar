@@ -32,7 +32,7 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 	public void init() {
 		super.init();
 		addModelTrigger.onExecute(e -> openAddModelDialog());
-		modelDialog.onCreate(this::open);
+		addModelDialog.onCreate(this::open);
 		modelTable.onAddItem(this::refresh);
 		modelPublishDialog.onPublish((l, v) -> open(l));
 	}
@@ -76,8 +76,8 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 	}
 
 	private void openAddModelDialog() {
-		modelDialog.language(language);
-		modelDialog.open();
+		addModelDialog.language(language);
+		addModelDialog.open();
 	}
 
 	private void removeModel(Model model) {
