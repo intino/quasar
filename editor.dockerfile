@@ -4,7 +4,6 @@ WORKDIR /root/app
 
 COPY out/build/editor/dependency dependency
 COPY out/build/editor/editor.jar app.jar
-COPY docker/archetype ./data
 
 ENV HOME_DIR=./data
 ENV PORT=8080

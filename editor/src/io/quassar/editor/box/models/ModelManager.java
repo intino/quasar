@@ -132,12 +132,22 @@ public class ModelManager {
 	public URI workspace(Model model, String version) {
 		try {
 			File workspace = archetype.languages().workspace(languageOf(model), model.name());
-			if (version != null) workspace = archetype.languages().versionWorkspace(languageOf(model), model.name(), version);
+			if (version != null && !version.equals(Model.DraftVersion)) workspace = versionWorkSpace(model, version);
 			return workspace.getAbsoluteFile().getCanonicalFile().toURI();
 		} catch (IOException e) {
 			Logger.error(e);
 			return null;
 		}
+	}
+
+	private File versionWorkSpace(Model model, String version) {
+		File versionFile = archetype.languages().version(languageOf(model), model.name(), version);
+		File workspace = archetype.tmp().versionWorkspace(languageOf(model), model.name(), version);
+		if (!versionFile.exists()) return workspace;
+		File[] files = workspace.listFiles();
+		if (files != null && files.length > 0) return workspace;
+		ZipHelper.extract(archetype.languages().version(languageOf(model), model.name(), version), workspace);
+		return workspace;
 	}
 
 	public ModelContainer.File copy(Model model, String filename, ModelContainer.File source) {
@@ -148,7 +158,7 @@ public class ModelManager {
 		try {
 			if (isWorkspaceEmpty(model, Model.DraftVersion)) return OperationResult.Error("Workspace is empty");
 			File versionFile = archetype.languages().version(languageOf(model), model.name(), version);
-			ZipHelper.zipFolder(Paths.get(workspace(model, version)), versionFile.toPath());
+			ZipHelper.zipFolder(Paths.get(workspace(model, Model.DraftVersion)), versionFile.toPath());
 			return OperationResult.Success();
 		} catch (Exception e) {
 			Logger.error(e);

@@ -7,7 +7,7 @@ Template addModelDialog
 
 	Dialog(title="Add model") dialog as Absolute(height=450px, width=450px)
         Block as Relative(height=100%, offsetHeight=40px)
-			Block(format=doubleAirTop)
+			Block
 				Text(value="Name", translate=true, format=h5 middleAirBottom)
 				Text nameField as Editable(helperText="Only alphanumeric characters are allowed") Focused
 			Block(format=doubleAirTop)
@@ -15,7 +15,7 @@ Template addModelDialog
 				Text titleField as Editable
 			Block(format=doubleAirTop)
 				Text(value="Description", translate=true, format=h5 middleAirBottom)
-				Text descriptionField as Editable
+				Text descriptionField as Editable Memo(height=4Rows)
 		Divider
         Block(layout=Horizontal EndJustified)
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(dialog)
@@ -53,7 +53,7 @@ Template(layout=Horizontal) publishModelDialog
 
 Template(layout=Horizontal) modelSettingsDialog
 
-	Dialog(title="Properties") dialog as Relative(width=60%, height=80%) Modal
+	Dialog(title="Properties") dialog as Relative(width=60%, height=90%) Modal
         Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
         	Selector settingsTabSelector as Tabs(format=tabsStyle)
         		Text(value="General") generalOption as Option
@@ -69,7 +69,7 @@ Template(layout=Horizontal) modelSettingsDialog
 						Text(format=doubleAirBottom) modelTitleField as Editable
 					Block(format=airTop)
 						Text(value="Description", translate=true, format=h5 middleAirBottom)
-						Text(format=doubleAirBottom) modelDescriptionField as Editable
+						Text(format=doubleAirBottom) modelDescriptionField as Editable Memo(height=4Rows)
 					Block(format=airTop)
 						Text(value="Model access", translate=true, format=h5 middleAirBottom)
 						Switch(title="Model is private", format=doubleAirBottom) modelAccessTypeField

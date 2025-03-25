@@ -74,7 +74,7 @@ public class PathHelper {
 
 	public static String modelPath(String address, Model model, String version) {
 		String result = address.replace(":language", Language.nameOf(model.language())).replace(":model", model.name());
-		result += "?version=" + version;
+		result += version != null ? "?version=" + version : "";
 		return result;
 	}
 

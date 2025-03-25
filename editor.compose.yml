@@ -13,4 +13,12 @@ services:
       - FEDERATION_URL=
       - LANGUAGE_ARTIFACTORY=https://artifactory.intino.io/artifactory/releases
     volumes:
-      - ${QUASSAR_HOME}:/root/data
+      - shared_volume:/root/data
+
+volumes:
+  shared_volume:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${QUASSAR_HOME}
+      o: bind

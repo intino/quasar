@@ -63,7 +63,7 @@ public class EditorBox extends AbstractBox {
 		commandsFactory = new CommandsFactory(this);
 		languageLoader = new LanguageLoader(new LocalLanguageArtifactory(archetype));
 		languageManager = new LanguageManager(archetype);
-		serverManager = new LanguageServerManager(languageLoader, (model, version) -> workSpaceOf(model, version));
+		serverManager = new LanguageServerManager(languageLoader, this::workSpaceOf);
 		modelManager = new ModelManager(archetype, serverManager);
 		userManager = new UserManager(archetype);
 		projectManager = new ProjectManager(archetype);

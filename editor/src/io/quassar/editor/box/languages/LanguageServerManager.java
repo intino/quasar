@@ -42,13 +42,18 @@ public class LanguageServerManager {
 	}
 
 	public LanguageServer get(Model model, String version) throws IOException, GitAPIException, URISyntaxException {
-		if (!servers.containsKey(model.name()))
-			servers.put(model.name(), create(model, version));
-		return servers.get(model.name());
+		String key = key(model, version);
+		if (!servers.containsKey(key))
+			servers.put(key, create(model, version));
+		return servers.get(key);
 	}
 
-	public void remove(Model model) {
-		servers.remove(model.name());
+	public void remove(Model model, String version) {
+		servers.remove(key(model, version));
+	}
+
+	private String key(Model model, String version) {
+		return model.name() + version;
 	}
 
 	private LanguageServer create(Model model, String version) throws IOException {
