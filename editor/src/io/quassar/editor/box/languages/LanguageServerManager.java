@@ -41,24 +41,24 @@ public class LanguageServerManager {
 		return new IntinoLanguageServer(language, new GitDocumentManager(root, branch, gitUrl, username, token));
 	}
 
-	public LanguageServer get(Model model, String version) throws IOException, GitAPIException, URISyntaxException {
-		String key = key(model, version);
+	public LanguageServer get(Model model, String release) throws IOException, GitAPIException, URISyntaxException {
+		String key = key(model, release);
 		if (!servers.containsKey(key))
-			servers.put(key, create(model, version));
+			servers.put(key, create(model, release));
 		return servers.get(key);
 	}
 
-	public void remove(Model model, String version) {
-		servers.remove(key(model, version));
+	public void remove(Model model, String release) {
+		servers.remove(key(model, release));
 	}
 
-	private String key(Model model, String version) {
-		return model.name() + version;
+	private String key(Model model, String release) {
+		return model.name() + release;
 	}
 
-	private LanguageServer create(Model model, String version) throws IOException {
+	private LanguageServer create(Model model, String release) throws IOException {
 		Language language = languageLoader.get(model.language());
-		URI workspace = workspaceProvider.apply(model, version);
+		URI workspace = workspaceProvider.apply(model, release);
 		return create(language, workspace);
 	}
 

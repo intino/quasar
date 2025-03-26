@@ -34,7 +34,7 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 		addModelTrigger.onExecute(e -> openAddModelDialog());
 		addModelDialog.onCreate(this::open);
 		modelTable.onAddItem(this::refresh);
-		modelPublishDialog.onPublish((l, v) -> open(l));
+		modelPublishDialog.onPublish(this::open);
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 		row.operationsItem.operationsToolbar.visible(true);
 		row.operationsItem.removeModelTrigger.onExecute(e -> removeModel(model));
 		row.operationsItem.settingsModelTrigger.onExecute(e -> openSettingsDialog(model, row));
-		row.operationsItem.publishModelTrigger.readonly(!PermissionsHelper.canPublish(model, Model.DraftVersion, session(), box()));
+		row.operationsItem.publishModelTrigger.readonly(!PermissionsHelper.canPublish(model, Model.DraftRelease, session(), box()));
 		row.operationsItem.publishModelTrigger.onExecute(e -> publishModel(model));
 	}
 
@@ -71,8 +71,8 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 		modelSettingsDialog.open();
 	}
 
-	private void open(Language language) {
-		notifier.dispatch(PathHelper.languagePath(language));
+	private void open(Model model, String release) {
+		notifier.dispatch(PathHelper.modelPath(model, release));
 	}
 
 	private void openAddModelDialog() {

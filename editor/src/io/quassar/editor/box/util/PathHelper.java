@@ -1,6 +1,7 @@
 package io.quassar.editor.box.util;
 
 import io.intino.alexandria.ui.services.push.UISession;
+import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.ui.types.LanguageView;
 import io.quassar.editor.box.ui.types.LanguagesTab;
@@ -72,10 +73,15 @@ public class PathHelper {
 		return session.browser().baseUrl() + "/languages/" + Language.nameOf(model.language()) + "/models/" + model.name();
 	}
 
-	public static String modelPath(String address, Model model, String version) {
+	public static String modelPath(String address, Model model, String release, String file) {
 		String result = address.replace(":language", Language.nameOf(model.language())).replace(":model", model.name());
-		result += version != null ? "?version=" + version : "";
+		result += release != null ? "?release=" + release : "";
+		result += file != null ? ((release != null ? "&" : "?") + "file=" + file) : "";
 		return result;
+	}
+
+	public static String modelPath(String address, Model model, String release) {
+		return modelPath(address, model, release, null);
 	}
 
 	public static String modelPath(String address, Model model) {
@@ -86,7 +92,12 @@ public class PathHelper {
 		return modelPath(model, null);
 	}
 
-	public static String modelPath(Model model, String version) {
-		return modelPath("/languages/:language/models/:model", model, version);
+	public static String modelPath(Model model, String release) {
+		return modelPath(model, release, (ModelContainer.File) null);
 	}
+
+	public static String modelPath(Model model, String release, ModelContainer.File file) {
+		return modelPath("/languages/:language/models/:model", model, release, file != null ? file.name() : null);
+	}
+
 }

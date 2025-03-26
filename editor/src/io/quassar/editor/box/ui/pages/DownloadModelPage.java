@@ -21,7 +21,7 @@ import java.util.zip.ZipOutputStream;
 public class DownloadModelPage extends AbstractDownloadModelPage {
 	public String language;
 	public String model;
-	public String version;
+	public String release;
 
 	public io.intino.alexandria.Resource execute() {
 		Model quassarModel = box.modelManager().get(language, model);

@@ -3,6 +3,7 @@ package io.quassar.editor.box.ui.displays;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.schemas.IntinoDslEditorFile;
 import io.quassar.editor.box.schemas.IntinoDslEditorSetup;
+import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
@@ -10,7 +11,7 @@ import java.util.function.Consumer;
 
 public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 	private Model model;
-	private String version;
+	private String release;
 	private String name;
 	private String uri;
 	private String extension;
@@ -26,8 +27,8 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 		this.model = model;
 	}
 
-	public void version(String version) {
-		this.version = version;
+	public void release(String value) {
+		this.release = value;
 	}
 
 	public void file(String name, String uri, String extension, String language) {
@@ -68,7 +69,7 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 	}
 
 	private IntinoDslEditorSetup info() {
-		return new IntinoDslEditorSetup().dslName(Language.nameOf(model.language())).modelName(model.name()).modelVersion(version);
+		return new IntinoDslEditorSetup().dslName(Language.nameOf(model.language())).modelName(model.name()).modelRelease(release).readonly(!PermissionsHelper.canEdit(model, release));
 	}
 
 	private IntinoDslEditorFile file() {
@@ -76,7 +77,7 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 	}
 
 	private String content() {
-		return box().modelManager().content(model, version, uri);
+		return box().modelManager().content(model, release, uri);
 	}
 
 }

@@ -26,7 +26,8 @@ public class AddModelDialog extends AbstractAddModelDialog<EditorBox> {
 	}
 
 	public void open() {
-		dialog.open();
+		create(ModelHelper.proposeName(), translate("(no name)"), translate("(no description)"));
+		//dialog.open();
 	}
 
 	@Override
@@ -51,6 +52,10 @@ public class AddModelDialog extends AbstractAddModelDialog<EditorBox> {
 		String name = nameField.value();
 		String title = titleField.value();
 		String description = descriptionField.value();
+		create(name, title, description);
+	}
+
+	private void create(String name, String title, String description) {
 		Model model = box().commands(ModelCommands.class).create(name, title, description, language, DisplayHelper.user(session()), username());
 		createListener.accept(model);
 	}

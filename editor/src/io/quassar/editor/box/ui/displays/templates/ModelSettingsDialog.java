@@ -14,14 +14,12 @@ import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
+import io.quassar.editor.model.User;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> {
@@ -29,6 +27,7 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 	private Set<String> tagSet;
 	private Consumer<Model> renameListener;
 	private Consumer<Model> saveListener;
+	private List<User> collaboratorList = null;
 
 	public ModelSettingsDialog(EditorBox box) {
 		super(box);
@@ -67,7 +66,6 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 	private void refreshDialog() {
 		Language language = box().languageManager().get(model.name());
 		if (language == null) settingsTabSelector.hideOption("languageOption");
-		settingsTabSelector.hideOption("collaboratorsOption");
 		settingsTabSelector.select(0);
 	}
 
@@ -95,6 +93,7 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		tagSet = new HashSet<>(language.tags());
 		File logo = box().archetype().languages().logo(language.name());
 		logoField.value(logo.exists() ? logo : null);
+		languageFileExtensionField.value(language.fileExtension());
 		languageLevelSelector.select(language.level() == Language.Level.L1 ? "level1Option" : "level2Option");
 		refreshTags();
 	}
@@ -127,9 +126,12 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 	}
 
 	private void initCollaboratorsBlock() {
+		collaboratorsStamp.onChange(e -> this.collaboratorList = e);
 	}
 
 	private void refreshCollaboratorsBlock() {
+		collaboratorsStamp.model(model);
+		collaboratorsStamp.refresh();
 	}
 
 	private void saveSettings() {
@@ -155,6 +157,7 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 	}
 
 	private boolean checkModelName() {
+		if (model.name().equals(modelNameField.value())) return true;
 		Language language = box().languageManager().get(model.language());
 		return DisplayHelper.checkLanguageName(modelNameField, language, this::translate, box());
 	}
@@ -169,13 +172,14 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 			notifyUser(translate("Select logo"), UserMessage.Type.Warning);
 			return false;
 		}
-		return true;
+		return DisplayHelper.check(languageFileExtensionField, this::translate);
 	}
 
 	private void saveModel() {
 		box().commands(ModelCommands.class).save(model, modelNameField.value(), modelTitleField.value(), modelDescriptionField.value(), username());
 		boolean isPrivate = modelAccessTypeField.state() == ToggleEvent.State.On;
 		saveAccessType(isPrivate);
+		saveCollaborators();
 	}
 
 	private void saveAccessType(boolean isPrivate) {
@@ -183,9 +187,15 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		else box().commands(ModelCommands.class).makePublic(model, username());
 	}
 
+	private void saveCollaborators() {
+		if (collaboratorList == null) return;
+		box().commands(ModelCommands.class).save(model, collaboratorList, username());
+	}
+
 	private void removeModel() {
 		notifyUser(translate("Removing model..."), UserMessage.Type.Loading);
 		box().commands(ModelCommands.class).remove(model, username());
+		hideUserNotification();
 		notifier.dispatch(PathHelper.languagePath(model.language()));
 	}
 
@@ -193,7 +203,8 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		String languageName = Language.nameOf(model.name());
 		if (!box().languageManager().exists(languageName)) return;
 		Language language = box().languageManager().get(languageName);
-		box().commands(LanguageCommands.class).save(language, model.description(), level(), new ArrayList<>(tagSet), logoFile(), username());
+		String fileExtension = languageFileExtensionField.value();
+		box().commands(LanguageCommands.class).save(language, model.description(), fileExtension, level(), new ArrayList<>(tagSet), logoFile(), username());
 	}
 
 	private Language.Level level() {

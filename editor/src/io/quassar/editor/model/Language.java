@@ -6,10 +6,12 @@ import java.util.List;
 
 public class Language {
 	private String name;
+	private String version;
 	private Level level;
 	private String parent;
 	private String description;
 	private String owner;
+	private String fileExtension;
 	private List<String> tagList;
 	private Instant createDate;
 	private transient ModelsProvider modelsProvider;
@@ -22,8 +24,10 @@ public class Language {
 
 	public Language(String name) {
 		this.name = name;
+		this.version = "1.0.0";
 		this.tagList = new ArrayList<>();
 		this.createDate = Instant.now();
+		this.fileExtension = "tara";
 	}
 
 	public void modelsProvider(ModelsProvider provider) {
@@ -45,6 +49,15 @@ public class Language {
 
 	public Language name(String name) {
 		this.name = name;
+		return this;
+	}
+
+	public String version() {
+		return version;
+	}
+
+	public Language version(String version) {
+		this.version = version;
 		return this;
 	}
 
@@ -72,6 +85,15 @@ public class Language {
 
 	public Language owner(String owner) {
 		this.owner = owner;
+		return this;
+	}
+
+	public String fileExtension() {
+		return fileExtension;
+	}
+
+	public Language fileExtension(String fileExtension) {
+		this.fileExtension = fileExtension;
 		return this;
 	}
 

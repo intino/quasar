@@ -5,7 +5,9 @@ import io.quassar.editor.box.commands.model.*;
 import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
-import io.quassar.editor.model.OperationResult;
+import io.quassar.editor.model.User;
+
+import java.util.List;
 
 public class ModelCommands extends Commands {
 
@@ -65,6 +67,13 @@ public class ModelCommands extends Commands {
 		command.execute();
 	}
 
+	public void save(Model model, List<User> collaborators, String username) {
+		SaveModelCollaboratorsCommand command = setup(new SaveModelCollaboratorsCommand(box), username);
+		command.model = model;
+		command.collaborators = collaborators;
+		command.execute();
+	}
+
 	public void save(Model model, ModelContainer.File file, String content, String username) {
 		SaveModelFileCommand command = setup(new SaveModelFileCommand(box), username);
 		command.model = model;
@@ -114,8 +123,8 @@ public class ModelCommands extends Commands {
 		command.execute();
 	}
 
-	public OperationResult createVersion(Model model, String version, String username) {
-		CreateModelVersionCommand command = setup(new CreateModelVersionCommand(box), username);
+	public Command.ExecutionResult createRelease(Model model, String version, String username) {
+		CreateModelReleaseCommand command = setup(new CreateModelReleaseCommand(box), username);
 		command.model = model;
 		command.version = version;
 		return command.execute();

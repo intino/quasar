@@ -52,7 +52,6 @@ Template modelTemplate as Relative(height=100%, width=100%)
 			Block(layout=Horizontal, format=headerPanel greyLightBackground leftSpaced rightSpaced)
 				Block(layout=Horizontal Flexible) > Text(value="Project", format=h6, translate=true)
 				Block(layout=Horizontal Center, format=smallAirLeft)
-					MaterialIconButton(title="Settings...", icon="Settings", size=Small) settingsTrigger as Action
 					MaterialIconButton(title="Operations...", icon="MoreVert", size=Small) operationsTrigger as OpenPopover(workspaceDialog)
 					// TODO MaterialIconButton(title="collapse", icon="Close") as CloseBlock()
 			DisplayStamp(display=intinoFileBrowser, format=displayHeaderPanel) intinoFileBrowser
@@ -68,6 +67,7 @@ Template modelTemplate as Relative(height=100%, width=100%)
 				Text(value="Select file on left panel to open it")
 			Block(layout=Vertical Flexible, visible=false) fileSelectedBlock
 				DisplayStamp(display=intinoDslEditor, format=fullHeight) intinoDslEditor
+			Block(visible=false) consoleBlock > TemplateStamp(template=consoleTemplate) console
 
 	Block(format=spaced) workspaceDialog as Popover Absolute(width=200px)
 		Block(layout=Vertical Start)
@@ -102,8 +102,6 @@ Template modelTemplate as Relative(height=100%, width=100%)
 			Block(layout=Horizontal EndJustified)
 				Button(title="Don't save", size=Small, format=airRight) continueWithoutSavingFile as Action
 				Button(title="Save", size=Small, highlight=Fill) continueSavingFile as Action
-
-	TemplateStamp(template=modelSettingsDialog) settingsDialog
 
 Display intinoFileBrowser
 	Notification refresh as Object(intinoFileBrowserInfo)
@@ -143,7 +141,8 @@ Display intinoDslEditor
 Schema intinoDslEditorSetup
 	Attribute dslName as Text
 	Attribute modelName as Text
-	Attribute modelVersion as Text
+	Attribute modelRelease as Text
+	Attribute readonly as Bool
 
 Schema intinoDslEditorFile
 	Attribute name as Text
@@ -152,4 +151,18 @@ Schema intinoDslEditorFile
 	Attribute content as Text
 	Attribute language as Text
 	Attribute extension as Text
+
+Template(format=consoleStyle) consoleTemplate
+	MaterialIconButton(title="Close", icon="Clear", size=Small, format=closeIcon) closeButton as Action
+	Text(value="Console", format=h6 airLeft middleAirTop, translate=true)
+	Block(format=airTop airLeft airRight middleAirBottom)
+		TemplateStamp(template=consoleEntryTemplate) entries as Multiple(noItemsMessage="No messages")
+
+Template(layout=Horizontal Center, format=middleAirBottom) consoleEntryTemplate
+	MaterialIcon(icon="Info", format=smallIconSize airRight blueColor, visible=false) infoIcon
+	MaterialIcon(icon="Warning", format=smallIconSize airRight orangeColor, visible=false) warningIcon
+	MaterialIcon(icon="Error", format=smallIconSize airRight redColor, visible=false) errorIcon
+	Text(format=airRight) file
+	Text(format=airRight) location
+	Text content
 

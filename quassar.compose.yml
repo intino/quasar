@@ -1,0 +1,35 @@
+services:
+  
+  editor:
+    build:
+      context: .
+      dockerfile: editor.dockerfile
+    container_name: quassar-editor
+    ports:
+      - "${QUASSAR_PORT}:8080"
+    environment:
+      - HOME_DIR=/root/data
+      - PORT=8080
+      - TITLE=Quassar
+      - FEDERATION_URL=
+      - LANGUAGE_ARTIFACTORY=https://artifactory.intino.io/artifactory/releases
+    volumes:
+      - shared_volume:/root/data
+
+  builder:
+    build:
+      context: .
+      dockerfile: builder.dockerfile
+    container_name: quassar-builder
+    ports:
+      - "${QUASSAR_PORT}:8080"
+    volumes:
+      - shared_volume:/root/data
+
+volumes:
+  shared_volume:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${QUASSAR_HOME}
+      o: bind

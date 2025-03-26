@@ -1,7 +1,10 @@
 package io.quassar.editor.box;
 
+import io.intino.alexandria.exceptions.InternalServerError;
 import io.intino.alexandria.logger.Logger;
 import io.intino.alexandria.ui.AlexandriaUiServer;
+import io.intino.builderservice.QuassarBuilderServiceAccessor;
+import io.intino.builderservice.schemas.RegisterBuilder;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.commands.Commands;
 import io.quassar.editor.box.commands.CommandsFactory;
@@ -36,6 +39,7 @@ public class EditorBox extends AbstractBox {
 	private ProjectManager projectManager;
 	private CommandsFactory commandsFactory;
 	private LanguageServerManager serverManager;
+	private QuassarBuilderServiceAccessor builderAccessor;
 	private Utilities utilities;
 
 	public EditorBox(String[] args) {
@@ -67,6 +71,8 @@ public class EditorBox extends AbstractBox {
 		modelManager = new ModelManager(archetype, serverManager);
 		userManager = new UserManager(archetype);
 		projectManager = new ProjectManager(archetype);
+		builderAccessor = new QuassarBuilderServiceAccessor(url(configuration.builderServiceUrl()));
+		setupServiceBuilder();
 	}
 
 	private URI workSpaceOf(Model model, String version) {
@@ -106,6 +112,10 @@ public class EditorBox extends AbstractBox {
 		return projectManager;
 	}
 
+	public QuassarBuilderServiceAccessor builderAccessor() {
+		return builderAccessor;
+	}
+
 	protected io.intino.alexandria.ui.services.AuthService authService(java.net.URL authServiceUrl) {
 		//TODO add your authService
 		return null;
@@ -124,10 +134,18 @@ public class EditorBox extends AbstractBox {
 		try {
 			Map<String, List<String>> parameterMap = session.getUpgradeRequest().getParameterMap();
 			Model model = modelManager.get(parameterMap.get("dsl").getFirst(), parameterMap.get("model").getFirst());
-			return serverManager.get(model, parameterMap.get("model-version").getFirst());
+			return serverManager.get(model, parameterMap.get("model-release").getFirst());
 		} catch (IOException | GitAPIException | URISyntaxException e) {
 			Logger.error(e);
 			return null;
+		}
+	}
+
+	private void setupServiceBuilder() {
+		try {
+			builderAccessor.postBuilders(new RegisterBuilder().imageURL(configuration().quassarBuilder()));
+		} catch (InternalServerError e) {
+			Logger.error(e);
 		}
 	}
 

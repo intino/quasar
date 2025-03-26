@@ -6,10 +6,10 @@ import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.displays.events.ChangeEvent;
 import io.intino.alexandria.ui.displays.events.SelectionEvent;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.commands.Command.ExecutionResult;
 import io.quassar.editor.box.commands.LanguageCommands;
 import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.ui.types.VersionType;
-import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.Formatters;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.model.Language;
@@ -24,7 +24,8 @@ import java.util.function.BiConsumer;
 
 public class PublishModelDialog extends AbstractPublishModelDialog<EditorBox> {
 	private Model model;
-	private BiConsumer<Language, String> publishListener;
+	private BiConsumer<Model, String> publishListener;
+	private BiConsumer<Model, ExecutionResult> publishFailureListener;
 
 	public PublishModelDialog(EditorBox box) {
 		super(box);
@@ -34,8 +35,12 @@ public class PublishModelDialog extends AbstractPublishModelDialog<EditorBox> {
 		this.model = value;
 	}
 
-	public void onPublish(BiConsumer<Language, String> listener) {
+	public void onPublish(BiConsumer<Model, String> listener) {
 		this.publishListener = listener;
+	}
+
+	public void onPublishFailure(BiConsumer<Model, ExecutionResult> listener) {
+		this.publishFailureListener = listener;
 	}
 
 	public void open() {
@@ -90,22 +95,24 @@ public class PublishModelDialog extends AbstractPublishModelDialog<EditorBox> {
 	private void publish() {
 		if (!check()) return;
 		dialog.close();
-		Language language = createLanguageIfNotExists();
-		if (!createVersion().success()) return;
+		createLanguageIfNotExists();
+		if (!createRelease().success()) return;
 		hideUserNotification();
-		publishListener.accept(language, version());
+		publishListener.accept(model, version());
 	}
 
-	private Language createLanguageIfNotExists() {
-		if (box().languageManager().exists(model.name())) return box().languageManager().get(model.name());
+	private void createLanguageIfNotExists() {
+		if (!ModelHelper.isMetamodel(model, box())) return;
+		if (box().languageManager().exists(model.name())) return;
 		notifyUser(translate("Creating language..."), UserMessage.Type.Loading);
-		return box().commands(LanguageCommands.class).create(model.name(), model.language(), level(), model.description(), logoFile(), username());
+		box().commands(LanguageCommands.class).create(model.name(), model.language(), level(), model.description(), logoFile(), username());
 	}
 
-	private OperationResult createVersion() {
-		notifyUser(translate("Creating version..."), UserMessage.Type.Loading);
-		OperationResult result = box().commands(ModelCommands.class).createVersion(model, version(), username());
-		if (!result.success()) notifyUser("Could not create version. %s".formatted(Formatters.firstUpperCase(result.message())), UserMessage.Type.Error);
+	private ExecutionResult createRelease() {
+		notifyUser(translate("Creating release..."), UserMessage.Type.Loading);
+		ExecutionResult result = box().commands(ModelCommands.class).createRelease(model, version(), username());
+		if (!result.success()) publishFailureListener.accept(model, result);
+		hideUserNotification();
 		return result;
 	}
 

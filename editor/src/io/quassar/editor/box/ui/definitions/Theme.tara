@@ -344,6 +344,10 @@ Format("background:'transparent'") languageOperationsStyle
 Format("position:'absolute',top:'0',left:'0',fontSize:'7pt',whiteSpace:'nowrap'") modelOperationsTextStyle
 Format("position:'absolute',width:'100%',height:'100%',right:'0',textAlign:'right',zIndex:'0'") operationsContainer
 Format("zIndex:'1'") bringToFront
+Format("position:'relative'") item
+Format("minWidth:'365px'") userItem
+Format("textTransform:'uppercase'") upperCase
+Format("fontStyle:'italic',color:'#777'") message
 
 // Sumus
 Format("background:'white',border:'1px solid #eee',position:'relative'") cubeDialogStyle

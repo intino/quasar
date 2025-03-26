@@ -10,12 +10,20 @@ public class PermissionsHelper {
 		return session.user() != null;
 	}
 
+	public static boolean hasPermissions(Model model, String username) {
+		return model.collaborators().contains(username);
+	}
+
 	public static boolean canRemove(Model model, UISession session, EditorBox box) {
 		return !ModelHelper.isMetamodel(model, box);
 	}
 
 	public static boolean canPublish(Model model, String version, UISession session, EditorBox box) {
 		return !box.modelManager().isWorkspaceEmpty(model, version);
+	}
+
+	public static boolean canEdit(Model model, String release) {
+		return model.isDraft(release);
 	}
 
 }

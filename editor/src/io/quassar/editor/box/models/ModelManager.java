@@ -4,12 +4,12 @@ import io.intino.alexandria.Json;
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.languages.LanguageServerManager;
+import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.box.util.VersionNumberComparator;
 import io.quassar.editor.box.util.ZipHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 import io.quassar.editor.model.OperationResult;
-import io.quassar.editor.model.Project;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.lsp4j.services.LanguageServer;
@@ -54,12 +54,12 @@ public class ModelManager {
 		return models(language).stream().filter(w -> belongsTo(w, user)).collect(toList());
 	}
 
-	public List<Model> publicModels(Language language) {
-		return publicModels(language.name());
+	public List<Model> publicModels(Language language, String user) {
+		return publicModels(language.name(), user);
 	}
 
-	public List<Model> publicModels(String language) {
-		return models(language).stream().filter(Model::isPublic).collect(toList());
+	public List<Model> publicModels(String language, String user) {
+		return models(language).stream().filter(m -> m.isPublic() || PermissionsHelper.hasPermissions(m, user)).collect(toList());
 	}
 
 	public List<Model> privateModels(Language language, String user) {
@@ -84,6 +84,7 @@ public class ModelManager {
 
 	public Model get(String language, String id) {
 		try {
+			if (!new File(archetype.languages().models(Language.nameOf(language)), id).exists()) return null;
 			File properties = archetype.languages().properties(Language.nameOf(language), id);
 			if (!properties.exists()) return null;
 			return Json.fromJson(Files.readString(properties.toPath()), Model.class);
@@ -93,13 +94,13 @@ public class ModelManager {
 		}
 	}
 
-	public List<String> versions(Model model) {
-		List<File> versions = archetype.languages().versions(languageOf(model), model.name());
-		return versions.stream().map(f -> f.getName().replace(".zip", "")).sorted((o1, o2) -> VersionNumberComparator.getInstance().compare(o1, o2)).toList();
+	public List<String> releases(Model model) {
+		List<File> releases = archetype.languages().releases(languageOf(model), model.name());
+		return releases.stream().map(f -> f.getName().replace(".zip", "")).sorted((o1, o2) -> VersionNumberComparator.getInstance().compare(o1, o2)).toList();
 	}
 
-	public File version(Model model, String version) {
-		return archetype.languages().version(languageOf(model), model.name(), version);
+	public File release(Model model, String version) {
+		return archetype.languages().release(languageOf(model), model.name(), version);
 	}
 
 	public Model create(String name, String title, String description, Language language, String owner) {
@@ -119,20 +120,20 @@ public class ModelManager {
 		result.name(name);
 		result.owner(owner);
 		save(result);
-		new ModelContainerWriter(model, server(model, Model.DraftVersion)).clone(result, server(result, Model.DraftVersion));
+		new ModelContainerWriter(model, server(model, Model.DraftRelease)).clone(result, server(result, Model.DraftRelease));
 		return get(languageOf(model), name);
 	}
 
-	public boolean isWorkspaceEmpty(Model model, String version) {
-		File workspace = new File(workspace(model, version));
+	public boolean isWorkspaceEmpty(Model model, String release) {
+		File workspace = new File(workspace(model, release));
 		File[] files = workspace.exists() ? workspace.listFiles() : null;
 		return files == null || files.length == 0;
 	}
 
-	public URI workspace(Model model, String version) {
+	public URI workspace(Model model, String release) {
 		try {
 			File workspace = archetype.languages().workspace(languageOf(model), model.name());
-			if (version != null && !version.equals(Model.DraftVersion)) workspace = versionWorkSpace(model, version);
+			if (release != null && !release.equals(Model.DraftRelease)) workspace = releaseWorkSpace(model, release);
 			return workspace.getAbsoluteFile().getCanonicalFile().toURI();
 		} catch (IOException e) {
 			Logger.error(e);
@@ -140,25 +141,25 @@ public class ModelManager {
 		}
 	}
 
-	private File versionWorkSpace(Model model, String version) {
-		File versionFile = archetype.languages().version(languageOf(model), model.name(), version);
-		File workspace = archetype.tmp().versionWorkspace(languageOf(model), model.name(), version);
-		if (!versionFile.exists()) return workspace;
+	private File releaseWorkSpace(Model model, String release) {
+		File releaseFile = archetype.languages().release(languageOf(model), model.name(), release);
+		File workspace = archetype.tmp().releaseWorkspace(languageOf(model), model.name(), release);
+		if (!releaseFile.exists()) return workspace;
 		File[] files = workspace.listFiles();
 		if (files != null && files.length > 0) return workspace;
-		ZipHelper.extract(archetype.languages().version(languageOf(model), model.name(), version), workspace);
+		ZipHelper.extract(archetype.languages().release(languageOf(model), model.name(), release), workspace);
 		return workspace;
 	}
 
 	public ModelContainer.File copy(Model model, String filename, ModelContainer.File source) {
-		return new ModelContainerWriter(model, server(model, Model.DraftVersion)).copy(filename, source);
+		return new ModelContainerWriter(model, server(model, Model.DraftRelease)).copy(filename, source);
 	}
 
-	public OperationResult createVersion(Model model, String version) {
+	public OperationResult createRelease(Model model, String release) {
 		try {
-			if (isWorkspaceEmpty(model, Model.DraftVersion)) return OperationResult.Error("Workspace is empty");
-			File versionFile = archetype.languages().version(languageOf(model), model.name(), version);
-			ZipHelper.zipFolder(Paths.get(workspace(model, Model.DraftVersion)), versionFile.toPath());
+			if (isWorkspaceEmpty(model, Model.DraftRelease)) return OperationResult.Error("Workspace is empty");
+			File releaseFile = archetype.languages().release(languageOf(model), model.name(), release);
+			ZipHelper.zipFolder(Paths.get(workspace(model, Model.DraftRelease)), releaseFile.toPath());
 			return OperationResult.Success();
 		} catch (Exception e) {
 			Logger.error(e);
@@ -167,24 +168,24 @@ public class ModelManager {
 	}
 
 	public ModelContainer.File createFile(Model model, String name, String content, ModelContainer.File parent) {
-		return new ModelContainerWriter(model, server(model, Model.DraftVersion)).createFile(name, content, parent);
+		return new ModelContainerWriter(model, server(model, Model.DraftRelease)).createFile(name, content, parent);
 	}
 
 	public ModelContainer.File createFolder(Model model, String name, ModelContainer.File parent) {
-		return new ModelContainerWriter(model, server(model, Model.DraftVersion)).createFolder(name, parent);
+		return new ModelContainerWriter(model, server(model, Model.DraftRelease)).createFolder(name, parent);
 	}
 
 	public void save(Model model, ModelContainer.File file, String content) {
-		new ModelContainerWriter(model, server(model, Model.DraftVersion)).save(file, content);
+		new ModelContainerWriter(model, server(model, Model.DraftRelease)).save(file, content);
 	}
 
 	public ModelContainer.File rename(Model model, ModelContainer.File file, String newName) {
-		return new ModelContainerWriter(model, server(model, Model.DraftVersion)).rename(file, newName);
+		return new ModelContainerWriter(model, server(model, Model.DraftRelease)).rename(file, newName);
 	}
 
 	public ModelContainer.File move(Model model, ModelContainer.File file, ModelContainer.File directory) {
 		try {
-			return new ModelContainerWriter(model, server(model, Model.DraftVersion)).move(file, directory);
+			return new ModelContainerWriter(model, server(model, Model.DraftRelease)).move(file, directory);
 		} catch (Exception e) {
 			Logger.error(e);
 			return null;
@@ -210,7 +211,7 @@ public class ModelManager {
 	}
 
 	public void remove(Model model, ModelContainer.File file) {
-		new ModelContainerWriter(model, server(model, Model.DraftVersion)).remove(file);
+		new ModelContainerWriter(model, server(model, Model.DraftRelease)).remove(file);
 	}
 
 	public void remove(Model model) {
@@ -223,12 +224,12 @@ public class ModelManager {
 		}
 	}
 
-	public ModelContainer modelContainer(Model model, String version) {
-		return new ModelContainer(model, server(model, version));
+	public ModelContainer modelContainer(Model model, String release) {
+		return new ModelContainer(model, server(model, release));
 	}
 
-	public String content(Model model, String version, String uri) {
-		return new ModelContainerReader(model, server(model, version)).content(uri);
+	public String content(Model model, String release, String uri) {
+		return new ModelContainerReader(model, server(model, release)).content(uri);
 	}
 
 	private boolean belongsTo(Model model, String user) {
@@ -236,9 +237,9 @@ public class ModelManager {
 		return user != null && model.owner() != null && user.equals(model.owner());
 	}
 
-	private LanguageServer server(Model model, String version) {
+	private LanguageServer server(Model model, String release) {
 		try {
-			return serverManager.get(model, version);
+			return serverManager.get(model, release);
 		} catch (IOException | GitAPIException | URISyntaxException e) {
 			Logger.error(e);
 			return null;

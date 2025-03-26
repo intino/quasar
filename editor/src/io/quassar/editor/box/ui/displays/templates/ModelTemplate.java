@@ -4,7 +4,10 @@ import io.intino.alexandria.Resource;
 import io.intino.alexandria.logger.Logger;
 import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.utils.DelayerUtil;
+import io.intino.builderservice.schemas.Message;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.commands.Command;
+import io.quassar.editor.box.commands.Command.ExecutionResult;
 import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.box.schemas.IntinoFileBrowserItem;
@@ -12,6 +15,7 @@ import io.quassar.editor.box.ui.displays.IntinoDslEditor;
 import io.quassar.editor.box.ui.displays.IntinoFileBrowser;
 import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.PathHelper;
+import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.Model;
 
 import java.io.IOException;
@@ -19,7 +23,7 @@ import java.util.*;
 
 public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	private Model model;
-	private String version;
+	private String release;
 	private ModelContainer.File selectedFile;
 	private ModelContainer.File selectedNewFile;
 	private ModelContainer modelContainer;
@@ -34,20 +38,30 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		super(box);
 	}
 
-	public void open(String language, String model, String version, String file) {
+	public void open(String language, String model, String release, String file) {
 		this.model = box().modelManager().get(language, model);
-		this.version = version != null ? version : Model.DraftVersion;
-		this.modelContainer = this.model != null ? box().modelManager().modelContainer(this.model, this.version) : null;
+		this.release = release != null ? release : Model.DraftRelease;
+		this.modelContainer = this.model != null ? box().modelManager().modelContainer(this.model, this.release) : null;
 		this.selectedFile = file != null && modelContainer != null ? modelContainer.file(file) : null;
+		refresh();
+	}
+
+	@Override
+	public void didMount() {
+		super.didMount();
+		createFileBrowser();
+		createFileEditor();
 		refresh();
 	}
 
 	@Override
 	public void init() {
 		super.init();
+		initHeader();
 		initFileBrowser();
 		initFileEditor();
 		initFileModifiedDialog();
+		console.onClose(e -> consoleBlock.hide());
 		workspaceDialog.onOpen(e -> refreshWorkspaceDialog());
 	}
 
@@ -66,10 +80,12 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		refreshFileEditor();
 	}
 
+	private void initHeader() {
+		headerStamp.onPublishFailure((m, e) -> showConsole(e));
+	}
+
 	private void initFileBrowser() {
 		initFileBrowserToolbar();
-		settingsDialog.onRename(e -> notifier.dispatch(PathHelper.modelPath(model)));
-		settingsDialog.onSave(e -> refresh());
 		createFileBrowser();
 	}
 
@@ -78,6 +94,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		browser.onOpen(this::open);
 		browser.onRename(this::rename);
 		browser.onMove(this::move);
+		intinoFileBrowser.clear();
 		intinoFileBrowser.display(browser);
 	}
 
@@ -96,12 +113,6 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		});
 		fileDialog.onOpen(e -> refreshFileDialog());
 		removeFileTrigger.onExecute(e -> removeFile());
-		settingsTrigger.onExecute(e -> openSettingsDialog());
-	}
-
-	private void openSettingsDialog() {
-		settingsDialog.model(model);
-		settingsDialog.open();
 	}
 
 	private void initFileEditor() {
@@ -110,6 +121,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 
 	private void createFileEditor() {
 		IntinoDslEditor editor = new IntinoDslEditor(box());
+		intinoDslEditor.clear();
 		intinoDslEditor.display(editor);
 		editor.onFileModified(e -> {
 			if (selectedFileIsModified) return;
@@ -273,15 +285,16 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 
 	private void refreshHeader() {
 		headerStamp.model(model);
-		headerStamp.version(version);
+		headerStamp.release(release);
+		headerStamp.file(selectedFile);
 		headerStamp.refresh();
 	}
 
 	private void refreshFileBrowser() {
 		IntinoFileBrowser browser = intinoFileBrowser.display();
-		browser.itemAddress(PathHelper.modelPath(model, version) + "&file=:file");
+		browser.itemAddress(PathHelper.modelPath(model, release) + "&file=:file");
 		browser.items(fileBrowserItems());
-		if (selectedFile != null) browser.select(itemOf(selectedFile));
+		browser.select(selectedFile != null ? itemOf(selectedFile) : null);
 		browser.refresh();
 	}
 
@@ -294,14 +307,16 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		if (!validFile) return;
 		IntinoDslEditor display = intinoDslEditor.display();
 		display.model(model);
-		display.version(version);
+		display.release(release);
 		display.file(selectedFile.name(), selectedFile.uri(), selectedFile.extension(), selectedFile.language());
 		display.refresh();
 	}
 
 	private void refreshWorkspaceDialog() {
-		removeFileTrigger.readonly(selectedFile == null);
-		editFilenameTrigger.readonly(selectedFile == null);
+		addFileTrigger.readonly(!PermissionsHelper.canEdit(model, release));
+		addFolderTrigger.readonly(!PermissionsHelper.canEdit(model, release));
+		editFilenameTrigger.readonly(selectedFile == null || !PermissionsHelper.canEdit(model, release));
+		removeFileTrigger.readonly(selectedFile == null || !PermissionsHelper.canEdit(model, release));
 	}
 
 	private void open(IntinoFileBrowserItem item) {
@@ -336,13 +351,24 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	}
 
 	private void reload() {
-		modelContainer = box().modelManager().modelContainer(model, version);
+		modelContainer = box().modelManager().modelContainer(model, release);
 		refresh();
 	}
 
 	private void refreshFileEditorToolbar() {
 		//fileModifiedMessage.visible(selectedFile != null && selectedFileIsModified);
 		//saveFile.readonly(selectedFile == null || !selectedFileIsModified);
+	}
+
+	private void showConsole(ExecutionResult result) {
+		showConsole(result.messages());
+	}
+
+	private void showConsole(List<Message> messages) {
+		consoleBlock.show();
+		console.messages(messages);
+		console.refresh();
+		console.show();
 	}
 
 }

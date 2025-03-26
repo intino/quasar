@@ -7,7 +7,7 @@ import io.quassar.editor.box.util.PermissionsHelper;
 public class ModelPage extends AbstractModelPage {
 	public String language;
 	public String model;
-	public String version;
+	public String release;
 	public String file;
 
 	@Override

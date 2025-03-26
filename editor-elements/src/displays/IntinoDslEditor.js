@@ -19,7 +19,7 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
 		this.requester = new IntinoDslEditorRequester(this);
 		this.loading = React.createRef();
 		this.state = {
-		    info: { dslName: "meta", modelName: "meta", modelVersion: "Draft" },
+		    info: { dslName: "meta", modelName: "meta", modelRelease: "Draft" },
 		    file: { name: "default.tara", uri: "default.tara", content: "", language: "tara" }
 		};
 	};
@@ -64,8 +64,9 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
         const theme = Theme.get();
 	    return {
             darkMode: theme.isDark(),
-            webSocketUrl: Application.configuration.baseUrl.replace("http", "ws") + "/dsl/tara?dsl=" + this.state.info.dslName + "&model=" + this.state.info.modelName + "&model-version=" + this.state.info.modelVersion,
+            webSocketUrl: Application.configuration.baseUrl.replace("http", "ws") + "/dsl/tara?dsl=" + this.state.info.dslName + "&model=" + this.state.info.modelName + "&model-release=" + this.state.info.modelRelease,
             file: this.state.file,
+            readonly: this.state.info.readonly,
         }
     };
 

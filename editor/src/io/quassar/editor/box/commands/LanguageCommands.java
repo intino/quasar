@@ -25,10 +25,11 @@ public class LanguageCommands extends Commands {
 		return command.execute();
 	}
 
-	public void save(Language language, String description, Language.Level level, List<String> tags, File logo, String username) {
+	public void save(Language language, String description, String fileExtension, Language.Level level, List<String> tags, File logo, String username) {
 		SaveLanguageCommand command = setup(new SaveLanguageCommand(box), username);
 		command.language = language;
 		command.description = description;
+		command.fileExtension = fileExtension;
 		command.level = level;
 		command.tags = tags;
 		command.logo = logo;

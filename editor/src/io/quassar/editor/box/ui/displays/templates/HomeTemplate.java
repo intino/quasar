@@ -34,9 +34,9 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 		if (languagePage.languageStamp != null) languagePage.languageStamp.open(language, tab, view);
 	}
 
-	public void openModel(String language, String model, String version, String file) {
+	public void openModel(String language, String model, String release, String file) {
 		openPage(Page.Model);
-		if (modelPage.modelStamp != null) modelPage.modelStamp.open(language, model, version, file);
+		if (modelPage.modelStamp != null) modelPage.modelStamp.open(language, model, release, file);
 	}
 
 	private boolean openPage(Page page) {

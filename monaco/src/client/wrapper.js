@@ -47,6 +47,8 @@ export const runClient = async () => {
         automaticLayout: true,
         wordBasedSuggestions: 'off',
         theme: "vs-dark",
+        readOnly: parameters.readonly,
+        domReadOnly: parameters.readonly
     });
     const model = monaco.editor.createModel(file.content, file.language.toLowerCase(), monaco.Uri.parse(file.uri));
     editor.setModel(model);

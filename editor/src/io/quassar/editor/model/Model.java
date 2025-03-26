@@ -11,10 +11,10 @@ public class Model {
 	private String language;
 	private String owner;
 	private Instant createDate;
-	private final List<String> collaborators = new ArrayList<>();
+	private List<String> collaborators = new ArrayList<>();
 	private boolean isPrivate = false;
 
-	public static final String DraftVersion = "draft";
+	public static final String DraftRelease = "draft";
 	public static final String DefaultOwner = "anonymous";
 
 	public String name() {
@@ -75,6 +75,10 @@ public class Model {
 		return collaborators;
 	}
 
+	public void collaborators(List<String> value) {
+		this.collaborators = new ArrayList<>(value);
+	}
+
 	public void add(String collaborator) {
 		this.collaborators.add(collaborator);
 	}
@@ -104,4 +108,7 @@ public class Model {
 		return result;
 	}
 
+	public boolean isDraft(String release) {
+		return release != null && release.equals(Model.DraftRelease);
+	}
 }

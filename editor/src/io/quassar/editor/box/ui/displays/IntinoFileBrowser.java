@@ -69,7 +69,7 @@ public class IntinoFileBrowser extends AbstractIntinoFileBrowser<EditorBox> {
 		super.refresh();
 		if (items == null) return;
 		notifier.refresh(info());
-		if (selectedItem != null) notifier.select(selectedItem);
+		notifier.select(selectedItem);
 	}
 
 	private IntinoFileBrowserInfo info() {

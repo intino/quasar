@@ -36,7 +36,7 @@ public class CreateModelCommand extends Command<Model> {
 		try {
 			InputStream stream = CreateModelCommand.class.getResourceAsStream("/readme.template.md");
 			String content = stream != null ? IOUtils.toString(stream, StandardCharsets.UTF_8) : "";
-			box.modelManager().createFile(model, "readme.mb", content, null);
+			box.modelManager().createFile(model, "readme.md", content, null);
 		} catch (IOException e) {
 			Logger.error(e);
 		}

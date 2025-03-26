@@ -75,7 +75,7 @@ public class LanguageManager {
 	}
 
 	public boolean exists(String language) {
-		return archetype.languages().properties(Language.nameOf(language)).exists();
+		return new File(archetype.languages().root(), Language.nameOf(language)).exists();
 	}
 
 	public Language getDefault() {
@@ -111,6 +111,7 @@ public class LanguageManager {
 
 	private Language languageOf(String id) {
 		try {
+			if (!exists(id)) return null;
 			File properties = archetype.languages().properties(Language.nameOf(id));
 			if (!properties.exists()) return null;
 			Language language = Json.fromJson(Files.readString(properties.toPath()), Language.class);

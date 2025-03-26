@@ -10,6 +10,8 @@ Artifact(groupId = "io.quassar", version = "1.0.0") editor
 		Compile("io.intino.alexandria", "ui-framework", "6.3.7")
 			Exclude("io.intino.tara","language")
 		Compile("io.intino", "language-server", "1.0.0-SNAPSHOT")
+		Compile("io.intino", "quassar-builder-service-accessor", "1.0.0-SNAPSHOT")
+		Compile("org.apache.commons", "commons-compress", "1.21")
 
 		Web("io.quassar", "editor-elements", "1.0.0")
 
@@ -23,6 +25,9 @@ Artifact(groupId = "io.quassar", version = "1.0.0") editor
 	Parameter("title")
 	Parameter("federation-url")
 	Parameter("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
+	Parameter("builder-service-url", "http://localhost:9002")
+	Parameter("tara-builder", "io.intino.tara.builder:1.3.0")
+	Parameter("quassar-builder", "quassar625/io.quassar.quassar-builder:1.0.0")
 
 RunConfiguration local
 	Argument("port", "8080")
@@ -30,3 +35,4 @@ RunConfiguration local
 	Argument("title", "Quassar")
 	Argument("federation-url", "")
 	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
+	Argument("builder-service-url", "http://localhost:9002")

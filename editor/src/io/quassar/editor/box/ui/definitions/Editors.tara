@@ -1,5 +1,6 @@
 dsl Konos
 
+use Users
 use UI
 use Theme
 
@@ -64,16 +65,16 @@ Template(layout=Horizontal) modelSettingsDialog
 					Block
 						Text(value="Name", translate=true, format=h5 middleAirBottom)
 						Text(format=doubleAirBottom) modelNameField as Editable(helperText="Only alphanumeric characters are allowed") Focused
-					Block(format=airTop)
+					Block(format=doubleAirTop)
 						Text(value="Title", translate=true, format=h5 middleAirBottom)
-						Text(format=doubleAirBottom) modelTitleField as Editable
-					Block(format=airTop)
+						Text modelTitleField as Editable
+					Block(format=doubleAirTop)
 						Text(value="Description", translate=true, format=h5 middleAirBottom)
-						Text(format=doubleAirBottom) modelDescriptionField as Editable Memo(height=4Rows)
-					Block(format=airTop)
+						Text modelDescriptionField as Editable Memo(height=4Rows)
+					Block(format=doubleAirTop)
 						Text(value="Model access", translate=true, format=h5 middleAirBottom)
-						Switch(title="Model is private", format=doubleAirBottom) modelAccessTypeField
-					Block(format=airTop)
+						Switch(title="Model is private") modelAccessTypeField
+					Block(format=doubleAirTop)
 						Text(value="Remove model", translate=true, format=h5)
 						Text(value="Removed models cannot be restored!", format=greyColor airBottom, translate=true)
 						Block(layout=Horizontal) > Button(title="Remove model...", format=airRight redBackground whiteColor, highlight=Fill) removeModel as Action Readonly Affirmed("Are you sure to remove model?")
@@ -82,7 +83,10 @@ Template(layout=Horizontal) modelSettingsDialog
 					Block as Absolute(width=170px)
 						Image logoField as Editable Absolute(height=150px, width=150px)
 					Block(layout=Vertical Flexible, format=doubleAirLeft)
-						Block(format=airTop)
+						Block
+							Text(value="File extension", translate=true, format=h5 middleAirBottom)
+							Text languageFileExtensionField as Editable
+						Block(format=doubleAirTop)
 							Text(value="Level", translate=true, format=h5 middleAirBottom)
 							Selector languageLevelSelector as RadioBox
 								Text(value="Level 1") level1Option as Option
@@ -93,7 +97,8 @@ Template(layout=Horizontal) modelSettingsDialog
 							Block(layout=Horizontal, format=airTop) > Button(title="Add tag", size=Small, highlight=Outline) as OpenDialog(addTagDialog)
 
         		Block(layout=Vertical Flexible, format=doubleTopSpaced) collaboratorsBlock as Relative(width=95%) Conditional(settingsTabSelector.collaboratorsOption)
-
+					Text(value="Users that will have access", translate=true, format=h5 middleAirBottom)
+					TemplateStamp(template=collaboratorsTemplate) collaboratorsStamp
 		Divider
         Block(layout=Horizontal)
         	Block(layout=Horizontal StartJustified Flexible) > Button(title="Close", size=Small, format=airRight) as CloseDialog(dialog)

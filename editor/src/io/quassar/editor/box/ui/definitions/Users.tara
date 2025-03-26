@@ -1,0 +1,30 @@
+dsl Konos
+
+use Theme
+
+Template(layout=Vertical Flexible) collaboratorsTemplate
+
+	Block(visible=false, format=middleAirBottom) noCollaboratorsBlock > Text(value="No collaborators have been added yet", format=message, translate=true)
+	Block(visible=false) collaboratorsBlock > TemplateStamp(template=collaboratorItemTemplate) collaborators as Multiple
+
+	Block(layout=Horizontal Center StartJustified, format=doubleAirTop) as Absolute(width=400px)
+		Selector(format=doubleAirRight) collaboratorSelector as CollectionBox(placeholder="Select a user to add as collaborator")
+			List(itemClass="io.quassar.editor.model.User") collaboratorSelectorList as Selectable
+				Mold > Item(height = 20px) collaboratorSelectorItem > Block > Text name
+
+Template collaboratorItemTemplate
+	Block(format=item userItem)
+		Block(layout=Horizontal)
+			Block(layout=Vertical Flexible CenterJustified) > Text(format=h5 bold) name
+			Block(layout=Horizontal Center EndJustified)
+				Block(layout=Horizontal Center, format=bringToFront)
+					Link(title="Remove", format=redColor middleAirBottom upperCase) removeUser as Action
+
+Template addCollaboratorDialog
+
+	Dialog(title="Properties") dialog as Absolute(width=450px, height=300px)
+        Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(dialog)
+            Button(title="Add", size=Small, highlight=Fill) add as Action

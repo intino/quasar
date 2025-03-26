@@ -101,5 +101,7 @@
     <orderEntry type="library" name="Intino: com.zaxxer:HikariCP-java7:2.4.13" level="project" />
     <orderEntry type="library" name="Intino: org.quartz-scheduler:quartz-jobs:2.3.2" level="project" />
     <orderEntry type="module" module-name="editor-elements" />
+    <orderEntry type="library" name="Intino: io.intino:quassar-builder-service-accessor:1.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Intino: org.apache.commons:commons-compress:1.21" level="project" />
   </component>
 </module>
