@@ -8,6 +8,7 @@ import io.quassar.editor.model.Model;
 import io.quassar.editor.model.User;
 
 import java.util.List;
+import java.util.Map;
 
 public class ModelCommands extends Commands {
 
@@ -67,10 +68,24 @@ public class ModelCommands extends Commands {
 		command.execute();
 	}
 
+	public void save(Model model, String title, String username) {
+		SaveModelTitleCommand command = setup(new SaveModelTitleCommand(box), username);
+		command.model = model;
+		command.title = title;
+		command.execute();
+	}
+
 	public void save(Model model, List<User> collaborators, String username) {
 		SaveModelCollaboratorsCommand command = setup(new SaveModelCollaboratorsCommand(box), username);
 		command.model = model;
 		command.collaborators = collaborators;
+		command.execute();
+	}
+
+	public void save(Model model, Map<String, String> tokens, String username) {
+		SaveModelTokensCommand command = setup(new SaveModelTokensCommand(box), username);
+		command.model = model;
+		command.tokens = tokens;
 		command.execute();
 	}
 
@@ -121,6 +136,12 @@ public class ModelCommands extends Commands {
 		command.model = model;
 		command.file = file;
 		command.execute();
+	}
+
+	public Command.ExecutionResult build(Model model, String username) {
+		BuildModelCommand command = setup(new BuildModelCommand(box), username);
+		command.model = model;
+		return command.execute();
 	}
 
 	public Command.ExecutionResult createRelease(Model model, String version, String username) {

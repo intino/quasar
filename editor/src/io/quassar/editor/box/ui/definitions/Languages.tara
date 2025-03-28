@@ -10,10 +10,7 @@ Template languagesTemplate as Relative(height=100%, width=100%)
 	Block(layout=Vertical Flexible, format=whiteBackground) bodyBlock as Relative(width=100%) AutoSize
 		Block(layout=Vertical Flexible Center) contentBlock as Relative(width=80%)
 			Block(layout=Vertical Flexible, format=whiteBackground) as Relative(width=100%, height=100%)
-				Block(layout=Vertical Flexible) homeBlock as Conditional
-					HtmlViewer homeStamp
-
-				Block(layout=Vertical Flexible, format=doubleSpaced, visible=false) languagesBlock as Conditional
+				Block(layout=Vertical Flexible, format=doubleSpaced)
 					Magazine(itemClass="io.quassar.editor.model.Language") languagesMagazine
 						noItemsMessage = "No languages"
 						Mold
@@ -44,7 +41,7 @@ Template languageTemplate as Relative(height=100%, width=100%, offsetHeight=2px)
 		Spinner(mode=Ring, color="secondary")
 		Text(value="" , translate=true, format=h3 airTop) openingMessage
 
-	Block(layout=Vertical Flexible, format=whiteBackground) bodyBlock as Relative(width=100%) AutoSize
+	Block(layout=Vertical Flexible, format=whiteBackground) bodyBlock as Relative(width=100%)
 
 		Block(layout=Vertical Flexible CenterCenter, visible=false) notFoundBlock
 			Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
@@ -52,10 +49,17 @@ Template languageTemplate as Relative(height=100%, width=100%, offsetHeight=2px)
 					Image(value="/logo-expanded.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=340px, height=80px)
 					Text(value="Language not found", format=h4 airTop textCentered, translate=true) message
 
-		Block(layout=Vertical Flexible Center, visible=false) contentBlock as Relative(width=80%)
-			Block(layout=Vertical Flexible, format=whiteBackground) as Relative(width=100%, height=100%)
-				Block(layout=Vertical Flexible) homeBlock as Conditional
-					HtmlViewer homeStamp
+		Block(layout=Vertical Flexible Center) contentBlock as Relative(width=100%)
 
-				Block(layout=Vertical Flexible, format=doubleSpaced) modelsBlock as Conditional
+			Block(layout=Horizontal Flexible, format=whiteBackground) as Relative(width=100%, height=100%) Resizable
+
+				Block(layout=Vertical Flexible, format=doubleLeftSpaced doubleRightSpaced bottomSpaced topSpaced) modelsBlock as Relative(width=55%)
 					TemplateStamp(template=modelsTemplate) modelsStamp
+
+				Block(layout=Vertical Flexible) homeBlock as Relative(width=45%)
+					Block(layout=Horizontal StartJustified, format=bottomLightBordered middleTopSpaced middleBottomSpaced doubleLeftSpaced)
+						Image(format=airRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) logo as Absolute(height=50px)
+						Text(format=h2) title
+
+					Block(layout=Vertical Flexible, format=doubleLeftSpaced doubleRightSpaced doubleBottomSpaced) as AutoSize
+						HtmlViewer(format=fullHeight) homeStamp

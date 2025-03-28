@@ -25,9 +25,12 @@ import java.util.function.Consumer;
 public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> {
 	private Model model;
 	private Set<String> tagSet;
+	private Map<String, String> tokensMap;
 	private Consumer<Model> renameListener;
 	private Consumer<Model> saveListener;
+	private Boolean accessType = null;
 	private List<User> collaboratorList = null;
+	private String token;
 
 	public ModelSettingsDialog(EditorBox box) {
 		super(box);
@@ -58,9 +61,14 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		languageBlock.onShow(e -> refreshLanguageBlock());
 		collaboratorsBlock.onInit(e -> initCollaboratorsBlock());
 		collaboratorsBlock.onShow(e -> refreshCollaboratorsBlock());
+		accessBlock.onInit(e -> initAccessBlock());
+		accessBlock.onShow(e -> refreshAccessBlock());
 		dialog.onOpen(e -> refreshDialog());
 		saveSettings.onExecute(e -> saveSettings());
 		addTagDialog.onOpen(e -> refreshTagDialog());
+		addToken.onExecute(e -> addToken());
+		generateToken.onExecute(e -> generateToken());
+		addTokenDialog.onOpen(e -> refreshTokenDialog());
 	}
 
 	private void refreshDialog() {
@@ -78,7 +86,6 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		modelNameField.value(model.name());
 		modelTitleField.value(ModelHelper.label(model, language(), box()));
 		modelDescriptionField.value(model.description());
-		modelAccessTypeField.state(model.isPrivate() ? ToggleEvent.State.On : ToggleEvent.State.Off);
 		removeModel.readonly(!PermissionsHelper.canRemove(model, session(), box()));
 	}
 
@@ -134,6 +141,59 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		collaboratorsStamp.refresh();
 	}
 
+	private void initAccessBlock() {
+		modelAccessTypeField.onToggle(e -> accessBlock.tokensBlock.visible(e.state() == ToggleEvent.State.On));
+		applicationField.onEnterPress(e -> addToken());
+	}
+
+	private void refreshAccessBlock() {
+		accessType = model.isPrivate();
+		modelAccessTypeField.state(model.isPrivate() ? ToggleEvent.State.On : ToggleEvent.State.Off);
+		accessBlock.tokensBlock.visible(model.isPrivate());
+		tokensMap = new HashMap<>(model.tokens());
+		refreshTokens();
+	}
+
+	private void refreshTokens() {
+		tokens.clear();
+		tokensMap.keySet().stream().sorted().forEach(e -> fill(e, tokens.add()));
+	}
+
+	private void fill(String app, TokenEditor display) {
+		display.app(app);
+		display.onRemove(o -> removeToken(app));
+		display.refresh();
+	}
+
+	private void removeToken(String app) {
+		tokensMap.remove(app);
+		refreshTokens();
+	}
+
+	private void addToken() {
+		if (!DisplayHelper.check(applicationField, this::translate)) return;
+		if (token == null || token.isEmpty()) {
+			notifyUser("Generate token to continue", UserMessage.Type.Warning);
+			return;
+		}
+		addTokenDialog.close();
+		tokensMap.put(applicationField.value(), tokenField.value());
+		refreshTokens();
+	}
+
+	private void generateToken() {
+		this.token = ModelHelper.proposeToken();
+		tokenField.value(token);
+		copyToken.text(token);
+	}
+
+	private void refreshTokenDialog() {
+		if (token == null) this.token = ModelHelper.proposeToken();
+		applicationField.value(null);
+		tokenField.value(token);
+		copyToken.text(token);
+	}
+
 	private void saveSettings() {
 		if (!check()) return;
 		dialog.close();
@@ -177,14 +237,21 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 
 	private void saveModel() {
 		box().commands(ModelCommands.class).save(model, modelNameField.value(), modelTitleField.value(), modelDescriptionField.value(), username());
-		boolean isPrivate = modelAccessTypeField.state() == ToggleEvent.State.On;
-		saveAccessType(isPrivate);
+		saveAccessType();
 		saveCollaborators();
 	}
 
-	private void saveAccessType(boolean isPrivate) {
+	private void saveAccessType() {
+		if (accessType == null) return;
+		boolean isPrivate = modelAccessTypeField.state() == ToggleEvent.State.On;
 		if (isPrivate) box().commands(ModelCommands.class).makePrivate(model, username());
 		else box().commands(ModelCommands.class).makePublic(model, username());
+		saveTokens();
+	}
+
+	private void saveTokens() {
+		if (tokensMap == null) return;
+		box().commands(ModelCommands.class).save(model, tokensMap, username());
 	}
 
 	private void saveCollaborators() {

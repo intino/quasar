@@ -226,36 +226,6 @@
     }
   },
   "definitions": {
-    "Message": {
-      "required": [
-        "type",
-        "kind",
-        "content",
-        "uri",
-        "line",
-        "column"
-      ],
-      "properties": {
-        "type": {
-          "type": "string"
-        },
-        "kind": {
-          "type": "string"
-        },
-        "content": {
-          "type": "string"
-        },
-        "uri": {
-          "type": "string"
-        },
-        "line": {
-          "type": "integer"
-        },
-        "column": {
-          "type": "integer"
-        }
-      }
-    },
     "OperationResult": {
       "required": [
         "state",
@@ -291,29 +261,33 @@
         }
       }
     },
-    "BuilderInfo": {
+    "Message": {
       "required": [
-        "imageURL",
-        "operations",
-        "targetLanguages",
-        "creationDate",
-        "properties"
+        "type",
+        "kind",
+        "content",
+        "uri",
+        "line",
+        "column"
       ],
       "properties": {
-        "imageURL": {
+        "type": {
           "type": "string"
         },
-        "operations": {
+        "kind": {
           "type": "string"
         },
-        "targetLanguages": {
+        "content": {
           "type": "string"
         },
-        "creationDate": {
+        "uri": {
           "type": "string"
         },
-        "properties": {
-          "type": "java.util.map"
+        "line": {
+          "type": "integer"
+        },
+        "column": {
+          "type": "integer"
         }
       }
     },
@@ -362,6 +336,32 @@
         },
         "generationPackage": {
           "type": "string"
+        }
+      }
+    },
+    "BuilderInfo": {
+      "required": [
+        "imageURL",
+        "operations",
+        "targetLanguages",
+        "creationDate",
+        "properties"
+      ],
+      "properties": {
+        "imageURL": {
+          "type": "string"
+        },
+        "operations": {
+          "type": "string"
+        },
+        "targetLanguages": {
+          "type": "string"
+        },
+        "creationDate": {
+          "type": "string"
+        },
+        "properties": {
+          "type": "java.util.map"
         }
       }
     }

@@ -11,6 +11,7 @@ import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
@@ -30,6 +31,7 @@ public class LanguageServerWebSocketHandler implements WebSocketListener {
 	public void onWebSocketConnect(Session session) {
 		try {
 			synchronized (monitor) {
+				session.setIdleTimeout(Duration.ofHours(1));
 				PipedInputStream clientInput = new PipedInputStream();
 				clientOutput = new PipedOutputStream(clientInput);
 				serverInput = new PipedInputStream();

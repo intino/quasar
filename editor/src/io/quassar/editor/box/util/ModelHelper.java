@@ -1,13 +1,10 @@
 package io.quassar.editor.box.util;
 
-import io.intino.alexandria.Scale;
-import io.intino.alexandria.Timetag;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.ui.types.VersionType;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
@@ -22,8 +19,11 @@ public class ModelHelper {
 	}
 
 	public static String proposeName() {
-		String uuid = UUID.randomUUID().toString();
-		return uuid.substring(uuid.lastIndexOf("-")+1) + new Timetag(Instant.now(), Scale.Month).value();
+		return RandomNameGenerator.generate();
+	}
+
+	public static String proposeToken() {
+		return UUID.randomUUID().toString();
 	}
 
 	public static boolean isMetamodel(Model model, EditorBox box) {
@@ -33,7 +33,7 @@ public class ModelHelper {
 
 	private static final String VersionPatternMask = "%s.%s.%s";
 	public static String nextVersion(Model model, VersionType type, EditorBox box) {
-		List<String> lastVersion = box.modelManager().releases(model).stream().sorted((o1, o2) -> VersionNumberComparator.getInstance().compare(o1, o2)).toList();
+		List<String> lastVersion = box.modelManager().releases(model).stream().sorted((o1, o2) -> VersionNumberComparator.getInstance().compare(o1, o2)).filter(v -> !v.equals(Model.DraftRelease)).toList();
 		if (lastVersion.isEmpty()) return FirstReleaseVersion;
 		String[] parts = lastVersion.getLast().split("\\.");
 		if (type == VersionType.MajorVersion) return String.format(VersionPatternMask, Integer.parseInt(parts[0])+1, 0, 0);
@@ -45,4 +45,5 @@ public class ModelHelper {
 	public static boolean validReleaseName(String version, Function<String, String> translator) {
 		return version != null && !version.equals(translator.apply(Model.DraftRelease)) && VersionPattern.matcher(version).matches();
 	}
+
 }

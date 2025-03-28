@@ -3,9 +3,7 @@ package io.quassar.editor.box.util;
 import io.intino.alexandria.ui.services.push.UISession;
 import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.box.ui.types.LanguageTab;
-import io.quassar.editor.box.ui.types.LanguageView;
 import io.quassar.editor.box.ui.types.LanguagesTab;
-import io.quassar.editor.box.ui.types.LanguagesView;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
@@ -24,14 +22,7 @@ public class PathHelper {
 	}
 
 	public static String languagesPath(String address, LanguagesTab tab) {
-		return address + "?tab=" + (tab != null ? tab.name().toLowerCase() : LanguagesTab.Languages.name().toLowerCase());
-	}
-
-	public static String languagesPath(String address, LanguagesTab tab, LanguagesView view) {
-		String result = address;
-		result += "?tab=" + (tab != null ? tab.name().toLowerCase() : LanguagesTab.Languages.name().toLowerCase());
-		result += (view != null ? "&view=" + view.name().toLowerCase() : "");
-		return result;
+		return address + "?tab=" + (tab != null ? tab.name().toLowerCase() : LanguagesTab.PublicLanguages.name().toLowerCase());
 	}
 
 	public static String languageUrl(Language language, UISession session) {
@@ -62,13 +53,6 @@ public class PathHelper {
 		return address.replace(":language", language) + (tab != null ? "?tab=" + tab.name().toLowerCase() : "");
 	}
 
-	public static String languagePath(String address, Language language, LanguageTab tab, LanguageView view) {
-		String result = address.replace(":language", language.name());
-		result += "?tab=" + (tab != null ? tab.name().toLowerCase() : LanguageTab.Models.name().toLowerCase());
-		result += (view != null ? "&view=" + view.name().toLowerCase() : "");
-		return result;
-	}
-
 	public static String modelUrl(Model model, UISession session) {
 		return session.browser().baseUrl() + "/languages/" + Language.nameOf(model.language()) + "/models/" + model.name();
 	}
@@ -93,11 +77,11 @@ public class PathHelper {
 	}
 
 	public static String modelPath(Model model, String release) {
-		return modelPath(model, release, (ModelContainer.File) null);
+		return modelPath(model, release, null);
 	}
 
 	public static String modelPath(Model model, String release, ModelContainer.File file) {
-		return modelPath("/languages/:language/models/:model", model, release, file != null ? file.name() : null);
+		return modelPath("/languages/:language/models/:model", model, release, file != null ? file.uri() : null);
 	}
 
 }

@@ -10,4 +10,8 @@ public class Formatters {
 		return value != null ? value.substring(0, 1).toUpperCase() + value.substring(1) : null;
 	}
 
+	public static String normalizeLanguageName(String value) {
+		return Formatters.firstUpperCase(StringHelper.snakeCaseToCamelCase(StringHelper.kebabCaseToCamelCase(value)));
+	}
+
 }

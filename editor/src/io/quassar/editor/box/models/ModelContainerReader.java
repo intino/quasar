@@ -3,6 +3,7 @@ package io.quassar.editor.box.models;
 import io.intino.alexandria.logger.Logger;
 import io.intino.ls.IntinoLanguageServer;
 import io.quassar.editor.box.util.WorkspaceHelper;
+import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.WorkspaceSymbol;
@@ -18,11 +19,13 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class ModelContainerReader {
+	private final Language language;
 	private final Model model;
 	private final LanguageServer server;
 
-	public ModelContainerReader(Model model, LanguageServer server) {
+	public ModelContainerReader(Language language, Model model, LanguageServer server) {
 		this.model = model;
+		this.language = language;
 		this.server = server;
 	}
 
@@ -35,6 +38,18 @@ public class ModelContainerReader {
 			Logger.error(e);
 			return Collections.emptyList();
 		}
+	}
+
+	public List<ModelContainer.File> modelFiles() {
+		return files().stream().filter(f -> f.name().contains(language.fileExtension()) || (f.isDirectory() && !isResourceFile(f))).toList();
+	}
+
+	public List<ModelContainer.File> resourceFiles() {
+		return files().stream().filter(this::isResourceFile).toList();
+	}
+
+	public boolean isResourceFile(ModelContainer.File file) {
+		return file.uri().startsWith(Model.ResourcesDirectory);
 	}
 
 	public String content(String uri) {

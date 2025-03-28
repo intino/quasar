@@ -10,11 +10,9 @@ import io.quassar.editor.box.commands.Command.ExecutionResult;
 import io.quassar.editor.box.commands.LanguageCommands;
 import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.ui.types.VersionType;
-import io.quassar.editor.box.util.Formatters;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
-import io.quassar.editor.model.OperationResult;
 
 import java.io.File;
 import java.io.IOException;

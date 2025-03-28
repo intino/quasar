@@ -7,6 +7,7 @@ import io.quassar.editor.box.schemas.IntinoFileBrowserMoveInfo;
 import io.quassar.editor.box.schemas.IntinoFileBrowserRenameInfo;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -18,6 +19,7 @@ public class IntinoFileBrowser extends AbstractIntinoFileBrowser<EditorBox> {
 	private BiConsumer<IntinoFileBrowserItem, IntinoFileBrowserItem> moveListener;
 	private String itemsAddress;
 	private IntinoFileBrowserItem selectedItem;
+	private String rootItem = null;
 
 	public IntinoFileBrowser(EditorBox box) {
 		super(box);
@@ -25,6 +27,10 @@ public class IntinoFileBrowser extends AbstractIntinoFileBrowser<EditorBox> {
 
 	public void itemAddress(String itemAddress) {
 		this.itemsAddress = itemAddress;
+	}
+
+	public void rootItem(String value) {
+		this.rootItem = value;
 	}
 
 	public void items(List<IntinoFileBrowserItem> items) {
@@ -73,21 +79,24 @@ public class IntinoFileBrowser extends AbstractIntinoFileBrowser<EditorBox> {
 	}
 
 	private IntinoFileBrowserInfo info() {
-		return new IntinoFileBrowserInfo().itemAddress(itemsAddress).items(withRoot(fix(items)));
+		return new IntinoFileBrowserInfo().rootItem(rootItem).itemAddress(itemsAddress).items(withRoot(fix(items)));
 	}
 
 	private List<IntinoFileBrowserItem> fix(List<IntinoFileBrowserItem> items) {
-		items.forEach(IntinoFileBrowser::fix);
-		return items;
+		List<IntinoFileBrowserItem> result = new ArrayList<>(items.stream().sorted(Comparator.comparing(o -> o.uri().toLowerCase())).toList());
+		for (int i=0; i<result.size(); i++) fix(result.get(i), i);
+		return result;
 	}
 
-	private static void fix(IntinoFileBrowserItem item) {
+	private static void fix(IntinoFileBrowserItem item, int index) {
 		List<String> parents = new ArrayList<>();
 		for (int i = 0; i < item.parents().size(); i++) parents.add(String.join("/", item.parents().subList(0, i + 1)));
+		item.id(index);
 		item.parents(parents);
 	}
 
 	private List<IntinoFileBrowserItem> withRoot(List<IntinoFileBrowserItem> items) {
+		if (rootItem != null) return items;
 		List<IntinoFileBrowserItem> children = items.stream().filter(IntinoFileBrowserItem::isRoot).toList();
 		items.addFirst(rootItem(children).id(items.size()));
 		return items;

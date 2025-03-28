@@ -19,7 +19,7 @@ public class TarUtils {
 	}
 
 	private static void processEntry(DocumentManager manager, String path, TarArchiveEntry entry, TarArchiveInputStream tarInput, boolean replace) throws IOException {
-		File entryFile = new File(manager.root().getPath(), path + "/" + entry.getName());
+		File entryFile = new File(manager.root().getPath(), path + File.separator + entry.getName());
 		if (entry.isDirectory()) {
 			if (!entryFile.exists()) entryFile.mkdirs();
 		} else {
@@ -58,11 +58,11 @@ public class TarUtils {
 	}
 
 	private static void tarDirectory(TarArchiveOutputStream tarOut, File file, String entryName) throws IOException {
-		TarArchiveEntry entry = new TarArchiveEntry(file, entryName + "/");
+		TarArchiveEntry entry = new TarArchiveEntry(file, entryName + File.separator);
 		tarOut.putArchiveEntry(entry);
 		tarOut.closeArchiveEntry();
 		for (File child : file.listFiles()) {
-			String entryName1 = entryName + "/" + child.getName();
+			String entryName1 = entryName + File.separator + child.getName();
 
 			if (child.isDirectory()) tarDirectory(tarOut, child, entryName1);
 			else tarFile(tarOut, null, entryName1); // TODO remove?

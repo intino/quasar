@@ -9,10 +9,10 @@ Service EditorElements as UI(port = "{port}", title = "{title}", favicon = "/ico
 	Authentication(by="{federation-url}")
 
 	Resource(path = "/") home as Page(homeTemplate) Main
-	Resource(path = "/languages") languages as Page(homeTemplate) > Parameter tab; Parameter view
-	Resource(path = "/languages/:language") language as Page(homeTemplate) > Parameter tab; Parameter view
+	Resource(path = "/about") about as Page(homeTemplate)
+	Resource(path = "/languages") languages as Page(homeTemplate) > Parameter tab
+	Resource(path = "/languages/:language") language as Page(homeTemplate) > Parameter tab
 	Resource(path = "/languages/:language/models/:model") model as Page(homeTemplate) > Parameter release; Parameter file
-	Resource(path = "/languages/:language/models/:model/download") downloadModel as AssetPage > Parameter release
 	Resource(path = "/login") login as Page(loginTemplate)
 
 Template homeTemplate as Relative(height=100%, width=100%)
@@ -21,22 +21,37 @@ Template homeTemplate as Relative(height=100%, width=100%)
 	Block(layout=Vertical Flexible)
 		Block(layout=Vertical, format=centered) as Relative(width=100%)
 			Block(layout=Vertical Flexible CenterCenter) loading > Spinner(format=secondary)
+			Block(layout=Vertical Flexible) aboutPage as Conditional > TemplateStamp(template=aboutTemplate) aboutStamp
 			Block(layout=Vertical Flexible) languagesPage as Conditional > TemplateStamp(template=languagesTemplate) languagesStamp
 			Block(layout=Vertical Flexible) languagePage as Conditional > TemplateStamp(template=languageTemplate) languageStamp
 			Block(layout=Vertical Flexible) modelPage as Conditional > TemplateStamp(template=modelTemplate) modelStamp
 
+Template aboutTemplate as Relative(height=100%, width=100%)
+	Block(layout=Vertical Flexible, format=whiteBackground) bodyBlock as Relative(width=100%) AutoSize
+		Block(layout=Vertical Flexible Center) contentBlock as Relative(width=80%)
+			Block(layout=Vertical Flexible, format=whiteBackground) as Relative(width=100%, height=100%)
+				HtmlViewer aboutStamp
+
 Template(layout=Horizontal Center, format=headerStyle) headerTemplate
 
-	Block(layout=Horizontal Flexible, format=middleAirTop middleAirBottom middleAirLeft) languageView
+	Block(layout=Horizontal Center Flexible, format=middleAirTop middleAirBottom middleAirLeft) languageView
 		Link(title="", format=logoLink) as Action Addressable(EditorElements.home)
 		Image(value="/logo-expanded-dark.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=130px, height=30px)
+		Text(value="/", format=whiteColor h2 airRight, visible=false) languageSeparator
+		Text(value="", format=whiteColor h2, visible=false) languageTitleText
+		Link(title="", format=whiteColor h2, visible=false) languageTitleLink as Action Addressable(EditorElements.language)
 
 	Block(layout=Horizontal EndJustified)
-		Button(title="Log in", format=airRight whiteColor, visible=false) login as Action
+		Button(title="Log in", format=airRight whiteColor, visible=false) login as OpenPage(EditorElements.login)
+
+		Block(layout=Horizontal Center)
+			Button(title="About", format=airRight whiteColor) as Action Addressable(EditorElements.about)
+
 		Block(layout=Horizontal Center) notLoggedBlock as Conditional
 			MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
 			MaterialIconButton(title="Set light mode", format=airRight, icon="Brightness7", size=Small) as SetLightMode
-		User(mode=OnlyPhoto, visible=false, format=relative veryLargeIconSize airRight) user
+
+		User(mode=OnlyPhoto, visible=false, format=relative veryLargeIconSize airRight smallAirTop) user
 			Block(layout=Horizontal EndJustified, format=userToolbar)
 				MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
 				MaterialIconButton(title="Set light mode", format=airRight, icon="Brightness7", size=Small) as SetLightMode
@@ -46,46 +61,43 @@ Template(layout=Horizontal Center, format=headerStyle) headerTemplate
 Template(layout=Horizontal Center, format=subHeaderStyle) languagesHeaderTemplate
 
 	Block(layout=Horizontal Flexible)
-		Block(layout=Horizontal, visible=false) languagesToolbar as Relative(width=100%)
-			Button(title="public", format=airLeft airRight) publicLanguages as Action Addressable(EditorElements.languages)
-			Button(title="my languages", visible=false) myLanguages as Action Addressable(EditorElements.languages)
+		Block(layout=Horizontal) as Relative(width=100%)
+			Text(value="public languages", format=doubleAirRight bold, visible=false) publicLanguagesText
+			Link(title="public languages", format=doubleAirRight, visible=false) publicLanguagesLink as Action Addressable(EditorElements.languages)
+			Text(value="my languages", format=bold, visible=false) myLanguagesText
+			Link(title="my languages", visible=false) myLanguagesLink as Action Addressable(EditorElements.languages)
 
 	Block(layout=Horizontal EndJustified)
-		Button(title="Home", format=airRight) homeOperation as Action Addressable(EditorElements.languages)
-		Button(title="Languages", format=airRight) languagesOperation as Action Addressable(EditorElements.languages)
 
 Template(layout=Horizontal Center, format=subHeaderStyle) languageHeaderTemplate
 
 	Block(layout=Horizontal Flexible)
-		Block(layout=Horizontal, visible=false) modelsToolbar as Relative(width=100%)
-			Button(title="public", format=airLeft airRight) publicModels as Action Addressable(EditorElements.language)
-			Button(title="my models", visible=false) myModels as Action Addressable(EditorElements.language)
+		Block(layout=Horizontal) as Relative(width=100%)
+			Text(value="public models", format=doubleAirRight bold) publicModelsText
+			Link(title="public models", format=doubleAirRight, visible=false) publicModelsLink as Action Addressable(EditorElements.language)
+			Text(value="my models", format=bold, visible=false) myModelsText
+			Link(title="my models") myModelsLink as Action Addressable(EditorElements.language)
 
 	Block(layout=Horizontal EndJustified)
-		Button(title="Home", format=airRight) homeOperation as Action Addressable(EditorElements.language)
-		Button(title="Models", format=airRight) modelsOperation as Action Addressable(EditorElements.language)
-		Block(layout=Horizontal, format=doubleAirLeft)
-			Image(format=airRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) logo as Absolute(height=30px)
-			Text(format=languageViewTitle) title
 
 Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
 
 	Block(layout=Horizontal Center Flexible, visible=false) contentBlock
 		Block(layout=Horizontal Flexible)
 			AvatarIconButton(title="", size=Small, format=airRight, visible=false) projectModelSelector as Action
-			Text(format=modelViewTitle, translate=true) title
+			Link(title="", format=modelViewTitle) title as Action
+			Block(layout=Horizontal Center, visible=false, format=doubleAirRight) titleEditorBlock as Absolute(width=360px)
+				Text(translate=true, format=modelViewTitle airRight) titleEditor as Editable
+				Link(title="Cancel", format=airRight) closeTitleEditor as Action
+				Link(title="Save") saveTitleEditor as Action
 			Block(layout=Horizontal Center, format=doubleAirLeft)
 				SplitButton(title="draft", format=airRight minSelectorWidth, options="draft", defaultOption = "draft") releaseSelector as Action
+				Button(title="build", size=Small) buildTrigger as Action > Shortcut(key="F9", metaKeys=Control)
 				Button(title="publish", format=airRight, visible=false) publishTrigger as Action
 				Button(title="download", format=airRight, visible=false) downloadTrigger as Download
-				Button(title="settings", format=airRight) modelSettingsTrigger as Action
 
 		Block(layout=Horizontal EndJustified)
-			Button(title="Home", format=airRight) homeOperation as Action Addressable(EditorElements.language)
-			Button(title="Models", format=airRight) modelsOperation as Action Addressable(EditorElements.language)
-			Block(layout=Horizontal, format=doubleAirLeft)
-				Image(format=airRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) languageLogo as Absolute(height=30px)
-				Text(format=languageViewTitle) languageTitle
+			Button(title="settings", format=airRight) modelSettingsTrigger as Action
 
 	TemplateStamp(template=publishModelDialog) modelPublishDialog
 	TemplateStamp(template=modelSettingsDialog) modelSettingsDialog

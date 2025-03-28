@@ -2,7 +2,9 @@ package io.quassar.editor.model;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Model {
 	private String name;
@@ -12,10 +14,13 @@ public class Model {
 	private String owner;
 	private Instant createDate;
 	private List<String> collaborators = new ArrayList<>();
+	private Map<String, String> tokens = new HashMap<>();
 	private boolean isPrivate = false;
+	private String targetLanguage;
 
 	public static final String DraftRelease = "draft";
 	public static final String DefaultOwner = "anonymous";
+	public static final String ResourcesDirectory = "resources";
 
 	public String name() {
 		return name;
@@ -94,6 +99,28 @@ public class Model {
 	public Model isPrivate(boolean value) {
 		this.isPrivate = value;
 		return this;
+	}
+
+	public Map<String, String> tokens() {
+		return tokens;
+	}
+
+	public Model tokens(Map<String, String> tokenMap) {
+		this.tokens = tokenMap;
+		return this;
+	}
+
+	public String targetLanguage() {
+		return targetLanguage;
+	}
+
+	public Model targetLanguage(String targetLanguage) {
+		this.targetLanguage = targetLanguage;
+		return this;
+	}
+
+	public void add(String app, String token) {
+		this.tokens.put(app, token);
 	}
 
 	public boolean isTemporal() {

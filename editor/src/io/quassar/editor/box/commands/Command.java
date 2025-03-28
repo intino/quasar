@@ -2,8 +2,11 @@ package io.quassar.editor.box.commands;
 
 import io.intino.builderservice.schemas.Message;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.builder.BuildResult;
 import io.quassar.editor.model.Model;
+import io.quassar.editor.model.OperationResult;
 
+import java.io.InputStream;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
@@ -29,11 +32,43 @@ public abstract class Command<T> {
 		return this.author != null ? this.author : Model.DefaultOwner;
 	}
 
+	protected ExecutionResult resultOf(OperationResult result) {
+		return resultOf(result, null);
+	}
+
+	protected ExecutionResult resultOf(OperationResult result, InputStream output) {
+		return ExecutionResult.build(List.of(new Message().kind(result.success() ? Message.Kind.INFO : Message.Kind.ERROR).content(result.message())), output);
+	}
+
 	public interface ExecutionResult {
 		boolean success();
 		List<Message> messages();
+		InputStream output();
+
+		static ExecutionResult build(BuildResult result) {
+			return new ExecutionResult() {
+				@Override
+				public boolean success() {
+					return result.messages().stream().noneMatch(m -> m.kind() == Message.Kind.ERROR);
+				}
+
+				@Override
+				public List<Message> messages() {
+					return result.messages();
+				}
+
+				@Override
+				public InputStream output() {
+					return result.output();
+				}
+			};
+		}
 
 		static ExecutionResult build(List<Message> messages) {
+			return build(messages, null);
+		}
+
+		static ExecutionResult build(List<Message> messages, InputStream output) {
 			return new ExecutionResult() {
 				@Override
 				public boolean success() {
@@ -43,6 +78,11 @@ public abstract class Command<T> {
 				@Override
 				public List<Message> messages() {
 					return messages;
+				}
+
+				@Override
+				public InputStream output() {
+					return output;
 				}
 			};
 		}

@@ -26,7 +26,8 @@ public class AddModelDialog extends AbstractAddModelDialog<EditorBox> {
 	}
 
 	public void open() {
-		create(ModelHelper.proposeName(), translate("(no name)"), translate("(no description)"));
+		String name = ModelHelper.proposeName();
+		create(name, name, translate("(no description)"));
 		//dialog.open();
 	}
 
@@ -40,9 +41,10 @@ public class AddModelDialog extends AbstractAddModelDialog<EditorBox> {
 	}
 
 	private void refreshDialog() {
+		String name = ModelHelper.proposeName();
 		dialog.title("Add model with %s".formatted(language.name()));
-		nameField.value(ModelHelper.proposeName());
-		titleField.value("(no name)");
+		nameField.value(name);
+		titleField.value(name);
 		descriptionField.value("(no description)");
 	}
 

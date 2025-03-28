@@ -6,13 +6,12 @@ import io.intino.alexandria.ui.model.datasource.PageDatasource;
 import io.intino.alexandria.ui.services.push.UISession;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.languages.LanguageManager;
-import io.quassar.editor.box.ui.types.LanguagesView;
+import io.quassar.editor.box.ui.types.LanguagesTab;
 import io.quassar.editor.box.util.DatasourceHelper;
 import io.quassar.editor.model.Language;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
@@ -20,12 +19,12 @@ import static java.util.stream.Collectors.toList;
 public class LanguagesDatasource extends PageDatasource<Language> {
 	protected final EditorBox box;
 	protected final UISession session;
-	private final LanguagesView view;
+	private final LanguagesTab tab;
 
-	public LanguagesDatasource(EditorBox box, UISession session, LanguagesView view) {
+	public LanguagesDatasource(EditorBox box, UISession session, LanguagesTab tab) {
 		this.box = box;
 		this.session = session;
-		this.view = view;
+		this.tab = tab;
 	}
 
 	@Override
@@ -59,7 +58,7 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 
 	protected List<Language> load() {
 		LanguageManager manager = box.languageManager();
-		return view == null || view == LanguagesView.PublicLanguages ? manager.publicLanguages() : manager.ownerLanguages(username());
+		return tab == null || tab == LanguagesTab.PublicLanguages ? manager.publicLanguages() : manager.ownerLanguages(username());
 	}
 
 	private List<Language> filterCondition(List<Language> languages, String condition) {

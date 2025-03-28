@@ -6,7 +6,7 @@ import io.intino.alexandria.ui.model.datasource.PageDatasource;
 import io.intino.alexandria.ui.services.push.UISession;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.models.ModelManager;
-import io.quassar.editor.box.ui.types.LanguageView;
+import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.util.DatasourceHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
@@ -21,16 +21,16 @@ public class ModelsDatasource extends PageDatasource<Model> {
 	protected final EditorBox box;
 	protected final UISession session;
 	private final Language language;
-	private final LanguageView view;
+	private final LanguageTab tab;
 	private String condition;
 	private List<Filter> filters;
 	private Sorting sorting;
 
-	public ModelsDatasource(EditorBox box, UISession session, Language language, LanguageView view) {
+	public ModelsDatasource(EditorBox box, UISession session, Language language, LanguageTab tab) {
 		this.box = box;
 		this.session = session;
 		this.language = language;
-		this.view = view;
+		this.tab = tab;
 	}
 
 	public enum Sorting { MostUsed, MostRecent }
@@ -64,7 +64,7 @@ public class ModelsDatasource extends PageDatasource<Model> {
 
 	protected List<Model> load() {
 		ModelManager manager = box.modelManager();
-		return view == null || view == LanguageView.PublicModels ? manager.publicModels(language, username()) : manager.ownerModels(language, username());
+		return tab == null || tab == LanguageTab.PublicModels ? manager.publicModels(language, username()) : manager.ownerModels(language, username());
 	}
 
 	protected String username() {

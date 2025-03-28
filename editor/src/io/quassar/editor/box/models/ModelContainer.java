@@ -1,6 +1,7 @@
 package io.quassar.editor.box.models;
 
 import io.intino.alexandria.logger.Logger;
+import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.lsp4j.services.LanguageServer;
@@ -12,22 +13,36 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ModelContainer {
+	private final Language language;
 	private final Model model;
 	private final LanguageServer server;
 	private static Map<String, String> LanguagesMap = null;
 
-	public ModelContainer(Model model, LanguageServer server) {
+	public ModelContainer(Language language, Model model, LanguageServer server) {
 		this.model = model;
+		this.language = language;
 		this.server = server;
 		loadLanguages();
 	}
 
 	public List<File> files() {
-		return new ModelContainerReader(model, server).files();
+		return new ModelContainerReader(language, model, server).files();
+	}
+
+	public List<File> modelFiles() {
+		return new ModelContainerReader(language, model, server).modelFiles();
+	}
+
+	public List<File> resourceFiles() {
+		return new ModelContainerReader(language, model, server).resourceFiles();
 	}
 
 	public File file(String uri) {
 		return files().stream().filter(f -> f.uri().equals(uri)).findFirst().orElse(null);
+	}
+
+	public boolean isResourceFile(File file) {
+		return new ModelContainerReader(language, model, server).isResourceFile(file);
 	}
 
 	public static class File {
@@ -72,6 +87,10 @@ public class ModelContainer {
 
 		public boolean isDirectory() {
 			return isDirectory;
+		}
+
+		public File clone(String newUri) {
+			return new File(name, newUri, isDirectory, parents());
 		}
 	}
 

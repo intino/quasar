@@ -2,19 +2,17 @@ package io.quassar.editor.box.ui.displays.templates;
 
 import io.intino.alexandria.ui.displays.events.AddCollectionItemEvent;
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.ui.datasources.ModelsDatasource;
-import io.quassar.editor.box.ui.displays.rows.ModelTableRow;
-import io.quassar.editor.box.ui.types.LanguageView;
+import io.quassar.editor.box.ui.displays.items.ModelItem;
+import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.PathHelper;
-import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
 public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 	private Language language;
-	private LanguageView view;
+	private LanguageTab tab;
 
 	public ModelsTemplate(EditorBox box) {
 		super(box);
@@ -24,55 +22,37 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 		this.language = language;
 	}
 
-	public void view(LanguageView view) {
-		this.view = view;
+	public void tab(LanguageTab tab) {
+		this.tab = tab;
 	}
 
 	@Override
 	public void init() {
 		super.init();
-		addModelTrigger.onExecute(e -> openAddModelDialog());
 		addModelDialog.onCreate(this::open);
-		modelTable.onAddItem(this::refresh);
-		modelPublishDialog.onPublish(this::open);
+		addModelTrigger.onExecute(e -> openAddModelDialog());
+		modelList.onAddItem(this::refresh);
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
-		addModelTrigger.visible(view == LanguageView.OwnerModels);
-		modelTable.source(new ModelsDatasource(box(), session(), language, view));
-		modelTable.reload();
+		addModelTrigger.visible(tab == LanguageTab.OwnerModels);
+		modelList.source(new ModelsDatasource(box(), session(), language, tab));
+		modelList.reload();
 	}
 
 	private void refresh(AddCollectionItemEvent event) {
 		refresh(event.item(), event.component());
 	}
 
-	private void refresh(Model model, ModelTableRow row) {
-		row.modelLabelItem.label.title(ModelHelper.label(model, language(), box()));
-		row.modelLabelItem.label.address(path -> PathHelper.modelPath(path, model));
-		row.modelDescriptionItem.description.value(model.description());
-		row.modelOwnerItem.owner.value(model.owner());
-		row.operationsItem.operationsToolbar.visible(true);
-		row.operationsItem.removeModelTrigger.onExecute(e -> removeModel(model));
-		row.operationsItem.settingsModelTrigger.onExecute(e -> openSettingsDialog(model, row));
-		row.operationsItem.publishModelTrigger.readonly(!PermissionsHelper.canPublish(model, Model.DraftRelease, session(), box()));
-		row.operationsItem.publishModelTrigger.onExecute(e -> publishModel(model));
-	}
-
-	private void open(Model model) {
-		notifier.dispatch(PathHelper.modelPath(model));
-	}
-
-	private void openSettingsDialog(Model model, ModelTableRow row) {
-		modelSettingsDialog.onSave(e -> refresh(model, row));
-		modelSettingsDialog.model(model);
-		modelSettingsDialog.open();
-	}
-
-	private void open(Model model, String release) {
-		notifier.dispatch(PathHelper.modelPath(model, release));
+	private void refresh(Model model, ModelItem display) {
+		display.label.title(ModelHelper.label(model, language(), box()));
+		display.label.address(path -> PathHelper.modelPath(path, model));
+		display.description.value(!model.description().equals(translate("(no description)")) ? model.description() : null);
+		display.owner.visible(tab == LanguageTab.PublicModels);
+		if (display.owner.isVisible()) display.owner.value(model.owner());
+		display.createDate.value(model.createDate());
 	}
 
 	private void openAddModelDialog() {
@@ -80,14 +60,8 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 		addModelDialog.open();
 	}
 
-	private void removeModel(Model model) {
-		box().commands(ModelCommands.class).remove(model, username());
-		refresh();
-	}
-
-	private void publishModel(Model model) {
-		modelPublishDialog.model(model);
-		modelPublishDialog.open();
+	private void open(Model model) {
+		notifier.dispatch(PathHelper.modelPath(model));
 	}
 
 }

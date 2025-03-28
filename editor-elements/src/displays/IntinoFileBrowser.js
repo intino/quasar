@@ -20,6 +20,7 @@ class IntinoFileBrowser extends AbstractIntinoFileBrowser {
 		this.requester = new IntinoFileBrowserRequester(this);
 		this.state = {
 		    itemAddress : "",
+		    rootItem: "root",
 		    items: [],
 		    focusedItem: null,
 		    expandedItems: [],
@@ -30,7 +31,8 @@ class IntinoFileBrowser extends AbstractIntinoFileBrowser {
     render() {
         const id = this.props.id + "-tree";
         const theme = Theme.get();
-        const style = theme.isDark() ? { backgroundColor:'#404348', color:'#e3e3e3'} : {};
+        const style = theme.isDark() ? { backgroundColor:'#1f1f1f', color:'#e3e3e3'} : {};
+        const root = this.state.rootItem != null ? this.state.rootItem : "root";
         if (this.state.items.length <= 1) return (<div className="layout vertical flex center-center" style={{height:'100%',fontSize:'10pt'}}>{this.translate("No files")}</div>);
         return (
             <ControlledTreeEnvironment
@@ -48,14 +50,14 @@ class IntinoFileBrowser extends AbstractIntinoFileBrowser {
               onDrop={this.handleDrop.bind(this)}
               items={this._itemsOf(this.state.items)}>
                 <div className={theme.isDark() ? "rct-dark" : "rct"} style={style}>
-                    <Tree className="rct-dark" treeId={id} rootItem="root" treeLabel={this.translate("Files")} />
+                    <Tree className="rct-dark" treeId={id} rootItem={root} treeLabel={this.translate("Files")} />
                 </div>
             </ControlledTreeEnvironment>
         )
     };
 
     refresh = (info) => {
-        this.setState({itemAddress: info.itemAddress, items: info.items});
+        this.setState({itemAddress: info.itemAddress, items: info.items, rootItem: info.rootItem});
     };
 
     select = (item) => {

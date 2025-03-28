@@ -3,9 +3,7 @@ package io.quassar.editor.box.ui.displays;
 import io.intino.alexandria.ui.Soul;
 import io.quassar.editor.box.ui.displays.templates.HomeTemplate;
 import io.quassar.editor.box.ui.types.LanguageTab;
-import io.quassar.editor.box.ui.types.LanguageView;
 import io.quassar.editor.box.ui.types.LanguagesTab;
-import io.quassar.editor.box.ui.types.LanguagesView;
 import io.quassar.editor.box.util.SessionHelper;
 
 public class RouteDispatcher extends AbstractRouteDispatcher {
@@ -16,17 +14,20 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	}
 
 	@Override
-	public void dispatchLanguages(Soul soul, String tab, String view) {
-		SessionHelper.register(soul.session(), LanguagesTab.from(tab));
-		SessionHelper.register(soul.session(), LanguagesView.from(view));
-		soul.currentLayer(HomeTemplate.class).openLanguages(tab, view);
+	public void dispatchAbout(Soul soul) {
+		soul.currentLayer(HomeTemplate.class).openAbout();
 	}
 
 	@Override
-	public void dispatchLanguage(Soul soul, String language, String tab, String view) {
+	public void dispatchLanguages(Soul soul, String tab) {
+		SessionHelper.register(soul.session(), LanguagesTab.from(tab));
+		soul.currentLayer(HomeTemplate.class).openLanguages(tab);
+	}
+
+	@Override
+	public void dispatchLanguage(Soul soul, String language, String tab) {
 		SessionHelper.register(soul.session(), LanguageTab.from(tab));
-		SessionHelper.register(soul.session(), LanguageView.from(view));
-		soul.currentLayer(HomeTemplate.class).openLanguage(language, tab, view);
+		soul.currentLayer(HomeTemplate.class).openLanguage(language, tab);
 	}
 
 	@Override

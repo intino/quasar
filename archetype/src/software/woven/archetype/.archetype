@@ -20,6 +20,7 @@ TARGETS:{ime editor}
     - workspace(language, model) in "{language}/models/{model}/workspace"
     - releases(language, model) in "{language}/models/{model}/releases" with ".zip"
     - release(language, model, version) in "{language}/models/{model}/releases/{version}.zip"
+    - releaseAccessor(language, model, version) in "{language}/models/{model}/releases/{version}-accessor.jar"
 
 + users in "users"
     - user(username) in "{username}"

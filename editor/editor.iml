@@ -17,7 +17,6 @@
     <orderEntry type="library" name="Intino: org.slf4j:slf4j-api:2.0.12" level="project" />
     <orderEntry type="library" name="Intino: ch.qos.reload4j:reload4j:1.2.22" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:ui-framework:6.3.7" level="project" />
-    <orderEntry type="library" name="Intino: io.intino.alexandria:http:2.1.10" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:exceptions:2.1.2" level="project" />
     <orderEntry type="library" name="Intino: io.javalin:javalin:6.4.0" level="project" />
     <orderEntry type="library" name="Intino: org.eclipse.jetty:jetty-server:11.0.24" level="project" />
@@ -103,5 +102,7 @@
     <orderEntry type="module" module-name="editor-elements" />
     <orderEntry type="library" name="Intino: io.intino:quassar-builder-service-accessor:1.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Intino: org.apache.commons:commons-compress:1.21" level="project" />
+    <orderEntry type="library" name="Intino: io.intino.alexandria:rest:4.1.10" level="project" />
+    <orderEntry type="library" name="Intino: io.intino.alexandria:http:2.1.9" level="project" />
   </component>
 </module>

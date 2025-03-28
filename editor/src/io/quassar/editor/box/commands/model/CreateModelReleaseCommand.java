@@ -1,20 +1,15 @@
 package io.quassar.editor.box.commands.model;
 
-import io.intino.builderservice.schemas.Message;
-import io.intino.ls.document.FileDocumentManager;
+import io.intino.alexandria.logger.Logger;
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.box.builder.ModelBuilder;
 import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.box.commands.Command.ExecutionResult;
+import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
-import io.quassar.editor.model.OperationResult;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.List;
 
 public class CreateModelReleaseCommand extends Command<ExecutionResult> {
 	public Model model;
@@ -28,28 +23,24 @@ public class CreateModelReleaseCommand extends Command<ExecutionResult> {
 	public ExecutionResult execute() {
 		ExecutionResult result = compile();
 		if (!result.success()) return result;
+		saveAccessor(result);
 		return resultOf(box.modelManager().createRelease(model, version));
 	}
 
 	private ExecutionResult compile() {
+		BuildModelCommand command = new BuildModelCommand(box);
+		command.author = author;
+		command.model = model;
+		return command.execute();
+	}
+
+	private void saveAccessor(ExecutionResult result) {
 		try {
-			ModelBuilder builder = new ModelBuilder(model, version, box);
-			return ExecutionResult.build(builder.build(author()));
+			File destiny = box.archetype().languages().releaseAccessor(Language.nameOf(model.language()), model.name(), version);
+			FileUtils.copyInputStreamToFile(result.output(), destiny);
 		} catch (IOException e) {
-			return ExecutionResult.build(List.of(new Message().kind(Message.Kind.ERROR).content(e.getMessage())));
+			Logger.error(e);
 		}
-	}
-
-	private URL url(String url) {
-		try {
-			return URI.create(url).toURL();
-		} catch (MalformedURLException ignored) {
-			return null;
-		}
-	}
-
-	private ExecutionResult resultOf(OperationResult result) {
-		return ExecutionResult.build(List.of(new Message().kind(result.success() ? Message.Kind.INFO : Message.Kind.ERROR).content(result.message())));
 	}
 
 }

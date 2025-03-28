@@ -1,24 +1,16 @@
 package io.quassar.editor.box.ui.displays.templates;
 
-import io.intino.alexandria.Resource;
-import io.intino.alexandria.logger.Logger;
-import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.utils.DelayerUtil;
 import io.intino.builderservice.schemas.Message;
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.box.commands.Command.ExecutionResult;
 import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.box.schemas.IntinoFileBrowserItem;
 import io.quassar.editor.box.ui.displays.IntinoDslEditor;
-import io.quassar.editor.box.ui.displays.IntinoFileBrowser;
-import io.quassar.editor.box.util.DisplayHelper;
-import io.quassar.editor.box.util.PathHelper;
-import io.quassar.editor.box.util.PermissionsHelper;
+import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
-import java.io.IOException;
 import java.util.*;
 
 public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
@@ -29,10 +21,6 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	private ModelContainer modelContainer;
 	private boolean selectedFileIsModified = false;
 	private boolean openNewFile = false;
-	private FileDialogOperation fileDialogOperation;
-	private Resource uploadedFile;
-
-	private enum FileDialogOperation { CopyFile, AddFile, AddFolder, EditFilename }
 
 	public ModelTemplate(EditorBox box) {
 		super(box);
@@ -41,7 +29,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	public void open(String language, String model, String release, String file) {
 		this.model = box().modelManager().get(language, model);
 		this.release = release != null ? release : Model.DraftRelease;
-		this.modelContainer = this.model != null ? box().modelManager().modelContainer(this.model, this.release) : null;
+		this.modelContainer = this.model != null ? box().modelManager().modelContainer(box().languageManager().get(language), this.model, this.release) : null;
 		this.selectedFile = file != null && modelContainer != null ? modelContainer.file(file) : null;
 		refresh();
 	}
@@ -49,7 +37,6 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	@Override
 	public void didMount() {
 		super.didMount();
-		createFileBrowser();
 		createFileEditor();
 		refresh();
 	}
@@ -58,11 +45,10 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	public void init() {
 		super.init();
 		initHeader();
-		initFileBrowser();
+		initBrowsers();
 		initFileEditor();
 		initFileModifiedDialog();
 		console.onClose(e -> consoleBlock.hide());
-		workspaceDialog.onOpen(e -> refreshWorkspaceDialog());
 	}
 
 	@Override
@@ -76,43 +62,48 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	private void refreshContent() {
 		contentBlock.visible(model != null);
 		if (!contentBlock.isVisible()) return;
-		refreshFileBrowser();
+		if (selectedFile != null) tabSelector.select(modelContainer.isResourceFile(selectedFile) ? "resourcesOption" : "modelOption");
+		else if (tabSelector.selection().isEmpty()) tabSelector.select("modelOption");
+		else tabSelector.select(tabSelector.selection().getFirst());
 		refreshFileEditor();
 	}
 
 	private void initHeader() {
-		headerStamp.onPublishFailure((m, e) -> showConsole(e));
+		headerStamp.onBuild((m, e) -> updateConsole(e));
+		headerStamp.onPublish((m, e) -> updateConsole(e));
 	}
 
-	private void initFileBrowser() {
-		initFileBrowserToolbar();
-		createFileBrowser();
+	private void initBrowsers() {
+		modelBrowserBlock.onInit(e -> initModelBrowserBlock());
+		modelBrowserBlock.onShow(e -> refreshModelBrowserBlock());
+		resourcesBrowserBlock.onInit(e -> initResourcesBrowserBlock());
+		resourcesBrowserBlock.onShow(e -> refreshResourcesBrowserBlock());
 	}
 
-	private void createFileBrowser() {
-		IntinoFileBrowser browser = new IntinoFileBrowser(box());
-		browser.onOpen(this::open);
-		browser.onRename(this::rename);
-		browser.onMove(this::move);
-		intinoFileBrowser.clear();
-		intinoFileBrowser.display(browser);
+	private void initModelBrowserBlock() {
+		modelBrowserStamp.onChange(this::reloadAndOpen);
+		modelBrowserStamp.onOpen(this::open);
 	}
 
-	private void initFileBrowserToolbar() {
-		addFileTrigger.onOpen(e -> refreshFileDialog(FileDialogOperation.AddFile));
-		addFolderTrigger.onOpen(e -> refreshFileDialog(FileDialogOperation.AddFolder));
-		editFilenameTrigger.onOpen(e -> refreshFileDialog(FileDialogOperation.EditFilename));
-		addFile.onExecute(e -> executeFileDialogOperation());
-		fileUploadBlock.onInit(v -> fileUploadField.onChange(e -> {
-			uploadedFile = e.value();
-			addFile.readonly(uploadedFile == null);
-		}));
-		fileFieldBlock.onInit(v -> {
-			fileField.onChange(e -> addFile.readonly(e.value() == null || ((String) e.value()).isEmpty()));
-			fileField.onEnterPress(e -> executeFileDialogOperation());
-		});
-		fileDialog.onOpen(e -> refreshFileDialog());
-		removeFileTrigger.onExecute(e -> removeFile());
+	private void refreshModelBrowserBlock() {
+		modelBrowserStamp.model(model);
+		modelBrowserStamp.release(release);
+		modelBrowserStamp.modelContainer(modelContainer);
+		modelBrowserStamp.file(selectedFile);
+		modelBrowserStamp.refresh();
+	}
+
+	private void initResourcesBrowserBlock() {
+		resourcesBrowserStamp.onChange(this::reloadAndOpen);
+		resourcesBrowserStamp.onOpen(this::open);
+	}
+
+	private void refreshResourcesBrowserBlock() {
+		resourcesBrowserStamp.model(model);
+		resourcesBrowserStamp.release(release);
+		resourcesBrowserStamp.modelContainer(modelContainer);
+		resourcesBrowserStamp.file(selectedFile);
+		resourcesBrowserStamp.refresh();
 	}
 
 	private void initFileEditor() {
@@ -136,8 +127,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		fileModifiedDialog.onOpen(e -> fileModifiedDialog.title(selectedFile.name()));
 		cancelSavingFile.onExecute(e -> {
 			fileModifiedDialog.close();
-			intinoFileBrowser.<IntinoFileBrowser>display().select(itemOf(selectedFile));
-			intinoFileBrowser.<IntinoFileBrowser>display().refresh();
+			refreshFileBrowser();
 		});
 		continueSavingFile.onExecute(e -> {
 			fileModifiedDialog.close();
@@ -151,121 +141,9 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		});
 	}
 
-	private List<IntinoFileBrowserItem> fileBrowserItems() {
-		List<ModelContainer.File> files = modelContainer.files();
-		Map<String, IntinoFileBrowserItem> items = new HashMap<>();
-		files.forEach(f -> register(f, items));
-		return new ArrayList<>(items.values());
-	}
-
-	private void register(ModelContainer.File file, Map<String, IntinoFileBrowserItem> items) {
-		List<String> parents = file.parents();
-		if (!items.containsKey(file.uri())) items.put(file.uri(), itemOf(file).id(items.size()));
-		for (int i = 0; i < parents.size(); i++) {
-			register(uri(parents, i), i > 0 ? uri(parents, i-1) : null, items);
-			if (i == parents.size() - 1) register(file, uri(parents, i), i == 0, items);
-		}
-	}
-
-	private String uri(List<String> parents, int i) {
-		return String.join("/", parents.subList(0, i+1));
-	}
-
-	private void register(String directory, String parent, Map<String, IntinoFileBrowserItem> items) {
-		if (!items.containsKey(directory))
-			items.put(directory, itemOf(directory, parent != null ? List.of(parent) : Collections.emptyList(), IntinoFileBrowserItem.Type.Folder, parent == null).id(items.size()));
-		if (parent != null && !items.get(parent).children().contains(directory))
-			items.get(parent).children().add(directory);
-	}
-
-	private void register(ModelContainer.File file, String parent, boolean isRoot, Map<String, IntinoFileBrowserItem> items) {
-		if (!items.containsKey(parent))
-			items.put(parent, itemOf(parent, Collections.emptyList(), IntinoFileBrowserItem.Type.Folder, isRoot).id(items.size()));
-		if (file != null && !items.get(parent).children().contains(file.uri())) items.get(parent).children().add(file.uri());
-	}
-
-	private IntinoFileBrowserItem itemOf(ModelContainer.File file) {
-		IntinoFileBrowserItem.Type type = file.isDirectory() ? IntinoFileBrowserItem.Type.Folder : IntinoFileBrowserItem.Type.File;
-		return itemOf(file.uri(), file.parents(), type, file.parents().isEmpty());
-	}
-
-	private IntinoFileBrowserItem itemOf(String uri, List<String> parents, IntinoFileBrowserItem.Type type, boolean isRoot) {
-		return new IntinoFileBrowserItem().name(nameOf(uri)).uri(uri).parents(parents).type(type).isRoot(isRoot);
-	}
-
-	private String nameOf(String uri) {
-		return uri.contains("/") ? uri.substring(uri.lastIndexOf("/")+1) : uri;
-	}
-
-	private void refreshFileDialog(FileDialogOperation operation) {
-		fileDialogOperation = operation;
-		refreshFileDialog();
-	}
-
-	private void refreshFileDialog() {
-		if (fileDialogOperation == null) return;
-		fileDialog.title(fileDialogTitle());
-		fileDialogSelector.select("newFileOption");
-		selectorBlock.visible(fileDialogOperation == FileDialogOperation.AddFile);
-		fileField.value(fileDialogOperation == FileDialogOperation.EditFilename ? selectedFile.name() : null);
-	}
-
-	private String fileDialogTitle() {
-		if (fileDialogOperation == FileDialogOperation.CopyFile) return translate("Copy file");
-		if (fileDialogOperation == FileDialogOperation.AddFolder) return translate("Add folder");
-		if (fileDialogOperation == FileDialogOperation.EditFilename) return translate("Edit name");
-		return translate("Add file");
-	}
-
-	private void executeFileDialogOperation() {
-		if (!isUploadOperation() && !DisplayHelper.check(fileField, this::translate)) return;
-		if (isUploadOperation() && uploadedFile == null) {
-			notifyUser(translate("Select file to upload"), UserMessage.Type.Warning);
-			return;
-		}
-		fileDialog.close();
-		if (fileDialogOperation == FileDialogOperation.AddFile && fileDialogSelector.selection().getFirst().equals("newFileOption")) addFile();
-		else if (fileDialogOperation == FileDialogOperation.AddFile) uploadFile();
-		else if (fileDialogOperation == FileDialogOperation.CopyFile) copyFile();
-		else if (fileDialogOperation == FileDialogOperation.EditFilename) rename();
-		else if (fileDialogOperation == FileDialogOperation.AddFolder) addFolder();
-	}
-
-	private boolean isUploadOperation() {
-		return fileDialogOperation == FileDialogOperation.AddFile && fileDialogSelector.selection().get(0).equals("uploadFileOption");
-	}
-
-	private void addFile() {
-		ModelContainer.File file = box().commands(ModelCommands.class).createFile(model, fileField.value(), "", selectedFile, username());
-		reload();
-		open(file);
-	}
-
-	private void copyFile() {
-		ModelContainer.File file = box().commands(ModelCommands.class).copy(model, fileField.value(), selectedFile, username());
-		reload();
-		open(file);
-	}
-
-	private void uploadFile() {
-		try {
-			ModelContainer.File file = box().commands(ModelCommands.class).createFile(model, uploadedFile.name(), uploadedFile.readAsString(), selectedFile, username());
-			reload();
-			open(file);
-		} catch (IOException e) {
-			Logger.error(e);
-		}
-	}
-
-	private void rename() {
-		ModelContainer.File file = box().commands(ModelCommands.class).rename(model, fileField.value(), selectedFile, username());
-		reload();
-		open(file);
-	}
-
-	private void addFolder() {
-		box().commands(ModelCommands.class).createFolder(model, fileField.value(), selectedFile, username());
-		reload();
+	private void refreshFileBrowser() {
+		if (modelBrowserBlock.isVisible()) refreshModelBrowserBlock();
+		if (resourcesBrowserBlock.isVisible()) refreshResourcesBrowserBlock();
 	}
 
 	private void saveFile(String content) {
@@ -277,25 +155,11 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		else refreshFileEditorToolbar();
 	}
 
-	private void removeFile() {
-		box().commands(ModelCommands.class).remove(model, selectedFile, username());
-		selectedFile = null;
-		reload();
-	}
-
 	private void refreshHeader() {
 		headerStamp.model(model);
 		headerStamp.release(release);
 		headerStamp.file(selectedFile);
 		headerStamp.refresh();
-	}
-
-	private void refreshFileBrowser() {
-		IntinoFileBrowser browser = intinoFileBrowser.display();
-		browser.itemAddress(PathHelper.modelPath(model, release) + "&file=:file");
-		browser.items(fileBrowserItems());
-		browser.select(selectedFile != null ? itemOf(selectedFile) : null);
-		browser.refresh();
 	}
 
 	private void refreshFileEditor() {
@@ -310,13 +174,6 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		display.release(release);
 		display.file(selectedFile.name(), selectedFile.uri(), selectedFile.extension(), selectedFile.language());
 		display.refresh();
-	}
-
-	private void refreshWorkspaceDialog() {
-		addFileTrigger.readonly(!PermissionsHelper.canEdit(model, release));
-		addFolderTrigger.readonly(!PermissionsHelper.canEdit(model, release));
-		editFilenameTrigger.readonly(selectedFile == null || !PermissionsHelper.canEdit(model, release));
-		removeFileTrigger.readonly(selectedFile == null || !PermissionsHelper.canEdit(model, release));
 	}
 
 	private void open(IntinoFileBrowserItem item) {
@@ -351,7 +208,8 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	}
 
 	private void reload() {
-		modelContainer = box().modelManager().modelContainer(model, release);
+		Language language = box().languageManager().get(model.language());
+		modelContainer = box().modelManager().modelContainer(language, model, release);
 		refresh();
 	}
 
@@ -360,15 +218,23 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		//saveFile.readonly(selectedFile == null || !selectedFileIsModified);
 	}
 
-	private void showConsole(ExecutionResult result) {
-		showConsole(result.messages());
+	private void updateConsole(ExecutionResult result) {
+		consoleBlock.visible(!result.success());
+		if (!consoleBlock.isVisible()) return;
+		updateConsole(result.messages());
 	}
 
-	private void showConsole(List<Message> messages) {
-		consoleBlock.show();
+	private void updateConsole(List<Message> messages) {
+		console.model(model);
+		console.release(release);
 		console.messages(messages);
 		console.refresh();
 		console.show();
+	}
+
+	private void reloadAndOpen(ModelContainer.File file) {
+		reload();
+		if (file != null) open(file);
 	}
 
 }

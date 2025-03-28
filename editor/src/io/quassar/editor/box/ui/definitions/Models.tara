@@ -6,33 +6,21 @@ use Theme
 
 Template modelsTemplate as Relative(height=100%, width=100%)
 
-	Block(layout=Horizontal)
-		Button(title="Add model...", size=Small, highlight=Outline, visible=false) addModelTrigger as Action
+	Block(layout=Horizontal Center, format=middleAirBottom)
+		Button(title="New", size=Small, highlight=Outline, visible=false) addModelTrigger as Action
+		SearchBox(collections=body.modelList) searchBox
 
 	Block(layout=Vertical Flexible) body
-		Table(itemClass="io.quassar.editor.model.Model") modelTable
+		List(itemClass="io.quassar.editor.model.Model") modelList
 			noItemsMessage = "No models"
 			Mold
-				Heading modelLabelHeading > Text(value="Title")
-				Item(height=30px, width=20%) modelLabelItem > Link(title="", format=relative bringToFront) label as Action Addressable(EditorElements.model)
-			Mold
-				Heading modelDescriptionHeading > Text(value="Description")
-				Item(height=30px, width=45%) modelDescriptionItem > Text description
-			Mold
-				Heading modelOwnerHeading > Sorting(collections=modelTable) ownerSorting as OrderBy Labeled("Owner")
-				Item(height=30px, width=15%) modelOwnerItem > Text owner
-			Mold
-				Heading operationsHeading > Block(layout=Horizontal EndJustified)
-				Item(height=30px, width=20%) operationsItem
-					Block(visible=false, format=operationsContainer) operationsToolbar as HoverContainer
-						Block(layout=Horizontal Flexible EndJustified, hidden=IfNotHover) as Relative(width=100%)
-							MaterialIconButton(icon="Settings", title="Settings", size=Small) settingsModelTrigger as Action
-							MaterialIconButton(icon="CloudUpload", title="Publish", size=Small) publishModelTrigger as Action
-							MaterialIconButton(icon="Clear", title="Remove", size=Small) removeModelTrigger as Action Affirmed("Are you sure to remove model?")
+				Item(height = 70px) modelItem
+					Link(title="", format=relative bringToFront h5) label as Action Addressable(EditorElements.model)
+					Text description
+					Text owner as Labeled("Owner")
+					Date createDate as Labeled("Create date")
 
 	TemplateStamp(template=addModelDialog) addModelDialog
-	TemplateStamp(template=modelSettingsDialog) modelSettingsDialog
-	TemplateStamp(template=publishModelDialog) modelPublishDialog
 
 Template modelTemplate as Relative(height=100%, width=100%)
 	TemplateStamp(template=modelHeaderTemplate) headerStamp
@@ -47,16 +35,27 @@ Template modelTemplate as Relative(height=100%, width=100%)
 				Image(value="/logo-expanded.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=340px, height=80px)
 				Text(value="Model not found", format=h4 airTop textCentered, translate=true) message
 
-	Block(layout=Horizontal Flexible, visible=false) contentBlock
-		Block(layout=Vertical, format=greyLightBackground) browserBlock as Relative(width=20%)
-			Block(layout=Horizontal, format=headerPanel greyLightBackground leftSpaced rightSpaced)
-				Block(layout=Horizontal Flexible) > Text(value="Project", format=h6, translate=true)
-				Block(layout=Horizontal Center, format=smallAirLeft)
-					MaterialIconButton(title="Operations...", icon="MoreVert", size=Small) operationsTrigger as OpenPopover(workspaceDialog)
-					// TODO MaterialIconButton(title="collapse", icon="Close") as CloseBlock()
-			DisplayStamp(display=intinoFileBrowser, format=displayHeaderPanel) intinoFileBrowser
+	Block(layout=Horizontal Flexible, visible=false) contentBlock as Resizable
 
-		Block(layout=Vertical Flexible)
+		Block(layout=Horizontal Flexible) as Relative(width=20%)
+			Block(format=tabPanel leftTabPanel autoWidth) tabSelectorBlock as Relative(height=100%)
+				Block(format=panelDrawer) tabSelectorDrawer as Drawer(variant=PersistentAndMini) Absolute(width=200px)
+					Block(layout=Horizontal Center, format=middleAirLeft middleAirRight middleAirTop) as Absolute(height=30px)
+						Block(layout=Horizontal EndJustified Center) as Absolute(height=30px)
+							MaterialIconButton(title="open menu", icon="ChevronRight", size=Small, format=airLeft) as OpenDrawer(drawer=tabSelectorDrawer)
+							MaterialIconButton(title = "minimize", icon="ChevronLeft", size=Small, format=airLeft) as CloseDrawer(drawer=tabSelectorDrawer)
+							Text(value="Tools", format=airLeft, translate=true)
+					Divider
+					Block(layout=Vertical Flexible) views
+						Selector tabSelector as ListBox
+							Block(layout=Horizontal Center) modelOption as Option > MaterialIcon(icon="DescriptionOutlined", title="Model", format=airRight); Text(value="Model", translate=true)
+							Block(layout=Horizontal Center) resourcesOption as Option > MaterialIcon(icon="AccountTreeOutlined", title="Resources", format=airRight); Text(value="Resources", translate=true)
+
+			Block(layout=Vertical Flexible, format=whiteBackground) browserBlock as Relative(width=100%, height=100%)
+				Block(layout=Vertical Flexible) modelBrowserBlock as Conditional(tabSelectorBlock.tabSelectorDrawer.views.tabSelector.modelOption) Relative(height=100%, width=100%) > TemplateStamp(template=modelBrowserTemplate) modelBrowserStamp
+				Block(layout=Vertical Flexible) resourcesBrowserBlock as Conditional(tabSelectorBlock.tabSelectorDrawer.views.tabSelector.resourcesOption) Relative(height=100%, width=100%) > TemplateStamp(template=resourcesBrowserTemplate) resourcesBrowserStamp
+
+		Block(layout=Vertical Flexible) as Relative(width=80%)
 			Block(layout=Horizontal, format=leftBordered headerPanel greyLightBackground leftSpaced rightSpaced)
 				Block(layout=Horizontal Flexible)
 					Text(value="", format=h6, translate=true) filename
@@ -69,12 +68,56 @@ Template modelTemplate as Relative(height=100%, width=100%)
 				DisplayStamp(display=intinoDslEditor, format=fullHeight) intinoDslEditor
 			Block(visible=false) consoleBlock > TemplateStamp(template=consoleTemplate) console
 
-	Block(format=spaced) workspaceDialog as Popover Absolute(width=200px)
+	Dialog(title="File modified") fileModifiedDialog as Absolute(width=500px, height=180px)
+        Block as Relative(height=100%, offsetHeight=40px)
+        	Text(value="File have been modified. What do you want to do?", translate=true)
+		Divider
+		Block(layout=Horizontal)
+			Block(layout=Horizontal Flexible StartJustified)
+				Button(title="Cancel", size=Small, format=airRight) cancelSavingFile as Action
+			Block(layout=Horizontal EndJustified)
+				Button(title="Don't save", size=Small, format=airRight) continueWithoutSavingFile as Action
+				Button(title="Save", size=Small, highlight=Fill) continueSavingFile as Action
+
+Template(layout=Vertical Flexible) modelBrowserTemplate as Relative(height=100%, width=100%)
+
+	Block(layout=Horizontal, format=headerPanel greyLightBackground leftSpaced rightSpaced)
+		Block(layout=Horizontal Flexible) > Text(value="Model", format=h6, translate=true)
+		Block(layout=Horizontal Center, format=smallAirLeft)
+			MaterialIconButton(title="Operations...", icon="MoreVert", size=Small) operationsTrigger as OpenPopover(operationsDialog)
+
+	DisplayStamp(display=intinoFileBrowser, format=displayHeaderPanel smallAirRight) fileBrowser
+
+	Block(format=spaced) operationsDialog as Popover Absolute(width=250px)
 		Block(layout=Vertical Start)
-			MaterialIconButton(title="Add file", icon="Description", titlePosition=Right, size=Small, format=middleAirBottom) addFileTrigger as OpenDialog(fileDialog) > Shortcut(key="N", metaKeys=Control, visible=true)
-			MaterialIconButton(title="Add folder", icon="Folder", titlePosition=Right, size=Small, format=middleAirBottom) addFolderTrigger as OpenDialog(fileDialog) > Shortcut(key="N", metaKeys=Shift Control, visible=true)
-			MaterialIconButton(title="Rename", icon="Edit", titlePosition=Right, size=Small, format=middleAirBottom) editFilenameTrigger as OpenDialog(fileDialog) Readonly > Shortcut(key="R", metaKeys=Control, visible=true)
-			MaterialIconButton(title="Remove", icon="Delete", titlePosition=Right, size=Small, format=middleAirBottom) removeFileTrigger as Action Affirmed("Are you sure to remove?") Readonly
+			Link(title="Add model file", format=middleAirBottom) addFileTrigger as OpenDialog(fileDialog) > Shortcut(key="N", metaKeys=Control, visible=true)
+			Link(title="Add folder", format=middleAirBottom) addFolderTrigger as OpenDialog(fileDialog) > Shortcut(key="N", metaKeys=Shift Control, visible=true)
+			Link(title="Rename", format=middleAirBottom) editFilenameTrigger as OpenDialog(fileDialog) Readonly > Shortcut(key="R", metaKeys=Control, visible=true)
+			Link(title="Remove", format=middleAirBottom) removeFileTrigger as Action Affirmed("Are you sure to remove?") Readonly
+
+	Dialog(title="") fileDialog as Absolute(width=400px, height=200px)
+        Block(layout=Horizontal) as Relative(height=100%, offsetHeight=40px)
+			Text fileField as Editable(placeholder="Indicate name") Labeled("Name") Focused
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(fileDialog)
+            Button(title="Accept", size=Small, highlight=Fill) addFile as Action Readonly
+
+Template(layout=Vertical Flexible) resourcesBrowserTemplate as Relative(height=100%, width=100%)
+
+	Block(layout=Horizontal, format=headerPanel greyLightBackground leftSpaced rightSpaced)
+		Block(layout=Horizontal Flexible) > Text(value="Resources", format=h6, translate=true)
+		Block(layout=Horizontal Center, format=smallAirLeft)
+			MaterialIconButton(title="Operations...", icon="MoreVert", size=Small) operationsTrigger as OpenPopover(operationsDialog)
+
+	DisplayStamp(display=intinoFileBrowser, format=displayHeaderPanel smallAirRight) fileBrowser
+
+	Block(format=spaced) operationsDialog as Popover Absolute(width=250px)
+		Block(layout=Vertical Start)
+			Link(title="Add file", format=middleAirBottom) addFileTrigger as OpenDialog(fileDialog) > Shortcut(key="N", metaKeys=Control, visible=true)
+			Link(title="Add folder", format=middleAirBottom) addFolderTrigger as OpenDialog(fileDialog) > Shortcut(key="N", metaKeys=Shift Control, visible=true)
+			Link(title="Rename", format=middleAirBottom) editFilenameTrigger as OpenDialog(fileDialog) Readonly > Shortcut(key="R", metaKeys=Control, visible=true)
+			Link(title="Remove", format=middleAirBottom) removeFileTrigger as Action Affirmed("Are you sure to remove?") Readonly
 
 	Dialog(title="") fileDialog as Absolute(width=600px, height=350px)
         Block(layout=Horizontal) as Relative(height=100%, offsetHeight=40px)
@@ -92,17 +135,6 @@ Template modelTemplate as Relative(height=100%, width=100%)
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(fileDialog)
             Button(title="Accept", size=Small, highlight=Fill) addFile as Action Readonly
 
-	Dialog(title="File modified") fileModifiedDialog as Absolute(width=500px, height=180px)
-        Block as Relative(height=100%, offsetHeight=40px)
-        	Text(value="File have been modified. What do you want to do?", translate=true)
-		Divider
-		Block(layout=Horizontal)
-			Block(layout=Horizontal Flexible StartJustified)
-				Button(title="Cancel", size=Small, format=airRight) cancelSavingFile as Action
-			Block(layout=Horizontal EndJustified)
-				Button(title="Don't save", size=Small, format=airRight) continueWithoutSavingFile as Action
-				Button(title="Save", size=Small, highlight=Fill) continueSavingFile as Action
-
 Display intinoFileBrowser
 	Notification refresh as Object(intinoFileBrowserInfo)
 	Notification select as Object(intinoFileBrowserItem)
@@ -112,6 +144,7 @@ Display intinoFileBrowser
 
 Schema intinoFileBrowserInfo
 	Attribute itemAddress as Text
+	Attribute rootItem as Text
 	Attribute items as Object(intinoFileBrowserItem) List
 
 Schema intinoFileBrowserRenameInfo
@@ -154,7 +187,7 @@ Schema intinoDslEditorFile
 
 Template(format=consoleStyle) consoleTemplate
 	MaterialIconButton(title="Close", icon="Clear", size=Small, format=closeIcon) closeButton as Action
-	Text(value="Console", format=h6 airLeft middleAirTop, translate=true)
+	Text(value="Build output", format=h6 airLeft middleAirTop, translate=true)
 	Block(format=airTop airLeft airRight middleAirBottom)
 		TemplateStamp(template=consoleEntryTemplate) entries as Multiple(noItemsMessage="No messages")
 
@@ -162,7 +195,7 @@ Template(layout=Horizontal Center, format=middleAirBottom) consoleEntryTemplate
 	MaterialIcon(icon="Info", format=smallIconSize airRight blueColor, visible=false) infoIcon
 	MaterialIcon(icon="Warning", format=smallIconSize airRight orangeColor, visible=false) warningIcon
 	MaterialIcon(icon="Error", format=smallIconSize airRight redColor, visible=false) errorIcon
-	Text(format=airRight) file
+	Link(title="", format=airRight) file as Action Addressable(EditorElements.model)
 	Text(format=airRight) location
 	Text content
 

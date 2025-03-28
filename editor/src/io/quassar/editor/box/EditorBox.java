@@ -68,7 +68,7 @@ public class EditorBox extends AbstractBox {
 		languageLoader = new LanguageLoader(new LocalLanguageArtifactory(archetype));
 		languageManager = new LanguageManager(archetype);
 		serverManager = new LanguageServerManager(languageLoader, this::workSpaceOf);
-		modelManager = new ModelManager(archetype, serverManager);
+		modelManager = new ModelManager(archetype, l -> languageManager.get(l), serverManager);
 		userManager = new UserManager(archetype);
 		projectManager = new ProjectManager(archetype);
 		builderAccessor = new QuassarBuilderServiceAccessor(url(configuration.builderServiceUrl()));

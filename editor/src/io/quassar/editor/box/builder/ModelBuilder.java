@@ -11,6 +11,7 @@ import io.intino.builderservice.schemas.RunOperationContext;
 import io.intino.ls.document.DocumentManager;
 import io.intino.ls.document.FileDocumentManager;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.util.Formatters;
 import io.quassar.editor.box.util.TarUtils;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
@@ -20,7 +21,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.util.Collections;
 import java.util.List;
 
 import static io.intino.builderservice.schemas.OperationResult.State.Running;
@@ -43,36 +43,36 @@ public class ModelBuilder {
 		this.quassarBuilder = box.configuration().quassarBuilder();
 	}
 
-	public List<Message> build(String user) {
+	public BuildResult build(String user) {
 		try {
 			File taraFiles = taraFiles();
 			if (taraFiles == null)
-				return List.of(new Message().kind(Message.Kind.ERROR).content("Model files not found"));
-			List<Message> messages = doBuild(taraFiles);
-			if (!messages.isEmpty()) return messages;
+				return BuildResult.failure(new Message().kind(Message.Kind.ERROR).content("Model files not found"));
+			BuildResult result = doBuild(taraFiles);
+			if (!result.success()) return result;
 			manager.commit(user);
 			manager.push();
+			return result;
 		} catch (Throwable t) {
 			Logger.error(t);
-			return List.of(new Message().kind(Message.Kind.ERROR).content("Unknown error"));
+			return BuildResult.failure(new Message().kind(Message.Kind.ERROR).content("Unknown error"));
 		}
-		return Collections.emptyList();
 	}
 
-	private List<Message> doBuild(File taraFiles) throws InternalServerError, IOException, NotFound, InterruptedException, URISyntaxException {
-		List<Message> messages = runBuild(quassarBuilder, taraFiles, "Build");
-		return !messages.isEmpty() ? messages : Collections.emptyList();
+	private BuildResult doBuild(File taraFiles) throws InternalServerError, IOException, NotFound, InterruptedException, URISyntaxException {
+		return runBuild(quassarBuilder, taraFiles, "Build");
 	}
 
-	private List<Message> runBuild(String builder, File taraFiles, String operation) throws InternalServerError, IOException, NotFound, InterruptedException, URISyntaxException {
+	private BuildResult runBuild(String builder, File taraFiles, String operation) throws InternalServerError, IOException, NotFound, InterruptedException, URISyntaxException {
 		String ticket = accessor.postRunOperation(context(builder).operation(operation), Resource.InputStreamProvider.of(taraFiles));
 		OperationResult output = accessor.getOperationOutput(ticket);
 		while (output.state() == Running) {
 			Thread.sleep(1000);
 			output = accessor.getOperationOutput(ticket);
 		}
-		if (!output.success()) return output.messages();
-		return Collections.emptyList();
+		if (!output.success()) return BuildResult.failure(output.messages());
+		Resource resource = accessor.getOutputResource(ticket, output.outRef(), null);
+		return BuildResult.success(resource.inputStream());
 	}
 
 	private File taraFiles() {
@@ -98,9 +98,9 @@ public class ModelBuilder {
 		return new RunOperationContext()
 				.imageURL(builder)
 				.generationPackage("")
-				.language(language.name())
+				.language(Formatters.normalizeLanguageName(language.name()))
 				.languageVersion(language.version())
-				.project(model.name())
+				.project(Formatters.normalizeLanguageName(model.name()))
 				.projectVersion(release);
 	}
 

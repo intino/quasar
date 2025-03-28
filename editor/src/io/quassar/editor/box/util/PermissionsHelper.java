@@ -18,6 +18,10 @@ public class PermissionsHelper {
 		return !ModelHelper.isMetamodel(model, box);
 	}
 
+	public static boolean canBuild(Model model, String version, UISession session, EditorBox box) {
+		return !box.modelManager().isWorkspaceEmpty(model, version);
+	}
+
 	public static boolean canPublish(Model model, String version, UISession session, EditorBox box) {
 		return !box.modelManager().isWorkspaceEmpty(model, version);
 	}

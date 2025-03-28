@@ -77,7 +77,11 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 	}
 
 	private String content() {
-		return box().modelManager().content(model, release, uri);
+		return box().modelManager().content(language(), model, release, uri);
+	}
+
+	private Language language() {
+		return box().languageManager().get(model.language());
 	}
 
 }

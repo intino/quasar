@@ -8,6 +8,7 @@ import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 import org.apache.commons.io.IOUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -27,7 +28,7 @@ public class CreateModelCommand extends Command<Model> {
 	@Override
 	public Model execute() {
 		Model model = box.modelManager().create(name, title, description, language, owner);
-		box.modelManager().createFile(model, "Model.tara", "dsl " + model.language(), null);
+		box.modelManager().createFile(model, "Model.tara", null, null);
 		createDefaultReadme(model);
 		return model;
 	}
@@ -36,7 +37,7 @@ public class CreateModelCommand extends Command<Model> {
 		try {
 			InputStream stream = CreateModelCommand.class.getResourceAsStream("/readme.template.md");
 			String content = stream != null ? IOUtils.toString(stream, StandardCharsets.UTF_8) : "";
-			box.modelManager().createFile(model, "readme.md", content, null);
+			box.modelManager().createFile(model, Model.ResourcesDirectory + File.separator + "readme.md", content, null);
 		} catch (IOException e) {
 			Logger.error(e);
 		}

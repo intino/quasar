@@ -2,11 +2,13 @@ package io.quassar.editor.box.models;
 
 import io.intino.alexandria.logger.Logger;
 import io.quassar.editor.box.util.WorkspaceHelper;
+import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageServer;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +17,12 @@ import java.util.concurrent.ExecutionException;
 import static java.util.Collections.emptyList;
 
 public class ModelContainerWriter {
+	private final Language language;
 	private final Model model;
 	private final LanguageServer server;
 
-	public ModelContainerWriter(Model model, LanguageServer server) {
+	public ModelContainerWriter(Language language, Model model, LanguageServer server) {
+		this.language = language;
 		this.model = model;
 		this.server = server;
 	}
@@ -39,7 +43,7 @@ public class ModelContainerWriter {
 
 	public ModelContainer.File copy(String filename, ModelContainer.File source) {
 		String parent = WorkspaceHelper.parent(source.uri());
-		String uri = (!parent.isEmpty() ? parent + "/" : "") + filename;
+		String uri = (!parent.isEmpty() ? parent + File.separator : "") + filename;
 		String content = content(source.uri());
 		server.getWorkspaceService().didCreateFiles(new CreateFilesParams(List.of(new FileCreate(uri))));
 		server.getTextDocumentService().didSave(new DidSaveTextDocumentParams(new TextDocumentIdentifier(uri), content));
@@ -47,14 +51,14 @@ public class ModelContainerWriter {
 	}
 
 	public ModelContainer.File createFile(String filename, String content, ModelContainer.File parent) {
-		String uri = (parent != null && parent.isDirectory() ? parent.uri() + "/" : "") + filename;
+		String uri = (parent != null && parent.isDirectory() ? parent.uri() + File.separator : "") + filename;
 		server.getWorkspaceService().didCreateFiles(new CreateFilesParams(List.of(new FileCreate(uri))));
 		if (content != null) server.getTextDocumentService().didSave(new DidSaveTextDocumentParams(new TextDocumentIdentifier(uri), content));
 		return new ModelContainer.File(filename, uri, false, new ArrayList<>());
 	}
 
 	public ModelContainer.File createFolder(String name, ModelContainer.File parent) {
-		String uri = (parent != null && parent.isDirectory() ? parent.uri() + "/" : "") + name;
+		String uri = (parent != null && parent.isDirectory() ? parent.uri() + File.separator : "") + name;
 		DidChangeWorkspaceFoldersParams params = new DidChangeWorkspaceFoldersParams(new WorkspaceFoldersChangeEvent(List.of(new WorkspaceFolder(uri, name)), emptyList()));
 		server.getWorkspaceService().didChangeWorkspaceFolders(params);
 		return new ModelContainer.File(name, uri, true, new ArrayList<>());
@@ -66,13 +70,13 @@ public class ModelContainerWriter {
 
 	public ModelContainer.File rename(ModelContainer.File file, String newName) {
 		String parent = WorkspaceHelper.parent(file.uri());
-		String newUri = (!parent.isEmpty() ? parent + "/" : "") + newName;
+		String newUri = (!parent.isEmpty() ? parent + File.separator : "") + newName;
 		server.getWorkspaceService().didRenameFiles(new RenameFilesParams(List.of(new FileRename(file.uri(), newUri))));
 		return new ModelContainer.File(newName, newUri, file.isDirectory(), file.parents());
 	}
 
 	public ModelContainer.File move(ModelContainer.File file, ModelContainer.File directory) {
-		String newUri = directory.uri() + "/" + file.name();
+		String newUri = directory.uri() + File.separator + file.name();
 		server.getWorkspaceService().didRenameFiles(new RenameFilesParams(List.of(new FileRename(file.uri(), newUri))));
 		return new ModelContainer.File(file.name(), newUri, file.isDirectory(), new ArrayList<>());
 	}
@@ -94,7 +98,7 @@ public class ModelContainerWriter {
 	}
 
 	private String content(String uri) {
-		return new ModelContainerReader(model, server).content(uri);
+		return new ModelContainerReader(language, model, server).content(uri);
 	}
 
 }

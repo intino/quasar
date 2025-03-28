@@ -14,11 +14,17 @@ import '@codingame/monaco-vscode-java-default-extension';
 import '@codingame/monaco-vscode-javascript-default-extension';
 import '@codingame/monaco-vscode-groovy-default-extension';
 import '@codingame/monaco-vscode-python-default-extension';
+import '@codingame/monaco-vscode-markdown-basics-default-extension';
+//import { conf as MarkdownConf, language as MarkdownLanguage } from '@codingame/monaco-vscode-standalone-languages/markdown/markdown.js';
 import { MonacoLanguageClient } from 'monaco-languageclient';
 import { WebSocketMessageReader, WebSocketMessageWriter, toSocket } from 'vscode-ws-jsonrpc';
 import { CloseAction, ErrorAction } from 'vscode-languageclient';
 import { useWorkerFactory } from 'monaco-editor-wrapper/workerFactory';
+
 export const configureMonacoWorkers = () => {
+    const parameters = window.parent.intinoDslEditorParameters();
+    const file = parameters.file;
+
     useWorkerFactory({
         ignoreMapping: true,
         workerLoaders: {
@@ -26,6 +32,7 @@ export const configureMonacoWorkers = () => {
         }
     });
 };
+
 export const runClient = async () => {
     await initServices({
         serviceConfig: {
@@ -36,13 +43,18 @@ export const runClient = async () => {
             debugLogging: true,
         }
     });
+
     const parameters = window.parent.intinoDslEditorParameters();
     const file = parameters.file;
-    monaco.languages.register({
-        id: file.language.toLowerCase(),
-        extensions: ['.' + file.extension],
-        aliases: [file.language.toUpperCase(), file.language],
-    });
+
+    if (file.language.toLowerCase() === "tara") {
+        monaco.languages.register({
+            id: file.language.toLowerCase(),
+            extensions: ['.' + file.extension],
+            aliases: [file.language.toUpperCase(), file.language],
+        });
+    }
+
     const editor = monaco.editor.create(document.getElementById('monaco-editor-root'), {
         automaticLayout: true,
         wordBasedSuggestions: 'off',
@@ -50,10 +62,21 @@ export const runClient = async () => {
         readOnly: parameters.readonly,
         domReadOnly: parameters.readonly
     });
+
     const model = monaco.editor.createModel(file.content, file.language.toLowerCase(), monaco.Uri.parse(file.uri));
     editor.setModel(model);
+
     window.parent.intinoDslEditorSetup(editor, monaco);
     initWebSocketAndStartClient(parameters.webSocketUrl);
+//    window.setTimeout(() => {
+//        monaco.languages.register({
+//          id: "markdown",
+//          extensions: [".md", ".markdown", ".mdown", ".mkdn", ".mkd", ".mdwn", ".mdtxt", ".mdtext"],
+//          aliases: ["Markdown", "markdown"]
+//        });
+//        monaco.languages.setMonarchTokensProvider("markdown", MarkdownLanguage);
+//        monaco.languages.setLanguageConfiguration("markdown", MarkdownConf);
+//    }, 400);
 };
 /** parameterized version , support all languageId */
 export const initWebSocketAndStartClient = (url) => {
@@ -64,10 +87,7 @@ export const initWebSocketAndStartClient = (url) => {
         const socket = toSocket(webSocket);
         const reader = new WebSocketMessageReader(socket);
         const writer = new WebSocketMessageWriter(socket);
-        const languageClient = createLanguageClient({
-            reader,
-            writer
-        });
+        const languageClient = createLanguageClient({reader,writer});
         languageClient.start();
         reader.onClose(() => languageClient.stop());
     };

@@ -20,19 +20,23 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
 
 public class ModelManager {
 	private final Archetype archetype;
+	private final Function<String, Language> languageLoader;
 	private final LanguageServerManager serverManager;
 
-	public ModelManager(Archetype archetype, LanguageServerManager serverManager) {
+	public ModelManager(Archetype archetype, Function<String, Language> languageLoader, LanguageServerManager serverManager) {
 		this.archetype = archetype;
+		this.languageLoader = languageLoader;
 		this.serverManager = serverManager;
 	}
 
@@ -95,12 +99,12 @@ public class ModelManager {
 	}
 
 	public List<String> releases(Model model) {
-		List<File> releases = archetype.languages().releases(languageOf(model), model.name());
+		List<File> releases = archetype.languages().releases(languageNameOf(model), model.name());
 		return releases.stream().map(f -> f.getName().replace(".zip", "")).sorted((o1, o2) -> VersionNumberComparator.getInstance().compare(o1, o2)).toList();
 	}
 
 	public File release(Model model, String version) {
-		return archetype.languages().release(languageOf(model), model.name(), version);
+		return archetype.languages().release(languageNameOf(model), model.name(), version);
 	}
 
 	public Model create(String name, String title, String description, Language language, String owner) {
@@ -111,6 +115,7 @@ public class ModelManager {
 		model.language(language.name());
 		model.owner(owner);
 		model.isPrivate(true);
+		model.createDate(Instant.now());
 		save(model);
 		return model;
 	}
@@ -120,8 +125,8 @@ public class ModelManager {
 		result.name(name);
 		result.owner(owner);
 		save(result);
-		new ModelContainerWriter(model, server(model, Model.DraftRelease)).clone(result, server(result, Model.DraftRelease));
-		return get(languageOf(model), name);
+		new ModelContainerWriter(language(model), model, server(model, Model.DraftRelease)).clone(result, server(result, Model.DraftRelease));
+		return get(languageNameOf(model), name);
 	}
 
 	public boolean isWorkspaceEmpty(Model model, String release) {
@@ -132,7 +137,7 @@ public class ModelManager {
 
 	public URI workspace(Model model, String release) {
 		try {
-			File workspace = archetype.languages().workspace(languageOf(model), model.name());
+			File workspace = archetype.languages().workspace(languageNameOf(model), model.name());
 			if (release != null && !release.equals(Model.DraftRelease)) workspace = releaseWorkSpace(model, release);
 			return workspace.getAbsoluteFile().getCanonicalFile().toURI();
 		} catch (IOException e) {
@@ -142,23 +147,23 @@ public class ModelManager {
 	}
 
 	private File releaseWorkSpace(Model model, String release) {
-		File releaseFile = archetype.languages().release(languageOf(model), model.name(), release);
-		File workspace = archetype.tmp().releaseWorkspace(languageOf(model), model.name(), release);
+		File releaseFile = archetype.languages().release(languageNameOf(model), model.name(), release);
+		File workspace = archetype.tmp().releaseWorkspace(languageNameOf(model), model.name(), release);
 		if (!releaseFile.exists()) return workspace;
 		File[] files = workspace.listFiles();
 		if (files != null && files.length > 0) return workspace;
-		ZipHelper.extract(archetype.languages().release(languageOf(model), model.name(), release), workspace);
+		ZipHelper.extract(archetype.languages().release(languageNameOf(model), model.name(), release), workspace);
 		return workspace;
 	}
 
 	public ModelContainer.File copy(Model model, String filename, ModelContainer.File source) {
-		return new ModelContainerWriter(model, server(model, Model.DraftRelease)).copy(filename, source);
+		return new ModelContainerWriter(language(model), model, server(model, Model.DraftRelease)).copy(filename, source);
 	}
 
 	public OperationResult createRelease(Model model, String release) {
 		try {
 			if (isWorkspaceEmpty(model, Model.DraftRelease)) return OperationResult.Error("Workspace is empty");
-			File releaseFile = archetype.languages().release(languageOf(model), model.name(), release);
+			File releaseFile = archetype.languages().release(languageNameOf(model), model.name(), release);
 			ZipHelper.zipFolder(Paths.get(workspace(model, Model.DraftRelease)), releaseFile.toPath());
 			return OperationResult.Success();
 		} catch (Exception e) {
@@ -168,24 +173,24 @@ public class ModelManager {
 	}
 
 	public ModelContainer.File createFile(Model model, String name, String content, ModelContainer.File parent) {
-		return new ModelContainerWriter(model, server(model, Model.DraftRelease)).createFile(name, content, parent);
+		return new ModelContainerWriter(language(model), model, server(model, Model.DraftRelease)).createFile(name, content, parent);
 	}
 
 	public ModelContainer.File createFolder(Model model, String name, ModelContainer.File parent) {
-		return new ModelContainerWriter(model, server(model, Model.DraftRelease)).createFolder(name, parent);
+		return new ModelContainerWriter(language(model), model, server(model, Model.DraftRelease)).createFolder(name, parent);
 	}
 
 	public void save(Model model, ModelContainer.File file, String content) {
-		new ModelContainerWriter(model, server(model, Model.DraftRelease)).save(file, content);
+		new ModelContainerWriter(language(model), model, server(model, Model.DraftRelease)).save(file, content);
 	}
 
 	public ModelContainer.File rename(Model model, ModelContainer.File file, String newName) {
-		return new ModelContainerWriter(model, server(model, Model.DraftRelease)).rename(file, newName);
+		return new ModelContainerWriter(language(model), model, server(model, Model.DraftRelease)).rename(file, newName);
 	}
 
 	public ModelContainer.File move(Model model, ModelContainer.File file, ModelContainer.File directory) {
 		try {
-			return new ModelContainerWriter(model, server(model, Model.DraftRelease)).move(file, directory);
+			return new ModelContainerWriter(language(model), model, server(model, Model.DraftRelease)).move(file, directory);
 		} catch (Exception e) {
 			Logger.error(e);
 			return null;
@@ -194,7 +199,7 @@ public class ModelManager {
 
 	public void save(Model model) {
 		try {
-			Files.writeString(archetype.languages().properties(languageOf(model), model.name()).toPath(), Json.toString(model));
+			Files.writeString(archetype.languages().properties(languageNameOf(model), model.name()).toPath(), Json.toString(model));
 		} catch (IOException e) {
 			Logger.error(e);
 		}
@@ -211,12 +216,12 @@ public class ModelManager {
 	}
 
 	public void remove(Model model, ModelContainer.File file) {
-		new ModelContainerWriter(model, server(model, Model.DraftRelease)).remove(file);
+		new ModelContainerWriter(language(model), model, server(model, Model.DraftRelease)).remove(file);
 	}
 
 	public void remove(Model model) {
 		try {
-			File rootDir = archetype.languages().model(languageOf(model), model.name());
+			File rootDir = archetype.languages().model(languageNameOf(model), model.name());
 			if (!rootDir.exists()) return;
 			FileUtils.deleteDirectory(rootDir);
 		} catch (IOException e) {
@@ -224,12 +229,12 @@ public class ModelManager {
 		}
 	}
 
-	public ModelContainer modelContainer(Model model, String release) {
-		return new ModelContainer(model, server(model, release));
+	public ModelContainer modelContainer(Language language, Model model, String release) {
+		return new ModelContainer(language, model, server(model, release));
 	}
 
-	public String content(Model model, String release, String uri) {
-		return new ModelContainerReader(model, server(model, release)).content(uri);
+	public String content(Language language, Model model, String release, String uri) {
+		return new ModelContainerReader(language, model, server(model, release)).content(uri);
 	}
 
 	private boolean belongsTo(Model model, String user) {
@@ -246,7 +251,11 @@ public class ModelManager {
 		}
 	}
 
-	private String languageOf(Model model) {
+	private Language language(Model model) {
+		return languageLoader.apply(languageNameOf(model));
+	}
+
+	private String languageNameOf(Model model) {
 		return Language.nameOf(model.language());
 	}
 
