@@ -51,7 +51,7 @@ public class DiagnosticService {
 		if (reference.model() == null)
 			return new ModelUnit(model, reference.tokens(), reference.tree(), reference.syntaxErrors(), reference.dependencyErrors(), reference.semanticErrors());
 		model.languageName(reference.model().languageName());
-		units.forEach(unit -> unit.model().mograms()
+		units.stream().filter(u -> u.model() != null).forEach(unit -> unit.model().mograms()
 				.forEach(c -> model.add(c, unit.model().rulesOf(c))));
 		for (Mogram mogram : model.mograms()) mogram.container(model);
 		return new ModelUnit(model, null, null,
