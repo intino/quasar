@@ -7,6 +7,7 @@ import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command.ExecutionResult;
 import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.models.ModelContainer;
+import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.PermissionsHelper;
@@ -59,7 +60,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		releaseSelector.onExecute(e -> openRelease(e.option()));
 		buildTrigger.onExecute(e -> build());
 		publishTrigger.onExecute(e -> publish());
-		downloadTrigger.onExecute(e -> download());
+		downloadTrigger.onExecute(e -> download(e.option()));
 		modelPublishDialog.onPublish((m, v) -> openRelease(v));
 		modelPublishDialog.onPublishFailure((m, v) -> publishListener.accept(m, v));
 		modelSettingsTrigger.onExecute(e -> openSettingsDialog());
@@ -109,24 +110,19 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		modelPublishDialog.open();
 	}
 
-	private UIFile download() {
-		File release = box().modelManager().release(model, this.release);
-		return new UIFile() {
-			@Override
-			public String label() {
-				return model.name() + " " + release.getName();
-			}
+	private UIFile download(String option) {
+		if (option.equals("Accessor")) return downloadAccessor();
+		return downloadModel();
+	}
 
-			@Override
-			public InputStream content() {
-				try {
-					return new FileInputStream(release);
-				} catch (FileNotFoundException e) {
-					Logger.error(e);
-					return new ByteArrayInputStream(new byte[0]);
-				}
-			}
-		};
+	private UIFile downloadModel() {
+		File release = box().modelManager().release(model, this.release);
+		return DisplayHelper.uiFile(model.name() + "-" + release.getName(), release);
+	}
+
+	private UIFile downloadAccessor() {
+		File release = box().modelManager().releaseAccessor(model, this.release);
+		return DisplayHelper.uiFile(model.name() + "-" + release.getName(), release);
 	}
 
 	private void openSettingsDialog() {

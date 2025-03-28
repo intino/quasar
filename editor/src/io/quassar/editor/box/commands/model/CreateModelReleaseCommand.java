@@ -23,8 +23,7 @@ public class CreateModelReleaseCommand extends Command<ExecutionResult> {
 	public ExecutionResult execute() {
 		ExecutionResult result = compile();
 		if (!result.success()) return result;
-		saveAccessor(result);
-		return resultOf(box.modelManager().createRelease(model, version));
+		return resultOf(box.modelManager().createRelease(model, version, result.output()));
 	}
 
 	private ExecutionResult compile() {
@@ -32,15 +31,6 @@ public class CreateModelReleaseCommand extends Command<ExecutionResult> {
 		command.author = author;
 		command.model = model;
 		return command.execute();
-	}
-
-	private void saveAccessor(ExecutionResult result) {
-		try {
-			File destiny = box.archetype().languages().releaseAccessor(Language.nameOf(model.language()), model.name(), version);
-			FileUtils.copyInputStreamToFile(result.output(), destiny);
-		} catch (IOException e) {
-			Logger.error(e);
-		}
 	}
 
 }

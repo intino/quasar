@@ -4,6 +4,28 @@ use Models
 use UI
 use Theme
 
+Template(layout=Horizontal Center, format=subHeaderStyle) languagesHeaderTemplate
+
+	Block(layout=Horizontal Flexible)
+		Block(layout=Horizontal) as Relative(width=100%)
+			Text(value="public languages", format=doubleAirRight bold, visible=false) publicLanguagesText
+			Link(title="public languages", format=doubleAirRight, visible=false) publicLanguagesLink as Action Addressable(EditorElements.languages)
+			Text(value="my languages", format=bold, visible=false) myLanguagesText
+			Link(title="my languages", visible=false) myLanguagesLink as Action Addressable(EditorElements.languages)
+
+	Block(layout=Horizontal EndJustified)
+
+Template(layout=Horizontal Center, format=subHeaderStyle) languageHeaderTemplate
+
+	Block(layout=Horizontal Flexible)
+		Block(layout=Horizontal) as Relative(width=100%)
+			Text(value="public models", format=doubleAirRight bold) publicModelsText
+			Link(title="public models", format=doubleAirRight, visible=false) publicModelsLink as Action Addressable(EditorElements.language)
+			Text(value="my models", format=bold, visible=false) myModelsText
+			Link(title="my models") myModelsLink as Action Addressable(EditorElements.language)
+
+	Block(layout=Horizontal EndJustified)
+
 Template languagesTemplate as Relative(height=100%, width=100%)
 	TemplateStamp(template=languagesHeaderTemplate) headerStamp
 

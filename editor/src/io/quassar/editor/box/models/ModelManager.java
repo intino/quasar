@@ -3,6 +3,7 @@ package io.quassar.editor.box.models;
 import io.intino.alexandria.Json;
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
+import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.box.languages.LanguageServerManager;
 import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.box.util.VersionNumberComparator;
@@ -16,6 +17,7 @@ import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -107,6 +109,10 @@ public class ModelManager {
 		return archetype.languages().release(languageNameOf(model), model.name(), version);
 	}
 
+	public File releaseAccessor(Model model, String version) {
+		return archetype.languages().releaseAccessor(languageNameOf(model), model.name(), version);
+	}
+
 	public Model create(String name, String title, String description, Language language, String owner) {
 		Model model = new Model();
 		model.name(name);
@@ -160,11 +166,13 @@ public class ModelManager {
 		return new ModelContainerWriter(language(model), model, server(model, Model.DraftRelease)).copy(filename, source);
 	}
 
-	public OperationResult createRelease(Model model, String release) {
+	public OperationResult createRelease(Model model, String release, InputStream accessor) {
 		try {
 			if (isWorkspaceEmpty(model, Model.DraftRelease)) return OperationResult.Error("Workspace is empty");
 			File releaseFile = archetype.languages().release(languageNameOf(model), model.name(), release);
 			ZipHelper.zipFolder(Paths.get(workspace(model, Model.DraftRelease)), releaseFile.toPath());
+			File accessorDestiny = releaseAccessor(model, release);
+			FileUtils.copyInputStreamToFile(accessor, accessorDestiny);
 			return OperationResult.Success();
 		} catch (Exception e) {
 			Logger.error(e);

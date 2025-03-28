@@ -58,50 +58,6 @@ Template(layout=Horizontal Center, format=headerStyle) headerTemplate
 			Selector as ListBox
 				Block as Option > Link(title="Home") home as Action Addressable(EditorElements.home)
 
-Template(layout=Horizontal Center, format=subHeaderStyle) languagesHeaderTemplate
-
-	Block(layout=Horizontal Flexible)
-		Block(layout=Horizontal) as Relative(width=100%)
-			Text(value="public languages", format=doubleAirRight bold, visible=false) publicLanguagesText
-			Link(title="public languages", format=doubleAirRight, visible=false) publicLanguagesLink as Action Addressable(EditorElements.languages)
-			Text(value="my languages", format=bold, visible=false) myLanguagesText
-			Link(title="my languages", visible=false) myLanguagesLink as Action Addressable(EditorElements.languages)
-
-	Block(layout=Horizontal EndJustified)
-
-Template(layout=Horizontal Center, format=subHeaderStyle) languageHeaderTemplate
-
-	Block(layout=Horizontal Flexible)
-		Block(layout=Horizontal) as Relative(width=100%)
-			Text(value="public models", format=doubleAirRight bold) publicModelsText
-			Link(title="public models", format=doubleAirRight, visible=false) publicModelsLink as Action Addressable(EditorElements.language)
-			Text(value="my models", format=bold, visible=false) myModelsText
-			Link(title="my models") myModelsLink as Action Addressable(EditorElements.language)
-
-	Block(layout=Horizontal EndJustified)
-
-Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
-
-	Block(layout=Horizontal Center Flexible, visible=false) contentBlock
-		Block(layout=Horizontal Flexible)
-			AvatarIconButton(title="", size=Small, format=airRight, visible=false) projectModelSelector as Action
-			Link(title="", format=modelViewTitle) title as Action
-			Block(layout=Horizontal Center, visible=false, format=doubleAirRight) titleEditorBlock as Absolute(width=360px)
-				Text(translate=true, format=modelViewTitle airRight) titleEditor as Editable
-				Link(title="Cancel", format=airRight) closeTitleEditor as Action
-				Link(title="Save") saveTitleEditor as Action
-			Block(layout=Horizontal Center, format=doubleAirLeft)
-				SplitButton(title="draft", format=airRight minSelectorWidth, options="draft", defaultOption = "draft") releaseSelector as Action
-				Button(title="build", size=Small) buildTrigger as Action > Shortcut(key="F9", metaKeys=Control)
-				Button(title="publish", format=airRight, visible=false) publishTrigger as Action
-				Button(title="download", format=airRight, visible=false) downloadTrigger as Download
-
-		Block(layout=Horizontal EndJustified)
-			Button(title="settings", format=airRight) modelSettingsTrigger as Action
-
-	TemplateStamp(template=publishModelDialog) modelPublishDialog
-	TemplateStamp(template=modelSettingsDialog) modelSettingsDialog
-
 Template(layout=Vertical Flexible) permissionsTemplate as Relative(height=100%,width=100%)
 	Block(layout=Vertical CenterCenter, format=grey) as Relative(height=100%,width=100%)
 		Block(format=visible) as Absolute(width=400px, height=400px) Paper

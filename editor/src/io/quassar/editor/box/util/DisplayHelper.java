@@ -1,14 +1,16 @@
 package io.quassar.editor.box.util;
 
 import io.intino.alexandria.Resource;
+import io.intino.alexandria.logger.Logger;
 import io.intino.alexandria.ui.displays.components.TextEditable;
+import io.intino.alexandria.ui.server.UIFile;
 import io.intino.alexandria.ui.services.push.UISession;
 import io.intino.alexandria.ui.services.push.User;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
-import java.io.ByteArrayInputStream;
+import java.io.*;
 import java.util.function.Function;
 
 public class DisplayHelper {
@@ -37,6 +39,29 @@ public class DisplayHelper {
 
 	public static Resource emptyFile() {
 		return new Resource("empty", new ByteArrayInputStream(new byte[0]));
+	}
+
+	public static UIFile uiFile(String label, File content) {
+		try {
+			return uiFile(label, new FileInputStream(content));
+		} catch (FileNotFoundException e) {
+			Logger.error(e);
+			return uiFile(label, new ByteArrayInputStream(new byte[0]));
+		}
+	}
+
+	public static UIFile uiFile(String label, InputStream content) {
+		return new UIFile() {
+			@Override
+			public String label() {
+				return label;
+			}
+
+			@Override
+			public InputStream content() {
+				return content;
+			}
+		};
 	}
 
 }

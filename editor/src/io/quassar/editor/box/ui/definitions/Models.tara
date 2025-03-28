@@ -4,6 +4,28 @@ use Editors
 use UI
 use Theme
 
+Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
+
+	Block(layout=Horizontal Center Flexible, visible=false) contentBlock
+		Block(layout=Horizontal Flexible)
+			AvatarIconButton(title="", size=Small, format=airRight, visible=false) projectModelSelector as Action
+			Link(title="", format=modelViewTitle) title as Action
+			Block(layout=Horizontal Center, visible=false, format=doubleAirRight) titleEditorBlock as Absolute(width=360px)
+				Text(translate=true, format=modelViewTitle airRight) titleEditor as Editable
+				Link(title="Cancel", format=airRight) closeTitleEditor as Action
+				Link(title="Save") saveTitleEditor as Action
+			Block(layout=Horizontal Center, format=doubleAirLeft)
+				SplitButton(title="draft", format=airRight minSelectorWidth, options="draft", defaultOption = "draft") releaseSelector as Action
+				Button(title="build", size=Small) buildTrigger as Action > Shortcut(key="F9", metaKeys=Control)
+				Button(title="publish", format=airRight, visible=false) publishTrigger as Action
+				Button(title="download", format=airRight, visible=false) downloadTrigger as Download(options="Model" "Accessor")
+
+		Block(layout=Horizontal EndJustified)
+			Button(title="settings", format=airRight) modelSettingsTrigger as Action
+
+	TemplateStamp(template=publishModelDialog) modelPublishDialog
+	TemplateStamp(template=modelSettingsDialog) modelSettingsDialog
+
 Template modelsTemplate as Relative(height=100%, width=100%)
 
 	Block(layout=Horizontal Center, format=middleAirBottom)
