@@ -39,6 +39,7 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
 	    const backgroundColor = theme.isDark() ? "#1F1F1F" : "white";
 	    window.intinoDslEditorParameters = this.getParameters.bind(this);
 	    window.intinoDslEditorSetup = this.handleSetup.bind(this);
+	    window.intinoExecuteCommand = this.handleExecuteCommand.bind(this);
         return (
             <div style={{position:'relative',height:"calc(100% - 20px)",width:"100%"}}>
                 <div className="layout vertical flex center-center" ref={this.loading} style={{height:"100%",width:"100%",position:"absolute",background:backgroundColor,top:'0',display:'block'}}>
@@ -71,16 +72,19 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
     };
 
     handleSetup = (editor, monaco) => {
+        this.editor = editor;
         const theme = Theme.get();
         const handleChange = this.handleChange.bind(this);
         const CtrlCmd = 2048;
         const KeyS = 49;
         const KeyF = 70;
+        const KeyF9 = 120;
         const self = this;
         editor.getModel().onDidChangeContent(event => handleChange(editor.getValue()));
         editor.getModel().updateOptions({ insertSpaces: false, tabSize: 4 });
         editor.addCommand(CtrlCmd | KeyS, this.handleSave.bind(this));
         editor.onDidChangeCursorPosition(e => self.refreshFooter(e));
+        this.updatePosition(editor, this.state.file.position);
         const loading = this.loading;
         loading.current.style.display = "block";
         window.setTimeout(() => {
@@ -100,6 +104,10 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
         this.requester.fileContent(this.state.file.content);
     };
 
+    handleExecuteCommand = (command) => {
+        this.requester.executeCommand(command);
+    };
+
     handleChange = (content) => {
         this.state.file.content = content;
         this.requester.fileModified();
@@ -115,6 +123,16 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
 
     refresh = (file) => {
         this.setState({file});
+    };
+
+    refreshPosition = (position) => {
+        this.updatePosition(this.editor, position);
+    };
+
+    updatePosition = (editor, position) => {
+        if (position == null) return;
+        editor.setPosition({lineNumber: position.line, column: position.column != -1 ? position.column : 1});
+        editor.revealLine(position.line);
     };
 
 }

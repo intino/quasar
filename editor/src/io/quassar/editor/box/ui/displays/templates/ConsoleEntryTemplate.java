@@ -3,6 +3,7 @@ package io.quassar.editor.box.ui.displays.templates;
 import io.intino.builderservice.schemas.Message;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.util.PathHelper;
+import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.Model;
 
 public class ConsoleEntryTemplate extends AbstractConsoleEntryTemplate<EditorBox> {
@@ -33,7 +34,7 @@ public class ConsoleEntryTemplate extends AbstractConsoleEntryTemplate<EditorBox
 		warningIcon.visible(message.kind() == Message.Kind.WARNING);
 		errorIcon.visible(message.kind() == Message.Kind.ERROR);
 		file.title(message.uri());
-		file.address(path -> PathHelper.modelPath(path, model, release, message.uri()));
+		file.address(path -> PathHelper.modelPath(path, model, release, message.uri(), new FilePosition(message.line(), message.column())));
 		location.value(message.line() + ":" + message.column());
 		content.value(message.content());
 	}

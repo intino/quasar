@@ -68,6 +68,7 @@ export const runClient = async () => {
 
     window.parent.intinoDslEditorSetup(editor, monaco);
     initWebSocketAndStartClient(parameters.webSocketUrl);
+    handleEvents();
 //    window.setTimeout(() => {
 //        monaco.languages.register({
 //          id: "markdown",
@@ -111,6 +112,19 @@ export const createLanguageClient = (transports) => {
                 return Promise.resolve(transports);
             }
         }
+    });
+};
+const handleEvents = () => {
+    const pressed = [];
+    document.addEventListener("keydown", (event) => {
+        pressed[event.key.toLowerCase()] = true;
+        if ((pressed["control"] || pressed["meta"]) && event.key.toLowerCase() === "f9") {
+            window.parent.intinoExecuteCommand("build");
+            return false;
+        }
+    });
+    document.addEventListener("keyup", (event) => {
+        delete pressed[event.key.toLowerCase()];
     });
 };
 //# sourceMappingURL=wrapper.js.map

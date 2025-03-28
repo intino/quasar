@@ -4,6 +4,7 @@ import io.intino.alexandria.ui.services.push.UISession;
 import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.ui.types.LanguagesTab;
+import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
@@ -58,9 +59,14 @@ public class PathHelper {
 	}
 
 	public static String modelPath(String address, Model model, String release, String file) {
+		return modelPath(address, model, release, file, null);
+	}
+
+	public static String modelPath(String address, Model model, String release, String file, FilePosition position) {
 		String result = address.replace(":language", Language.nameOf(model.language())).replace(":model", model.name());
 		result += release != null ? "?release=" + release : "";
-		result += file != null ? ((release != null ? "&" : "?") + "file=" + file) : "";
+		result += file != null ? ((result.contains("?") ? "&" : "?") + "file=" + file) : "";
+		result += position != null ? ((result.contains("?") ? "&" : "?") + "pos=" +position.line() + "-" + position.column()) : "";
 		return result;
 	}
 

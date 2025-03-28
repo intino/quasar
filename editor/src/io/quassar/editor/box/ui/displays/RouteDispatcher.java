@@ -31,8 +31,8 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	}
 
 	@Override
-	public void dispatchModel(Soul soul, String language, String model, String release, String file) {
-		soul.currentLayer(HomeTemplate.class).openModel(language, model, release, file);
+	public void dispatchModel(Soul soul, String language, String model, String release, String file, String position) {
+		soul.currentLayer(HomeTemplate.class).openModel(language, model, release, file, position);
 	}
 
 	@Override

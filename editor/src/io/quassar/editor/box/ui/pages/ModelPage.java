@@ -9,6 +9,7 @@ public class ModelPage extends AbstractModelPage {
 	public String model;
 	public String release;
 	public String file;
+	public String pos;
 
 	@Override
 	public boolean hasPermissions() {

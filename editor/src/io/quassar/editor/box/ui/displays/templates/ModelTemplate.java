@@ -1,5 +1,6 @@
 package io.quassar.editor.box.ui.displays.templates;
 
+import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.utils.DelayerUtil;
 import io.intino.builderservice.schemas.Message;
 import io.quassar.editor.box.EditorBox;
@@ -8,6 +9,7 @@ import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.box.schemas.IntinoFileBrowserItem;
 import io.quassar.editor.box.ui.displays.IntinoDslEditor;
+import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
@@ -17,6 +19,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	private Model model;
 	private String release;
 	private ModelContainer.File selectedFile;
+	private FilePosition selectedPosition;
 	private ModelContainer.File selectedNewFile;
 	private ModelContainer modelContainer;
 	private boolean selectedFileIsModified = false;
@@ -26,11 +29,12 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		super(box);
 	}
 
-	public void open(String language, String model, String release, String file) {
+	public void open(String language, String model, String release, String file, String position) {
 		this.model = box().modelManager().get(language, model);
 		this.release = release != null ? release : Model.DraftRelease;
 		this.modelContainer = this.model != null ? box().modelManager().modelContainer(box().languageManager().get(language), this.model, this.release) : null;
 		this.selectedFile = file != null && modelContainer != null ? modelContainer.file(file) : null;
+		this.selectedPosition = position != null ? FilePosition.from(position) : null;
 		refresh();
 	}
 
@@ -69,7 +73,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	}
 
 	private void initHeader() {
-		headerStamp.onBuild((m, e) -> updateConsole(e));
+		headerStamp.onBuild(m -> build());
 		headerStamp.onPublish((m, e) -> updateConsole(e));
 	}
 
@@ -121,6 +125,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 			refreshFileEditorToolbar();
 		});
 		editor.onSaveFile(this::saveFile);
+		editor.onBuild(e -> build());
 	}
 
 	private void initFileModifiedDialog() {
@@ -172,7 +177,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		IntinoDslEditor display = intinoDslEditor.display();
 		display.model(model);
 		display.release(release);
-		display.file(selectedFile.name(), selectedFile.uri(), selectedFile.extension(), selectedFile.language());
+		display.file(selectedFile.name(), selectedFile.uri(), selectedFile.extension(), selectedFile.language(), selectedPosition);
 		display.refresh();
 	}
 
@@ -235,6 +240,14 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	private void reloadAndOpen(ModelContainer.File file) {
 		reload();
 		if (file != null) open(file);
+	}
+
+	private void build() {
+		notifyUser(translate("Building model..."), UserMessage.Type.Loading);
+		ExecutionResult result = box().commands(ModelCommands.class).build(model, username());
+		updateConsole(result);
+		if (result.success()) notifyUser("Model built successfully", UserMessage.Type.Success);
+		else hideUserNotification();
 	}
 
 }

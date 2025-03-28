@@ -189,9 +189,11 @@ Schema intinoFileBrowserItem
 Display intinoDslEditor
 	Notification setup as Object(intinoDslEditorSetup)
 	Notification refresh as Object(intinoDslEditorFile)
+	Notification refreshPosition as Object(intinoDslEditorFilePosition)
 	Notification receiveContent
 	Request fileModified
 	Request fileContent as Text
+	Request executeCommand as Text
 
 Schema intinoDslEditorSetup
 	Attribute dslName as Text
@@ -206,6 +208,11 @@ Schema intinoDslEditorFile
 	Attribute content as Text
 	Attribute language as Text
 	Attribute extension as Text
+	Attribute position as Object(intinoDslEditorFilePosition)
+
+Schema intinoDslEditorFilePosition
+	Attribute line as Integer
+	Attribute column as Integer
 
 Template(format=consoleStyle) consoleTemplate
 	MaterialIconButton(title="Close", icon="Clear", size=Small, format=closeIcon) closeButton as Action

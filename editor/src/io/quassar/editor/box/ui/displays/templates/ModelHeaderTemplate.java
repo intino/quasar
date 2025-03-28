@@ -18,12 +18,13 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> {
 	private Model model;
 	private String release;
 	private ModelContainer.File file;
-	private BiConsumer<Model, ExecutionResult> buildListener;
+	private Consumer<Model> buildListener;
 	private BiConsumer<Model, ExecutionResult> publishListener;
 
 	public ModelHeaderTemplate(EditorBox box) {
@@ -42,7 +43,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		this.file = value;
 	}
 
-	public void onBuild(BiConsumer<Model, ExecutionResult> listener) {
+	public void onBuild(Consumer<Model> listener) {
 		this.buildListener = listener;
 	}
 
@@ -98,11 +99,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	}
 
 	private void build() {
-		notifyUser(translate("Building model..."), UserMessage.Type.Loading);
-		ExecutionResult result = box().commands(ModelCommands.class).build(model, username());
-		buildListener.accept(model, result);
-		if (result.success()) notifyUser("Model built successfully", UserMessage.Type.Success);
-		else hideUserNotification();
+		buildListener.accept(model);
 	}
 
 	private void publish() {
