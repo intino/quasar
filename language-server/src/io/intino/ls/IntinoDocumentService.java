@@ -56,10 +56,10 @@ public class IntinoDocumentService implements TextDocumentService {
 		this.completionService = new CompletionService();
 		this.models = models;
 		this.client = client;
-		laodModels();
+		loadModels();
 	}
 
-	private void laodModels() {
+	private void loadModels() {
 		documentSourceProvider.all().filter(s -> isTaraModel(s.uri().getPath())).forEach(u -> {
 			try {
 				parsingService.updateModel(new StringSource(u.uri().getPath(), new String(u.content().readAllBytes())));

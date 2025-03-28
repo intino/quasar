@@ -16,7 +16,6 @@ public class Model {
 	private List<String> collaborators = new ArrayList<>();
 	private Map<String, String> tokens = new HashMap<>();
 	private boolean isPrivate = false;
-	private String targetLanguage;
 
 	public static final String DraftRelease = "draft";
 	public static final String DefaultOwner = "anonymous";
@@ -107,15 +106,6 @@ public class Model {
 
 	public Model tokens(Map<String, String> tokenMap) {
 		this.tokens = tokenMap;
-		return this;
-	}
-
-	public String targetLanguage() {
-		return targetLanguage;
-	}
-
-	public Model targetLanguage(String targetLanguage) {
-		this.targetLanguage = targetLanguage;
 		return this;
 	}
 
