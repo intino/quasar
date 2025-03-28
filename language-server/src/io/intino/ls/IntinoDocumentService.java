@@ -21,6 +21,7 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either3;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.TextDocumentService;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -59,13 +60,17 @@ public class IntinoDocumentService implements TextDocumentService {
 	}
 
 	private void laodModels() {
-		documentSourceProvider.all().forEach(u -> {
+		documentSourceProvider.all().filter(s -> isTaraModel(s.uri().getPath())).forEach(u -> {
 			try {
 				parsingService.updateModel(new StringSource(u.uri().getPath(), new String(u.content().readAllBytes())));
 			} catch (IOException e) {
 				Logger.error(e);
 			}
 		});
+	}
+
+	private boolean isTaraModel(String path) {
+		return new File(path).getName().endsWith(".tara");
 	}
 
 	@Override

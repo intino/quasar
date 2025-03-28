@@ -115,7 +115,7 @@ public class FileDocumentManager implements DocumentManager {
 		return new TextDocumentItem(relativePath(f).getPath(), languageOf(f), (int) f.lastModified(), content(f));
 	}
 
-	private String languageOf(File f) {
+	public static String languageOf(File f) {
 		try {
 			if (!f.exists()) return "";
 			if (f.getName().endsWith(".tara"))
@@ -127,7 +127,7 @@ public class FileDocumentManager implements DocumentManager {
 		}
 	}
 
-	private String extensionOf(File f) {
+	public static String extensionOf(File f) {
 		String fileName = f.getName();
 		int lastIndex = fileName.lastIndexOf('.');
 		return lastIndex > 0 && lastIndex < fileName.length() - 1 ? fileName.substring(lastIndex + 1) : "";
