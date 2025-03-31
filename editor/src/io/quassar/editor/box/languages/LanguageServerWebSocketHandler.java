@@ -53,7 +53,7 @@ public class LanguageServerWebSocketHandler implements WebSocketListener {
 	@Override
 	public void onWebSocketText(String message) {
 		try {
-			var content = "Content-Length: " + message.length() + "\n\n" + message;
+			var content = "Content-Length: " + message.getBytes().length + "\n\n" + message;
 			clientOutput.write(content.getBytes());
 			clientOutput.flush();
 		} catch (Exception e) {
