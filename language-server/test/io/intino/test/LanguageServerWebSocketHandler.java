@@ -1,8 +1,8 @@
 package io.intino.test;
 
 import io.intino.alexandria.logger.Logger;
-import io.intino.ls.document.FileDocumentManager;
 import io.intino.ls.IntinoLanguageServer;
+import io.intino.ls.document.FileDocumentManager;
 import io.intino.tara.Tara;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -11,8 +11,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.eclipse.jetty.websocket.server.WebSocketHandler;
-import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
+import org.eclipse.jetty.websocket.server.config.JettyWebSocketServletContainerInitializer;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
 import org.eclipse.lsp4j.launch.LSPLauncher;
 import org.eclipse.lsp4j.services.LanguageClient;
@@ -37,25 +36,21 @@ public class LanguageServerWebSocketHandler {
 	private PipedOutputStream output;
 
 	public static void main(String[] args) throws Exception {
-		Server server = new Server(8080);
+		Server server = new Server(8081);
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		context.setContextPath("/");
 		server.setHandler(context);
-		WebSocketHandler wsHandler = new WebSocketHandler() {
-			@Override
-			public void configure(WebSocketServletFactory factory) {
-				factory.setCreator((req, resp) -> {
-					try {
-						return new LanguageServerWebSocketHandler(new Meta(), new File("./workspace"));
-					} catch (IOException e) {
-						Logger.error(e);
-						return null;
-					}
-				});
-			}
-		};
-		context.setHandler(wsHandler);
-
+		JettyWebSocketServletContainerInitializer.configure(context, (servletContext, wsContainer) -> {
+			wsContainer.addMapping("/ws", (req, resp) -> {
+				try {
+					return new LanguageServerWebSocketHandler(new Meta(), new File("./workspace"));
+				} catch (IOException e) {
+					Logger.error(e);
+					return null;
+				}
+			});
+		});
+		server.setHandler(context);
 		server.start();
 		server.join();
 	}

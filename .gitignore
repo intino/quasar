@@ -11,3 +11,6 @@ package.json
 package-lock.json
 webpack.config.js
 */www/
+res/js/monaco-client/
+*/res/www
+temp2

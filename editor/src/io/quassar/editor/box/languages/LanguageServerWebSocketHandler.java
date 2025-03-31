@@ -17,6 +17,7 @@ import java.util.concurrent.Executors;
 import java.util.function.Function;
 
 public class LanguageServerWebSocketHandler implements WebSocketListener {
+	public static final int MessageSize = 1_000_000;
 	private final Function<Session, LanguageServer> provider;
 	private ExecutorService executorService;
 	private PipedOutputStream clientOutput;
@@ -32,9 +33,10 @@ public class LanguageServerWebSocketHandler implements WebSocketListener {
 		try {
 			synchronized (monitor) {
 				session.setIdleTimeout(Duration.ofHours(1));
-				PipedInputStream clientInput = new PipedInputStream();
+				session.setMaxTextMessageSize(MessageSize);
+				PipedInputStream clientInput = new PipedInputStream(MessageSize);
 				clientOutput = new PipedOutputStream(clientInput);
-				serverInput = new PipedInputStream();
+				serverInput = new PipedInputStream(MessageSize);
 				PipedOutputStream out = new PipedOutputStream(serverInput);
 				executorService = Executors.newSingleThreadExecutor();
 				executorService.submit(() -> notificationThread(session));
@@ -69,7 +71,7 @@ public class LanguageServerWebSocketHandler implements WebSocketListener {
 	private void notificationThread(Session session) {
 		try {
 			int bytesRead;
-			byte[] buffer = new byte[2048];
+			byte[] buffer = new byte[8096];
 			while ((bytesRead = serverInput.read(buffer)) != -1) {
 				String content = new String(buffer, 0, bytesRead);
 				if (content.contains("\n"))

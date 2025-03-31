@@ -28,4 +28,10 @@ public class BuilderRunnerUseCaseTest {
 		FileSystemUtils.removeDir(new File("/Users/oroncal/workspace/sandbox/flogo/flogo-accessor"));
 		QuassarcRunner.main(new String[]{"test-res/flogo-m2.txt"});
 	}
+
+	@Test
+	@Ignore
+	public void should_run_quassar_builder_with_m2_2() {
+		QuassarcRunner.main(new String[]{"test-res/prueba-m2.txt"});
+	}
 }

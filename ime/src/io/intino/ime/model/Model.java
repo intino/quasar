@@ -1,6 +1,6 @@
 package io.intino.ime.model;
 
-public final class Model {
+public final class 	Model {
 	private String id;
 	private String label;
 	private String modelingLanguage;

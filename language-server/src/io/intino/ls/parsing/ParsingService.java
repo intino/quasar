@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 public class ParsingService {
-
 	private final Map<URI, ModelUnit> models;
 
 	public ParsingService(Map<URI, ModelUnit> models) {
