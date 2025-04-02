@@ -17,6 +17,7 @@ public class CreateModelFileCommand extends Command<ModelContainer.File> {
 
 	@Override
 	public ModelContainer.File execute() {
+		name = name.replace(" ", "_");
 		return box.modelManager().createFile(model, name, content, parent);
 	}
 

@@ -12,6 +12,7 @@ import java.util.List;
 
 public class BuildModelCommand extends Command<ExecutionResult> {
 	public Model model;
+	public String release;
 
 	public BuildModelCommand(EditorBox box) {
 		super(box);
@@ -24,7 +25,7 @@ public class BuildModelCommand extends Command<ExecutionResult> {
 
 	private ExecutionResult compile() {
 		try {
-			ModelBuilder builder = new ModelBuilder(model, Model.DraftRelease, box);
+			ModelBuilder builder = new ModelBuilder(model, release, box);
 			return ExecutionResult.build(builder.build(author()));
 		} catch (IOException e) {
 			return ExecutionResult.build(List.of(new Message().kind(Message.Kind.ERROR).content(e.getMessage())));

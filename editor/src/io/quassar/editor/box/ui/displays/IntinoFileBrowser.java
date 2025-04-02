@@ -1,10 +1,7 @@
 package io.quassar.editor.box.ui.displays;
 
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.box.schemas.IntinoFileBrowserInfo;
-import io.quassar.editor.box.schemas.IntinoFileBrowserItem;
-import io.quassar.editor.box.schemas.IntinoFileBrowserMoveInfo;
-import io.quassar.editor.box.schemas.IntinoFileBrowserRenameInfo;
+import io.quassar.editor.box.schemas.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -14,7 +11,10 @@ import java.util.function.Consumer;
 
 public class IntinoFileBrowser extends AbstractIntinoFileBrowser<EditorBox> {
 	private List<IntinoFileBrowserItem> items;
+	private boolean hideExtension;
+	private List<IntinoFileBrowserOperation> operations;
 	private Consumer<IntinoFileBrowserItem> openListener;
+	private BiConsumer<String, IntinoFileBrowserItem> executeOperationListener;
 	private BiConsumer<IntinoFileBrowserItem, String> renameListener;
 	private BiConsumer<IntinoFileBrowserItem, IntinoFileBrowserItem> moveListener;
 	private String itemsAddress;
@@ -33,12 +33,25 @@ public class IntinoFileBrowser extends AbstractIntinoFileBrowser<EditorBox> {
 		this.rootItem = value;
 	}
 
-	public void items(List<IntinoFileBrowserItem> items) {
+	public void items(List<IntinoFileBrowserItem> items, boolean hideExtension) {
 		this.items = items;
+		this.hideExtension = hideExtension;
+	}
+
+	public void operations(List<IntinoFileBrowserOperation> operations) {
+		this.operations = operations;
+	}
+
+	public void openContextMenu(List<IntinoFileBrowserOperation> operations) {
+		notifier.openContextMenu(operations);
 	}
 
 	public void onOpen(Consumer<IntinoFileBrowserItem> listener) {
 		this.openListener = listener;
+	}
+
+	public void onExecuteOperation(BiConsumer<String, IntinoFileBrowserItem> listener) {
+		this.executeOperationListener = listener;
 	}
 
 	public void onRename(BiConsumer<IntinoFileBrowserItem, String> listener) {
@@ -55,6 +68,11 @@ public class IntinoFileBrowser extends AbstractIntinoFileBrowser<EditorBox> {
 
 	public void select(IntinoFileBrowserItem item) {
 		this.selectedItem = item;
+	}
+
+	public void executeOperation(IntinoFileBrowserOperationInfo info) {
+		IntinoFileBrowserItem target = info.target() != -1 ? items.stream().filter(i -> i.id() == info.target()).findFirst().orElse(null) : null;
+		executeOperationListener.accept(info.operation(), target);
 	}
 
 	public void rename(IntinoFileBrowserRenameInfo info) {
@@ -79,7 +97,7 @@ public class IntinoFileBrowser extends AbstractIntinoFileBrowser<EditorBox> {
 	}
 
 	private IntinoFileBrowserInfo info() {
-		return new IntinoFileBrowserInfo().rootItem(rootItem).itemAddress(itemsAddress).items(withRoot(fix(items)));
+		return new IntinoFileBrowserInfo().rootItem(rootItem).itemAddress(itemsAddress).items(withRoot(fix(items))).operations(operations).hideExtension(hideExtension);
 	}
 
 	private List<IntinoFileBrowserItem> fix(List<IntinoFileBrowserItem> items) {

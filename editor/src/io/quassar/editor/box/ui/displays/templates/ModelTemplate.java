@@ -9,6 +9,10 @@ import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.box.schemas.IntinoFileBrowserItem;
 import io.quassar.editor.box.ui.displays.IntinoDslEditor;
+import io.quassar.editor.box.ui.types.ModelView;
+import io.quassar.editor.box.util.ModelHelper;
+import io.quassar.editor.box.util.PathHelper;
+import io.quassar.editor.box.util.SessionHelper;
 import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
@@ -18,6 +22,7 @@ import java.util.*;
 public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	private Model model;
 	private String release;
+	private ModelView selectedView;
 	private ModelContainer.File selectedFile;
 	private FilePosition selectedPosition;
 	private ModelContainer.File selectedNewFile;
@@ -29,9 +34,10 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		super(box);
 	}
 
-	public void open(String language, String model, String release, String file, String position) {
+	public void open(String language, String model, String release, String view, String file, String position) {
 		this.model = box().modelManager().get(language, model);
 		this.release = release != null ? release : Model.DraftRelease;
+		this.selectedView = view != null ? ModelView.from(view) : SessionHelper.modelView(session());
 		this.modelContainer = this.model != null ? box().modelManager().modelContainer(box().languageManager().get(language), this.model, this.release) : null;
 		this.selectedFile = file != null && modelContainer != null ? modelContainer.file(file) : null;
 		this.selectedPosition = position != null ? FilePosition.from(position) : null;
@@ -64,16 +70,19 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	}
 
 	private void refreshContent() {
+		tabSelector.address(path -> PathHelper.modelViewPath(path, model, release));
 		contentBlock.visible(model != null);
 		if (!contentBlock.isVisible()) return;
-		if (selectedFile != null) tabSelector.select(modelContainer.isResourceFile(selectedFile) ? "resourcesOption" : "modelOption");
-		else if (tabSelector.selection().isEmpty()) tabSelector.select("modelOption");
+		if (selectedFile != null) tabSelector.select(modelContainer.isResourceFile(selectedFile) ? "resources" : "model");
+		else if (selectedView != null) tabSelector.select(selectedView.name().toLowerCase());
+		else if (tabSelector.selection().isEmpty()) tabSelector.select("model");
 		else tabSelector.select(tabSelector.selection().getFirst());
 		refreshFileEditor();
 	}
 
 	private void initHeader() {
 		headerStamp.onBuild(m -> build());
+		headerStamp.onClone(m -> cloneModel());
 		headerStamp.onPublish((m, e) -> updateConsole(e));
 	}
 
@@ -171,14 +180,19 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		boolean validFile = selectedFile != null && !selectedFile.isDirectory();
 		fileNotSelectedBlock.visible(!validFile);
 		fileSelectedBlock.visible(validFile);
-		filename.value(validFile ? selectedFile.name() : "");
+		filename.value(validFile ? withoutExtensionIfModelFile(selectedFile.name()) : "");
 		refreshFileEditorToolbar();
 		if (!validFile) return;
+		createFileEditor();
 		IntinoDslEditor display = intinoDslEditor.display();
 		display.model(model);
 		display.release(release);
 		display.file(selectedFile.name(), selectedFile.uri(), selectedFile.extension(), selectedFile.language(), selectedPosition);
 		display.refresh();
+	}
+
+	private String withoutExtensionIfModelFile(String name) {
+		return Model.isResource(name) ? name : name.replace("." + box().languageManager().get(model.language()).fileExtension(), "");
 	}
 
 	private void open(IntinoFileBrowserItem item) {
@@ -248,6 +262,13 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		updateConsole(result);
 		if (result.success()) notifyUser("Model built successfully", UserMessage.Type.Success);
 		else hideUserNotification();
+	}
+
+	private void cloneModel() {
+		notifyUser(translate("Cloning model..."), UserMessage.Type.Loading);
+		Model newModel = box().commands(ModelCommands.class).clone(model, release, ModelHelper.proposeName(), username());
+		notifier.dispatch(PathHelper.modelPath(newModel));
+		hideUserNotification();
 	}
 
 }

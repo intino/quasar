@@ -6,8 +6,8 @@ import io.quassar.editor.model.Model;
 
 public class CloneModelCommand extends Command<Model> {
 	public Model model;
-	public String id;
-	public String owner;
+	public String release;
+	public String name;
 
 	public CloneModelCommand(EditorBox box) {
 		super(box);
@@ -15,7 +15,7 @@ public class CloneModelCommand extends Command<Model> {
 
 	@Override
 	public Model execute() {
-		return box.modelManager().clone(model, id, owner);
+		return box.modelManager().clone(model, release, name, author);
 	}
 
 }

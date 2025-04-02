@@ -1,5 +1,6 @@
 package io.quassar.editor.box.languages;
 
+import io.intino.alexandria.ui.UI;
 import io.intino.ls.IntinoLanguageServer;
 import io.intino.ls.document.FileDocumentManager;
 import io.intino.ls.document.GitDocumentManager;
@@ -16,6 +17,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 

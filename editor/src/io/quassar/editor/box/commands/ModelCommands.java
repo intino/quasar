@@ -7,6 +7,7 @@ import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 import io.quassar.editor.model.User;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -26,11 +27,11 @@ public class ModelCommands extends Commands {
 		return command.execute();
 	}
 
-	public Model clone(Model model, String name, String owner, String username) {
+	public Model clone(Model model, String release, String name, String username) {
 		CloneModelCommand command = setup(new CloneModelCommand(box), username);
 		command.model = model;
-		command.id = name;
-		command.owner = owner;
+		command.release = release;
+		command.name = name;
 		return command.execute();
 	}
 
@@ -141,6 +142,7 @@ public class ModelCommands extends Commands {
 	public Command.ExecutionResult build(Model model, String username) {
 		BuildModelCommand command = setup(new BuildModelCommand(box), username);
 		command.model = model;
+		command.release = Model.DraftRelease;
 		return command.execute();
 	}
 

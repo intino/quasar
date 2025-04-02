@@ -26,6 +26,17 @@ public class PermissionsHelper {
 		return !box.modelManager().isWorkspaceEmpty(model, version);
 	}
 
+	public static boolean canClone(Model model, String version, UISession session, EditorBox box) {
+		if (!model.isPublic() && !isOwner(model, session)) return false;
+		return !box.modelManager().isWorkspaceEmpty(model, version);
+	}
+
+	private static boolean isOwner(Model model, UISession session) {
+		if (model.owner() == null) return false;
+		String username = session.user() != null ? session.user().username() : null;
+		return model.owner().equalsIgnoreCase(username);
+	}
+
 	public static boolean canEdit(Model model, String release) {
 		return model.isDraft(release);
 	}

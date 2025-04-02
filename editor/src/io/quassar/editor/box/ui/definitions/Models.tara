@@ -19,6 +19,7 @@ Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
 				Button(title="build", size=Small) buildTrigger as Action > Shortcut(key="F9", metaKeys=Control)
 				Button(title="publish", format=airRight, visible=false) publishTrigger as Action
 				Button(title="download", format=airRight, visible=false) downloadTrigger as Download(options="Model" "Accessor")
+				Button(title="clone", format=airRight, visible=false) cloneTrigger as Action
 
 		Block(layout=Horizontal EndJustified)
 			Button(title="settings", format=airRight) modelSettingsTrigger as Action
@@ -69,13 +70,13 @@ Template modelTemplate as Relative(height=100%, width=100%)
 							Text(value="Tools", format=airLeft, translate=true)
 					Divider
 					Block(layout=Vertical Flexible) views
-						Selector tabSelector as ListBox
-							Block(layout=Horizontal Center) modelOption as Option > MaterialIcon(icon="DescriptionOutlined", title="Model", format=airRight); Text(value="Model", translate=true)
-							Block(layout=Horizontal Center) resourcesOption as Option > MaterialIcon(icon="AccountTreeOutlined", title="Resources", format=airRight); Text(value="Resources", translate=true)
+						Selector tabSelector as ListBox Addressable(EditorElements.model)
+							Block(layout=Horizontal Center) model as Option > MaterialIcon(icon="DescriptionOutlined", title="Model", format=airRight); Text(value="Model", translate=true)
+							Block(layout=Horizontal Center) resources as Option > MaterialIcon(icon="AccountTreeOutlined", title="Resources", format=airRight); Text(value="Resources", translate=true)
 
 			Block(layout=Vertical Flexible, format=whiteBackground) browserBlock as Relative(width=100%, height=100%)
-				Block(layout=Vertical Flexible) modelBrowserBlock as Conditional(tabSelectorBlock.tabSelectorDrawer.views.tabSelector.modelOption) Relative(height=100%, width=100%) > TemplateStamp(template=modelBrowserTemplate) modelBrowserStamp
-				Block(layout=Vertical Flexible) resourcesBrowserBlock as Conditional(tabSelectorBlock.tabSelectorDrawer.views.tabSelector.resourcesOption) Relative(height=100%, width=100%) > TemplateStamp(template=resourcesBrowserTemplate) resourcesBrowserStamp
+				Block(layout=Vertical Flexible) modelBrowserBlock as Conditional(tabSelectorBlock.tabSelectorDrawer.views.tabSelector.model) Relative(height=100%, width=100%) > TemplateStamp(template=modelBrowserTemplate) modelBrowserStamp
+				Block(layout=Vertical Flexible) resourcesBrowserBlock as Conditional(tabSelectorBlock.tabSelectorDrawer.views.tabSelector.resources) Relative(height=100%, width=100%) > TemplateStamp(template=resourcesBrowserTemplate) resourcesBrowserStamp
 
 		Block(layout=Vertical Flexible) as Relative(width=80%)
 			Block(layout=Horizontal, format=leftBordered headerPanel greyLightBackground leftSpaced rightSpaced)
@@ -86,9 +87,9 @@ Template modelTemplate as Relative(height=100%, width=100%)
 				Block(layout=Horizontal EndJustified)
 			Block(layout=Vertical Flexible CenterCenter, format=whiteBackground) fileNotSelectedBlock
 				Text(value="Select file on left panel to open it")
-			Block(layout=Vertical Flexible, visible=false) fileSelectedBlock
-				DisplayStamp(display=intinoDslEditor, format=fullHeight) intinoDslEditor
-			Block(visible=false) consoleBlock > TemplateStamp(template=consoleTemplate) console
+			Block(layout=Vertical Flexible, visible=false) fileSelectedBlock as Resizable Relative(height=100%)
+				Block as Relative(height=60%) > Block(layout=Vertical Flexible) as Relative(height=100%) > DisplayStamp(display=intinoDslEditor, format=fullHeight) intinoDslEditor
+				Block(visible=false) consoleBlock as Relative(height=40%) > TemplateStamp(template=consoleTemplate) console
 
 	Dialog(title="File modified") fileModifiedDialog as Absolute(width=500px, height=180px)
         Block as Relative(height=100%, offsetHeight=40px)
@@ -102,20 +103,16 @@ Template modelTemplate as Relative(height=100%, width=100%)
 				Button(title="Save", size=Small, highlight=Fill) continueSavingFile as Action
 
 Template(layout=Vertical Flexible) modelBrowserTemplate as Relative(height=100%, width=100%)
+	Link(title="") removeFileTrigger as Action Affirmed("Are you sure to remove?")
 
 	Block(layout=Horizontal, format=headerPanel greyLightBackground leftSpaced rightSpaced)
 		Block(layout=Horizontal Flexible) > Text(value="Model", format=h6, translate=true)
 		Block(layout=Horizontal Center, format=smallAirLeft)
-			MaterialIconButton(title="Operations...", icon="MoreVert", size=Small) operationsTrigger as OpenPopover(operationsDialog)
+			MaterialIconButton(title="Operations...", icon="MoreVert", size=Small) operationsTrigger as Action
 
-	DisplayStamp(display=intinoFileBrowser, format=displayHeaderPanel smallAirRight) fileBrowser
-
-	Block(format=spaced) operationsDialog as Popover Absolute(width=250px)
-		Block(layout=Vertical Start)
-			Link(title="Add model file", format=middleAirBottom) addFileTrigger as OpenDialog(fileDialog) > Shortcut(key="N", metaKeys=Control, visible=true)
-			Link(title="Add folder", format=middleAirBottom) addFolderTrigger as OpenDialog(fileDialog) > Shortcut(key="N", metaKeys=Shift Control, visible=true)
-			Link(title="Rename", format=middleAirBottom) editFilenameTrigger as OpenDialog(fileDialog) Readonly > Shortcut(key="R", metaKeys=Control, visible=true)
-			Link(title="Remove", format=middleAirBottom) removeFileTrigger as Action Affirmed("Are you sure to remove?") Readonly
+	Block(layout=Vertical Flexible)
+		Block(layout=Vertical Flexible) > DisplayStamp(display=intinoFileBrowser, format=displayHeaderPanel smallAirRight) fileBrowser
+		Block(layout=Vertical End, format=spaced) > File addFileField as Editable(showDropZone=true) > Validation(allowedTypes=Text)
 
 	Dialog(title="") fileDialog as Absolute(width=400px, height=200px)
         Block(layout=Horizontal) as Relative(height=100%, offsetHeight=40px)
@@ -126,20 +123,16 @@ Template(layout=Vertical Flexible) modelBrowserTemplate as Relative(height=100%,
             Button(title="Accept", size=Small, highlight=Fill) addFile as Action Readonly
 
 Template(layout=Vertical Flexible) resourcesBrowserTemplate as Relative(height=100%, width=100%)
+	Link(title="") removeFileTrigger as Action Affirmed("Are you sure to remove?")
 
 	Block(layout=Horizontal, format=headerPanel greyLightBackground leftSpaced rightSpaced)
 		Block(layout=Horizontal Flexible) > Text(value="Resources", format=h6, translate=true)
 		Block(layout=Horizontal Center, format=smallAirLeft)
-			MaterialIconButton(title="Operations...", icon="MoreVert", size=Small) operationsTrigger as OpenPopover(operationsDialog)
+			MaterialIconButton(title="Operations...", icon="MoreVert", size=Small) operationsTrigger as Action
 
-	DisplayStamp(display=intinoFileBrowser, format=displayHeaderPanel smallAirRight) fileBrowser
-
-	Block(format=spaced) operationsDialog as Popover Absolute(width=250px)
-		Block(layout=Vertical Start)
-			Link(title="Add file", format=middleAirBottom) addFileTrigger as OpenDialog(fileDialog) > Shortcut(key="N", metaKeys=Control, visible=true)
-			Link(title="Add folder", format=middleAirBottom) addFolderTrigger as OpenDialog(fileDialog) > Shortcut(key="N", metaKeys=Shift Control, visible=true)
-			Link(title="Rename", format=middleAirBottom) editFilenameTrigger as OpenDialog(fileDialog) Readonly > Shortcut(key="R", metaKeys=Control, visible=true)
-			Link(title="Remove", format=middleAirBottom) removeFileTrigger as Action Affirmed("Are you sure to remove?") Readonly
+	Block(layout=Vertical Flexible)
+		Block(layout=Vertical Flexible) > DisplayStamp(display=intinoFileBrowser, format=displayHeaderPanel smallAirRight) fileBrowser
+		Block(layout=Vertical End, format=spaced) > File addFileField as Editable(showDropZone=true) > Validation(allowedTypes=Text)
 
 	Dialog(title="") fileDialog as Absolute(width=600px, height=350px)
         Block(layout=Horizontal) as Relative(height=100%, offsetHeight=40px)
@@ -160,14 +153,22 @@ Template(layout=Vertical Flexible) resourcesBrowserTemplate as Relative(height=1
 Display intinoFileBrowser
 	Notification refresh as Object(intinoFileBrowserInfo)
 	Notification select as Object(intinoFileBrowserItem)
+	Notification openContextMenu as Object(intinoFileBrowserOperation) List
 	Request open as Text
 	Request rename as Object(intinoFileBrowserRenameInfo)
 	Request move as Object(intinoFileBrowserMoveInfo)
+	Request executeOperation as Object(intinoFileBrowserOperationInfo)
 
 Schema intinoFileBrowserInfo
 	Attribute itemAddress as Text
 	Attribute rootItem as Text
+	Attribute hideExtension as Bool
 	Attribute items as Object(intinoFileBrowserItem) List
+	Attribute operations as Object(intinoFileBrowserOperation) List
+
+Schema intinoFileBrowserOperationInfo
+	Attribute operation as Text
+	Attribute target as Integer
 
 Schema intinoFileBrowserRenameInfo
 	Attribute id as Integer
@@ -185,6 +186,17 @@ Schema intinoFileBrowserItem
 	Attribute isRoot as Bool
 	Attribute parents as Text List
 	Attribute children as Text List
+
+Schema intinoFileBrowserOperation
+	Attribute name as Text
+	Attribute shortcut as Object(intinoFileBrowserOperationShortcut)
+	Attribute enabled as Bool
+
+Schema intinoFileBrowserOperationShortcut
+	Attribute ctrlKey as Bool
+	Attribute shiftKey as Bool
+	Attribute altKey as Bool
+	Attribute key as Text
 
 Display intinoDslEditor
 	Notification setup as Object(intinoDslEditorSetup)
@@ -214,10 +226,10 @@ Schema intinoDslEditorFilePosition
 	Attribute line as Integer
 	Attribute column as Integer
 
-Template(format=consoleStyle) consoleTemplate
+Template(layout=Vertical Flexible, format=consoleStyle) consoleTemplate
 	MaterialIconButton(title="Close", icon="Clear", size=Small, format=closeIcon) closeButton as Action
 	Text(value="Build output", format=h6 airLeft middleAirTop, translate=true)
-	Block(format=airTop airLeft airRight middleAirBottom)
+	Block(layout=Vertical Flexible, format=airTop airLeft airRight middleAirBottom)
 		TemplateStamp(template=consoleEntryTemplate) entries as Multiple(noItemsMessage="No messages")
 
 Template(layout=Horizontal Center, format=middleAirBottom) consoleEntryTemplate

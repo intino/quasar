@@ -126,12 +126,13 @@ public class ModelManager {
 		return model;
 	}
 
-	public Model clone(Model model, String name, String owner) {
+	public Model clone(Model model, String release, String name, String owner) {
 		Model result = Model.clone(model);
 		result.name(name);
 		result.owner(owner);
+		result.createDate(Instant.now());
 		save(result);
-		new ModelContainerWriter(language(model), model, server(model, Model.DraftRelease)).clone(result, server(result, Model.DraftRelease));
+		new ModelContainerWriter(language(model), model, server(model, release)).clone(result, server(result, Model.DraftRelease));
 		return get(languageNameOf(model), name);
 	}
 

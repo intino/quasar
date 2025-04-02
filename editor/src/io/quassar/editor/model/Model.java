@@ -21,6 +21,10 @@ public class Model {
 	public static final String DefaultOwner = "anonymous";
 	public static final String ResourcesDirectory = "resources";
 
+	public static boolean isResource(String file) {
+		return file.startsWith(ResourcesDirectory);
+	}
+
 	public String name() {
 		return name;
 	}

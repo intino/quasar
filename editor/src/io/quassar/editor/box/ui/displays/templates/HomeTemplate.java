@@ -2,6 +2,7 @@ package io.quassar.editor.box.ui.displays.templates;
 
 import io.intino.alexandria.ui.displays.components.BlockConditional;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
@@ -46,10 +47,10 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 		if (languagePage.languageStamp != null) languagePage.languageStamp.open(language, tab);
 	}
 
-	public void openModel(String language, String model, String release, String file, String position) {
+	public void openModel(String language, String model, String release, String view, String file, String position) {
 		set(language, model);
 		openPage(Page.Model);
-		if (modelPage.modelStamp != null) modelPage.modelStamp.open(language, model, release, file, position);
+		if (modelPage.modelStamp != null) modelPage.modelStamp.open(language, model, release, view, file, position);
 	}
 
 	private boolean openPage(Page page) {

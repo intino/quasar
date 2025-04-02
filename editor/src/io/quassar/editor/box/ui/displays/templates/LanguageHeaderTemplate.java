@@ -25,10 +25,10 @@ public class LanguageHeaderTemplate extends AbstractLanguageHeaderTemplate<Edito
 	public void refresh() {
 		super.refresh();
 		if (language == null) return;
-		publicModelsText.visible(tab == null || tab == LanguageTab.PublicModels);
+		publicModelsText.visible(tab == LanguageTab.PublicModels);
 		publicModelsLink.visible(tab == LanguageTab.OwnerModels);
 		if (publicModelsLink.isVisible()) publicModelsLink.address(a -> PathHelper.languagePath(a, language, LanguageTab.PublicModels));
-		myModelsText.visible(user() != null && tab == LanguageTab.OwnerModels);
+		myModelsText.visible(user() != null && (tab == null || tab == LanguageTab.OwnerModels));
 		myModelsLink.visible(user() != null && (tab == null || tab == LanguageTab.PublicModels));
 		if (myModelsLink.isVisible()) myModelsLink.address(a -> PathHelper.languagePath(a, language, LanguageTab.OwnerModels));
 	}

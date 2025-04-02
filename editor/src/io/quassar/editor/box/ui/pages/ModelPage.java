@@ -8,6 +8,7 @@ public class ModelPage extends AbstractModelPage {
 	public String language;
 	public String model;
 	public String release;
+	public String view;
 	public String file;
 	public String pos;
 

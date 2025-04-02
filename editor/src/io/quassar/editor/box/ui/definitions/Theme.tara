@@ -58,7 +58,7 @@ Format("background:'white',color:'black',zIndex:'2'") searchBoxBackground
 Format("background:'#b9d1e3'", darkContent="background:'#2a3443'") leftPanelBackground
 Format("height:'39px'") headerPanel
 Format("background:'#b9d1e3'", darkContent="background:'#2a3443'") headerPanelBackground
-Format("height:'calc(100% - 40px)'") displayHeaderPanel
+Format("height:'100%'") displayHeaderPanel
 Format("background:'#000'") blackBackground
 Format("background:'transparent'") noBackground
 Format("padding:'10px'") spaced

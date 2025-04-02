@@ -49,7 +49,7 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 	private void refresh(Model model, ModelItem display) {
 		display.label.title(ModelHelper.label(model, language(), box()));
 		display.label.address(path -> PathHelper.modelPath(path, model));
-		display.description.value(!model.description().equals(translate("(no description)")) ? model.description() : null);
+		display.description.value(model.description() != null && !model.description().equals(translate("(no description)")) ? model.description() : null);
 		display.owner.visible(tab == LanguageTab.PublicModels);
 		if (display.owner.isVisible()) display.owner.value(model.owner());
 		display.createDate.value(model.createDate());

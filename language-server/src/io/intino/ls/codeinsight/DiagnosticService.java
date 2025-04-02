@@ -28,10 +28,12 @@ import java.util.stream.Collectors;
 
 public class DiagnosticService {
 	private final DocumentManager documentManager;
+	private final Language language;
 	private final Map<URI, ModelUnit> models;
 
-	public DiagnosticService(DocumentManager documentManager, Map<URI, ModelUnit> models) {
+	public DiagnosticService(DocumentManager documentManager, Language language, Map<URI, ModelUnit> models) {
 		this.documentManager = documentManager;
+		this.language = language;
 		this.models = models;
 	}
 
@@ -60,10 +62,10 @@ public class DiagnosticService {
 				units.stream().flatMap(u -> u.semanticErrors().stream()).collect(Collectors.toList()));
 	}
 
-	private static void analyzeWorkspace(ModelUnit context) {
+	private void analyzeWorkspace(ModelUnit context) {
 		try {
 			dependencyResolver(context.model()).resolve();
-			new SemanticAnalyzer(context.model(), new Meta()).analyze();
+			new SemanticAnalyzer(context.model(), language).analyze();
 		} catch (DependencyException e) {
 			context.dependencyErrors().add(e);
 		} catch (SemanticFatalException e) {

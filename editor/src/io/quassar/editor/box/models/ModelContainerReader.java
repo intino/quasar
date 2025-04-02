@@ -49,15 +49,14 @@ public class ModelContainerReader {
 	}
 
 	public boolean isResourceFile(ModelContainer.File file) {
-		return file.uri().startsWith(Model.ResourcesDirectory);
+		return Model.isResource(file.uri());
 	}
 
 	public String content(String uri) {
 		if (server == null) return "";
 		try(InputStream content = ((IntinoLanguageServer) server).getWorkspaceService().content(URI.create(uri))) {
 			return new String(content.readAllBytes(), Charset.defaultCharset());
-		} catch (Exception e) {
-			Logger.error(e);
+		} catch (Exception ignored) {
 			return "";
 		}
 	}

@@ -19,10 +19,10 @@ Template(layout=Horizontal Center, format=subHeaderStyle) languageHeaderTemplate
 
 	Block(layout=Horizontal Flexible)
 		Block(layout=Horizontal) as Relative(width=100%)
-			Text(value="public models", format=doubleAirRight bold) publicModelsText
+			Text(value="my models", format=doubleAirRight bold) myModelsText
+			Link(title="my models", format=doubleAirRight, visible=false) myModelsLink as Action Addressable(EditorElements.language)
+			Text(value="public models", format=doubleAirRight bold, visible=false) publicModelsText
 			Link(title="public models", format=doubleAirRight, visible=false) publicModelsLink as Action Addressable(EditorElements.language)
-			Text(value="my models", format=bold, visible=false) myModelsText
-			Link(title="my models") myModelsLink as Action Addressable(EditorElements.language)
 
 	Block(layout=Horizontal EndJustified)
 

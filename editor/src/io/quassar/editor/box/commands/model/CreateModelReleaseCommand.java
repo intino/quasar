@@ -1,15 +1,9 @@
 package io.quassar.editor.box.commands.model;
 
-import io.intino.alexandria.logger.Logger;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.box.commands.Command.ExecutionResult;
-import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
 
 public class CreateModelReleaseCommand extends Command<ExecutionResult> {
 	public Model model;
@@ -30,6 +24,7 @@ public class CreateModelReleaseCommand extends Command<ExecutionResult> {
 		BuildModelCommand command = new BuildModelCommand(box);
 		command.author = author;
 		command.model = model;
+		command.release = version;
 		return command.execute();
 	}
 

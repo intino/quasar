@@ -1,6 +1,6 @@
 dsl Legio
 
-Artifact(groupId = "io.quassar", version = "1.0.0") editor
+Artifact(groupId = "io.quassar", version = "1.0.0-SNAPSHOT") editor
 	Dsl("Konos", "13.2.5") > Builder(generationPackage = "box")
 	Archetype("io.quassar", "editor-archetype", "1.0.0-SNAPSHOT")
 
@@ -9,13 +9,13 @@ Artifact(groupId = "io.quassar", version = "1.0.0") editor
 		Compile("io.intino.alexandria", "logger4j", "1.1.0")
 		Compile("io.intino.alexandria", "scheduler-framework", "1.2.0")
 		Compile("io.intino.alexandria", "rest", "4.1.10")
-		Compile("io.intino.alexandria", "ui-framework", "6.3.7")
+		Compile("io.intino.alexandria", "ui-framework", "6.3.9")
 			Exclude("io.intino.tara","language")
 		Compile("io.intino", "language-server", "1.0.0-SNAPSHOT")
 		Compile("io.intino", "quassar-builder-service-accessor", "1.0.0-SNAPSHOT")
 		Compile("org.apache.commons", "commons-compress", "1.21")
 
-		Web("io.quassar", "editor-elements", "1.0.0")
+		Web("io.quassar", "editor-elements", "1.0.0-SNAPSHOT")
 
 		Test("junit", "junit", "4.13")
 
@@ -35,5 +35,14 @@ RunConfiguration local
 	Argument("home", "./temp")
 	Argument("title", "Quassar")
 	Argument("federation-url", "")
+	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
+	Argument("builder-service-url", "http://localhost:9002")
+
+RunConfiguration dev
+	Argument("port", "8080")
+	Argument("home", "/home/intino")
+	Argument("url", "https://dev.quassar.io")
+	Argument("title", "Quassar")
+	Argument("federation-url", "https://cosmos.monentia.es/login")
 	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
 	Argument("builder-service-url", "http://localhost:9002")

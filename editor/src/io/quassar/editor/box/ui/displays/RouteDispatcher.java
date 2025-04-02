@@ -4,6 +4,7 @@ import io.intino.alexandria.ui.Soul;
 import io.quassar.editor.box.ui.displays.templates.HomeTemplate;
 import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.ui.types.LanguagesTab;
+import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.box.util.SessionHelper;
 
 public class RouteDispatcher extends AbstractRouteDispatcher {
@@ -31,8 +32,9 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	}
 
 	@Override
-	public void dispatchModel(Soul soul, String language, String model, String release, String file, String position) {
-		soul.currentLayer(HomeTemplate.class).openModel(language, model, release, file, position);
+	public void dispatchModel(Soul soul, String language, String model, String release, String view, String file, String position) {
+		SessionHelper.register(soul.session(), ModelView.from(view));
+		soul.currentLayer(HomeTemplate.class).openModel(language, model, release, view, file, position);
 	}
 
 	@Override

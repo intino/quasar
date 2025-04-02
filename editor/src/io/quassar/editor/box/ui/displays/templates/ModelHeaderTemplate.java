@@ -1,7 +1,5 @@
 package io.quassar.editor.box.ui.displays.templates;
 
-import io.intino.alexandria.logger.Logger;
-import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.server.UIFile;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command.ExecutionResult;
@@ -14,7 +12,7 @@ import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.Model;
 import io.quassar.editor.model.Project;
 
-import java.io.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -25,6 +23,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	private String release;
 	private ModelContainer.File file;
 	private Consumer<Model> buildListener;
+	private Consumer<Model> cloneListener;
 	private BiConsumer<Model, ExecutionResult> publishListener;
 
 	public ModelHeaderTemplate(EditorBox box) {
@@ -47,6 +46,10 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		this.buildListener = listener;
 	}
 
+	public void onClone(Consumer<Model> listener) {
+		this.cloneListener = listener;
+	}
+
 	public void onPublish(BiConsumer<Model, ExecutionResult> listener) {
 		this.publishListener = listener;
 	}
@@ -61,6 +64,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		releaseSelector.onExecute(e -> openRelease(e.option()));
 		buildTrigger.onExecute(e -> build());
 		publishTrigger.onExecute(e -> publish());
+		cloneTrigger.onExecute(e -> cloneModel());
 		downloadTrigger.onExecute(e -> download(e.option()));
 		modelPublishDialog.onPublish((m, v) -> openRelease(v));
 		modelPublishDialog.onPublishFailure((m, v) -> publishListener.accept(m, v));
@@ -82,6 +86,8 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		buildTrigger.readonly(!PermissionsHelper.canBuild(model, release, session(), box()));
 		publishTrigger.visible(release == null || release.equals(translate(Model.DraftRelease)));
 		publishTrigger.readonly(!PermissionsHelper.canPublish(model, release, session(), box()));
+		cloneTrigger.visible(true);
+		cloneTrigger.readonly(!PermissionsHelper.canClone(model, release, session(), box()));
 		downloadTrigger.visible(ModelHelper.validReleaseName(release, this::translate));
 	}
 
@@ -105,6 +111,10 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	private void publish() {
 		modelPublishDialog.model(model);
 		modelPublishDialog.open();
+	}
+
+	private void cloneModel() {
+		cloneListener.accept(model);
 	}
 
 	private UIFile download(String option) {

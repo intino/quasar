@@ -4,6 +4,7 @@ import io.intino.alexandria.ui.services.push.UISession;
 import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.ui.types.LanguagesTab;
+import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
@@ -58,36 +59,42 @@ public class PathHelper {
 		return session.browser().baseUrl() + "/languages/" + Language.nameOf(model.language()) + "/models/" + model.name();
 	}
 
-	public static String modelPath(String address, Model model, String release, String file) {
-		return modelPath(address, model, release, file, null);
+	private static final String ModelPath = "/languages/:language/models/:model";
+	public static String modelPath(Model model) {
+		return modelPath(ModelPath, model, null, null, null, null);
+	}
+
+	public static String modelPath(Model model, String release) {
+		return modelPath(ModelPath, model, release, null, null, null);
+	}
+
+	public static String modelPath(Model model, String release, ModelContainer.File file) {
+		return modelPath(ModelPath, model, release, null, file != null ? file.uri() : null, null);
+	}
+
+	public static String modelPath(String address, Model model) {
+		return modelPath(address, model, null, null, null, null);
 	}
 
 	public static String modelPath(String address, Model model, String release, String file, FilePosition position) {
+		ModelView view = file != null && Model.isResource(file) ? ModelView.Resources : ModelView.Model;
+		return modelPath(address, model, release, view, file, position);
+	}
+
+	public static String modelPath(String address, Model model, String release, ModelView view, String file, FilePosition position) {
 		String result = address.replace(":language", Language.nameOf(model.language())).replace(":model", model.name());
 		result += release != null ? "?release=" + release : "";
+		result += view != null ? ((result.contains("?") ? "&" : "?") + "view=" + view.name()) : "";
 		result += file != null ? ((result.contains("?") ? "&" : "?") + "file=" + file) : "";
 		result += position != null ? ((result.contains("?") ? "&" : "?") + "pos=" +position.line() + "-" + position.column()) : "";
 		return result;
 	}
 
-	public static String modelPath(String address, Model model, String release) {
-		return modelPath(address, model, release, null);
-	}
-
-	public static String modelPath(String address, Model model) {
-		return modelPath(address, model, null);
-	}
-
-	public static String modelPath(Model model) {
-		return modelPath(model, null);
-	}
-
-	public static String modelPath(Model model, String release) {
-		return modelPath(model, release, null);
-	}
-
-	public static String modelPath(Model model, String release, ModelContainer.File file) {
-		return modelPath("/languages/:language/models/:model", model, release, file != null ? file.uri() : null);
+	public static String modelViewPath(String address, Model model, String release) {
+		String result = address.replace(":language", Language.nameOf(model.language())).replace(":model", model.name());
+		result += release != null ? "?release=" + release : "";
+		result += (result.contains("?") ? "&" : "?") + "view=:view";
+		return result;
 	}
 
 }

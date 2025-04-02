@@ -12,7 +12,7 @@ Service EditorElements as UI(port = "{port}", title = "{title}", favicon = "/ico
 	Resource(path = "/about") about as Page(homeTemplate)
 	Resource(path = "/languages") languages as Page(homeTemplate) > Parameter tab
 	Resource(path = "/languages/:language") language as Page(homeTemplate) > Parameter tab
-	Resource(path = "/languages/:language/models/:model") model as Page(homeTemplate) > Parameter release; Parameter file; Parameter pos
+	Resource(path = "/languages/:language/models/:model") model as Page(homeTemplate) > Parameter release; Parameter view; Parameter file; Parameter pos
 	Resource(path = "/login") login as Page(loginTemplate)
 
 Template homeTemplate as Relative(height=100%, width=100%)
