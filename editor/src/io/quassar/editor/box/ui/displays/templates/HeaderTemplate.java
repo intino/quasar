@@ -23,6 +23,16 @@ public class HeaderTemplate extends AbstractHeaderTemplate<EditorBox> {
 	}
 
 	@Override
+	public void init() {
+		super.init();
+		login.onExecute(e -> {
+			session().add("callback", session().browser().requestUrl());
+			if (box().authService() == null) notifier.redirect(PathHelper.loginUrl(session()));
+			else notifier.redirect(session().login(session().browser().baseUrl()));
+		});
+	}
+
+	@Override
 	public void refresh() {
 		super.refresh();
 		User loggedUser = session().user();

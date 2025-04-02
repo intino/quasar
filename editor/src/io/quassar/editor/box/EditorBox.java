@@ -3,6 +3,8 @@ package io.quassar.editor.box;
 import io.intino.alexandria.exceptions.InternalServerError;
 import io.intino.alexandria.logger.Logger;
 import io.intino.alexandria.ui.AlexandriaUiServer;
+import io.intino.alexandria.ui.services.auth.Space;
+import io.intino.amidas.accessor.alexandria.core.AmidasOauthAccessor;
 import io.intino.builderservice.QuassarBuilderServiceAccessor;
 import io.intino.builderservice.schemas.RegisterBuilder;
 import io.quassar.archetype.Archetype;
@@ -16,6 +18,7 @@ import io.quassar.editor.box.languages.artifactories.LocalLanguageArtifactory;
 import io.quassar.editor.box.models.ModelManager;
 import io.quassar.editor.box.projects.ProjectManager;
 import io.quassar.editor.box.users.UserManager;
+import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 import io.quassar.editor.model.Utilities;
 import org.eclipse.jetty.websocket.api.Session;
@@ -30,8 +33,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
+
 public class EditorBox extends AbstractBox {
 	private final Archetype archetype;
+	private AmidasOauthAccessor authService;
 	private LanguageLoader languageLoader;
 	private LanguageManager languageManager;
 	private ModelManager modelManager;
@@ -66,7 +72,7 @@ public class EditorBox extends AbstractBox {
 		utilities = new Utilities(archetype.configuration().editor().utilities());
 		commandsFactory = new CommandsFactory(this);
 		languageLoader = new LanguageLoader(new LocalLanguageArtifactory(archetype));
-		languageManager = new LanguageManager(archetype);
+		languageManager = new LanguageManager(archetype, this::modelsProvider);
 		serverManager = new LanguageServerManager(languageLoader, this::workSpaceOf);
 		modelManager = new ModelManager(archetype, l -> languageManager.get(l), serverManager);
 		userManager = new UserManager(archetype);
@@ -116,9 +122,13 @@ public class EditorBox extends AbstractBox {
 		return builderAccessor;
 	}
 
+	public AmidasOauthAccessor authService() {
+		return authService;
+	}
+
 	protected io.intino.alexandria.ui.services.AuthService authService(java.net.URL authServiceUrl) {
-		//TODO add your authService
-		return null;
+		if (authService == null) authService = authServiceUrl != null ? new AmidasOauthAccessor(new Space(url(configuration().url())).name("quasar-editor"), authServiceUrl) : null;
+		return authService;
 	}
 
 	public <T extends Commands> T commands(Class<T> clazz) {
@@ -149,4 +159,18 @@ public class EditorBox extends AbstractBox {
 		}
 	}
 
+	private Language.ModelsProvider modelsProvider(Language language) {
+		return new Language.ModelsProvider() {
+			@Override
+			public List<String> models() {
+				File[] models = archetype.languages().models(language.name()).listFiles();
+				return models != null ? Arrays.stream(models).map(File::getName).filter(name -> !name.startsWith(".")).toList() : emptyList();
+			}
+
+			@Override
+			public Model model(String name) {
+				return modelManager.get(language, name);
+			}
+		};
+	}
 }

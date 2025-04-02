@@ -11,6 +11,7 @@ import io.quassar.editor.box.util.DatasourceHelper;
 import io.quassar.editor.model.Language;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -58,7 +59,7 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 
 	protected List<Language> load() {
 		LanguageManager manager = box.languageManager();
-		return tab == null || tab == LanguagesTab.PublicLanguages ? manager.publicLanguages() : manager.ownerLanguages(username());
+		return manager.visibleLanguages(username());
 	}
 
 	private List<Language> filterCondition(List<Language> languages, String condition) {
@@ -72,7 +73,7 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 	}
 
 	private List<Language> sort(List<Language> languages, List<String> sortings) {
-		return languages.stream().sorted((o1, o2) -> Long.compare(o2.modelsCount(), o1.modelsCount())).toList();
+		return languages.stream().sorted(Comparator.comparing(Language::name)).toList();
 	}
 
 }

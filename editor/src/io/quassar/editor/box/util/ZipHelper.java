@@ -29,9 +29,17 @@ public class ZipHelper {
 	}
 
 	public static void extract(File zipFile, File destiny) {
+		try {
+			extract(new FileInputStream(zipFile), destiny);
+		} catch (FileNotFoundException e) {
+			Logger.error(e);
+		}
+	}
+
+	public static void extract(InputStream zipStream, File destiny) {
 		if (!destiny.exists()) destiny.mkdirs();
 
-		try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFile))) {
+		try (ZipInputStream zipInputStream = new ZipInputStream(zipStream)) {
 			ZipEntry entry;
 			while ((entry = zipInputStream.getNextEntry()) != null) {
 				File destFile = new File(destiny, entry.getName());

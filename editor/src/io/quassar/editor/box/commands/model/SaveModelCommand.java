@@ -3,6 +3,7 @@ package io.quassar.editor.box.commands.model;
 import io.intino.alexandria.logger.Logger;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command;
+import io.quassar.editor.box.commands.language.PublishLanguageCommand;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
@@ -23,10 +24,7 @@ public class SaveModelCommand extends Command<Boolean> {
 	@Override
 	public Boolean execute() {
 		if (!model.name().equals(name) && !renameModel()) return false;
-		model.name(name);
-		model.title(title);
-		model.description(description);
-		box.modelManager().save(model);
+		else saveModel();
 		return true;
 	}
 
@@ -35,7 +33,13 @@ public class SaveModelCommand extends Command<Boolean> {
 			File currentFolder = box.archetype().languages().model(Language.nameOf(model.language()), model.name());
 			File newFolder = box.archetype().languages().model(Language.nameOf(model.language()), name);
 			Files.move(currentFolder.toPath(), newFolder.toPath());
-			renameLanguage();
+			Language language = box.languageManager().get(model.name());
+			if (language == null) return true;
+			String oldName = model.name();
+			saveModel();
+			renameLanguage(language, oldName);
+			createRelease(language);
+			publishLanguage(language);
 			return true;
 		} catch (IOException e) {
 			Logger.error(e);
@@ -43,12 +47,36 @@ public class SaveModelCommand extends Command<Boolean> {
 		}
 	}
 
-	private void renameLanguage() throws IOException {
-		Language currentLanguage = box.languageManager().get(model.name());
-		if (currentLanguage == null) return;
-		File currentFolder = box.archetype().languages().language(model.name());
+	private void saveModel() {
+		model.name(name);
+		model.title(title);
+		model.description(description);
+		box.modelManager().save(model);
+	}
+
+	private void createRelease(Language language) {
+		CreateModelReleaseCommand command = new CreateModelReleaseCommand(box);
+		command.author = author;
+		command.model = model;
+		command.version = language.version();
+		command.execute();
+	}
+
+	private void renameLanguage(Language language, String oldName) throws IOException {
+		File currentFolder = box.archetype().languages().language(oldName);
 		File newFolder = box.archetype().languages().language(name);
 		Files.move(currentFolder.toPath(), newFolder.toPath());
+		language.name(name);
+		box.languageManager().save(language);
+	}
+
+	private void publishLanguage(Language language) {
+		PublishLanguageCommand command = new PublishLanguageCommand(box);
+		command.author = author;
+		command.name = language.name();
+		command.version = language.version();
+		command.level = language.level();
+		command.execute();
 	}
 
 }

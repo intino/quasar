@@ -181,6 +181,10 @@ public class ModelManager {
 		}
 	}
 
+	public boolean existsFile(Model model, String name, ModelContainer.File parent) {
+		return new ModelContainerReader(language(model), model, server(model, Model.DraftRelease)).existsFile(name, parent);
+	}
+
 	public ModelContainer.File createFile(Model model, String name, String content, ModelContainer.File parent) {
 		return new ModelContainerWriter(language(model), model, server(model, Model.DraftRelease)).createFile(name, content, parent);
 	}

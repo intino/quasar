@@ -3,6 +3,7 @@ package io.quassar.editor.box.commands.model;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.box.models.ModelContainer;
+import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.model.Model;
 
 public class CreateModelFileCommand extends Command<ModelContainer.File> {
@@ -17,8 +18,7 @@ public class CreateModelFileCommand extends Command<ModelContainer.File> {
 
 	@Override
 	public ModelContainer.File execute() {
-		name = name.replace(" ", "_");
-		return box.modelManager().createFile(model, name, content, parent);
+		return box.modelManager().createFile(model, ModelHelper.validWorkspaceFileName(name), content, parent);
 	}
 
 }

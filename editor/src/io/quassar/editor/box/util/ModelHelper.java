@@ -46,4 +46,12 @@ public class ModelHelper {
 		return version != null && !version.equals(translator.apply(Model.DraftRelease)) && VersionPattern.matcher(version).matches();
 	}
 
+	public static boolean isZip(String filename) {
+		return filename.endsWith(".zip");
+	}
+
+	public static String validWorkspaceFileName(String name) {
+		return StringHelper.camelCaseToKebabCase(name).replace(" ", "-");
+	}
+
 }

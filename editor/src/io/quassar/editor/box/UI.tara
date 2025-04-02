@@ -14,6 +14,8 @@ Service EditorElements as UI(port = "{port}", title = "{title}", favicon = "/ico
 	Resource(path = "/languages/:language") language as Page(homeTemplate) > Parameter tab
 	Resource(path = "/languages/:language/models/:model") model as Page(homeTemplate) > Parameter release; Parameter view; Parameter file; Parameter pos
 	Resource(path = "/login") login as Page(loginTemplate)
+	Resource(path = "/not-found") notFound as Page(notFoundTemplate) > Parameter type
+	Resource(path = "/permissions") permissions as Page(permissionsTemplate) > Parameter username; Parameter language; Parameter model; Parameter callback
 
 Template homeTemplate as Relative(height=100%, width=100%)
 	TemplateStamp(template=headerTemplate) header
@@ -42,7 +44,7 @@ Template(layout=Horizontal Center, format=headerStyle) headerTemplate
 		Link(title="", format=whiteColor h2, visible=false) languageTitleLink as Action Addressable(EditorElements.language)
 
 	Block(layout=Horizontal EndJustified)
-		Button(title="Log in", format=airRight whiteColor, visible=false) login as OpenPage(EditorElements.login)
+		Button(title="Log in", format=airRight whiteColor, visible=false) login as Action
 
 		Block(layout=Horizontal Center)
 			Button(title="About", format=airRight whiteColor) as Action Addressable(EditorElements.about)
@@ -63,27 +65,25 @@ Template(layout=Vertical Flexible) permissionsTemplate as Relative(height=100%,w
 		Block(format=visible) as Absolute(width=400px, height=400px) Paper
 			Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
 				Block(layout=Vertical CenterCenter)
-					Image(value="/logo-expanded-dark.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=340px, height=80px)
+					Image(value="/logo-expanded.png", format=airRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) as Absolute(width=340px, height=80px)
 					Text(value="You dont have access permissions", format=h4 airTop textCentered, translate=true) message
 			Block
 				Divider
 				Block(layout=Horizontal CenterJustified, format=middleAirTop)
-					Button(title="Home", highlight=Outline, format=airRight) gotoHome as Action Addressable(EditorElements.home)
 					Button(title="Login", visible=false, highlight=Outline, format=airRight) loginButton as Action
 					Button(title="Logout", visible=false, highlight=Outline) logoutButton as Action
 
 Template(layout=Vertical Flexible) notFoundTemplate as Relative(height=100%,width=100%)
 	Block(layout=Vertical CenterCenter, format=grey) as Relative(height=100%,width=100%)
-		Block(format=visible headerStyle) as Absolute(width=400px, height=400px) Paper
+		Block(format=visible) as Absolute(width=400px, height=400px) Paper
 			Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
 				Block(layout=Vertical CenterCenter)
-					Image(value="/logo-expanded-dark.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=340px, height=80px)
+					Image(value="/logo-expanded.png", format=airRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) as Absolute(width=340px, height=80px)
 					Text(value="Model not found", format=h4 airTop textCentered, translate=true) message
 			Block
 				Divider
 				Block(layout=Horizontal CenterJustified, format=middleAirTop)
-					Button(title="Home", highlight=Outline, format=airRight) gotoHome as Action Addressable(EditorElements.home)
-
+					Button(title="Home", highlight=Outline, format=airRight) gotoHome as OpenPage(EditorElements.home)
 
 Template(layout=Vertical Flexible, format=radialBackground) loginTemplate as Relative(height=100%, width=100%)
 

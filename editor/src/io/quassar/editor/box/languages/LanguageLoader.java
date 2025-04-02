@@ -2,6 +2,7 @@ package io.quassar.editor.box.languages;
 
 import io.intino.alexandria.logger.Logger;
 import io.intino.tara.Language;
+import io.quassar.editor.box.util.StringHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class LanguageLoader {
 			String[] parts = dsl.split(":");
 			final ClassLoader classLoader = createClassLoader(jar);
 			if (classLoader == null) return null;
-			Class<?> cls = classLoader.loadClass("tara.dsl." + firstUpperCase(parts[0]));
+			Class<?> cls = classLoader.loadClass("tara.dsl." + firstUpperCase(StringHelper.kebabCaseToCamelCase(parts[0])));
 			return (Language) cls.getConstructors()[0].newInstance();
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			Logger.error(e);

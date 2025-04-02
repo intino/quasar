@@ -1,8 +1,14 @@
 package io.quassar.editor.box.ui.pages;
 
+import io.intino.alexandria.ui.services.push.User;
+import io.quassar.editor.box.I18n;
 import io.quassar.editor.box.ui.displays.templates.HomeTemplate;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.PermissionsHelper;
+import io.quassar.editor.model.Model;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 public class ModelPage extends AbstractModelPage {
 	public String language;
@@ -14,13 +20,18 @@ public class ModelPage extends AbstractModelPage {
 
 	@Override
 	public boolean hasPermissions() {
-		return PermissionsHelper.hasPermissions(session, box);
+		Model model = box.modelManager().get(language, this.model);
+		if (model == null) return false;
+		if (model.isPublic()) return true;
+		User loggedUser = session.user();
+		return loggedUser != null && model.owner().equals(loggedUser.username());
 	}
 
 	@Override
 	public String redirectUrl() {
-		session.add("callback", session.browser().requestUrl());
-		return PathHelper.loginUrl(session);
+		String callbackUrl = URLEncoder.encode(session.browser().requestUrl(), StandardCharsets.UTF_8);
+		Model model = box.modelManager().get(language, this.model);
+		return model != null ? PathHelper.permissionsUrl(model, callbackUrl, session) : PathHelper.notFoundUrl(I18n.translate("Model", session.discoverLanguage()), session);
 	}
 
 	public io.intino.alexandria.ui.Soul prepareSoul(io.intino.alexandria.ui.services.push.UIClient client) {

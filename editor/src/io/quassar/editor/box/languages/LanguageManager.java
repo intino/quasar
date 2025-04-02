@@ -3,34 +3,44 @@ package io.quassar.editor.box.languages;
 import io.intino.alexandria.Json;
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
+import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.Model;
+import io.quassar.editor.model.User;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.sql.Array;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Function;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 public class LanguageManager {
 	private final Archetype archetype;
+	private final Function<Language, Language.ModelsProvider> modelsProvider;
 
-	public LanguageManager(Archetype archetype) {
+	public LanguageManager(Archetype archetype, Function<Language, Language.ModelsProvider> modelsProvider) {
 		this.archetype = archetype;
+		this.modelsProvider = modelsProvider;
+	}
+
+	public List<Language> visibleLanguages(String owner) {
+		Set<Language> result = new HashSet<>(publicLanguages());
+		result.addAll(ownerLanguages(owner));
+		return new ArrayList<>(result);
 	}
 
 	public List<Language> publicLanguages() {
-		return languages().stream().filter(l -> l.owner() == null || l.owner().isEmpty()).toList();
+		return languages().stream().filter(l -> l.owner() == null || l.owner().isEmpty() || l.owner().equals(User.Anonymous)).toList();
 	}
 
 	public List<Language> ownerLanguages(String owner) {
-		return languages().stream().filter(l -> l.owner() != null && l.owner().equals(owner)).toList();
+		return languages().stream().filter(l -> l.owner() != null && l.owner().equals(owner) || isModelCollaborator(l, owner)).toList();
 	}
 
 	public List<Language> languages() {
@@ -44,15 +54,15 @@ public class LanguageManager {
 		return languages().stream().filter(l -> user.equals(l.owner())).collect(toList());
 	}
 
-	public Language create(String name, Language.Level level, String description, File dsl, File logo, String parent, String owner) {
+	public Language create(String name, String version, Language.Level level, String description, File dsl, String parent, String owner) {
 		Language language = new Language(name);
+		language.version(version);
 		language.level(level);
 		language.description(description);
 		language.parent(parent);
 		language.owner(owner);
 		language.createDate(Instant.now());
 		saveDsl(language, dsl);
-		saveLogo(language, logo);
 		return save(language);
 	}
 
@@ -68,7 +78,9 @@ public class LanguageManager {
 	public void saveDsl(Language language, File dsl) {
 		try {
 			if (dsl == null) return;
-			Files.move(dsl.toPath(), archetype.languages().dslFile(Language.nameOf(language.name())).toPath());
+			File destiny = archetype.languages().dslFile(Language.nameOf(language.name()));
+			if (destiny.exists()) destiny.delete();
+			Files.copy(dsl.toPath(), destiny.toPath());
 		} catch (IOException e) {
 			Logger.error(e);
 		}
@@ -115,7 +127,7 @@ public class LanguageManager {
 			File properties = archetype.languages().properties(Language.nameOf(id));
 			if (!properties.exists()) return null;
 			Language language = Json.fromJson(Files.readString(properties.toPath()), Language.class);
-			language.modelsProvider(modelsProvider(language));
+			language.modelsProvider(modelsProvider.apply(language));
 			return language;
 		} catch (IOException e) {
 			Logger.error(e);
@@ -123,11 +135,12 @@ public class LanguageManager {
 		}
 	}
 
-	private Language.ModelsProvider modelsProvider(Language language) {
-		return () -> {
-			File[] models = archetype.languages().models(language.name()).listFiles();
-			return models != null ? Arrays.stream(models).map(File::getName).filter(name -> !name.startsWith(".")).toList() : emptyList();
-		};
+	private boolean isModelCollaborator(Language language, String user) {
+		if (language.isFoundational()) return false;
+		Language parentLanguage = get(language.parent());
+		if (parentLanguage == null) return false;
+		Model model = modelsProvider.apply(parentLanguage).model(language.name());
+		return model != null && model.collaborators().contains(user);
 	}
 
 }

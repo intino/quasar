@@ -63,7 +63,7 @@ public class LanguagesTemplate extends AbstractLanguagesTemplate<EditorBox> {
 		item.languageTitleLink.address(path -> PathHelper.languagePath(path, language));
 		item.description.value(language.description());
 		item.languageLink.address(path -> PathHelper.languagePath(path, language));
-		item.owner.value(language.owner());
+		item.owner.value(language.isFoundational() ? translate("Quassar") : language.owner());
 		item.createDate.value(language.createDate());
 		item.modelsCount.value(language.modelsCount());
 		item.parent.value(!language.isFoundational() ? language.parent() : "-");

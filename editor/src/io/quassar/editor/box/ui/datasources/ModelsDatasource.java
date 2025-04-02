@@ -10,6 +10,7 @@ import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.util.DatasourceHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
+import io.quassar.editor.model.User;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -68,7 +69,7 @@ public class ModelsDatasource extends PageDatasource<Model> {
 	}
 
 	protected String username() {
-		return session.user() != null ? session.user().username() : Model.DefaultOwner;
+		return session.user() != null ? session.user().username() : User.Anonymous;
 	}
 
 	private List<Model> load(String condition, List<Filter> filters) {

@@ -93,6 +93,7 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		logoField.onChange(this::updateLogo);
 		addTag.onExecute(e -> addTag());
 		tagField.onEnterPress(e -> addTag());
+		removeLanguage.onExecute(e -> removeLanguage());
 	}
 
 	private void refreshLanguageBlock() {
@@ -103,6 +104,7 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		languageFileExtensionField.value(language.fileExtension());
 		languageLevelSelector.select(language.level() == Language.Level.L1 ? "level1Option" : "level2Option");
 		refreshTags();
+		removeLanguage.readonly(!PermissionsHelper.canRemove(language, session(), box()));
 	}
 
 	private void refreshTags() {
@@ -257,6 +259,14 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 	private void saveCollaborators() {
 		if (collaboratorList == null) return;
 		box().commands(ModelCommands.class).save(model, collaboratorList, username());
+	}
+
+	private void removeLanguage() {
+		notifyUser(translate("Removing language..."), UserMessage.Type.Loading);
+		Language language = box().languageManager().get(model.name());
+		box().commands(LanguageCommands.class).remove(language, username());
+		notifyUser(translate("Language removed successfully..."), UserMessage.Type.Success);
+		dialog.close();
 	}
 
 	private void removeModel() {

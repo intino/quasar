@@ -1,5 +1,6 @@
 package io.quassar.editor.model;
 
+import java.io.File;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,11 +19,14 @@ public class Model {
 	private boolean isPrivate = false;
 
 	public static final String DraftRelease = "draft";
-	public static final String DefaultOwner = "anonymous";
 	public static final String ResourcesDirectory = "resources";
 
 	public static boolean isResource(String file) {
 		return file.startsWith(ResourcesDirectory);
+	}
+
+	public static String withResourcesPath(String name) {
+		return ResourcesDirectory + (name.startsWith(File.separator) ? "" : File.separator) + name;
 	}
 
 	public String name() {
@@ -118,7 +122,7 @@ public class Model {
 	}
 
 	public boolean isTemporal() {
-		return isPublic() && (owner == null || owner.equalsIgnoreCase(Model.DefaultOwner));
+		return isPublic() && (owner == null || owner.equalsIgnoreCase(User.Anonymous));
 	}
 
 	public static Model clone(Model model) {

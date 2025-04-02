@@ -1,8 +1,8 @@
 package io.quassar.editor.box.ui.displays.templates;
 
 import io.intino.alexandria.ui.displays.components.BlockConditional;
+import io.intino.alexandria.ui.services.push.User;
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
@@ -23,6 +23,12 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 		public static Page from(String key) {
 			return Arrays.stream(values()).filter(v -> v.name().equalsIgnoreCase(key)).findFirst().orElse(null);
 		}
+	}
+
+	@Override
+	public void init() {
+		super.init();
+		registerUserIfNeeded();
 	}
 
 	public void openHome() {
@@ -87,6 +93,13 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 	private void set(String language, String model) {
 		this.language = language != null ? box().languageManager().get(language) : null;
 		this.model = model != null ? box().modelManager().get(this.language, model) : null;
+	}
+
+	private void registerUserIfNeeded() {
+		User user = session().user();
+		if (user == null) return;
+		if (box().userManager().get(user.username()) != null) return;
+		box().userManager().create(user.username());
 	}
 
 }

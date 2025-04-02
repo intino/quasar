@@ -8,7 +8,6 @@ import io.intino.alexandria.ui.services.push.UISession;
 import io.intino.alexandria.ui.services.push.User;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.model.Language;
-import io.quassar.editor.model.Model;
 
 import java.io.*;
 import java.util.function.Function;
@@ -17,7 +16,7 @@ public class DisplayHelper {
 
 	public static String user(UISession session) {
 		User user = session.user();
-		return user != null ? user.username() : Model.DefaultOwner;
+		return user != null ? user.username() : io.quassar.editor.model.User.Anonymous;
 	}
 
 	public static boolean check(TextEditable<?, ?> field, Function<String, String> translator) {

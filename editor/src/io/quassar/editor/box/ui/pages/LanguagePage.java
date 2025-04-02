@@ -1,8 +1,12 @@
 package io.quassar.editor.box.ui.pages;
 
+import io.quassar.editor.box.I18n;
 import io.quassar.editor.box.ui.displays.templates.HomeTemplate;
 import io.quassar.editor.box.util.PathHelper;
-import io.quassar.editor.box.util.PermissionsHelper;
+import io.quassar.editor.model.Language;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 public class LanguagePage extends AbstractLanguagePage {
 	public String language;
@@ -11,13 +15,14 @@ public class LanguagePage extends AbstractLanguagePage {
 
 	@Override
 	public boolean hasPermissions() {
-		return PermissionsHelper.hasPermissions(session, box);
+		return box.languageManager().get(language) != null;
 	}
 
 	@Override
 	public String redirectUrl() {
-		session.add("callback", session.browser().requestUrl());
-		return PathHelper.loginUrl(session);
+		String callbackUrl = URLEncoder.encode(session.browser().requestUrl(), StandardCharsets.UTF_8);
+		Language language = box.languageManager().get(this.language);
+		return language != null ? PathHelper.permissionsUrl(language, callbackUrl, session) : PathHelper.notFoundUrl(I18n.translate("Language", session.discoverLanguage()), session);
 	}
 
 	public io.intino.alexandria.ui.Soul prepareSoul(io.intino.alexandria.ui.services.push.UIClient client) {

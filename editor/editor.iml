@@ -82,7 +82,6 @@
     <orderEntry type="library" name="Intino: org.eclipse.jgit:org.eclipse.jgit:7.0.0.202409031743-r" level="project" />
     <orderEntry type="library" name="Intino: com.googlecode.javaewah:JavaEWAH:1.2.3" level="project" />
     <orderEntry type="library" name="Intino: org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:6.8.0.202311291450-r" level="project" />
-    <orderEntry type="library" name="Intino: com.jcraft:jsch:0.1.55" level="project" />
     <orderEntry type="library" name="Intino: com.jcraft:jzlib:1.1.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Intino: junit:junit:4.13" level="project" />
     <orderEntry type="library" scope="TEST" name="Intino: org.hamcrest:hamcrest-core:1.3" level="project" />
@@ -103,6 +102,10 @@
     <orderEntry type="library" name="Intino: org.eclipse.lsp4j:org.eclipse.lsp4j.jsonrpc:0.24.0" level="project" />
     <orderEntry type="library" name="Intino: commons-io:commons-io:2.18.0" level="project" />
     <orderEntry type="library" name="Intino: com.github.mwiede:jsch:0.2.24" level="project" />
-    <orderEntry type="library" name="Intino: io.intino.alexandria:ui-framework:6.3.9" level="project" />
+    <orderEntry type="library" name="Intino: io.intino.amidas:accessor:4.1.1" level="project" />
+    <orderEntry type="library" name="Intino: org.scribe:scribe:1.3.7" level="project" />
+    <orderEntry type="library" name="Intino: io.intino.amidas:shared:4.0.5" level="project" />
+    <orderEntry type="library" name="Intino: io.intino.alexandria:zif:2.0.0" level="project" />
+    <orderEntry type="library" name="Intino: org.java-websocket:Java-WebSocket:1.5.3" level="project" />
   </component>
 </module>

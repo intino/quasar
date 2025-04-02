@@ -9,7 +9,7 @@ TARGETS:{ime editor}
 - readme() in "readme.html"
 
 + languages in "dsls"
-    - language(name) in "{language}"
+    - language(name) in "{name}"
     - dslFile(language) in "{language}/dsl.jar"
     - logo(language) in "{language}/logo.png"
     - readme(language) in "{language}/readme.html"
@@ -30,5 +30,6 @@ TARGETS:{ime editor}
     - project(username, name) in "{username}/projects/{name}.json"
 
 + tmp
+    - upload(name) in "uploads/{name}"
     - model(language, model) in "{language}/{model}"
     - releaseWorkspace(language, model, version) in "{language}/models/{model}/releases/{version}"

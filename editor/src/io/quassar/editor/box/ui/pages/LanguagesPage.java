@@ -9,11 +9,6 @@ public class LanguagesPage extends AbstractLanguagesPage {
 	public String view;
 
 	@Override
-	public boolean hasPermissions() {
-		return PermissionsHelper.hasPermissions(session, box);
-	}
-
-	@Override
 	public String redirectUrl() {
 		session.add("callback", session.browser().requestUrl());
 		return PathHelper.loginUrl(session);

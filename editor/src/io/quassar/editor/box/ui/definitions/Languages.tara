@@ -79,9 +79,21 @@ Template languageTemplate as Relative(height=100%, width=100%, offsetHeight=2px)
 					TemplateStamp(template=modelsTemplate) modelsStamp
 
 				Block(layout=Vertical Flexible) homeBlock as Relative(width=45%)
-					Block(layout=Horizontal StartJustified, format=bottomLightBordered middleTopSpaced middleBottomSpaced doubleLeftSpaced)
-						Image(format=airRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) logo as Absolute(height=50px)
-						Text(format=h2) title
+					Block(layout=Horizontal Flexible Center, format=bottomLightBordered middleTopSpaced middleBottomSpaced doubleLeftSpaced)
+						Block(layout=Horizontal Flexible)
+							Image(format=airRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) logo as Absolute(height=50px)
+							Text(format=h2) title
+						Block(layout=Horizontal EndJustified, format=doubleAirRight)
+							Button(title="Open model", size=Small, highlight=Outline, format=airRight, visible=false) gotoModelTrigger as Action Addressable(EditorElements.model)
+							Button(title="Edit readme...", size=Small, highlight=Outline, visible=false) editReadmeTrigger as OpenDialog(dialog=editReadmeDialog)
 
 					Block(layout=Vertical Flexible, format=doubleLeftSpaced doubleRightSpaced doubleBottomSpaced) as AutoSize
 						HtmlViewer(format=fullHeight) homeStamp
+
+	Dialog(title="Edit readme") editReadmeDialog as FullScreen
+        Block(layout=Horizontal) as Relative(height=100%, offsetHeight=40px)
+        	Text(format=fullHeight fullWidth) readmeField as Editable Code(Html)
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(editReadmeDialog)
+            Button(title="Accept", size=Small, highlight=Fill) saveReadme as Action

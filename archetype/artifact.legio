@@ -4,7 +4,7 @@ Artifact("io.quassar", "1.0.0-SNAPSHOT") archetype
 	Package(mode = ModulesAndLibrariesLinkedByManifest)
 	IntinoPlugin("io.intino.archetype", "archetype-plugin", "2.0.1", Export)
 
-	Distribution
-		Artifactory("monentia-maven")
-			Release("https://artifactory.monentia.es/artifactory/libs-release-local")
-			Snapshot("https://artifactory.monentia.es/artifactory/libs-snapshot-local")
+    Distribution
+        Artifactory("intino-maven")
+			Release("https://artifactory.intino.io/artifactory/release-libraries")
+			Snapshot("https://artifactory.intino.io/artifactory/snapshot-libraries")

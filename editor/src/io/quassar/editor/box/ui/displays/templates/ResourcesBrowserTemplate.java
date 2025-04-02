@@ -11,10 +11,8 @@ import io.quassar.editor.box.schemas.IntinoFileBrowserItem;
 import io.quassar.editor.box.schemas.IntinoFileBrowserOperation;
 import io.quassar.editor.box.schemas.IntinoFileBrowserOperationShortcut;
 import io.quassar.editor.box.ui.displays.IntinoFileBrowser;
-import io.quassar.editor.box.util.DisplayHelper;
-import io.quassar.editor.box.util.IntinoFileBrowserHelper;
-import io.quassar.editor.box.util.PathHelper;
-import io.quassar.editor.box.util.PermissionsHelper;
+import io.quassar.editor.box.ui.types.ModelView;
+import io.quassar.editor.box.util.*;
 import io.quassar.editor.model.Model;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +33,7 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 	private Operation operation;
 	private Consumer<IntinoFileBrowserItem> openListener;
 	private Consumer<ModelContainer.File> changeListener;
+	private Consumer<ModelContainer.File> removeListener;
 	private Resource uploadedFile;
 
 	private enum Operation { CopyFile, AddFile, AddFolder, EditFilename }
@@ -65,6 +64,10 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 
 	public void onChange(Consumer<ModelContainer.File> listener) {
 		this.changeListener = listener;
+	}
+
+	public void onRemove(Consumer<ModelContainer.File> listener) {
+		this.removeListener = listener;
 	}
 
 	@Override
@@ -103,6 +106,7 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 		browser.operations(operations());
 		browser.select(file != null ? IntinoFileBrowserHelper.itemOf(file) : null);
 		browser.refresh();
+		addFileField.readonly(!PermissionsHelper.canEdit(model, release, session()));
 	}
 
 	private void createBrowser() {
@@ -121,10 +125,10 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 
 	private List<IntinoFileBrowserOperation> operations() {
 		return List.of(
-			new IntinoFileBrowserOperation().name("Add file...").shortcut(new IntinoFileBrowserOperationShortcut().ctrlKey(true).key("N")).enabled(PermissionsHelper.canEdit(model, release)),
-			new IntinoFileBrowserOperation().name("Add folder...").shortcut(new IntinoFileBrowserOperationShortcut().shiftKey(true).ctrlKey(true).key("N")).enabled(PermissionsHelper.canEdit(model, release)),
-			new IntinoFileBrowserOperation().name("Rename...").shortcut(new IntinoFileBrowserOperationShortcut().ctrlKey(true).key("R")).enabled(file != null && PermissionsHelper.canEdit(model, release)),
-			new IntinoFileBrowserOperation().name("Remove").shortcut(new IntinoFileBrowserOperationShortcut().ctrlKey(true).key("Backspace")).enabled(file != null && PermissionsHelper.canEdit(model, release))
+			new IntinoFileBrowserOperation().name("Add file...").shortcut(new IntinoFileBrowserOperationShortcut().ctrlKey(true).key("N")).enabled(PermissionsHelper.canEdit(model, release, session())),
+			new IntinoFileBrowserOperation().name("Add folder...").shortcut(new IntinoFileBrowserOperationShortcut().shiftKey(true).ctrlKey(true).key("N")).enabled(PermissionsHelper.canEdit(model, release, session())),
+			new IntinoFileBrowserOperation().name("Rename...").shortcut(new IntinoFileBrowserOperationShortcut().ctrlKey(true).key("R")).enabled(file != null && PermissionsHelper.canEdit(model, release, session())),
+			new IntinoFileBrowserOperation().name("Remove").shortcut(new IntinoFileBrowserOperationShortcut().ctrlKey(true).key("Backspace")).enabled(file != null && PermissionsHelper.canEdit(model, release, session()))
 		);
 	}
 
@@ -182,8 +186,9 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 		try {
 			Resource value = event.value();
 			if (value == null) return;
-			String content = new String(value.bytes(), StandardCharsets.UTF_8);
-			changeListener.accept(box().commands(ModelCommands.class).createFile(model, nameOf(value.name()), content, file, username()));
+			if (ModelHelper.isZip(value.name())) box().commands(ModelCommands.class).addZip(model, ModelView.Resources, value.stream(), file, username());
+			else changeListener.accept(box().commands(ModelCommands.class).createFile(model, nameOf(value.name()), new String(value.bytes(), StandardCharsets.UTF_8), file, username()));
+			refresh();
 		} catch (IOException e) {
 			Logger.error(e);
 		}
@@ -218,7 +223,7 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 
 	private void removeFile() {
 		box().commands(ModelCommands.class).remove(model, file, username());
-		changeListener.accept(null);
+		removeListener.accept(null);
 	}
 
 	private void rename(IntinoFileBrowserItem item, String newName) {
@@ -233,7 +238,7 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 	}
 
 	private String nameOf(String name) {
-		return file != null && !file.isDirectory() ? Model.ResourcesDirectory + File.separator + name : name;
+		return file == null ? Model.ResourcesDirectory + File.separator + name : name;
 	}
 
 }

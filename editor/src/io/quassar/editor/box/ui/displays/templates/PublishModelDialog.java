@@ -1,10 +1,8 @@
 package io.quassar.editor.box.ui.displays.templates;
 
-import io.intino.alexandria.Resource;
-import io.intino.alexandria.logger.Logger;
 import io.intino.alexandria.ui.displays.UserMessage;
-import io.intino.alexandria.ui.displays.events.ChangeEvent;
 import io.intino.alexandria.ui.displays.events.SelectionEvent;
+import io.intino.alexandria.ui.displays.events.actionable.ToggleEvent;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command.ExecutionResult;
 import io.quassar.editor.box.commands.LanguageCommands;
@@ -15,9 +13,6 @@ import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
 import java.util.function.BiConsumer;
 
 public class PublishModelDialog extends AbstractPublishModelDialog<EditorBox> {
@@ -50,22 +45,10 @@ public class PublishModelDialog extends AbstractPublishModelDialog<EditorBox> {
 		super.init();
 		dialog.onOpen(e -> refreshDialog());
 		create.onExecute(e -> publish());
-		logoField.onChange(this::updateLogo);
 		versionTypeSelector.onSelect(this::updateVersion);
 		versionTypeSelector.selection("revisionOption");
 		levelSelector.selection("level1Option");
-	}
-
-	private void updateLogo(ChangeEvent event) {
-		try {
-			File tmpFile = logoFile();
-			if (tmpFile.exists()) tmpFile.delete();
-			Resource value = event.value();
-			if (value != null) Files.write(tmpFile.toPath(), value.bytes());
-			logoField.value(value != null ? tmpFile : null);
-		} catch (IOException e) {
-			Logger.error(e);
-		}
+		languageSwitch.onToggle(this::toggleLanguage);
 	}
 
 	private void refreshDialog() {
@@ -85,25 +68,36 @@ public class PublishModelDialog extends AbstractPublishModelDialog<EditorBox> {
 	}
 
 	private void refreshLanguageBlock() {
-		languagePropertiesBlock.visible(false); //!box().languageManager().exists(model.name())
-		if (!languagePropertiesBlock.isVisible()) return;
-		logoField.value((URL)null);
+		boolean existsLanguage = box().languageManager().exists(model.name());
+		Language parentLanguage = box().languageManager().get(model.language());
+		languageSwitch.visible(parentLanguage != null && parentLanguage.isFoundational());
+		languageSwitch.title(!existsLanguage ? "Create language with this model version" : "Update language with this model version");
+		languageSwitch.state(ToggleEvent.State.Off);
 	}
 
 	private void publish() {
 		if (!check()) return;
 		dialog.close();
-		createLanguageIfNotExists();
 		if (!createRelease().success()) return;
+		createOrUpdateLanguage();
 		hideUserNotification();
 		publishListener.accept(model, version());
 	}
 
-	private void createLanguageIfNotExists() {
-		if (!ModelHelper.isMetamodel(model, box())) return;
-		if (box().languageManager().exists(model.name())) return;
+	private void createOrUpdateLanguage() {
+		if (languageSwitch.state() == ToggleEvent.State.Off) return;
+		if (box().languageManager().exists(model.name())) updateLanguage();
+		else createLanguage();
+	}
+
+	private void createLanguage() {
 		notifyUser(translate("Creating language..."), UserMessage.Type.Loading);
-		box().commands(LanguageCommands.class).create(model.name(), model.language(), level(), model.description(), logoFile(), username());
+		box().commands(LanguageCommands.class).create(model.name(), version(), model.language(), level(), model.description(), username());
+	}
+
+	private void updateLanguage() {
+		notifyUser(translate("Updating language..."), UserMessage.Type.Loading);
+		box().commands(LanguageCommands.class).publish(model.name(), version(), level(), username());
 	}
 
 	private ExecutionResult createRelease() {
@@ -120,11 +114,6 @@ public class PublishModelDialog extends AbstractPublishModelDialog<EditorBox> {
 	}
 
 	private boolean check() {
-		if (!languagePropertiesBlock.isVisible()) return true;
-		if (!logoFile().exists()) {
-			notifyUser(translate("Select logo"), UserMessage.Type.Warning);
-			return false;
-		}
 		return true;
 	}
 
@@ -145,8 +134,8 @@ public class PublishModelDialog extends AbstractPublishModelDialog<EditorBox> {
 		return Language.Level.L2;
 	}
 
-	private File logoFile() {
-		return new File(box().archetype().tmp().root(), model.name() + "-logo.png");
+	private void toggleLanguage(ToggleEvent event) {
+		languagePropertiesBlock.visible(event.state() == ToggleEvent.State.On);
 	}
 
 }

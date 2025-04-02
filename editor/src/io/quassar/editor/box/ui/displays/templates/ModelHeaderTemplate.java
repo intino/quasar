@@ -88,6 +88,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		publishTrigger.readonly(!PermissionsHelper.canPublish(model, release, session(), box()));
 		cloneTrigger.visible(true);
 		cloneTrigger.readonly(!PermissionsHelper.canClone(model, release, session(), box()));
+		modelSettingsTrigger.readonly(!PermissionsHelper.canEditSettings(model, release, session()));
 		downloadTrigger.visible(ModelHelper.validReleaseName(release, this::translate));
 	}
 

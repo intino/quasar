@@ -11,7 +11,7 @@ public class Formatters {
 	}
 
 	public static String normalizeLanguageName(String value) {
-		return Formatters.firstUpperCase(StringHelper.snakeCaseToCamelCase(StringHelper.kebabCaseToCamelCase(value)));
+		return Formatters.firstLowerCase(StringHelper.snakeCaseToCamelCase(StringHelper.kebabCaseToCamelCase(value)));
 	}
 
 }

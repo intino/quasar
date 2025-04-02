@@ -3,6 +3,7 @@ package io.quassar.editor.box.commands;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.model.*;
 import io.quassar.editor.box.models.ModelContainer;
+import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 import io.quassar.editor.model.User;
@@ -32,6 +33,15 @@ public class ModelCommands extends Commands {
 		command.model = model;
 		command.release = release;
 		command.name = name;
+		return command.execute();
+	}
+
+	public Boolean addZip(Model model, ModelView view, InputStream content, ModelContainer.File parent, String username) {
+		AddModelZipCommand command = setup(new AddModelZipCommand(box), username);
+		command.model = model;
+		command.view = view;
+		command.content = content;
+		command.parent = parent;
 		return command.execute();
 	}
 

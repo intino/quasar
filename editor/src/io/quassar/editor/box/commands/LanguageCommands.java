@@ -1,9 +1,7 @@
 package io.quassar.editor.box.commands;
 
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.box.commands.language.CreateLanguageCommand;
-import io.quassar.editor.box.commands.language.RemoveLanguageCommand;
-import io.quassar.editor.box.commands.language.SaveLanguageCommand;
+import io.quassar.editor.box.commands.language.*;
 import io.quassar.editor.model.Language;
 
 import java.io.File;
@@ -15,13 +13,21 @@ public class LanguageCommands extends Commands {
 		super(box);
 	}
 
-	public Language create(String name, String parent, Language.Level level, String description, File logo, String username) {
+	public Language create(String name, String version, String parent, Language.Level level, String description, String username) {
 		CreateLanguageCommand command = setup(new CreateLanguageCommand(box), username);
 		command.name = name;
+		command.version = version;
 		command.parent = parent;
 		command.level = level;
 		command.description = description;
-		command.logo = logo;
+		return command.execute();
+	}
+
+	public Language publish(String name, String version, Language.Level level, String username) {
+		PublishLanguageCommand command = setup(new PublishLanguageCommand(box), username);
+		command.name = name;
+		command.version = version;
+		command.level = level;
 		return command.execute();
 	}
 
@@ -33,6 +39,13 @@ public class LanguageCommands extends Commands {
 		command.level = level;
 		command.tags = tags;
 		command.logo = logo;
+		command.execute();
+	}
+
+	public void saveReadme(Language language, String content, String username) {
+		SaveLanguageReadmeCommand command = setup(new SaveLanguageReadmeCommand(box), username);
+		command.language = language;
+		command.content = content;
 		command.execute();
 	}
 

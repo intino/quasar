@@ -3,8 +3,8 @@ package io.quassar.editor.box.commands;
 import io.intino.builderservice.schemas.Message;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.builder.BuildResult;
-import io.quassar.editor.model.Model;
 import io.quassar.editor.model.OperationResult;
+import io.quassar.editor.model.User;
 
 import java.io.InputStream;
 import java.time.Clock;
@@ -29,7 +29,7 @@ public abstract class Command<T> {
 	}
 
 	protected String author() {
-		return this.author != null ? this.author : Model.DefaultOwner;
+		return this.author != null ? this.author : User.Anonymous;
 	}
 
 	protected ExecutionResult resultOf(OperationResult result) {

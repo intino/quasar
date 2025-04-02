@@ -1,5 +1,7 @@
 package io.quassar.editor.box.util;
 
+import java.io.File;
+
 public class StringHelper {
     public StringHelper() {
     }

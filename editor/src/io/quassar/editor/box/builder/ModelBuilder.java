@@ -16,6 +16,7 @@ import io.quassar.editor.box.util.TarUtils;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -71,8 +72,8 @@ public class ModelBuilder {
 			output = accessor.getOperationOutput(ticket);
 		}
 		if (!output.success()) return BuildResult.failure(output.messages());
-		Resource resource = accessor.getOutputResource(ticket, output.outRef(), null);
-		return BuildResult.success(resource.inputStream());
+		Resource resource = output.outRef() != null ? accessor.getOutputResource(ticket, output.outRef(), null) : null;
+		return BuildResult.success(resource != null ? resource.inputStream() : new ByteArrayInputStream(new byte[0]));
 	}
 
 	private File taraFiles() {

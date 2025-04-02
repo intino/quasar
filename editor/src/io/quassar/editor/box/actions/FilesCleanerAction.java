@@ -4,6 +4,7 @@ import io.intino.alexandria.Scale;
 import io.intino.alexandria.Timetag;
 import io.intino.alexandria.logger.Logger;
 import io.quassar.editor.box.EditorBox;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +27,7 @@ public class FilesCleanerAction {
 	private void clean(File root) {
 		File[] files = root.listFiles();
 		if (files == null) return;
-		Arrays.stream(files).filter(this::isOld).forEach(File::delete);
+		Arrays.stream(files).filter(this::isOld).forEach(this::delete);
 		Logger.info("Cleaned " + root.getAbsolutePath() + " files before " + borderDay());
 	}
 
@@ -44,6 +45,15 @@ public class FilesCleanerAction {
 		DayOfWeek day = WeekFields.of(Locale.getDefault()).getFirstDayOfWeek();
 		LocalDate date = LocalDate.now().with(TemporalAdjusters.previousOrSame(day)).minusDays(1);
 		return Timetag.of(date, Scale.Day);
+	}
+
+	private void delete(File file) {
+		try {
+			if (file.isDirectory()) FileUtils.deleteDirectory(file);
+			else file.delete();
+		} catch (IOException e) {
+			Logger.error(e);
+		}
 	}
 
 }

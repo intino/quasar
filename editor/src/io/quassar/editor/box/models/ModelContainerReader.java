@@ -5,15 +5,15 @@ import io.intino.ls.IntinoLanguageServer;
 import io.quassar.editor.box.util.WorkspaceHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
-import org.eclipse.lsp4j.SymbolInformation;
-import org.eclipse.lsp4j.WorkspaceSymbol;
-import org.eclipse.lsp4j.WorkspaceSymbolParams;
+import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageServer;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -46,6 +46,11 @@ public class ModelContainerReader {
 
 	public List<ModelContainer.File> resourceFiles() {
 		return files().stream().filter(this::isResourceFile).toList();
+	}
+
+	public boolean existsFile(String filename, ModelContainer.File parent) {
+		String uri = (parent != null && parent.isDirectory() ? parent.uri() + File.separator : "") + filename;
+		return files().stream().anyMatch(f -> f.uri().contains(uri));
 	}
 
 	public boolean isResourceFile(ModelContainer.File file) {

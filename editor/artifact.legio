@@ -9,11 +9,12 @@ Artifact(groupId = "io.quassar", version = "1.0.0-SNAPSHOT") editor
 		Compile("io.intino.alexandria", "logger4j", "1.1.0")
 		Compile("io.intino.alexandria", "scheduler-framework", "1.2.0")
 		Compile("io.intino.alexandria", "rest", "4.1.10")
-		Compile("io.intino.alexandria", "ui-framework", "6.3.9")
+		Compile("io.intino.alexandria", "ui-framework", "6.3.10")
 			Exclude("io.intino.tara","language")
 		Compile("io.intino", "language-server", "1.0.0-SNAPSHOT")
 		Compile("io.intino", "quassar-builder-service-accessor", "1.0.0-SNAPSHOT")
 		Compile("org.apache.commons", "commons-compress", "1.21")
+		Compile("io.intino.amidas", "accessor", "4.1.1")
 
 		Web("io.quassar", "editor-elements", "1.0.0-SNAPSHOT")
 
@@ -21,28 +22,43 @@ Artifact(groupId = "io.quassar", version = "1.0.0-SNAPSHOT") editor
 
 	Package(mode = ModulesAndLibrariesLinkedByManifest, finalName="editor") as Runnable(mainClass = "io.quassar.editor.box.Main")
 
+    Distribution
+        Artifactory("intino-maven")
+			Release("https://artifactory.intino.io/artifactory/release-libraries")
+			Snapshot("https://artifactory.intino.io/artifactory/snapshot-libraries")
+
+	Deployment(server = deploy-quassar-dev, runConfiguration = dev)
+
 	Parameter("port")
+	Parameter("url")
 	Parameter("home")
 	Parameter("title")
 	Parameter("federation-url")
 	Parameter("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
+	Parameter("language-repository")
 	Parameter("builder-service-url", "http://localhost:9002")
 	Parameter("tara-builder", "io.intino.tara.builder:1.3.0")
 	Parameter("quassar-builder", "quassar625/io.quassar.quassar-builder:1.0.0")
 
 RunConfiguration local
 	Argument("port", "8080")
+	Argument("url", "http://localhost:8080")
 	Argument("home", "./temp")
 	Argument("title", "Quassar")
 	Argument("federation-url", "")
+//	Argument("federation-url", "https://www.monentia.es/login")
 	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
+	Argument("language-repository", "/Users/mcaballero/.m2")
 	Argument("builder-service-url", "http://localhost:9002")
 
 RunConfiguration dev
 	Argument("port", "8080")
-	Argument("home", "/home/intino")
 	Argument("url", "https://dev.quassar.io")
+	Argument("home", "/home/intino")
 	Argument("title", "Quassar")
-	Argument("federation-url", "https://cosmos.monentia.es/login")
+	Argument("federation-url", "https://www.monentia.es/login")
 	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
+	Argument("language-repository", "/home/intino/.m2")
 	Argument("builder-service-url", "http://localhost:9002")
+
+Server(type=Dev) deploy-quassar-dev

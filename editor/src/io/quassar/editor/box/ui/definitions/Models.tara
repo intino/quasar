@@ -22,7 +22,7 @@ Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
 				Button(title="clone", format=airRight, visible=false) cloneTrigger as Action
 
 		Block(layout=Horizontal EndJustified)
-			Button(title="settings", format=airRight) modelSettingsTrigger as Action
+			Button(title="settings", format=airRight) modelSettingsTrigger as Action Readonly
 
 	TemplateStamp(template=publishModelDialog) modelPublishDialog
 	TemplateStamp(template=modelSettingsDialog) modelSettingsDialog
@@ -112,7 +112,7 @@ Template(layout=Vertical Flexible) modelBrowserTemplate as Relative(height=100%,
 
 	Block(layout=Vertical Flexible)
 		Block(layout=Vertical Flexible) > DisplayStamp(display=intinoFileBrowser, format=displayHeaderPanel smallAirRight) fileBrowser
-		Block(layout=Vertical End, format=spaced) > File addFileField as Editable(showDropZone=true) > Validation(allowedTypes=Text)
+		Block(layout=Vertical End, format=spaced) > File addFileField as Editable(showDropZone=true)
 
 	Dialog(title="") fileDialog as Absolute(width=400px, height=200px)
         Block(layout=Horizontal) as Relative(height=100%, offsetHeight=40px)
@@ -132,7 +132,7 @@ Template(layout=Vertical Flexible) resourcesBrowserTemplate as Relative(height=1
 
 	Block(layout=Vertical Flexible)
 		Block(layout=Vertical Flexible) > DisplayStamp(display=intinoFileBrowser, format=displayHeaderPanel smallAirRight) fileBrowser
-		Block(layout=Vertical End, format=spaced) > File addFileField as Editable(showDropZone=true) > Validation(allowedTypes=Text)
+		Block(layout=Vertical End, format=spaced) > File addFileField as Editable(showDropZone=true)
 
 	Dialog(title="") fileDialog as Absolute(width=600px, height=350px)
         Block(layout=Horizontal) as Relative(height=100%, offsetHeight=40px)

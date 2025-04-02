@@ -138,6 +138,7 @@ public class Language {
 
 	public interface ModelsProvider {
 		List<String> models();
+		Model model(String name);
 	}
 
 }

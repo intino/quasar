@@ -7,6 +7,8 @@ public class User {
 	private String name;
 	private List<Project> projectList = new ArrayList<>();
 
+	public static final String Anonymous = "anonymous";
+
 	public String name() {
 		return name;
 	}

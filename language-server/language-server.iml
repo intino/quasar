@@ -92,6 +92,5 @@
     <orderEntry type="library" scope="TEST" name="Intino: org.apache.httpcomponents:httpmime:4.5.14" level="project" />
     <orderEntry type="library" scope="TEST" name="Intino: log4j:log4j:1.2.14" level="project" />
     <orderEntry type="library" scope="TEST" name="Intino: io.intino.alexandria:rest-accessor:3.1.8" level="project" />
-    <orderEntry type="library" name="Intino: com.jcraft:jsch:0.1.55" level="project" />
   </component>
 </module>

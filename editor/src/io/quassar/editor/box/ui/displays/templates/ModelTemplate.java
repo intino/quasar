@@ -95,6 +95,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 
 	private void initModelBrowserBlock() {
 		modelBrowserStamp.onChange(this::reloadAndOpen);
+		modelBrowserStamp.onRemove(this::reloadAndUnselect);
 		modelBrowserStamp.onOpen(this::open);
 	}
 
@@ -108,6 +109,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 
 	private void initResourcesBrowserBlock() {
 		resourcesBrowserStamp.onChange(this::reloadAndOpen);
+		resourcesBrowserStamp.onRemove(this::reloadAndUnselect);
 		resourcesBrowserStamp.onOpen(this::open);
 	}
 
@@ -249,6 +251,11 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		console.messages(messages);
 		console.refresh();
 		console.show();
+	}
+
+	private void reloadAndUnselect(ModelContainer.File file) {
+		selectedFile = null;
+		reload();
 	}
 
 	private void reloadAndOpen(ModelContainer.File file) {

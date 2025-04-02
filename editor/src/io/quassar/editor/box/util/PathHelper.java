@@ -15,6 +15,18 @@ public class PathHelper {
 		return session.browser().baseUrl();
 	}
 
+	public static String permissionsUrl(Language language, String callbackUrl, UISession session) {
+		return session.browser().baseUrl() + "/permissions?language=" + language.name() + "&callback=" + callbackUrl;
+	}
+
+	public static String permissionsUrl(Model model, String callbackUrl, UISession session) {
+		return session.browser().baseUrl() + "/permissions?language=" + Language.nameOf(model.language()) + "&model=" + model.name() + "&callback=" + callbackUrl;
+	}
+
+	public static String notFoundUrl(String type, UISession session) {
+		return session.browser().baseUrl() + "/not-found?type=" + type;
+	}
+
 	public static String loginUrl(UISession session) {
 		return session.browser().baseUrl() + "/login";
 	}

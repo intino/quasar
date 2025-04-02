@@ -41,4 +41,12 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	public void dispatchLogin(Soul soul) {
 	}
 
+	@Override
+	public void dispatchNotFound(Soul soul, String type) {
+	}
+
+	@Override
+	public void dispatchPermissions(Soul soul, String username, String language, String model, String callback) {
+	}
+
 }
