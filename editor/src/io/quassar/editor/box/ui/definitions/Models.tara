@@ -22,6 +22,7 @@ Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
 				Button(title="clone", format=airRight, visible=false) cloneTrigger as Action
 
 		Block(layout=Horizontal EndJustified)
+			Button(title="help", format=airRight) languageHelpTrigger as Action
 			Button(title="settings", format=airRight) modelSettingsTrigger as Action Readonly
 
 	TemplateStamp(template=publishModelDialog) modelPublishDialog
@@ -31,17 +32,18 @@ Template modelsTemplate as Relative(height=100%, width=100%)
 
 	Block(layout=Horizontal Center, format=middleAirBottom)
 		Button(title="New", size=Small, highlight=Outline, visible=false) addModelTrigger as Action
-		SearchBox(collections=body.modelList) searchBox
+		SearchBox(collections=body.modelList, visible=false) searchBox
 
 	Block(layout=Vertical Flexible) body
 		List(itemClass="io.quassar.editor.model.Model") modelList
 			noItemsMessage = "No models"
 			Mold
-				Item(height = 70px) modelItem
-					Link(title="", format=relative bringToFront h5) label as Action Addressable(EditorElements.model)
-					Text description
-					Text owner as Labeled("Owner")
-					Date createDate as Labeled("Create date")
+				Item(height = 50px) modelItem
+					Block(layout=Vertical Flexible, format=doubleBottomSpaced topSpaced bottomBordered)
+						Link(title="", format=relative bringToFront h5) label as Action Addressable(EditorElements.model)
+						Text description
+						Text owner as Labeled("Owner")
+						Date createDate as Labeled("Create date")
 
 	TemplateStamp(template=addModelDialog) addModelDialog
 
@@ -55,7 +57,7 @@ Template modelTemplate as Relative(height=100%, width=100%)
 	Block(layout=Vertical Flexible CenterCenter, visible=false) notFoundBlock
 		Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
 			Block(layout=Vertical CenterCenter)
-				Image(value="/logo-expanded.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=340px, height=80px)
+				Image(value="/images/logo-expanded.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=340px, height=80px)
 				Text(value="Model not found", format=h4 airTop textCentered, translate=true) message
 
 	Block(layout=Horizontal Flexible, visible=false) contentBlock as Resizable
@@ -87,7 +89,9 @@ Template modelTemplate as Relative(height=100%, width=100%)
 				Block(layout=Horizontal EndJustified)
 			Block(layout=Vertical Flexible CenterCenter, format=whiteBackground) fileNotSelectedBlock
 				Text(value="Select file on left panel to open it")
-			Block(layout=Vertical Flexible, visible=false) fileSelectedBlock as Resizable Relative(height=100%)
+			Block(layout=Vertical Flexible, format=whiteBackground) nonEditableFileBlock
+				File fileField
+			Block(layout=Vertical Flexible, visible=false) editableFileBlock as Resizable Relative(height=100%)
 				Block as Relative(height=60%) > Block(layout=Vertical Flexible) as Relative(height=100%) > DisplayStamp(display=intinoDslEditor, format=fullHeight) intinoDslEditor
 				Block(visible=false) consoleBlock as Relative(height=40%) > TemplateStamp(template=consoleTemplate) console
 
@@ -101,6 +105,13 @@ Template modelTemplate as Relative(height=100%, width=100%)
 			Block(layout=Horizontal EndJustified)
 				Button(title="Don't save", size=Small, format=airRight) continueWithoutSavingFile as Action
 				Button(title="Save", size=Small, highlight=Fill) continueSavingFile as Action
+
+	Dialog(title="Language help") helpDialog as Relative(width=60%, height=80%)
+        Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
+        	HtmlViewer(format=fullHeight) helpStamp
+		Divider
+		Block(layout=Horizontal EndJustified)
+			Button(title="Close", size=Small, highlight=Fill) as CloseDialog(helpDialog)
 
 Template(layout=Vertical Flexible) modelBrowserTemplate as Relative(height=100%, width=100%)
 	Link(title="") removeFileTrigger as Action Affirmed("Are you sure to remove?")

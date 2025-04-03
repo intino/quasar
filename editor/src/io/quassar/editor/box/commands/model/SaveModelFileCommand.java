@@ -2,13 +2,15 @@ package io.quassar.editor.box.commands.model;
 
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command;
-import io.quassar.editor.box.models.ModelContainer;
+import io.quassar.editor.box.models.File;
 import io.quassar.editor.model.Model;
+
+import java.io.InputStream;
 
 public class SaveModelFileCommand extends Command<Boolean> {
 	public Model model;
-	public ModelContainer.File file;
-	public String content;
+	public File file;
+	public InputStream content;
 
 	public SaveModelFileCommand(EditorBox box) {
 		super(box);

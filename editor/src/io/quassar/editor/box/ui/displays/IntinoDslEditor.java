@@ -1,5 +1,6 @@
 package io.quassar.editor.box.ui.displays;
 
+import io.intino.alexandria.logger.Logger;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.schemas.IntinoDslEditorFile;
 import io.quassar.editor.box.schemas.IntinoDslEditorFilePosition;
@@ -8,7 +9,11 @@ import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
+import org.apache.commons.io.IOUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
 public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
@@ -107,7 +112,13 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 	}
 
 	private String content() {
-		return box().modelManager().content(language(), model, release, uri);
+		try {
+			InputStream content = box().modelManager().content(language(), model, release, uri);
+			return content != null ? IOUtils.toString(content, StandardCharsets.UTF_8) : "";
+		} catch (IOException e) {
+			Logger.error(e);
+			return "";
+		}
 	}
 
 	private Language language() {

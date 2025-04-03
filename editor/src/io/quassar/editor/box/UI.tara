@@ -1,5 +1,6 @@
 dsl Konos
 
+use Landing
 use Editors
 use Models
 use Languages
@@ -8,11 +9,12 @@ use Theme
 Service EditorElements as UI(port = "{port}", title = "{title}", favicon = "/icons/favicons/favicon.ico")
 	Authentication(by="{federation-url}")
 
-	Resource(path = "/") home as Page(homeTemplate) Main
+	Resource(path = "/") home as Page(homeTemplate) Main > Parameter dialog
 	Resource(path = "/about") about as Page(homeTemplate)
 	Resource(path = "/languages") languages as Page(homeTemplate) > Parameter tab
 	Resource(path = "/languages/:language") language as Page(homeTemplate) > Parameter tab
 	Resource(path = "/languages/:language/models/:model") model as Page(homeTemplate) > Parameter release; Parameter view; Parameter file; Parameter pos
+	Resource(path = "/languages/:language/models/:model/starting") startingModel as Page(homeTemplate)
 	Resource(path = "/login") login as Page(loginTemplate)
 	Resource(path = "/not-found") notFound as Page(notFoundTemplate) > Parameter type
 	Resource(path = "/permissions") permissions as Page(permissionsTemplate) > Parameter username; Parameter language; Parameter model; Parameter callback
@@ -23,6 +25,7 @@ Template homeTemplate as Relative(height=100%, width=100%)
 	Block(layout=Vertical Flexible)
 		Block(layout=Vertical, format=centered) as Relative(width=100%)
 			Block(layout=Vertical Flexible CenterCenter) loading > Spinner(format=secondary)
+			Block(layout=Vertical Flexible) landingPage as Conditional > TemplateStamp(template=landingTemplate) landingStamp
 			Block(layout=Vertical Flexible) aboutPage as Conditional > TemplateStamp(template=aboutTemplate) aboutStamp
 			Block(layout=Vertical Flexible) languagesPage as Conditional > TemplateStamp(template=languagesTemplate) languagesStamp
 			Block(layout=Vertical Flexible) languagePage as Conditional > TemplateStamp(template=languageTemplate) languageStamp
@@ -38,34 +41,27 @@ Template(layout=Horizontal Center, format=headerStyle) headerTemplate
 
 	Block(layout=Horizontal Center Flexible, format=middleAirTop middleAirBottom middleAirLeft) languageView
 		Link(title="", format=logoLink) as Action Addressable(EditorElements.home)
-		Image(value="/logo-expanded-dark.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=130px, height=30px)
+		Image(value="/images/logo-expanded-dark.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=130px, height=30px)
 		Text(value="/", format=whiteColor h2 airRight, visible=false) languageSeparator
 		Text(value="", format=whiteColor h2, visible=false) languageTitleText
 		Link(title="", format=whiteColor h2, visible=false) languageTitleLink as Action Addressable(EditorElements.language)
 
 	Block(layout=Horizontal EndJustified)
+		MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
+		MaterialIconButton(title="Set light mode", format=airRight, icon="Brightness7", size=Small) as SetLightMode
+		Button(title="About", format=airRight whiteColor) as Action Addressable(EditorElements.about)
 		Button(title="Log in", format=airRight whiteColor, visible=false) login as Action
 
-		Block(layout=Horizontal Center)
-			Button(title="About", format=airRight whiteColor) as Action Addressable(EditorElements.about)
-
-		Block(layout=Horizontal Center) notLoggedBlock as Conditional
-			MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
-			MaterialIconButton(title="Set light mode", format=airRight, icon="Brightness7", size=Small) as SetLightMode
-
 		User(mode=OnlyPhoto, visible=false, format=relative veryLargeIconSize airRight smallAirTop) user
-			Block(layout=Horizontal EndJustified, format=userToolbar)
-				MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
-				MaterialIconButton(title="Set light mode", format=airRight, icon="Brightness7", size=Small) as SetLightMode
 			Selector as ListBox
-				Block as Option > Link(title="Home") home as Action Addressable(EditorElements.home)
+				Block as Option > Link(title="Projects", visible=false) home as Action Addressable(EditorElements.home)
 
 Template(layout=Vertical Flexible) permissionsTemplate as Relative(height=100%,width=100%)
 	Block(layout=Vertical CenterCenter, format=grey) as Relative(height=100%,width=100%)
 		Block(format=visible) as Absolute(width=400px, height=400px) Paper
 			Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
 				Block(layout=Vertical CenterCenter)
-					Image(value="/logo-expanded.png", format=airRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) as Absolute(width=340px, height=80px)
+					Image(value="/images/logo-expanded.png", format=airRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) as Absolute(width=340px, height=80px)
 					Text(value="You dont have access permissions", format=h4 airTop textCentered, translate=true) message
 			Block
 				Divider
@@ -78,7 +74,7 @@ Template(layout=Vertical Flexible) notFoundTemplate as Relative(height=100%,widt
 		Block(format=visible) as Absolute(width=400px, height=400px) Paper
 			Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
 				Block(layout=Vertical CenterCenter)
-					Image(value="/logo-expanded.png", format=airRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) as Absolute(width=340px, height=80px)
+					Image(value="/images/logo-expanded.png", format=airRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) as Absolute(width=340px, height=80px)
 					Text(value="Model not found", format=h4 airTop textCentered, translate=true) message
 			Block
 				Divider
@@ -90,7 +86,7 @@ Template(layout=Vertical Flexible, format=radialBackground) loginTemplate as Rel
 	Block(layout=Vertical CenterCenter, format=centered) content as Relative(width=80%)
 		Block(layout=Horizontal, format=relative)
 			Link(title="", format=fullSpaceLink) homeLink as Action
-			Image(value="/logo-expanded.png", format=airLeft airRight doubleAirBottom, mobileReduceFactor=75%) as Absolute(width=300px, height=70px)
+			Image(value="/images/logo-expanded.png", format=airLeft airRight doubleAirBottom, mobileReduceFactor=75%) as Absolute(width=300px, height=70px)
 		Block
 			Block(layout=Vertical Center) as Absolute(width=400px)
 				Block(format=loginBlockStyle)

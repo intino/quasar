@@ -18,7 +18,7 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 	}
 
 	public enum Page {
-		About, Languages, Language, Model;
+		Landing, About, Languages, Language, Model;
 
 		public static Page from(String key) {
 			return Arrays.stream(values()).filter(v -> v.name().equalsIgnoreCase(key)).findFirst().orElse(null);
@@ -31,8 +31,14 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 		registerUserIfNeeded();
 	}
 
-	public void openHome() {
-		openLanguages(null);
+	public void openHome(String dialog) {
+		openLanding(dialog);
+	}
+
+	public void openLanding(String dialog) {
+		set(null, null);
+		openPage(Page.Landing);
+		if (landingPage.landingStamp != null) landingPage.landingStamp.open(dialog);
 	}
 
 	public void openAbout() {
@@ -59,6 +65,12 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 		if (modelPage.modelStamp != null) modelPage.modelStamp.open(language, model, release, view, file, position);
 	}
 
+	public void openStartingModel(String language, String model) {
+		set(language, model);
+		openPage(Page.Model);
+		if (modelPage.modelStamp != null) modelPage.modelStamp.openStarting(language, model);
+	}
+
 	private boolean openPage(Page page) {
 		refreshHeader();
 		if (current == page) return true;
@@ -76,6 +88,7 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 	}
 
 	private void hidePages() {
+		if (landingPage.isVisible()) landingPage.hide();
 		if (aboutPage.isVisible()) aboutPage.hide();
 		if (languagesPage.isVisible()) languagesPage.hide();
 		if (languagePage.isVisible()) languagePage.hide();
@@ -83,6 +96,7 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 	}
 
 	private BlockConditional<?, ?> blockOf(Page page) {
+		if (page == Page.Landing) return landingPage;
 		if (page == Page.About) return aboutPage;
 		if (page == Page.Languages) return languagesPage;
 		if (page == Page.Language) return languagePage;

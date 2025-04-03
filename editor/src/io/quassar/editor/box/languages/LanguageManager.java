@@ -32,7 +32,7 @@ public class LanguageManager {
 	public List<Language> visibleLanguages(String owner) {
 		Set<Language> result = new HashSet<>(publicLanguages());
 		result.addAll(ownerLanguages(owner));
-		return new ArrayList<>(result);
+		return result.stream().filter(l -> !l.name().equals(Language.Meta)).toList();
 	}
 
 	public List<Language> publicLanguages() {
@@ -54,10 +54,11 @@ public class LanguageManager {
 		return languages().stream().filter(l -> user.equals(l.owner())).collect(toList());
 	}
 
-	public Language create(String name, String version, Language.Level level, String description, File dsl, String parent, String owner) {
+	public Language create(String name, String version, Language.Level level, String hint, String description, File dsl, String parent, String owner) {
 		Language language = new Language(name);
 		language.version(version);
 		language.level(level);
+		language.hint(hint);
 		language.description(description);
 		language.parent(parent);
 		language.owner(owner);

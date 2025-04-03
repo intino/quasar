@@ -92,7 +92,7 @@ public class PublishModelDialog extends AbstractPublishModelDialog<EditorBox> {
 
 	private void createLanguage() {
 		notifyUser(translate("Creating language..."), UserMessage.Type.Loading);
-		box().commands(LanguageCommands.class).create(model.name(), version(), model.language(), level(), model.description(), username());
+		box().commands(LanguageCommands.class).create(model.name(), version(), model.language(), level(), model.hint(), model.description(), username());
 	}
 
 	private void updateLanguage() {

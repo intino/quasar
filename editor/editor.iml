@@ -12,7 +12,6 @@
     <orderEntry type="library" name="Intino: io.intino.alexandria:core-framework:2.2.2" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:logger4j:1.1.0" level="project" />
     <orderEntry type="library" name="Intino: org.slf4j:slf4j-reload4j:2.0.12" level="project" />
-    <orderEntry type="library" name="Intino: org.slf4j:slf4j-api:2.0.12" level="project" />
     <orderEntry type="library" name="Intino: ch.qos.reload4j:reload4j:1.2.22" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:exceptions:2.1.2" level="project" />
     <orderEntry type="library" name="Intino: io.javalin:javalin:6.4.0" level="project" />
@@ -107,5 +106,8 @@
     <orderEntry type="library" name="Intino: io.intino.amidas:shared:4.0.5" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:zif:2.0.0" level="project" />
     <orderEntry type="library" name="Intino: org.java-websocket:Java-WebSocket:1.5.3" level="project" />
+    <orderEntry type="library" name="Intino: io.intino.alexandria:ui-framework:6.3.10" level="project" />
+    <orderEntry type="library" name="Intino: org.apache.tika:tika-core:3.1.0" level="project" />
+    <orderEntry type="library" name="Intino: org.slf4j:slf4j-api:2.0.16" level="project" />
   </component>
 </module>

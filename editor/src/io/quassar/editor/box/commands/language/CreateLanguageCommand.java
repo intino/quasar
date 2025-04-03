@@ -5,9 +5,7 @@ import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.box.commands.model.CreateModelCommand;
 import io.quassar.editor.box.util.LanguageHelper;
-import io.quassar.editor.box.util.StringHelper;
 import io.quassar.editor.model.Language;
-import io.quassar.editor.model.Model;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -21,6 +19,7 @@ public class CreateLanguageCommand extends Command<Language> {
 	public String version;
 	public String parent;
 	public Language.Level level;
+	public String hint;
 	public String description;
 
 	public CreateLanguageCommand(EditorBox box) {
@@ -30,14 +29,14 @@ public class CreateLanguageCommand extends Command<Language> {
 	@Override
 	public Language execute() {
 		File dsl = LanguageHelper.mavenDslFile(name, version, box);
-		Language language = box.languageManager().create(name, version, level, description, dsl.exists() ? dsl : null, parent, author());
+		Language language = box.languageManager().create(name, version, level, hint, description, dsl.exists() ? dsl : null, parent, author());
 		createDefaultReadme(language);
 		return language;
 	}
 
 	private void createDefaultReadme(Language language) {
 		try {
-			InputStream stream = CreateModelCommand.class.getResourceAsStream("/language.template.html");
+			InputStream stream = CreateModelCommand.class.getResourceAsStream("/templates/language.template.html");
 			String content = stream != null ? IOUtils.toString(stream, StandardCharsets.UTF_8) : "";
 			Files.writeString(box.archetype().languages().readme(language.name()).toPath(), content);
 		} catch (IOException e) {

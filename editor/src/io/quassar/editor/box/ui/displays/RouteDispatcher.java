@@ -10,8 +10,8 @@ import io.quassar.editor.box.util.SessionHelper;
 public class RouteDispatcher extends AbstractRouteDispatcher {
 
 	@Override
-	public void dispatchHome(Soul soul) {
-		soul.currentLayer(HomeTemplate.class).openHome();
+	public void dispatchHome(Soul soul, String dialog) {
+		soul.currentLayer(HomeTemplate.class).openHome(dialog);
 	}
 
 	@Override
@@ -35,6 +35,11 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	public void dispatchModel(Soul soul, String language, String model, String release, String view, String file, String position) {
 		SessionHelper.register(soul.session(), ModelView.from(view));
 		soul.currentLayer(HomeTemplate.class).openModel(language, model, release, view, file, position);
+	}
+
+	@Override
+	public void dispatchStartingModel(Soul soul, String language, String model) {
+		soul.currentLayer(HomeTemplate.class).openStartingModel(language, model);
 	}
 
 	@Override

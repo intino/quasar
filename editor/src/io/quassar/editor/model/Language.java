@@ -9,12 +9,15 @@ public class Language {
 	private String version;
 	private Level level;
 	private String parent;
+	private String hint;
 	private String description;
 	private String owner;
 	private String fileExtension;
 	private List<String> tagList;
 	private Instant createDate;
 	private transient ModelsProvider modelsProvider;
+
+	public static final String Meta = "meta";
 
 	public enum Level { L1, L2, L3 }
 
@@ -67,6 +70,15 @@ public class Language {
 
 	public Language level(Level level) {
 		this.level = level;
+		return this;
+	}
+
+	public String hint() {
+		return hint;
+	}
+
+	public Language hint(String hint) {
+		this.hint = hint;
 		return this;
 	}
 

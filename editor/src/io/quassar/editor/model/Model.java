@@ -10,6 +10,7 @@ import java.util.Map;
 public class Model {
 	private String name;
 	private String title;
+	private String hint;
 	private String description;
 	private String language;
 	private String owner;
@@ -19,15 +20,6 @@ public class Model {
 	private boolean isPrivate = false;
 
 	public static final String DraftRelease = "draft";
-	public static final String ResourcesDirectory = "resources";
-
-	public static boolean isResource(String file) {
-		return file.startsWith(ResourcesDirectory);
-	}
-
-	public static String withResourcesPath(String name) {
-		return ResourcesDirectory + (name.startsWith(File.separator) ? "" : File.separator) + name;
-	}
 
 	public String name() {
 		return name;
@@ -44,6 +36,15 @@ public class Model {
 
 	public Model title(String title) {
 		this.title = title;
+		return this;
+	}
+
+	public String hint() {
+		return hint;
+	}
+
+	public Model hint(String hint) {
+		this.hint = hint;
 		return this;
 	}
 

@@ -12,13 +12,10 @@ import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.ZipHelper;
 import io.quassar.editor.model.Model;
 
-public class GetDownloadModelAction implements io.intino.alexandria.rest.RequestErrorHandler {
-	public EditorBox box;
-	public io.intino.alexandria.http.server.AlexandriaHttpContext context;
+public class GetDownloadModelAction extends QuassarAction {
 	public String language;
 	public String model;
 	public String release;
-	public String token;
 
 	public io.intino.alexandria.Resource execute() throws Forbidden {
 		Model quassarModel = box.modelManager().get(language, model);
@@ -40,12 +37,4 @@ public class GetDownloadModelAction implements io.intino.alexandria.rest.Request
 		}
 	}
 
-	private boolean check(Model quassarModel) {
-		if (quassarModel.isPublic()) return true;
-		return quassarModel.tokens().values().stream().anyMatch(t -> t.equals(token));
-	}
-
-	public void onMalformedRequest(Throwable e) throws AlexandriaException {
-		throw new BadRequest("Malformed request");
-	}
 }

@@ -3,13 +3,13 @@ package io.quassar.editor.box.commands.model;
 import io.intino.alexandria.logger.Logger;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command;
-import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.ZipHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +22,7 @@ public class AddModelZipCommand extends Command<Boolean> {
 	public Model model;
 	public ModelView view;
 	public InputStream content;
-	public ModelContainer.File parent;
+	public io.quassar.editor.box.models.File parent;
 
 	public AddModelZipCommand(EditorBox box) {
 		super(box);
@@ -44,7 +44,7 @@ public class AddModelZipCommand extends Command<Boolean> {
 	private void add(Path path, File root) {
 		try {
 			File file = path.toFile();
-			String content = Files.readString(path);
+			InputStream content = new ByteArrayInputStream(Files.readAllBytes(path));
 			String filename = nameFor(file.getAbsolutePath().replace(root.getAbsolutePath() + File.separator, ""));
 			if (box.modelManager().existsFile(model, filename, parent)) return;
 			box.modelManager().createFile(model, filename, content, parent);
@@ -55,7 +55,7 @@ public class AddModelZipCommand extends Command<Boolean> {
 
 	private String nameFor(String name) {
 		String result = ModelHelper.validWorkspaceFileName(name);
-		return view == ModelView.Resources ? parent != null ? result : Model.withResourcesPath(result) : result;
+		return view == ModelView.Resources ? parent != null ? result : io.quassar.editor.box.models.File.withResourcesPath(result) : result;
 	}
 
 	private File extract() {

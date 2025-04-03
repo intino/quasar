@@ -14,6 +14,8 @@ import java.util.function.Function;
 
 public class DisplayHelper {
 
+	public static long MinItemsCount = 6;
+
 	public static String user(UISession session) {
 		User user = session.user();
 		return user != null ? user.username() : io.quassar.editor.model.User.Anonymous;

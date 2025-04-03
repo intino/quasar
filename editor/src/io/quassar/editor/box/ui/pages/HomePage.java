@@ -7,6 +7,7 @@ import io.quassar.editor.box.util.PermissionsHelper;
 public class HomePage extends AbstractHomePage {
 	public String language;
 	public String view;
+	public String dialog;
 
 	@Override
 	public String redirectUrl() {

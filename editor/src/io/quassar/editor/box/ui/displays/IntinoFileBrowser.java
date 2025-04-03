@@ -83,8 +83,8 @@ public class IntinoFileBrowser extends AbstractIntinoFileBrowser<EditorBox> {
 
 	public void move(IntinoFileBrowserMoveInfo info) {
 		IntinoFileBrowserItem item = items.stream().filter(i -> i.id() == info.file()).findFirst().orElse(null);
-		IntinoFileBrowserItem directory = items.stream().filter(i -> i.name().equals(info.directory())).findFirst().orElse(null);
-		if (item == null || directory == null) return;
+		IntinoFileBrowserItem directory = items.stream().filter(i -> i.uri().equals(info.directory())).findFirst().orElse(null);
+		if (item == null) return;
 		moveListener.accept(item, directory);
 	}
 

@@ -1,0 +1,57 @@
+dsl Konos
+
+use Languages
+use Models
+use UI
+use Theme
+
+Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, height=100%)
+
+	Block(layout=Vertical Center, format=doubleBottomSpaced) content as Relative(width=100%, height=100%)
+
+		Block(layout=Horizontal CenterJustified Wrap, format=doubleAirTop doubleTopSpaced bringToFront doubleAirBottom)
+			Block(layout=Vertical Center, format=block)
+				Text(value="Model with a DSL", format=blockTitle)
+				Text(value="Use existing Domain Specific Language (DSL) from our community to build your models", format=blockDescription)
+				Block(layout=Vertical CenterCenter, format=doubleAirTop)
+					Button(title="Start modelling", format=blockMainAction) startModeling as Action Addressable(EditorElements.home)
+					Link(title="Explore", format=blockAction airTop) exploreLanguages as Action Addressable(EditorElements.home)
+			Block(layout=Vertical Center) > Block(format=doubleAirLeft doubleAirRight doubleAirBottom)
+			Block(layout=Vertical Center, format=block)
+				Text(value="Build your own DSL", format=blockTitle)
+				Text(value="High expressive DSL without writing code to model any domain through expressive grammar", format=blockDescription)
+				Block(layout=Vertical CenterCenter, format=doubleAirTop)
+					Button(title="Start building", format=blockMainAction) startBuilding as Action
+					Link(title="Explore", format=blockAction airTop) exploreModels as Action Addressable(EditorElements.home)
+
+		Block(layout=Vertical Flexible CenterJustified Wrap, format=bringToFront doubleAirTop)
+			Block(layout=Vertical CenterCenter, format=doubleAirBottom)
+				Text(value="1", format=stepBudge)
+				Text(value="Build", format=stepTitle)
+				Text(value="Design a DSL using Quassar's Metalanguage", format=stepDescription)
+			Block(layout=Vertical CenterCenter, format=doubleAirBottom doubleAirTop)
+				Text(value="2", format=stepBudge)
+				Text(value="Publish", format=stepTitle)
+				Text(value="Make your DSL available to other users", format=stepDescription)
+			Block(layout=Vertical CenterCenter, format=doubleAirBottom doubleAirTop)
+				Text(value="3", format=stepBudge)
+				Text(value="Model", format=stepTitle)
+				Text(value="Describe a problem or behavior with your DSL", format=stepDescription)
+			Block(layout=Vertical CenterCenter, format=doubleAirBottom doubleAirTop)
+				Text(value="4", format=stepBudge)
+				Text(value="Deploy", format=stepTitle)
+				Text(value="Let the model drive your software's behavior", format=stepDescription)
+
+	Dialog(title="") modelsDialog as Relative(height=80%, width=60%)
+        Block(layout=Horizontal) as Relative(height=100%, offsetHeight=40px)
+        	TemplateStamp(template=modelsTemplate) modelsStamp
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Close", size=Small, highlight=Fill) as CloseDialog(modelsDialog)
+
+	Dialog(title="") languagesDialog as Relative(height=80%, width=60%)
+        Block(layout=Horizontal) as Relative(height=100%, offsetHeight=40px)
+        	TemplateStamp(template=languagesTemplate) languagesStamp
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Close", size=Small, highlight=Fill) as CloseDialog(modelsDialog)

@@ -85,6 +85,7 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 	private void refreshGeneralBlock() {
 		modelNameField.value(model.name());
 		modelTitleField.value(ModelHelper.label(model, language(), box()));
+		modelHintField.value(model.hint());
 		modelDescriptionField.value(model.description());
 		removeModel.readonly(!PermissionsHelper.canRemove(model, session(), box()));
 	}
@@ -215,6 +216,7 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 	private boolean checkModel() {
 		if (!checkModelName()) return false;
 		if (!DisplayHelper.check(modelTitleField, this::translate)) return false;
+		if (!DisplayHelper.check(modelHintField, this::translate)) return false;
 		return DisplayHelper.check(modelDescriptionField, this::translate);
 	}
 
@@ -238,7 +240,7 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 	}
 
 	private void saveModel() {
-		box().commands(ModelCommands.class).save(model, modelNameField.value(), modelTitleField.value(), modelDescriptionField.value(), username());
+		box().commands(ModelCommands.class).save(model, modelNameField.value(), modelTitleField.value(), modelHintField.value(), modelDescriptionField.value(), username());
 		saveAccessType();
 		saveCollaborators();
 	}
@@ -280,8 +282,13 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		String languageName = Language.nameOf(model.name());
 		if (!box().languageManager().exists(languageName)) return;
 		Language language = box().languageManager().get(languageName);
+		if (tagSet == null) {
+			box().commands(LanguageCommands.class).save(language, model.hint(), model.description(), username());
+			return;
+		}
 		String fileExtension = languageFileExtensionField.value();
-		box().commands(LanguageCommands.class).save(language, model.description(), fileExtension, level(), new ArrayList<>(tagSet), logoFile(), username());
+		List<String> tags = new ArrayList<>(tagSet);
+		box().commands(LanguageCommands.class).save(language, model.hint(), model.description(), fileExtension, level(), tags, logoFile(), username());
 	}
 
 	private Language.Level level() {

@@ -1,24 +1,24 @@
 package io.quassar.editor.box.util;
 
-import io.quassar.editor.box.models.ModelContainer;
+import io.quassar.editor.box.models.File;
 import io.quassar.editor.box.schemas.IntinoFileBrowserItem;
 
 import java.util.*;
 
 public class IntinoFileBrowserHelper {
 
-	public static List<IntinoFileBrowserItem> fileBrowserItems(List<ModelContainer.File> files) {
+	public static List<IntinoFileBrowserItem> fileBrowserItems(List<File> files) {
 		Map<String, IntinoFileBrowserItem> items = new HashMap<>();
 		files.forEach(f -> register(f, items));
 		return new ArrayList<>(items.values());
 	}
 
-	public static IntinoFileBrowserItem itemOf(ModelContainer.File file) {
+	public static IntinoFileBrowserItem itemOf(File file) {
 		IntinoFileBrowserItem.Type type = file.isDirectory() ? IntinoFileBrowserItem.Type.Folder : IntinoFileBrowserItem.Type.File;
 		return itemOf(file.uri(), file.parents(), type, file.parents().isEmpty());
 	}
 
-	private static void register(ModelContainer.File file, Map<String, IntinoFileBrowserItem> items) {
+	private static void register(File file, Map<String, IntinoFileBrowserItem> items) {
 		List<String> parents = file.parents();
 		if (!items.containsKey(file.uri())) items.put(file.uri(), itemOf(file).id(items.size()));
 		for (int i = 0; i < parents.size(); i++) {
@@ -34,7 +34,7 @@ public class IntinoFileBrowserHelper {
 			items.get(parent).children().add(directory);
 	}
 
-	private static void register(ModelContainer.File file, String parent, boolean isRoot, Map<String, IntinoFileBrowserItem> items) {
+	private static void register(File file, String parent, boolean isRoot, Map<String, IntinoFileBrowserItem> items) {
 		if (!items.containsKey(parent))
 			items.put(parent, itemOf(parent, Collections.emptyList(), io.quassar.editor.box.schemas.IntinoFileBrowserItem.Type.Folder, isRoot).id(items.size()));
 		if (file != null && !items.get(parent).children().contains(file.uri())) items.get(parent).children().add(file.uri());

@@ -39,7 +39,7 @@ public class ModelBuilder {
 		this.model = model;
 		this.release = release;
 		this.language = box.languageManager().get(model.language());
-		this.manager = new FileDocumentManager(new File(box.modelManager().workspace(model, Model.DraftRelease)));
+		this.manager = new FileDocumentManager(box.modelManager().workspace(model, Model.DraftRelease).root());
 		this.accessor = box.builderAccessor();
 		this.quassarBuilder = box.configuration().quassarBuilder();
 	}

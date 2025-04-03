@@ -50,8 +50,12 @@ public class ModelHelper {
 		return filename.endsWith(".zip");
 	}
 
-	public static String validWorkspaceFileName(String name) {
-		return StringHelper.camelCaseToKebabCase(name).replace(" ", "-");
+	private static final String ArchetypeFilename = "archetype.zip";
+	public static boolean isArchetype(String filename) {
+		return filename.equalsIgnoreCase(ArchetypeFilename);
 	}
 
+	public static String validWorkspaceFileName(String name) {
+		return StringHelper.camelCaseToKebabCase(name).replace("/-", "/").replace(" ", "-");
+	}
 }

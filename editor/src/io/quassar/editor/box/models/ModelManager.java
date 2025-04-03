@@ -3,7 +3,6 @@ package io.quassar.editor.box.models;
 import io.intino.alexandria.Json;
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
-import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.box.languages.LanguageServerManager;
 import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.box.util.VersionNumberComparator;
@@ -12,21 +11,17 @@ import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 import io.quassar.editor.model.OperationResult;
 import org.apache.commons.io.FileUtils;
+import org.apache.tika.Tika;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
@@ -40,6 +35,12 @@ public class ModelManager {
 		this.archetype = archetype;
 		this.languageLoader = languageLoader;
 		this.serverManager = serverManager;
+	}
+
+	public List<Model> visibleModels(Language language, String owner) {
+		Set<Model> result = new HashSet<>(publicModels(language, owner));
+		result.addAll(ownerModels(language, owner));
+		return result.stream().toList();
 	}
 
 	public List<Model> models(Language language) {
@@ -113,10 +114,11 @@ public class ModelManager {
 		return archetype.languages().releaseAccessor(languageNameOf(model), model.name(), version);
 	}
 
-	public Model create(String name, String title, String description, Language language, String owner) {
+	public Model create(String name, String title, String hint, String description, Language language, String owner) {
 		Model model = new Model();
 		model.name(name);
 		model.title(title);
+		model.hint(hint);
 		model.description(description);
 		model.language(language.name());
 		model.owner(owner);
@@ -132,46 +134,29 @@ public class ModelManager {
 		result.owner(owner);
 		result.createDate(Instant.now());
 		save(result);
-		new ModelContainerWriter(language(model), model, server(model, release)).clone(result, server(result, Model.DraftRelease));
+		new WorkspaceWriter(workspace(model, release), server(model, release)).clone(result, server(result, Model.DraftRelease));
 		return get(languageNameOf(model), name);
 	}
 
 	public boolean isWorkspaceEmpty(Model model, String release) {
-		File workspace = new File(workspace(model, release));
+		File workspace = workspace(model, release).root();
 		File[] files = workspace.exists() ? workspace.listFiles() : null;
 		return files == null || files.length == 0;
 	}
 
-	public URI workspace(Model model, String release) {
-		try {
-			File workspace = archetype.languages().workspace(languageNameOf(model), model.name());
-			if (release != null && !release.equals(Model.DraftRelease)) workspace = releaseWorkSpace(model, release);
-			return workspace.getAbsoluteFile().getCanonicalFile().toURI();
-		} catch (IOException e) {
-			Logger.error(e);
-			return null;
-		}
+	public Workspace workspace(Model model, String release) {
+		return new Workspace(language(model), model, release, archetype);
 	}
 
-	private File releaseWorkSpace(Model model, String release) {
-		File releaseFile = archetype.languages().release(languageNameOf(model), model.name(), release);
-		File workspace = archetype.tmp().releaseWorkspace(languageNameOf(model), model.name(), release);
-		if (!releaseFile.exists()) return workspace;
-		File[] files = workspace.listFiles();
-		if (files != null && files.length > 0) return workspace;
-		ZipHelper.extract(archetype.languages().release(languageNameOf(model), model.name(), release), workspace);
-		return workspace;
-	}
-
-	public ModelContainer.File copy(Model model, String filename, ModelContainer.File source) {
-		return new ModelContainerWriter(language(model), model, server(model, Model.DraftRelease)).copy(filename, source);
+	public io.quassar.editor.box.models.File copy(Model model, String filename, io.quassar.editor.box.models.File source) {
+		return new WorkspaceWriter(workspace(model, Model.DraftRelease), server(model, Model.DraftRelease)).copy(filename, source);
 	}
 
 	public OperationResult createRelease(Model model, String release, InputStream accessor) {
 		try {
 			if (isWorkspaceEmpty(model, Model.DraftRelease)) return OperationResult.Error("Workspace is empty");
 			File releaseFile = archetype.languages().release(languageNameOf(model), model.name(), release);
-			ZipHelper.zipFolder(Paths.get(workspace(model, Model.DraftRelease)), releaseFile.toPath());
+			ZipHelper.zipFolder(workspace(model, Model.DraftRelease).root().toPath(), releaseFile.toPath());
 			File accessorDestiny = releaseAccessor(model, release);
 			FileUtils.copyInputStreamToFile(accessor, accessorDestiny);
 			return OperationResult.Success();
@@ -181,29 +166,29 @@ public class ModelManager {
 		}
 	}
 
-	public boolean existsFile(Model model, String name, ModelContainer.File parent) {
-		return new ModelContainerReader(language(model), model, server(model, Model.DraftRelease)).existsFile(name, parent);
+	public boolean existsFile(Model model, String name, io.quassar.editor.box.models.File parent) {
+		return new WorkspaceReader(workspace(model, Model.DraftRelease), server(model, Model.DraftRelease)).existsFile(name, parent);
 	}
 
-	public ModelContainer.File createFile(Model model, String name, String content, ModelContainer.File parent) {
-		return new ModelContainerWriter(language(model), model, server(model, Model.DraftRelease)).createFile(name, content, parent);
+	public io.quassar.editor.box.models.File createFile(Model model, String name, InputStream content, io.quassar.editor.box.models.File parent) {
+		return new WorkspaceWriter(workspace(model, Model.DraftRelease), server(model, Model.DraftRelease)).createFile(name, content, parent);
 	}
 
-	public ModelContainer.File createFolder(Model model, String name, ModelContainer.File parent) {
-		return new ModelContainerWriter(language(model), model, server(model, Model.DraftRelease)).createFolder(name, parent);
+	public io.quassar.editor.box.models.File createFolder(Model model, String name, io.quassar.editor.box.models.File parent) {
+		return new WorkspaceWriter(workspace(model, Model.DraftRelease), server(model, Model.DraftRelease)).createFolder(name, parent);
 	}
 
-	public void save(Model model, ModelContainer.File file, String content) {
-		new ModelContainerWriter(language(model), model, server(model, Model.DraftRelease)).save(file, content);
+	public void save(Model model, io.quassar.editor.box.models.File file, InputStream content) {
+		new WorkspaceWriter(workspace(model, Model.DraftRelease), server(model, Model.DraftRelease)).save(file, content);
 	}
 
-	public ModelContainer.File rename(Model model, ModelContainer.File file, String newName) {
-		return new ModelContainerWriter(language(model), model, server(model, Model.DraftRelease)).rename(file, newName);
+	public io.quassar.editor.box.models.File rename(Model model, io.quassar.editor.box.models.File file, String newName) {
+		return new WorkspaceWriter(workspace(model, Model.DraftRelease), server(model, Model.DraftRelease)).rename(file, newName);
 	}
 
-	public ModelContainer.File move(Model model, ModelContainer.File file, ModelContainer.File directory) {
+	public io.quassar.editor.box.models.File move(Model model, io.quassar.editor.box.models.File file, io.quassar.editor.box.models.File directory) {
 		try {
-			return new ModelContainerWriter(language(model), model, server(model, Model.DraftRelease)).move(file, directory);
+			return new WorkspaceWriter(workspace(model, Model.DraftRelease), server(model, Model.DraftRelease)).move(file, directory);
 		} catch (Exception e) {
 			Logger.error(e);
 			return null;
@@ -228,8 +213,8 @@ public class ModelManager {
 		save(model);
 	}
 
-	public void remove(Model model, ModelContainer.File file) {
-		new ModelContainerWriter(language(model), model, server(model, Model.DraftRelease)).remove(file);
+	public void remove(Model model, io.quassar.editor.box.models.File file) {
+		new WorkspaceWriter(workspace(model, Model.DraftRelease), server(model, Model.DraftRelease)).remove(file);
 	}
 
 	public void remove(Model model) {
@@ -242,12 +227,12 @@ public class ModelManager {
 		}
 	}
 
-	public ModelContainer modelContainer(Language language, Model model, String release) {
-		return new ModelContainer(language, model, server(model, release));
+	public ModelContainer modelContainer(Model model, String release) {
+		return new ModelContainer(workspace(model, release), server(model, release));
 	}
 
-	public String content(Language language, Model model, String release, String uri) {
-		return new ModelContainerReader(language, model, server(model, release)).content(uri);
+	public InputStream content(Language language, Model model, String release, String uri) {
+		return new WorkspaceReader(workspace(model, release), server(model, release)).content(uri);
 	}
 
 	private boolean belongsTo(Model model, String user) {
@@ -270,6 +255,23 @@ public class ModelManager {
 
 	private String languageNameOf(Model model) {
 		return Language.nameOf(model.language());
+	}
+
+	public boolean isTextFile(Model model, String release, io.quassar.editor.box.models.File file) {
+		if (!file.isResource()) return true;
+		return isText(new File(workspace(model, release).root(), file.uri()));
+	}
+
+	private static final List<String> TextContentTypes = List.of("text/", "application/json", "application/xml", "application/javascript", "application/xhtml+xml");
+	private boolean isText(java.io.File file) {
+		try {
+			if (file.length() == 0) return true;
+			Tika tika = new Tika();
+			String contentType = tika.detect(file);
+			return TextContentTypes.stream().anyMatch(contentType::startsWith);
+		} catch (IOException ignored) {
+			return false;
+		}
 	}
 
 }

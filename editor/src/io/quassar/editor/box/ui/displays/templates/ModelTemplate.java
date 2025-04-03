@@ -1,5 +1,8 @@
 package io.quassar.editor.box.ui.displays.templates;
 
+import io.intino.alexandria.MimeTypes;
+import io.intino.alexandria.logger.Logger;
+import io.intino.alexandria.ui.Asset;
 import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.utils.DelayerUtil;
 import io.intino.builderservice.schemas.Message;
@@ -16,16 +19,27 @@ import io.quassar.editor.box.util.SessionHelper;
 import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
+import org.eclipse.jetty.util.resource.Resource;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.*;
 
 public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	private Model model;
 	private String release;
 	private ModelView selectedView;
-	private ModelContainer.File selectedFile;
+	private io.quassar.editor.box.models.File selectedFile;
 	private FilePosition selectedPosition;
-	private ModelContainer.File selectedNewFile;
+	private io.quassar.editor.box.models.File selectedNewFile;
 	private ModelContainer modelContainer;
 	private boolean selectedFileIsModified = false;
 	private boolean openNewFile = false;
@@ -38,10 +52,15 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		this.model = box().modelManager().get(language, model);
 		this.release = release != null ? release : Model.DraftRelease;
 		this.selectedView = view != null ? ModelView.from(view) : SessionHelper.modelView(session());
-		this.modelContainer = this.model != null ? box().modelManager().modelContainer(box().languageManager().get(language), this.model, this.release) : null;
+		this.modelContainer = this.model != null ? box().modelManager().modelContainer(this.model, this.release) : null;
 		this.selectedFile = file != null && modelContainer != null ? modelContainer.file(file) : null;
 		this.selectedPosition = position != null ? FilePosition.from(position) : null;
 		refresh();
+	}
+
+	public void openStarting(String language, String model) {
+		open(language, model, null, null, null, null);
+		helpDialog.open();
 	}
 
 	@Override
@@ -59,6 +78,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		initFileEditor();
 		initFileModifiedDialog();
 		console.onClose(e -> consoleBlock.hide());
+		helpDialog.onOpen(e -> refreshHelpDialog());
 	}
 
 	@Override
@@ -73,15 +93,16 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		tabSelector.address(path -> PathHelper.modelViewPath(path, model, release));
 		contentBlock.visible(model != null);
 		if (!contentBlock.isVisible()) return;
-		if (selectedFile != null) tabSelector.select(modelContainer.isResourceFile(selectedFile) ? "resources" : "model");
+		if (selectedFile != null) tabSelector.select(selectedFile.isResource() ? "resources" : "model");
 		else if (selectedView != null) tabSelector.select(selectedView.name().toLowerCase());
 		else if (tabSelector.selection().isEmpty()) tabSelector.select("model");
 		else tabSelector.select(tabSelector.selection().getFirst());
-		refreshFileEditor();
+		refreshFile();
 	}
 
 	private void initHeader() {
 		headerStamp.onBuild(m -> build());
+		headerStamp.onHelp(m -> helpDialog.open());
 		headerStamp.onClone(m -> cloneModel());
 		headerStamp.onPublish((m, e) -> updateConsole(e));
 	}
@@ -163,7 +184,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	}
 
 	private void saveFile(String content) {
-		box().commands(ModelCommands.class).save(model, selectedFile, content, username());
+		box().commands(ModelCommands.class).save(model, selectedFile, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)), username());
 		fileSavedMessage.visible(true);
 		DelayerUtil.execute(this, e -> fileSavedMessage.visible(false), 2000);
 		selectedFileIsModified = false;
@@ -178,13 +199,19 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		headerStamp.refresh();
 	}
 
-	private void refreshFileEditor() {
-		boolean validFile = selectedFile != null && !selectedFile.isDirectory();
-		fileNotSelectedBlock.visible(!validFile);
-		fileSelectedBlock.visible(validFile);
+	private void refreshFile() {
+		boolean validFile = selectedFile != null && !selectedFile.isDirectory() && box().modelManager().isTextFile(model, release, selectedFile);
+		fileNotSelectedBlock.visible(selectedFile == null || selectedFile.isDirectory());
+		nonEditableFileBlock.visible(selectedFile != null && !validFile);
+		editableFileBlock.visible(validFile);
 		filename.value(validFile ? withoutExtensionIfModelFile(selectedFile.name()) : "");
 		refreshFileEditorToolbar();
-		if (!validFile) return;
+		refreshEditableFileBlock();
+		refreshNonEditableFileBlock();
+	}
+
+	private void refreshEditableFileBlock() {
+		if (!editableFileBlock.isVisible()) return;
 		createFileEditor();
 		IntinoDslEditor display = intinoDslEditor.display();
 		display.model(model);
@@ -193,15 +220,21 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		display.refresh();
 	}
 
+	private void refreshNonEditableFileBlock() {
+		if (!nonEditableFileBlock.isVisible()) return;
+		Language language = box().languageManager().get(model.language());
+		fileField.value(new io.intino.alexandria.ui.File().filename(selectedFile.uri()).mimeType(MimeTypes.contentTypeOf(selectedFile.extension())).value(urlOf(PathHelper.fileUrl(language, model, release, selectedFile, session(), box()))));
+	}
+
 	private String withoutExtensionIfModelFile(String name) {
-		return Model.isResource(name) ? name : name.replace("." + box().languageManager().get(model.language()).fileExtension(), "");
+		return io.quassar.editor.box.models.File.isResource(name) ? name : name.replace("." + box().languageManager().get(model.language()).fileExtension(), "");
 	}
 
 	private void open(IntinoFileBrowserItem item) {
 		open(modelContainer.file(item.uri()));
 	}
 
-	private void open(ModelContainer.File file) {
+	private void open(io.quassar.editor.box.models.File file) {
 		openNewFile = false;
 		/*
 		if (selectedFileIsModified) {
@@ -214,15 +247,15 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	}
 
 	private void rename(IntinoFileBrowserItem item, String newName) {
-		ModelContainer.File file = modelContainer.file(item.name());
+		io.quassar.editor.box.models.File file = modelContainer.file(item.name());
 		file = box().commands(ModelCommands.class).rename(model, newName, file, username());
 		reload();
 		open(file);
 	}
 
 	private void move(IntinoFileBrowserItem item, IntinoFileBrowserItem directoryItem) {
-		ModelContainer.File file = modelContainer.file(item.name());
-		ModelContainer.File directory = modelContainer.file(directoryItem.name());
+		io.quassar.editor.box.models.File file = modelContainer.file(item.name());
+		io.quassar.editor.box.models.File directory = modelContainer.file(directoryItem.name());
 		file = box().commands(ModelCommands.class).move(model, file, directory, username());
 		reload();
 		open(file);
@@ -230,7 +263,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 
 	private void reload() {
 		Language language = box().languageManager().get(model.language());
-		modelContainer = box().modelManager().modelContainer(language, model, release);
+		modelContainer = box().modelManager().modelContainer(model, release);
 		refresh();
 	}
 
@@ -253,12 +286,12 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		console.show();
 	}
 
-	private void reloadAndUnselect(ModelContainer.File file) {
+	private void reloadAndUnselect(io.quassar.editor.box.models.File file) {
 		selectedFile = null;
 		reload();
 	}
 
-	private void reloadAndOpen(ModelContainer.File file) {
+	private void reloadAndOpen(io.quassar.editor.box.models.File file) {
 		reload();
 		if (file != null) open(file);
 	}
@@ -276,6 +309,27 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		Model newModel = box().commands(ModelCommands.class).clone(model, release, ModelHelper.proposeName(), username());
 		notifier.dispatch(PathHelper.modelPath(newModel));
 		hideUserNotification();
+	}
+
+	private void refreshHelpDialog() {
+		try {
+			Language language = box().languageManager().get(model.language());
+			File readme = box().archetype().languages().readme(language.name());
+			helpDialog.title("%s help".formatted(language.name()));
+			if (!readme.exists()) return;
+			helpStamp.content(Files.readString(readme.toPath()));
+			helpStamp.refresh();
+		} catch (IOException e) {
+			Logger.error(e);
+		}
+	}
+
+	private URL urlOf(String url) {
+		try {
+			return new URI(url).toURL();
+		} catch (URISyntaxException | MalformedURLException ignored) {
+			return null;
+		}
 	}
 
 }

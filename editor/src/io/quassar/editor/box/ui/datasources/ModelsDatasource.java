@@ -65,7 +65,8 @@ public class ModelsDatasource extends PageDatasource<Model> {
 
 	protected List<Model> load() {
 		ModelManager manager = box.modelManager();
-		return tab == null || tab == LanguageTab.PublicModels ? manager.publicModels(language, username()) : manager.ownerModels(language, username());
+		if (tab == null) return manager.visibleModels(language, username());
+		return tab == LanguageTab.PublicModels ? manager.publicModels(language, username()) : manager.ownerModels(language, username());
 	}
 
 	protected String username() {

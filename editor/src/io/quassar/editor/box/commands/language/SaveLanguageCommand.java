@@ -9,6 +9,7 @@ import java.util.List;
 
 public class SaveLanguageCommand extends Command<Boolean> {
 	public Language language;
+	public String hint;
 	public String description;
 	public String fileExtension;
 	public Language.Level level;
@@ -26,6 +27,7 @@ public class SaveLanguageCommand extends Command<Boolean> {
 	}
 
 	private void saveLanguage() {
+		language.hint(hint);
 		language.description(description);
 		language.fileExtension(fileExtension);
 		language.level(level);

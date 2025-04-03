@@ -1,29 +1,73 @@
 package io.quassar.editor.box.util;
 
-import io.quassar.editor.box.models.ModelContainer;
+import io.intino.alexandria.logger.Logger;
+import io.quassar.archetype.Archetype;
+import io.quassar.editor.box.models.File;
+import io.quassar.editor.box.models.Workspace;
+import io.quassar.editor.model.Language;
+import io.quassar.editor.model.Model;
 import org.eclipse.lsp4j.FileCreate;
 import org.eclipse.lsp4j.SymbolKind;
 import org.eclipse.lsp4j.WorkspaceSymbol;
 import org.eclipse.lsp4j.WorkspaceSymbolLocation;
 
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class WorkspaceHelper {
 
+	public static URI workspace(Model model, String release, Archetype archetype) {
+		try {
+			java.io.File workspace = archetype.languages().workspace(Language.nameOf(model.language()), model.name());
+			if (release != null && !release.equals(Model.DraftRelease)) workspace = releaseWorkSpace(model, release, archetype);
+			return workspace.getAbsoluteFile().getCanonicalFile().toURI();
+		} catch (IOException e) {
+			Logger.error(e);
+			return null;
+		}
+	}
+
+	private static java.io.File releaseWorkSpace(Model model, String release, Archetype archetype) {
+		String language = Language.nameOf(model.language());
+		java.io.File releaseFile = archetype.languages().release(language, model.name(), release);
+		java.io.File workspace = archetype.tmp().releaseWorkspace(language, model.name(), release);
+		if (!releaseFile.exists()) return workspace;
+		java.io.File[] files = workspace.listFiles();
+		if (files != null && files.length > 0) return workspace;
+		ZipHelper.extract(archetype.languages().release(language, model.name(), release), workspace);
+		return workspace;
+	}
+
 	public static boolean isFile(WorkspaceSymbol symbol) {
 		return symbol.getKind() == SymbolKind.File || symbol.getKind() == SymbolKind.Package;
 	}
 
-	public static List<ModelContainer.File> filesOf(List<? extends WorkspaceSymbol> symbolList) {
+	public static List<File> filesOf(List<? extends WorkspaceSymbol> symbolList) {
 		return symbolList.stream().map(WorkspaceHelper::fileOf).toList();
 	}
 
-	public static ModelContainer.File fileOf(WorkspaceSymbol symbol) {
+	public static File fileOf(WorkspaceSymbol symbol) {
 		String uri = uriOf(symbol.getLocation().getRight());
 		boolean isDirectory = symbol.getKind() != SymbolKind.File;
-		return new ModelContainer.File(nameOf(symbol.getName()), uri, isDirectory, WorkspaceHelper.parents(uri));
+		return new File(nameOf(symbol.getName()), uri, isDirectory, WorkspaceHelper.parents(uri));
+	}
+
+	public static File fileOf(Path path, Workspace workspace) {
+		return fileOf(path.toFile(), workspace);
+	}
+
+	public static File fileOf(java.io.File file, Workspace workspace) {
+		String uri = relativePath(file, workspace);
+		return new File(file.getName(), uri, file.isDirectory(), WorkspaceHelper.parents(uri));
+	}
+
+	public static String relativePath(java.io.File file, Workspace workspace) {
+		return file.getAbsolutePath().replace(workspace.root().getAbsolutePath() + "/", "");
 	}
 
 	public static String nameOf(String relativePath) {
@@ -37,7 +81,7 @@ public class WorkspaceHelper {
 		return location.getUri();
 	}
 
-	public static FileCreate fileCreateOf(ModelContainer.File file) {
+	public static FileCreate fileCreateOf(File file) {
 		FileCreate result = new FileCreate();
 		result.setUri(file.uri());
 		return result;

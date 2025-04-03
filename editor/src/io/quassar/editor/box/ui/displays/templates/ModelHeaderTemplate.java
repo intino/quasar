@@ -4,7 +4,6 @@ import io.intino.alexandria.ui.server.UIFile;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command.ExecutionResult;
 import io.quassar.editor.box.commands.ModelCommands;
-import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.PathHelper;
@@ -21,8 +20,9 @@ import java.util.function.Consumer;
 public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> {
 	private Model model;
 	private String release;
-	private ModelContainer.File file;
+	private io.quassar.editor.box.models.File file;
 	private Consumer<Model> buildListener;
+	private Consumer<Model> helpListener;
 	private Consumer<Model> cloneListener;
 	private BiConsumer<Model, ExecutionResult> publishListener;
 
@@ -38,12 +38,16 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		this.release = value;
 	}
 
-	public void file(ModelContainer.File value) {
+	public void file(io.quassar.editor.box.models.File value) {
 		this.file = value;
 	}
 
 	public void onBuild(Consumer<Model> listener) {
 		this.buildListener = listener;
+	}
+
+	public void onHelp(Consumer<Model> listener) {
+		this.helpListener = listener;
 	}
 
 	public void onClone(Consumer<Model> listener) {
@@ -71,6 +75,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		modelSettingsTrigger.onExecute(e -> openSettingsDialog());
 		modelSettingsDialog.onRename(e -> notifier.dispatch(PathHelper.modelPath(model)));
 		modelSettingsDialog.onSave(e -> refresh());
+		languageHelpTrigger.onExecute(e -> helpListener.accept(model));
 	}
 
 	@Override

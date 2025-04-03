@@ -10,7 +10,7 @@ Theme theme1
 	Secondary("#ff9100")
 	Error("#f44336")
 
-Format("fontSize:'25pt'") h1
+Format("fontSize:'32pt'") h1
 Format("fontSize:'20pt'") h2
 Format("fontSize:'15pt'") h3
 Format("fontSize:'14pt',fontWeight:'400'") h4
@@ -60,6 +60,7 @@ Format("height:'39px'") headerPanel
 Format("background:'#b9d1e3'", darkContent="background:'#2a3443'") headerPanelBackground
 Format("height:'100%'") displayHeaderPanel
 Format("background:'#000'") blackBackground
+Format("width:'100%',zIndex:'0',position:'absolute'") landingBackground
 Format("background:'transparent'") noBackground
 Format("padding:'10px'") spaced
 Format("padding:'20px'") doubleSpaced
@@ -129,7 +130,7 @@ Format("borderRight:'1px solid #efefef'") rightBordered
 Format("borderRight:'1px solid #145c9f'") blueRightBordered
 Format("borderTop:'1px solid #efefef'") topBordered
 Format("borderTop:'1px solid #999'") topDarkBordered
-Format("borderBottom:'1px solid #efefef'") bottomBordered
+Format("borderBottom:'1px solid #ddd'") bottomBordered
 Format("borderBottom:'1px solid #999'") bottomDarkBordered
 Format("borderBottom:'1px solid #efefef'") bottomLightBordered
 Format("borderTop:'1px dotted #efefef'") topDottedBordered
@@ -185,7 +186,7 @@ Format("boxShadow:'rgb(0 0 0 / 5%) 0px 0px 0px 1px, #4D9A51 0px 0px 0px 1px inse
 Format("background:'#D74545'") redBackground
 Format("boxShadow:'rgb(0 0 0 / 5%) 0px 0px 0px 1px, #D74545 0px 0px 0px 1px inset'") redOutlineBackground
 Format("boxShadow:'rgba(215, 69, 69, 0.4) 0px 5px, rgba(215, 69, 69, 0.3) 0px 10px, rgba(215, 69, 69, 0.2) 0px 15px, rgba(215, 69, 69, 0.1) 0px 20px, rgba(215, 69, 69, 0.05) 0px 25px'") redAlertBackground
-Format("background:'#D9D9D9'") mainBackground
+Format("background:'#333'") mainBackground
 Format("background:'#efefef'", darkContent="background:'#404348'") greyLightBackground
 Format("background:'#aaa'") greyHardBackground
 Format("color:'#777'") grey
@@ -201,7 +202,14 @@ Format("width:'150px'") openUsersButton
 Format("fontSize:'20pt',textAlign:'center',marginTop:'40px'") userNotGranted
 Format("minWidth:'250px'") selectorWidth
 Format("minWidth:'130px'") minExecutiveIndicatorWidth
-Format("position:'relative',borderRadius:'3px',minWidth:'150px'") block
+Format("width:'500px'") block
+Format("fontSize:'35pt',color:'white',fontWeight:'bold'") blockTitle
+Format("fontSize:'16pt',color:'white',textAlign:'center'") blockDescription
+Format("border:'2px solid white',background:'#1b70c0',color:'white',borderRadius:'20px',padding:'13px 30px',fontSize:'10pt'") blockMainAction
+Format("color:'white',fontSize:'12pt',fontWeight:'bold'") blockAction
+Format("color:'white',fontSize:'18pt',border:'2px solid white',background:'#404040',borderRadius:'12px',width:'45px',textAlign:'center'") stepBudge
+Format("color:'white',fontSize:'14pt',marginTop:'5px',fontWeight:'bold'") stepTitle
+Format("color:'white',fontSize:'12pt'") stepDescription
 Format("width:'100%'") fullWidth
 Format("background:'#efefef',padding:'0 7px',borderRadius:'6px'", darkContent="background:'#1F1F1F'") tag
 Format("minWidth:'56px',textAlign:'center',fontSize:'8pt'") pill
@@ -291,7 +299,6 @@ Format("marginTop:'-7px',color:'grey'") modelViewDescription
 Format("height:'28px'") minPanelHeaderHeight
 Format("background:'white',minHeight:'400px'", darkContent="background:'#1F1F1F'") dashboardFullPanelStyle
 Format("background:'white',padding:'20px'", darkContent="background:'#1F1F1F'") dashboardPanelStyle
-Format("width:'275px',height:'200px',background:'#f6f7ff',padding:'10px',margin:'10px 0',borderRadius:'4px'", darkContent="background:'#333'") dashboardItemStyle
 Format("width:'275px',height:'100px'") smallDashboardItem
 Format("background:'white'", darkContent="background:'#1F1F1F'") mainPanelStyle
 Format("background:'white',padding:'10px 0 0 10px',borderRadius:'10px 10px 0 0',marginRight:'10px'", darkContent="background:'#1F1F1F'") dashboardMainPanelStyle
@@ -336,7 +343,6 @@ Format("height:'40px',marginRight:'20px'") viewSelectorStyle
 Format("marginLeft:'18px',marginTop:'10px'") indicatorFilterSelectorStyle
 Format("position:'absolute',height:'100%',width:'100%',zIndex:'100',background:'white'") mapGroupFilterNotAvailableStyle
 Format("position:'absolute',height:'100%',width:'100%',zIndex:'100',top:'0'") imageLinkStyle
-Format("position:'absolute',width:'100%',height:'calc(100% - 20px)',cursor:'pointer',marginTop:'20px'") magazineLinkStyle
 Format("padding:'0 15px',color:'#9399ff'") modelLink
 Format("borderRadius:'6px 0 0 6px',border:'1px solid white',borderRight:'0'") m3l3Style
 Format("borderRadius:'0',border:'1px solid white',borderRight:'0'") m2l2Style

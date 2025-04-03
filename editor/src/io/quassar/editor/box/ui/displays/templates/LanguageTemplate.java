@@ -37,6 +37,7 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 		saveReadme.onExecute(e -> saveReadme());
 		homeBlock.onShow(e -> refreshHome());
 		modelsBlock.onShow(e -> refreshModels());
+		headerStamp.onEditReadme(e -> editReadmeDialog.open());
 	}
 
 	@Override
@@ -61,9 +62,6 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 	private void refreshHome() {
 		title.value(language.name());
 		logo.value(LanguageHelper.logo(language, box()));
-		gotoModelTrigger.visible(PermissionsHelper.canOpenModel(language, session(), box()));
-		if (gotoModelTrigger.isVisible()) gotoModelTrigger.address(path -> PathHelper.modelPath(LanguageHelper.model(language, box())));
-		editReadmeTrigger.visible(PermissionsHelper.canEdit(language, session(), box()));
 		refreshHomeReadme();
 	}
 

@@ -2,12 +2,12 @@ package io.quassar.editor.box.commands.model;
 
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command;
-import io.quassar.editor.box.models.ModelContainer;
+import io.quassar.editor.box.models.File;
 import io.quassar.editor.model.Model;
 
-public class RenameModelFileCommand extends Command<ModelContainer.File> {
+public class RenameModelFileCommand extends Command<File> {
 	public Model model;
-	public ModelContainer.File file;
+	public File file;
 	public String newName;
 
 	public RenameModelFileCommand(EditorBox box) {
@@ -15,7 +15,7 @@ public class RenameModelFileCommand extends Command<ModelContainer.File> {
 	}
 
 	@Override
-	public ModelContainer.File execute() {
+	public File execute() {
 		return box.modelManager().rename(model, file, newName);
 	}
 

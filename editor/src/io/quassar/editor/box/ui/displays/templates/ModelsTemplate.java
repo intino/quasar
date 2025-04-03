@@ -5,10 +5,13 @@ import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.ui.datasources.ModelsDatasource;
 import io.quassar.editor.box.ui.displays.items.ModelItem;
 import io.quassar.editor.box.ui.types.LanguageTab;
+import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
+
+import java.util.Collections;
 
 public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 	private Language language;
@@ -38,8 +41,10 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 	public void refresh() {
 		super.refresh();
 		addModelTrigger.visible(tab == LanguageTab.OwnerModels);
-		modelList.source(new ModelsDatasource(box(), session(), language, tab));
+		ModelsDatasource source = new ModelsDatasource(box(), session(), language, tab);
+		modelList.source(source);
 		modelList.reload();
+		searchBox.visible(source.itemCount(null, Collections.emptyList()) > DisplayHelper.MinItemsCount);
 	}
 
 	private void refresh(AddCollectionItemEvent event) {

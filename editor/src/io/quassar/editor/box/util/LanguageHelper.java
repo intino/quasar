@@ -29,7 +29,7 @@ public class LanguageHelper {
 	public static URL logo(Language language, EditorBox box) {
 		try {
 			File result = box.archetype().languages().logo(Language.nameOf(language.name()));
-			return result.exists() ? result.toURI().toURL() : ModelHelper.class.getResource("/language-logo.png");
+			return result.exists() ? result.toURI().toURL() : ModelHelper.class.getResource("/images/language-logo.png");
 		} catch (MalformedURLException e) {
 			Logger.error(e);
 			return null;

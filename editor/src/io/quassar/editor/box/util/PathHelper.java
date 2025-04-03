@@ -1,7 +1,9 @@
 package io.quassar.editor.box.util;
 
 import io.intino.alexandria.ui.services.push.UISession;
-import io.quassar.editor.box.models.ModelContainer;
+import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.models.File;
+import io.quassar.editor.box.ui.types.LandingDialog;
 import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.ui.types.LanguagesTab;
 import io.quassar.editor.box.ui.types.ModelView;
@@ -13,6 +15,18 @@ public class PathHelper {
 
 	public static String homeUrl(UISession session) {
 		return session.browser().baseUrl();
+	}
+
+	public static String homePath() {
+		return "/";
+	}
+
+	public static String fileUrl(Language language, Model model, String release, File file, UISession session, EditorBox box) {
+		return session.browser().baseUrl() + "/languages/%s/models/%s/download/file".formatted(language.name(), model.name()) + "?token=%s&release=%s&file=%s".formatted(box.configuration().editorShelfToken(), release, file.uri());
+	}
+
+	public static String landingPath(String path, LandingDialog dialog) {
+		return path + (dialog != null ? "?dialog=" + dialog.name().toLowerCase() : "");
 	}
 
 	public static String permissionsUrl(Language language, String callbackUrl, UISession session) {
@@ -76,11 +90,15 @@ public class PathHelper {
 		return modelPath(ModelPath, model, null, null, null, null);
 	}
 
+	public static String startingModelPath(Model model) {
+		return modelPath(model) + "/starting";
+	}
+
 	public static String modelPath(Model model, String release) {
 		return modelPath(ModelPath, model, release, null, null, null);
 	}
 
-	public static String modelPath(Model model, String release, ModelContainer.File file) {
+	public static String modelPath(Model model, String release, File file) {
 		return modelPath(ModelPath, model, release, null, file != null ? file.uri() : null, null);
 	}
 
@@ -89,7 +107,7 @@ public class PathHelper {
 	}
 
 	public static String modelPath(String address, Model model, String release, String file, FilePosition position) {
-		ModelView view = file != null && Model.isResource(file) ? ModelView.Resources : ModelView.Model;
+		ModelView view = file != null && io.quassar.editor.box.models.File.isResource(file) ? ModelView.Resources : ModelView.Model;
 		return modelPath(address, model, release, view, file, position);
 	}
 

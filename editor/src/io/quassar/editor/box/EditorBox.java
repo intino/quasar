@@ -82,7 +82,7 @@ public class EditorBox extends AbstractBox {
 	}
 
 	private URI workSpaceOf(Model model, String version) {
-		return modelManager.workspace(model, version);
+		return modelManager.workspace(model, version).root().toURI();
 	}
 
 	public void afterStart() {

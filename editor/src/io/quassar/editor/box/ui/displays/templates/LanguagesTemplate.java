@@ -3,18 +3,22 @@ package io.quassar.editor.box.ui.displays.templates;
 import io.intino.alexandria.ui.displays.events.AddCollectionItemEvent;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.ui.datasources.LanguagesDatasource;
-import io.quassar.editor.box.ui.displays.items.LanguageMagazineItem;
-import io.quassar.editor.box.ui.types.LanguageTab;
+import io.quassar.editor.box.ui.displays.items.LanguageItem;
 import io.quassar.editor.box.ui.types.LanguagesTab;
+import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.SessionHelper;
 import io.quassar.editor.model.Language;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class LanguagesTemplate extends AbstractLanguagesTemplate<EditorBox> {
 	private LanguagesTab tab;
+	private boolean embedded = false;
+	private Consumer<Language> selectListener;
 
 	public LanguagesTemplate(EditorBox box) {
 		super(box);
@@ -25,18 +29,26 @@ public class LanguagesTemplate extends AbstractLanguagesTemplate<EditorBox> {
 		refresh();
 	}
 
+	public void embedded(boolean value) {
+		this.embedded = value;
+	}
+
 	public void filter(String condition) {
-		languagesMagazine.filter(condition);
+		languagesCatalog.filter(condition);
 	}
 
 	public void filter(String grouping, List<String> values) {
-		languagesMagazine.filter(grouping, values);
+		languagesCatalog.filter(grouping, values);
+	}
+
+	public void onSelect(Consumer<Language> listener) {
+		this.selectListener = listener;
 	}
 
 	@Override
 	public void init() {
 		super.init();
-		languagesMagazine.onAddItem(this::refresh);
+		languagesCatalog.onAddItem(this::refresh);
 	}
 
 	@Override
@@ -47,28 +59,44 @@ public class LanguagesTemplate extends AbstractLanguagesTemplate<EditorBox> {
 	}
 
 	private void refreshHeader() {
+		headerStamp.visible(!embedded);
+		if (!headerStamp.isVisible()) return;
 		headerStamp.tab(tab);
 		headerStamp.refresh();
 	}
 
 	private void refreshLanguages() {
-		languagesMagazine.source(new LanguagesDatasource(box(), session(), tab));
+		LanguagesDatasource source = new LanguagesDatasource(box(), session(), tab);
+		languagesCatalog.source(source);
+		searchBox.visible(source.itemCount(null, Collections.emptyList()) > DisplayHelper.MinItemsCount);
 	}
 
 	private void refresh(AddCollectionItemEvent event) {
 		Language language = event.item();
-		LanguageMagazineItem item = event.component();
+		LanguageItem item = event.component();
 		item.logo.value(LanguageHelper.logo(language, box()));
-		item.languageTitleLink.title(language.name());
-		item.languageTitleLink.address(path -> PathHelper.languagePath(path, language));
+		refreshTitle(language, item);
+		refreshTitleSelector(language, item);
+		item.hint.value(language.hint());
 		item.description.value(language.description());
-		item.languageLink.address(path -> PathHelper.languagePath(path, language));
-		item.owner.value(language.isFoundational() ? translate("Quassar") : language.owner());
-		item.createDate.value(language.createDate());
-		item.modelsCount.value(language.modelsCount());
-		item.parent.value(!language.isFoundational() ? language.parent() : "-");
-		item.viewModels.readonly(language.modelsCount() == 0);
-		item.viewModels.address(path -> PathHelper.languagePath(path, language, LanguageTab.PublicModels));
+	}
+
+	private void refreshTitle(Language language, LanguageItem item) {
+		item.title.visible(selectListener == null);
+		if (!item.title.isVisible()) return;
+		item.title.title(language.name());
+		item.title.address(path -> PathHelper.languagePath(path, language));
+	}
+
+	private void refreshTitleSelector(Language language, LanguageItem item) {
+		item.titleSelector.visible(selectListener != null);
+		if (!item.titleSelector.isVisible()) return;
+		item.titleSelector.title(language.name());
+		item.titleSelector.onExecute(e -> notifySelect(language));
+	}
+
+	private void notifySelect(Language language) {
+		selectListener.accept(language);
 	}
 
 }

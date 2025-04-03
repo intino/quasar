@@ -15,6 +15,9 @@ Template addModelDialog
 				Text(value="Title", translate=true, format=h5 middleAirBottom)
 				Text titleField as Editable
 			Block(format=doubleAirTop)
+				Text(value="Hint", translate=true, format=h5 middleAirBottom)
+				Text hintField as Editable
+			Block(format=doubleAirTop)
 				Text(value="Description", translate=true, format=h5 middleAirBottom)
 				Text descriptionField as Editable Memo(height=4Rows)
 		Divider
@@ -68,6 +71,9 @@ Template(layout=Horizontal) modelSettingsDialog
 					Block(format=doubleAirTop)
 						Text(value="Title", translate=true, format=h5 middleAirBottom)
 						Text modelTitleField as Editable
+					Block(format=doubleAirTop)
+						Text(value="Hint", translate=true, format=h5 middleAirBottom)
+						Text modelHintField as Editable
 					Block(format=doubleAirTop)
 						Text(value="Description", translate=true, format=h5 middleAirBottom)
 						Text modelDescriptionField as Editable Memo(height=4Rows)

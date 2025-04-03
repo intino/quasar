@@ -15,6 +15,7 @@ public class SaveModelCommand extends Command<Boolean> {
 	public Model model;
 	public String name;
 	public String title;
+	public String hint;
 	public String description;
 
 	public SaveModelCommand(EditorBox box) {
@@ -50,6 +51,7 @@ public class SaveModelCommand extends Command<Boolean> {
 	private void saveModel() {
 		model.name(name);
 		model.title(title);
+		model.hint(hint);
 		model.description(description);
 		box.modelManager().save(model);
 	}

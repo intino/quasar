@@ -2,7 +2,7 @@ package io.quassar.editor.box.commands;
 
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.model.*;
-import io.quassar.editor.box.models.ModelContainer;
+import io.quassar.editor.box.models.File;
 import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
@@ -18,10 +18,11 @@ public class ModelCommands extends Commands {
 		super(box);
 	}
 
-	public Model create(String name, String title, String description, Language language, String owner, String username) {
+	public Model create(String name, String title, String hint, String description, Language language, String owner, String username) {
 		CreateModelCommand command = setup(new CreateModelCommand(box), username);
 		command.name = name;
 		command.title = title;
+		command.hint = hint;
 		command.description = description;
 		command.language = language;
 		command.owner = owner;
@@ -36,7 +37,7 @@ public class ModelCommands extends Commands {
 		return command.execute();
 	}
 
-	public Boolean addZip(Model model, ModelView view, InputStream content, ModelContainer.File parent, String username) {
+	public Boolean addZip(Model model, ModelView view, InputStream content, File parent, String username) {
 		AddModelZipCommand command = setup(new AddModelZipCommand(box), username);
 		command.model = model;
 		command.view = view;
@@ -45,7 +46,7 @@ public class ModelCommands extends Commands {
 		return command.execute();
 	}
 
-	public ModelContainer.File createFile(Model model, String name, String content, ModelContainer.File parent, String username) {
+	public File createFile(Model model, String name, InputStream content, File parent, String username) {
 		CreateModelFileCommand command = setup(new CreateModelFileCommand(box), username);
 		command.model = model;
 		command.name = name;
@@ -54,7 +55,7 @@ public class ModelCommands extends Commands {
 		return command.execute();
 	}
 
-	public ModelContainer.File createFolder(Model model, String name, ModelContainer.File parent, String username) {
+	public File createFolder(Model model, String name, File parent, String username) {
 		CreateModelFolderCommand command = setup(new CreateModelFolderCommand(box), username);
 		command.model = model;
 		command.name = name;
@@ -62,7 +63,7 @@ public class ModelCommands extends Commands {
 		return command.execute();
 	}
 
-	public ModelContainer.File copy(Model model, String filename, ModelContainer.File source, String username) {
+	public File copy(Model model, String filename, File source, String username) {
 		CopyModelFileCommand command = setup(new CopyModelFileCommand(box), username);
 		command.model = model;
 		command.filename = filename;
@@ -70,11 +71,12 @@ public class ModelCommands extends Commands {
 		return command.execute();
 	}
 
-	public void save(Model model, String name, String title, String description, String username) {
+	public void save(Model model, String name, String title, String hint, String description, String username) {
 		SaveModelCommand command = setup(new SaveModelCommand(box), username);
 		command.model = model;
 		command.name = name;
 		command.title = title;
+		command.hint = hint;
 		command.description = description;
 		command.execute();
 	}
@@ -100,7 +102,7 @@ public class ModelCommands extends Commands {
 		command.execute();
 	}
 
-	public void save(Model model, ModelContainer.File file, String content, String username) {
+	public void save(Model model, File file, InputStream content, String username) {
 		SaveModelFileCommand command = setup(new SaveModelFileCommand(box), username);
 		command.model = model;
 		command.file = file;
@@ -108,7 +110,7 @@ public class ModelCommands extends Commands {
 		command.execute();
 	}
 
-	public ModelContainer.File rename(Model model, String newName, ModelContainer.File file, String username) {
+	public File rename(Model model, String newName, File file, String username) {
 		RenameModelFileCommand command = setup(new RenameModelFileCommand(box), username);
 		command.model = model;
 		command.file = file;
@@ -116,7 +118,7 @@ public class ModelCommands extends Commands {
 		return command.execute();
 	}
 
-	public ModelContainer.File move(Model model, ModelContainer.File file, ModelContainer.File directory, String username) {
+	public File move(Model model, File file, File directory, String username) {
 		MoveModelFileCommand command = setup(new MoveModelFileCommand(box), username);
 		command.model = model;
 		command.file = file;
@@ -142,7 +144,7 @@ public class ModelCommands extends Commands {
 		command.execute();
 	}
 
-	public void remove(Model model, ModelContainer.File file, String username) {
+	public void remove(Model model, File file, String username) {
 		RemoveModelFileCommand command = setup(new RemoveModelFileCommand(box), username);
 		command.model = model;
 		command.file = file;

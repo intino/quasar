@@ -4,9 +4,9 @@ import io.intino.alexandria.Resource;
 import io.intino.alexandria.logger.Logger;
 import io.intino.alexandria.ui.displays.components.FileEditable;
 import io.intino.alexandria.ui.displays.events.ChangeEvent;
-import io.intino.alexandria.ui.displays.templates.AbstractDigitalSignatureExamplesMold;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.ModelCommands;
+import io.quassar.editor.box.models.File;
 import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.box.schemas.IntinoFileBrowserItem;
 import io.quassar.editor.box.schemas.IntinoFileBrowserOperation;
@@ -27,11 +27,11 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 	private Model model;
 	private String release;
 	private ModelContainer modelContainer;
-	private ModelContainer.File file;
+	private File file;
 	private Operation operation;
 	private Consumer<IntinoFileBrowserItem> openListener;
-	private Consumer<ModelContainer.File> changeListener;
-	private Consumer<ModelContainer.File> removeListener;
+	private Consumer<File> changeListener;
+	private Consumer<File> removeListener;
 
 	private enum Operation { CopyFile, AddFile, AddFolder, EditFilename }
 
@@ -51,7 +51,7 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 		this.modelContainer = value;
 	}
 
-	public void file(ModelContainer.File value) {
+	public void file(File value) {
 		this.file = value;
 	}
 
@@ -59,11 +59,11 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 		this.openListener = listener;
 	}
 
-	public void onChange(Consumer<ModelContainer.File> listener) {
+	public void onChange(Consumer<File> listener) {
 		this.changeListener = listener;
 	}
 
-	public void onRemove(Consumer<ModelContainer.File> listener) {
+	public void onRemove(Consumer<File> listener) {
 		this.removeListener = listener;
 	}
 
@@ -168,7 +168,7 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 			Resource value = event.value();
 			if (value == null) return;
 			if (ModelHelper.isZip(value.name())) box().commands(ModelCommands.class).addZip(model, ModelView.Model, value.stream(), file, username());
-			else changeListener.accept(box().commands(ModelCommands.class).createFile(model, withExtension(value.name()), new String(value.bytes(), StandardCharsets.UTF_8), file, username()));
+			else changeListener.accept(box().commands(ModelCommands.class).createFile(model, withExtension(value.name()), value.stream(), file, username()));
 			refresh();
 		} catch (IOException e) {
 			Logger.error(e);
@@ -200,19 +200,19 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 	}
 
 	private void rename(IntinoFileBrowserItem item, String newName) {
-		ModelContainer.File file = modelContainer.file(item.uri());
+		File file = modelContainer.file(item.uri());
 		Language language = box().languageManager().get(model.language());
 		if (!newName.endsWith(language.fileExtension())) newName += "." + language.fileExtension();
 		changeListener.accept(box().commands(ModelCommands.class).rename(model, newName, file, username()));
 	}
 
 	private void move(IntinoFileBrowserItem item, IntinoFileBrowserItem directoryItem) {
-		ModelContainer.File file = modelContainer.file(item.uri());
-		ModelContainer.File directory = modelContainer.file(directoryItem.uri());
+		File file = modelContainer.file(item.uri());
+		File directory = directoryItem != null ? modelContainer.file(directoryItem.uri()) : null;
 		changeListener.accept(box().commands(ModelCommands.class).move(model, file, directory, username()));
 	}
 
-	private String nameOf(ModelContainer.File file) {
+	private String nameOf(File file) {
 		if (file == null) return null;
 		return file.name().substring(0, file.name().lastIndexOf("."));
 	}

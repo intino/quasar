@@ -7,6 +7,16 @@ Service(title = "Quassar API") quassar-api as REST(host = "{host}", basePath = "
     		Parameter(in=path) language as Text
     		Parameter(in=path) model as Text
     		Parameter(in=query) release as Text
-    		Parameter(in=header) token as Text
+    		Parameter(in=query) token as Text
+    		Response as File
+    		Exception(Forbidden)
+
+	Resource("/languages/:language/models/:model/download/file") downloadModelFile
+    	Get(description = "Downloads model file")
+    		Parameter(in=path) language as Text
+    		Parameter(in=path) model as Text
+    		Parameter(in=query) release as Text
+    		Parameter(in=query) file as Text
+    		Parameter(in=query) token as Text
     		Response as File
     		Exception(Forbidden)

@@ -14,10 +14,8 @@ import io.quassar.editor.box.ui.displays.IntinoFileBrowser;
 import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.box.util.*;
 import io.quassar.editor.model.Model;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.stream.Streams;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -29,11 +27,11 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 	private Model model;
 	private String release;
 	private ModelContainer modelContainer;
-	private ModelContainer.File file;
+	private io.quassar.editor.box.models.File file;
 	private Operation operation;
 	private Consumer<IntinoFileBrowserItem> openListener;
-	private Consumer<ModelContainer.File> changeListener;
-	private Consumer<ModelContainer.File> removeListener;
+	private Consumer<io.quassar.editor.box.models.File> changeListener;
+	private Consumer<io.quassar.editor.box.models.File> removeListener;
 	private Resource uploadedFile;
 
 	private enum Operation { CopyFile, AddFile, AddFolder, EditFilename }
@@ -54,7 +52,7 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 		this.modelContainer = value;
 	}
 
-	public void file(ModelContainer.File value) {
+	public void file(io.quassar.editor.box.models.File value) {
 		this.file = value;
 	}
 
@@ -62,11 +60,11 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 		this.openListener = listener;
 	}
 
-	public void onChange(Consumer<ModelContainer.File> listener) {
+	public void onChange(Consumer<io.quassar.editor.box.models.File> listener) {
 		this.changeListener = listener;
 	}
 
-	public void onRemove(Consumer<ModelContainer.File> listener) {
+	public void onRemove(Consumer<io.quassar.editor.box.models.File> listener) {
 		this.removeListener = listener;
 	}
 
@@ -101,7 +99,7 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 		super.refresh();
 		IntinoFileBrowser browser = fileBrowser.display();
 		browser.itemAddress(PathHelper.modelPath(model, release) + "&file=:file");
-		browser.rootItem(Model.ResourcesDirectory);
+		browser.rootItem(io.quassar.editor.box.models.File.ResourcesDirectory);
 		browser.items(IntinoFileBrowserHelper.fileBrowserItems(modelContainer.resourceFiles()), false);
 		browser.operations(operations());
 		browser.select(file != null ? IntinoFileBrowserHelper.itemOf(file) : null);
@@ -186,8 +184,8 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 		try {
 			Resource value = event.value();
 			if (value == null) return;
-			if (ModelHelper.isZip(value.name())) box().commands(ModelCommands.class).addZip(model, ModelView.Resources, value.stream(), file, username());
-			else changeListener.accept(box().commands(ModelCommands.class).createFile(model, nameOf(value.name()), new String(value.bytes(), StandardCharsets.UTF_8), file, username()));
+			if (ModelHelper.isZip(value.name()) && !ModelHelper.isArchetype(value.name())) box().commands(ModelCommands.class).addZip(model, ModelView.Resources, value.stream(), file, username());
+			else changeListener.accept(box().commands(ModelCommands.class).createFile(model, nameOf(value.name()), value.stream(), file, username()));
 			refresh();
 		} catch (IOException e) {
 			Logger.error(e);
@@ -198,12 +196,12 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 	}
 
 	private void addFile() {
-		changeListener.accept(box().commands(ModelCommands.class).createFile(model, nameOf(fileField.value()), "", file, username()));
+		changeListener.accept(box().commands(ModelCommands.class).createFile(model, nameOf(fileField.value()), new ByteArrayInputStream(new byte[0]), file, username()));
 	}
 
 	private void uploadFile() {
 		try {
-			changeListener.accept(box().commands(ModelCommands.class).createFile(model, nameOf(uploadedFile.name()), uploadedFile.readAsString(), file, username()));
+			changeListener.accept(box().commands(ModelCommands.class).createFile(model, nameOf(uploadedFile.name()), uploadedFile.stream(), file, username()));
 		} catch (IOException e) {
 			Logger.error(e);
 		}
@@ -227,18 +225,18 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 	}
 
 	private void rename(IntinoFileBrowserItem item, String newName) {
-		ModelContainer.File file = modelContainer.file(item.uri());
+		io.quassar.editor.box.models.File file = modelContainer.file(item.uri());
 		changeListener.accept(box().commands(ModelCommands.class).rename(model, newName, file, username()));
 	}
 
 	private void move(IntinoFileBrowserItem item, IntinoFileBrowserItem directoryItem) {
-		ModelContainer.File file = modelContainer.file(item.uri());
-		ModelContainer.File directory = modelContainer.file(directoryItem.uri());
+		io.quassar.editor.box.models.File file = modelContainer.file(item.uri());
+		io.quassar.editor.box.models.File directory = directoryItem != null ? modelContainer.file(directoryItem.uri()) : null;
 		changeListener.accept(box().commands(ModelCommands.class).move(model, file, directory, username()));
 	}
 
 	private String nameOf(String name) {
-		return file == null ? Model.ResourcesDirectory + File.separator + name : name;
+		return file == null ? io.quassar.editor.box.models.File.ResourcesDirectory + File.separator + name : name;
 	}
 
 }

@@ -6,6 +6,8 @@ import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
+import java.util.Set;
+
 public class HeaderTemplate extends AbstractHeaderTemplate<EditorBox> {
 	private Language language;
 	private Model model;
@@ -39,7 +41,6 @@ public class HeaderTemplate extends AbstractHeaderTemplate<EditorBox> {
 		refreshLanguage();
 		login.visible(loggedUser == null);
 		user.visible(loggedUser != null);
-		notLoggedBlock.visible(loggedUser == null);
 	}
 
 	private void refreshLanguage() {
