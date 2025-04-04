@@ -87,12 +87,14 @@ Template modelTemplate as Relative(height=100%, width=100%)
 					Block(layout=Horizontal, visible=false, format=airLeft) fileModifiedMessage > Text(value="modified", translate=true, format=airRight redColor bold)
 					Block(layout=Horizontal, visible=false, format=airLeft) fileSavedMessage > Text(value="saved", translate=true, format=airRight greenColor bold)
 				Block(layout=Horizontal EndJustified)
-			Block(layout=Vertical Flexible CenterCenter, format=whiteBackground) fileNotSelectedBlock
-				Text(value="Select file on left panel to open it")
-			Block(layout=Vertical Flexible, format=whiteBackground) nonEditableFileBlock
-				File fileField
-			Block(layout=Vertical Flexible, visible=false) editableFileBlock as Resizable Relative(height=100%)
-				Block as Relative(height=60%) > Block(layout=Vertical Flexible) as Relative(height=100%) > DisplayStamp(display=intinoDslEditor, format=fullHeight) intinoDslEditor
+			Block(layout=Vertical Flexible) as Resizable Relative(height=100%)
+				Block(layout=Vertical Flexible) as Relative(height=60%)
+					Block(layout=Vertical Flexible CenterCenter, format=whiteBackground) fileNotSelectedBlock
+						Text(value="Select file on left panel to open it")
+					Block(layout=Vertical Flexible, format=whiteBackground) nonEditableFileBlock
+						File fileField
+					Block(layout=Vertical Flexible, visible=false) editableFileBlock
+						DisplayStamp(display=intinoDslEditor, format=fullHeight) intinoDslEditor
 				Block(visible=false) consoleBlock as Relative(height=40%) > TemplateStamp(template=consoleTemplate) console
 
 	Dialog(title="File modified") fileModifiedDialog as Absolute(width=500px, height=180px)

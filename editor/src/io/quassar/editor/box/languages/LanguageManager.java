@@ -36,7 +36,7 @@ public class LanguageManager {
 	}
 
 	public List<Language> restrictedLanguages(String owner) {
-		return languages().stream().filter(l -> l.isPrivate() && l.owner() != null && l.owner().equals(owner) || hasAccess(l, owner)).toList();
+		return languages().stream().filter(l -> l.isPrivate() && hasAccess(l, owner)).toList();
 	}
 
 	public List<Language> languages() {
@@ -122,6 +122,13 @@ public class LanguageManager {
 		return language;
 	}
 
+	public boolean hasAccess(Language language, String user) {
+		if (user == null) return false;
+		if (language.owner() != null && language.owner().equals(user)) return true;
+		List<String> patternList = language.accessPatterns();
+		return patternList.stream().anyMatch(p -> matches(p, user));
+	}
+
 	private Language languageOf(File file) {
 		return languageOf(file.getName());
 	}
@@ -138,12 +145,6 @@ public class LanguageManager {
 			Logger.error(e);
 			return null;
 		}
-	}
-
-	private boolean hasAccess(Language language, String user) {
-		if (user == null) return false;
-		List<String> patternList = language.accessPatterns();
-		return patternList.stream().anyMatch(p -> matches(p, user));
 	}
 
 	private boolean matches(String regex, String user) {

@@ -1,5 +1,6 @@
 package io.quassar.editor.box.ui.pages;
 
+import io.intino.alexandria.ui.services.push.User;
 import io.quassar.editor.box.I18n;
 import io.quassar.editor.box.ui.displays.templates.HomeTemplate;
 import io.quassar.editor.box.util.PathHelper;
@@ -15,7 +16,11 @@ public class LanguagePage extends AbstractLanguagePage {
 
 	@Override
 	public boolean hasPermissions() {
-		return box.languageManager().get(language) != null;
+		Language language = box.languageManager().get(this.language);
+		if (language == null) return false;
+		if (language.isPublic()) return true;
+		User loggedUser = session.user();
+		return loggedUser != null && box.languageManager().hasAccess(language, loggedUser.username());
 	}
 
 	@Override
