@@ -1,5 +1,6 @@
 dsl Konos
 
+use Editors
 use Models
 use UI
 use Theme
@@ -25,8 +26,10 @@ Template(layout=Horizontal Center, format=subHeaderStyle) languageHeaderTemplate
 			Link(title="public models", format=doubleAirRight, visible=false) publicModelsLink as Action Addressable(EditorElements.language)
 
 	Block(layout=Horizontal EndJustified)
-		Button(title="Open model", size=Small, format=airRight, visible=false) gotoModelTrigger as Action Addressable(EditorElements.model)
-		Button(title="Edit readme...", size=Small, visible=false) editReadmeTrigger as Action
+		Button(title="open model", size=Small, format=airRight, visible=false) gotoModelTrigger as Action Addressable(EditorElements.model)
+		Button(title="settings", format=airRight, visible=false) settingsTrigger as Action
+
+	TemplateStamp(template=languageSettingsDialog) languageSettingsDialog
 
 Template languagesTemplate as Relative(height=100%, width=100%)
 	TemplateStamp(template=languagesHeaderTemplate, visible=false) headerStamp
@@ -79,11 +82,3 @@ Template languageTemplate as Relative(height=100%, width=100%, offsetHeight=2px)
 
 					Block(layout=Vertical Flexible, format=doubleLeftSpaced doubleRightSpaced doubleBottomSpaced) as AutoSize
 						HtmlViewer(format=fullHeight) homeStamp
-
-	Dialog(title="Edit readme") editReadmeDialog as FullScreen
-        Block(layout=Horizontal) as Relative(height=100%, offsetHeight=40px)
-        	Text(format=fullHeight fullWidth) readmeField as Editable Code(Html)
-		Divider
-        Block(layout=Horizontal EndJustified)
-            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(editReadmeDialog)
-            Button(title="Accept", size=Small, highlight=Fill) saveReadme as Action

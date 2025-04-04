@@ -6,11 +6,8 @@ import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.LanguageCommands;
 import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.util.LanguageHelper;
-import io.quassar.editor.box.util.PathHelper;
-import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.box.util.SessionHelper;
 import io.quassar.editor.model.Language;
-import io.quassar.editor.model.Model;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,11 +30,9 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 	@Override
 	public void init() {
 		super.init();
-		editReadmeDialog.onOpen(e -> refreshReadmeDialog());
-		saveReadme.onExecute(e -> saveReadme());
 		homeBlock.onShow(e -> refreshHome());
 		modelsBlock.onShow(e -> refreshModels());
-		headerStamp.onEditReadme(e -> editReadmeDialog.open());
+		headerStamp.onSaveSettings(e -> refresh());
 	}
 
 	@Override
@@ -76,27 +71,10 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 		}
 	}
 
-	private void refreshReadmeDialog() {
-		try {
-			editReadmeDialog.title(translate("Edit %s readme").formatted(language.name()));
-			File readme = box().archetype().languages().readme(language.name());
-			readmeField.value(readme.exists() ? Files.readString(readme.toPath()) : null);
-		} catch (IOException ignored) {
-			readmeField.value(null);
-		}
-	}
-
 	private void refreshModels() {
 		modelsBlock.modelsStamp.language(language);
 		modelsBlock.modelsStamp.tab(tab);
 		modelsBlock.modelsStamp.refresh();
-	}
-
-	private void saveReadme() {
-		box().commands(LanguageCommands.class).saveReadme(language, readmeField.value(), username());
-		editReadmeDialog.close();
-		notifyUser(translate("Readme saved"), UserMessage.Type.Success);
-		refreshHomeReadme();
 	}
 
 }

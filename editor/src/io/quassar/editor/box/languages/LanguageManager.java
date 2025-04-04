@@ -3,21 +3,17 @@ package io.quassar.editor.box.languages;
 import io.intino.alexandria.Json;
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
-import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.Language;
-import io.quassar.editor.model.Model;
-import io.quassar.editor.model.User;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.sql.Array;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
-import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 public class LanguageManager {
@@ -31,27 +27,22 @@ public class LanguageManager {
 
 	public List<Language> visibleLanguages(String owner) {
 		Set<Language> result = new HashSet<>(publicLanguages());
-		result.addAll(ownerLanguages(owner));
-		return result.stream().filter(l -> !l.name().equals(Language.Meta)).toList();
+		result.addAll(restrictedLanguages(owner));
+		return result.stream().filter(l -> !l.name().equals(Language.Meta)).distinct().toList();
 	}
 
 	public List<Language> publicLanguages() {
-		return languages().stream().filter(l -> l.owner() == null || l.owner().isEmpty() || l.owner().equals(User.Anonymous)).toList();
+		return languages().stream().filter(Language::isPublic).toList();
 	}
 
-	public List<Language> ownerLanguages(String owner) {
-		return languages().stream().filter(l -> l.owner() != null && l.owner().equals(owner) || isModelCollaborator(l, owner)).toList();
+	public List<Language> restrictedLanguages(String owner) {
+		return languages().stream().filter(l -> l.isPrivate() && l.owner() != null && l.owner().equals(owner) || hasAccess(l, owner)).toList();
 	}
 
 	public List<Language> languages() {
 		File[] root = archetype.languages().root().listFiles();
 		if (root == null) return Collections.emptyList();
 		return Arrays.stream(root).filter(File::isDirectory).map(this::languageOf).filter(Objects::nonNull).collect(toList());
-	}
-
-	public List<Language> proprietaryLanguages(String user) {
-		if (user == null) return emptyList();
-		return languages().stream().filter(l -> user.equals(l.owner())).collect(toList());
 	}
 
 	public Language create(String name, String version, Language.Level level, String hint, String description, File dsl, String parent, String owner) {
@@ -69,8 +60,10 @@ public class LanguageManager {
 
 	public void saveLogo(Language language, File logo) {
 		try {
-			if (logo == null) return;
-			Files.move(logo.toPath(), archetype.languages().logo(Language.nameOf(language.name())).toPath());
+			File current = archetype.languages().logo(Language.nameOf(language.name()));
+			if (logo == null && current.exists()) { current.delete(); return; }
+			if (logo != null && logo.getAbsolutePath().equals(current.getAbsolutePath())) return;
+			Files.move(logo.toPath(), current.toPath());
 		} catch (IOException e) {
 			Logger.error(e);
 		}
@@ -97,6 +90,17 @@ public class LanguageManager {
 
 	public Language get(String language) {
 		return languageOf(language);
+	}
+
+	public void makePrivate(Language language, List<String> accessPatterns) {
+		language.isPrivate(true);
+		language.accessPatterns(accessPatterns);
+		save(language);
+	}
+
+	public void makePublic(Language language) {
+		language.isPrivate(false);
+		save(language);
 	}
 
 	public void remove(Language language) {
@@ -136,12 +140,15 @@ public class LanguageManager {
 		}
 	}
 
-	private boolean isModelCollaborator(Language language, String user) {
-		if (language.isFoundational()) return false;
-		Language parentLanguage = get(language.parent());
-		if (parentLanguage == null) return false;
-		Model model = modelsProvider.apply(parentLanguage).model(language.name());
-		return model != null && model.collaborators().contains(user);
+	private boolean hasAccess(Language language, String user) {
+		if (user == null) return false;
+		List<String> patternList = language.accessPatterns();
+		return patternList.stream().anyMatch(p -> matches(p, user));
+	}
+
+	private boolean matches(String regex, String user) {
+		Pattern pattern = Pattern.compile(regex);
+		return pattern.matcher(user).matches();
 	}
 
 }

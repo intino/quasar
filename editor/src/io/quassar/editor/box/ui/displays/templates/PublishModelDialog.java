@@ -12,7 +12,6 @@ import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
-import java.io.File;
 import java.util.function.BiConsumer;
 
 public class PublishModelDialog extends AbstractPublishModelDialog<EditorBox> {
@@ -47,8 +46,6 @@ public class PublishModelDialog extends AbstractPublishModelDialog<EditorBox> {
 		create.onExecute(e -> publish());
 		versionTypeSelector.onSelect(this::updateVersion);
 		versionTypeSelector.selection("revisionOption");
-		levelSelector.selection("level1Option");
-		languageSwitch.onToggle(this::toggleLanguage);
 	}
 
 	private void refreshDialog() {
@@ -64,7 +61,6 @@ public class PublishModelDialog extends AbstractPublishModelDialog<EditorBox> {
 		version.value(value);
 		versionTypeSelector.selection("revisionOption");
 		versionTypeSelector.readonly(value.equals("1.0.0"));
-		levelSelector.selection("level1Option");
 	}
 
 	private void refreshLanguageBlock() {
@@ -92,12 +88,12 @@ public class PublishModelDialog extends AbstractPublishModelDialog<EditorBox> {
 
 	private void createLanguage() {
 		notifyUser(translate("Creating language..."), UserMessage.Type.Loading);
-		box().commands(LanguageCommands.class).create(model.name(), version(), model.language(), level(), model.hint(), model.description(), username());
+		box().commands(LanguageCommands.class).create(model.name(), version(), model.language(), Language.Level.L1, model.hint(), model.description(), username());
 	}
 
 	private void updateLanguage() {
 		notifyUser(translate("Updating language..."), UserMessage.Type.Loading);
-		box().commands(LanguageCommands.class).publish(model.name(), version(), level(), username());
+		box().commands(LanguageCommands.class).publish(model.name(), version(), Language.Level.L1, username());
 	}
 
 	private ExecutionResult createRelease() {
@@ -126,16 +122,6 @@ public class PublishModelDialog extends AbstractPublishModelDialog<EditorBox> {
 		if (selected.equals("revisionOption")) return VersionType.Revision;
 		if (selected.equals("minorVersionOption")) return VersionType.MinorVersion;
 		return VersionType.MajorVersion;
-	}
-
-	private Language.Level level() {
-		String selected = levelSelector.selection().getFirst();
-		if (selected.equals("level1Option")) return Language.Level.L1;
-		return Language.Level.L2;
-	}
-
-	private void toggleLanguage(ToggleEvent event) {
-		languagePropertiesBlock.visible(event.state() == ToggleEvent.State.On);
 	}
 
 }

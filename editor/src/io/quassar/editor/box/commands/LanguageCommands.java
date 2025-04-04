@@ -2,7 +2,10 @@ package io.quassar.editor.box.commands;
 
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.language.*;
+import io.quassar.editor.box.commands.model.MakeModelPrivateCommand;
+import io.quassar.editor.box.commands.model.MakeModelPublicCommand;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.Model;
 
 import java.io.File;
 import java.util.List;
@@ -32,7 +35,7 @@ public class LanguageCommands extends Commands {
 		return command.execute();
 	}
 
-	public void save(Language language, String hint, String description, String username) {
+	public void saveProperties(Language language, String hint, String description, String username) {
 		SaveLanguagePropertiesCommand command = setup(new SaveLanguagePropertiesCommand(box), username);
 		command.language = language;
 		command.hint = hint;
@@ -63,6 +66,19 @@ public class LanguageCommands extends Commands {
 		RemoveLanguageCommand command = setup(new RemoveLanguageCommand(box), username);
 		command.language = language;
 		return command.execute();
+	}
+
+	public void makePrivate(Language language, List<String> accessPatterns, String username) {
+		MakeLanguagePrivateCommand command = setup(new MakeLanguagePrivateCommand(box), username);
+		command.language = language;
+		command.accessPatterns = accessPatterns;
+		command.execute();
+	}
+
+	public void makePublic(Language language, String username) {
+		MakeLanguagePublicCommand command = setup(new MakeLanguagePublicCommand(box), username);
+		command.language = language;
+		command.execute();
 	}
 
 }

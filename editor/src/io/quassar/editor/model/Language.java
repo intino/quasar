@@ -14,6 +14,8 @@ public class Language {
 	private String owner;
 	private String fileExtension;
 	private List<String> tagList;
+	private boolean isPrivate;
+	private List<String> accessPatterns;
 	private Instant createDate;
 	private transient ModelsProvider modelsProvider;
 
@@ -22,7 +24,9 @@ public class Language {
 	public enum Level { L1, L2, L3 }
 
 	public Language() {
+		this.isPrivate = true;
 		this.tagList = new ArrayList<>();
+		this.accessPatterns = new ArrayList<>();
 	}
 
 	public Language(String name) {
@@ -146,6 +150,28 @@ public class Language {
 
 	public boolean isFoundational() {
 		return parent == null || parent.isEmpty();
+	}
+
+	public boolean isPublic() {
+		return !isPrivate;
+	}
+
+	public boolean isPrivate() {
+		return isPrivate;
+	}
+
+	public Language isPrivate(boolean value) {
+		this.isPrivate = value;
+		return this;
+	}
+
+	public List<String> accessPatterns() {
+		return accessPatterns;
+	}
+
+	public Language accessPatterns(List<String> values) {
+		this.accessPatterns = values;
+		return this;
 	}
 
 	public interface ModelsProvider {

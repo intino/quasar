@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 public class LanguageHeaderTemplate extends AbstractLanguageHeaderTemplate<EditorBox> {
 	private Language language;
 	private LanguageTab tab;
-	private Consumer<Language> editReadmeListener;
+	private Consumer<Language> saveSettingsListener;
 
 	public LanguageHeaderTemplate(EditorBox box) {
 		super(box);
@@ -26,14 +26,15 @@ public class LanguageHeaderTemplate extends AbstractLanguageHeaderTemplate<Edito
 		this.tab = tab;
 	}
 
-	public void onEditReadme(Consumer<Language> listener) {
-		this.editReadmeListener = listener;
+	public void onSaveSettings(Consumer<Language> listener) {
+		this.saveSettingsListener = listener;
 	}
 
 	@Override
 	public void init() {
 		super.init();
-		editReadmeTrigger.onExecute(e -> editReadmeListener.accept(language));
+		settingsTrigger.onExecute(e -> openSettings());
+		languageSettingsDialog.onSave(e -> { refresh(); saveSettingsListener.accept(language); });
 	}
 
 	@Override
@@ -48,7 +49,12 @@ public class LanguageHeaderTemplate extends AbstractLanguageHeaderTemplate<Edito
 		if (myModelsLink.isVisible()) myModelsLink.address(a -> PathHelper.languagePath(a, language, LanguageTab.OwnerModels));
 		gotoModelTrigger.visible(PermissionsHelper.canOpenModel(language, session(), box()));
 		if (gotoModelTrigger.isVisible()) gotoModelTrigger.address(path -> PathHelper.modelPath(LanguageHelper.model(language, box())));
-		editReadmeTrigger.visible(PermissionsHelper.canEdit(language, session(), box()));
+		settingsTrigger.visible(PermissionsHelper.canEdit(language, session(), box()));
+	}
+
+	private void openSettings() {
+		languageSettingsDialog.language(language);
+		languageSettingsDialog.open();
 	}
 
 }

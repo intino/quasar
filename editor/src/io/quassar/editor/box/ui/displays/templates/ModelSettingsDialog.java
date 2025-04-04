@@ -1,9 +1,6 @@
 package io.quassar.editor.box.ui.displays.templates;
 
-import io.intino.alexandria.Resource;
-import io.intino.alexandria.logger.Logger;
 import io.intino.alexandria.ui.displays.UserMessage;
-import io.intino.alexandria.ui.displays.events.ChangeEvent;
 import io.intino.alexandria.ui.displays.events.actionable.ToggleEvent;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.LanguageCommands;
@@ -16,15 +13,13 @@ import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 import io.quassar.editor.model.User;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> {
 	private Model model;
-	private Set<String> tagSet;
 	private Map<String, String> tokensMap;
 	private Consumer<Model> renameListener;
 	private Consumer<Model> saveListener;
@@ -57,15 +52,12 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		super.init();
 		generalBlock.onInit(e -> initGeneralBlock());
 		generalBlock.onShow(e -> refreshGeneralBlock());
-		languageBlock.onInit(e -> initLanguageBlock());
-		languageBlock.onShow(e -> refreshLanguageBlock());
 		collaboratorsBlock.onInit(e -> initCollaboratorsBlock());
 		collaboratorsBlock.onShow(e -> refreshCollaboratorsBlock());
 		accessBlock.onInit(e -> initAccessBlock());
 		accessBlock.onShow(e -> refreshAccessBlock());
 		dialog.onOpen(e -> refreshDialog());
 		saveSettings.onExecute(e -> saveSettings());
-		addTagDialog.onOpen(e -> refreshTagDialog());
 		addToken.onExecute(e -> addToken());
 		generateToken.onExecute(e -> generateToken());
 		addTokenDialog.onOpen(e -> refreshTokenDialog());
@@ -90,51 +82,6 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		removeModel.readonly(!PermissionsHelper.canRemove(model, session(), box()));
 	}
 
-	private void initLanguageBlock() {
-		logoField.onChange(this::updateLogo);
-		addTag.onExecute(e -> addTag());
-		tagField.onEnterPress(e -> addTag());
-		removeLanguage.onExecute(e -> removeLanguage());
-	}
-
-	private void refreshLanguageBlock() {
-		Language language = box().languageManager().get(model.name());
-		tagSet = new HashSet<>(language.tags());
-		File logo = box().archetype().languages().logo(language.name());
-		logoField.value(logo.exists() ? logo : null);
-		languageFileExtensionField.value(language.fileExtension());
-		languageLevelSelector.select(language.level() == Language.Level.L1 ? "level1Option" : "level2Option");
-		refreshTags();
-		removeLanguage.readonly(!PermissionsHelper.canRemove(language, session(), box()));
-	}
-
-	private void refreshTags() {
-		languageTags.clear();
-		tagSet.stream().sorted(Comparator.naturalOrder()).forEach(o -> fill(o, languageTags.add()));
-	}
-
-	private void fill(String tag, TagEditor display) {
-		display.tag(tag);
-		display.onRemove(o -> removeTag(tag));
-		display.refresh();
-	}
-
-	private void removeTag(String tag) {
-		tagSet.remove(tag);
-		refreshTags();
-	}
-
-	private void addTag() {
-		if (!DisplayHelper.check(tagField, this::translate)) return;
-		addTagDialog.close();
-		tagSet.add(tagField.value());
-		refreshTags();
-	}
-
-	private void refreshTagDialog() {
-		tagField.value(null);
-	}
-
 	private void initCollaboratorsBlock() {
 		collaboratorsStamp.onChange(e -> this.collaboratorList = e);
 	}
@@ -145,13 +92,13 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 	}
 
 	private void initAccessBlock() {
-		modelAccessTypeField.onToggle(e -> accessBlock.tokensBlock.visible(e.state() == ToggleEvent.State.On));
+		accessTypeField.onToggle(e -> accessBlock.tokensBlock.visible(e.state() == ToggleEvent.State.On));
 		applicationField.onEnterPress(e -> addToken());
 	}
 
 	private void refreshAccessBlock() {
 		accessType = model.isPrivate();
-		modelAccessTypeField.state(model.isPrivate() ? ToggleEvent.State.On : ToggleEvent.State.Off);
+		accessTypeField.state(model.isPrivate() ? ToggleEvent.State.On : ToggleEvent.State.Off);
 		accessBlock.tokensBlock.visible(model.isPrivate());
 		tokensMap = new HashMap<>(model.tokens());
 		refreshTokens();
@@ -202,18 +149,12 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		dialog.close();
 		boolean renamed = !model.name().equals(modelNameField.value());
 		saveModel();
-		saveLanguage();
+		saveLanguageProperties();
 		saveListener.accept(model);
 		if (renamed) renameListener.accept(model);
 	}
 
 	private boolean check() {
-		if (!checkModel()) return false;
-		if (!checkLanguage()) return false;
-		return true;
-	}
-
-	private boolean checkModel() {
 		if (!checkModelName()) return false;
 		if (!DisplayHelper.check(modelTitleField, this::translate)) return false;
 		if (!DisplayHelper.check(modelHintField, this::translate)) return false;
@@ -226,19 +167,6 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		return DisplayHelper.checkLanguageName(modelNameField, language, this::translate, box());
 	}
 
-	private boolean checkLanguage() {
-		String languageName = Language.nameOf(model.name());
-		if (!box().languageManager().exists(languageName)) return true;
-		if (!languageBlock.isVisible()) return true;
-		String language = Language.nameOf(model.name());
-		boolean hasLogo = box().archetype().languages().logo(language).exists();
-		if (box().languageManager().exists(language) && !hasLogo && !logoFile().exists()) {
-			notifyUser(translate("Select logo"), UserMessage.Type.Warning);
-			return false;
-		}
-		return DisplayHelper.check(languageFileExtensionField, this::translate);
-	}
-
 	private void saveModel() {
 		box().commands(ModelCommands.class).save(model, modelNameField.value(), modelTitleField.value(), modelHintField.value(), modelDescriptionField.value(), username());
 		saveAccessType();
@@ -247,7 +175,7 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 
 	private void saveAccessType() {
 		if (accessType == null) return;
-		boolean isPrivate = modelAccessTypeField.state() == ToggleEvent.State.On;
+		boolean isPrivate = accessTypeField.state() == ToggleEvent.State.On;
 		if (isPrivate) box().commands(ModelCommands.class).makePrivate(model, username());
 		else box().commands(ModelCommands.class).makePublic(model, username());
 		saveTokens();
@@ -263,14 +191,6 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		box().commands(ModelCommands.class).save(model, collaboratorList, username());
 	}
 
-	private void removeLanguage() {
-		notifyUser(translate("Removing language..."), UserMessage.Type.Loading);
-		Language language = box().languageManager().get(model.name());
-		box().commands(LanguageCommands.class).remove(language, username());
-		notifyUser(translate("Language removed successfully..."), UserMessage.Type.Success);
-		dialog.close();
-	}
-
 	private void removeModel() {
 		notifyUser(translate("Removing model..."), UserMessage.Type.Loading);
 		box().commands(ModelCommands.class).remove(model, username());
@@ -278,39 +198,11 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		notifier.dispatch(PathHelper.languagePath(model.language()));
 	}
 
-	private void saveLanguage() {
+	private void saveLanguageProperties() {
 		String languageName = Language.nameOf(model.name());
 		if (!box().languageManager().exists(languageName)) return;
 		Language language = box().languageManager().get(languageName);
-		if (tagSet == null) {
-			box().commands(LanguageCommands.class).save(language, model.hint(), model.description(), username());
-			return;
-		}
-		String fileExtension = languageFileExtensionField.value();
-		List<String> tags = new ArrayList<>(tagSet);
-		box().commands(LanguageCommands.class).save(language, model.hint(), model.description(), fileExtension, level(), tags, logoFile(), username());
-	}
-
-	private Language.Level level() {
-		String selected = languageLevelSelector.selection().getFirst();
-		if (selected.equals("level1Option")) return Language.Level.L1;
-		return Language.Level.L2;
-	}
-
-	private void updateLogo(ChangeEvent event) {
-		try {
-			File tmpFile = logoFile();
-			if (tmpFile.exists()) tmpFile.delete();
-			Resource value = event.value();
-			if (value != null) Files.write(tmpFile.toPath(), value.bytes());
-			logoField.value(value != null ? tmpFile : null);
-		} catch (IOException e) {
-			Logger.error(e);
-		}
-	}
-
-	private File logoFile() {
-		return new File(box().archetype().tmp().root(), model.name() + "-logo.png");
+		box().commands(LanguageCommands.class).saveProperties(language, model.hint(), model.description(), username());
 	}
 
 }
