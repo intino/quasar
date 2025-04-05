@@ -25,6 +25,10 @@ public class PathHelper {
 		return session.browser().baseUrl() + "/languages/%s/models/%s/download/file".formatted(language.name(), model.name()) + "?token=%s&release=%s&file=%s".formatted(box.configuration().editorShelfToken(), release, file.uri());
 	}
 
+	public static String landingUrl(LandingDialog dialog, UISession session) {
+		return homeUrl(session) + "?dialog=" + dialog.name().toLowerCase();
+	}
+
 	public static String landingPath(String path, LandingDialog dialog) {
 		return path + (dialog != null ? "?dialog=" + dialog.name().toLowerCase() : "");
 	}
@@ -73,6 +77,10 @@ public class PathHelper {
 		return languagePath(address, language, null);
 	}
 
+	public static String languagePath(String address, String language) {
+		return languagePath(address, language, null);
+	}
+
 	public static String languagePath(String address, Language language, LanguageTab tab) {
 		return address.replace(":language", language.name()) + (tab != null ? "?tab=" + tab.name().toLowerCase() : "");
 	}
@@ -92,6 +100,10 @@ public class PathHelper {
 
 	public static String startingModelPath(Model model) {
 		return modelPath(model) + "/starting";
+	}
+
+	public static String modelTemplateUrl(Model model, UISession session) {
+		return session.browser().baseUrl() + modelPath(model) + "/template";
 	}
 
 	public static String modelPath(Model model, String release) {

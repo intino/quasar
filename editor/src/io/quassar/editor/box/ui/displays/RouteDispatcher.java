@@ -43,6 +43,11 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	}
 
 	@Override
+	public void dispatchTemplateModel(Soul soul, String language, String model) {
+		soul.currentLayer(HomeTemplate.class).openTemplate(language, model);
+	}
+
+	@Override
 	public void dispatchLogin(Soul soul) {
 	}
 

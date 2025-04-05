@@ -35,6 +35,7 @@ public class Language {
 		this.tagList = new ArrayList<>();
 		this.createDate = Instant.now();
 		this.fileExtension = "tara";
+		this.isPrivate = true;
 	}
 
 	public void modelsProvider(ModelsProvider provider) {

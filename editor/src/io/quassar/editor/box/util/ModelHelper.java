@@ -15,7 +15,8 @@ public class ModelHelper {
 	public static final String FirstReleaseVersion = "1.0.0";
 
 	public static String label(Model model, String language, EditorBox box) {
-		return model.title() != null && !model.title().isEmpty() ? model.title() : model.name();
+		String result = model.title() != null && !model.title().isEmpty() ? model.title() : model.name();
+		return model.isTemplate() ? box.translatorService().translate("%s TEMPLATE", language).formatted(result) : result;
 	}
 
 	public static String proposeName() {

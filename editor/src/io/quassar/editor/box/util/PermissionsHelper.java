@@ -46,15 +46,25 @@ public class PermissionsHelper {
 		return !box.modelManager().isWorkspaceEmpty(model, version);
 	}
 
-	public static boolean canPublish(Model model, String version, UISession session, EditorBox box) {
+	public static boolean canDeploy(Model model, String version, UISession session, EditorBox box) {
+		if (model.isTemplate()) return false;
 		if (!hasPermissions(model, session)) return false;
 		return !box.modelManager().isWorkspaceEmpty(model, version);
 	}
 
 	public static boolean canClone(Model model, String version, UISession session, EditorBox box) {
+		if (model.isTemplate()) return false;
 		if (session.user() == null) return false;
 		if (!model.isPublic() && !isOwner(model, session)) return false;
 		return !box.modelManager().isWorkspaceEmpty(model, version);
+	}
+
+	public static boolean canEditTemplate(Model model, String version, UISession session, EditorBox box) {
+		if (session.user() == null) return false;
+		if (!isOwner(model, session)) return false;
+		Language language = box.languageManager().get(model.name());
+		if (language == null) return false;
+		return box.modelManager().exists(language, Model.Template);
 	}
 
 	private static boolean isOwner(Model model, UISession session) {

@@ -15,17 +15,19 @@ Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
 				Link(title="Cancel", format=airRight) closeTitleEditor as Action
 				Link(title="Save") saveTitleEditor as Action
 			Block(layout=Horizontal Center, format=doubleAirLeft)
-				SplitButton(title="draft", format=airRight minSelectorWidth, options="draft", defaultOption = "draft") releaseSelector as Action
+				SplitButton(title="draft", format=airRight minSelectorWidth, options="draft", defaultOption = "draft", visible=false) releaseSelector as Action
 				Button(title="build", size=Small) buildTrigger as Action > Shortcut(key="F9", metaKeys=Control)
-				Button(title="publish", format=airRight, visible=false) publishTrigger as Action
+				Button(title="deploy", format=airRight, visible=false) deployTrigger as Action
 				Button(title="download", format=airRight, visible=false) downloadTrigger as Download(options="Model" "Accessor")
 				Button(title="clone", format=airRight, visible=false) cloneTrigger as Action
+				Button(title="model template", format=airRight, visible=false) editTemplateTrigger as OpenSite(site=empty, target=Blank)
 
 		Block(layout=Horizontal EndJustified)
 			Button(title="help", format=airRight) languageHelpTrigger as Action
-			Button(title="settings", format=airRight) modelSettingsTrigger as Action Readonly
+			Button(title="open language", format=airRight, visible=false) openLanguageTrigger as Action Addressable(EditorElements.language)
+			Button(title="settings", format=airRight, visible=false) modelSettingsTrigger as Action Readonly
 
-	TemplateStamp(template=publishModelDialog) modelPublishDialog
+	TemplateStamp(template=deployModelDialog) modelDeployDialog
 	TemplateStamp(template=modelSettingsDialog) modelSettingsDialog
 
 Template modelsTemplate as Relative(height=100%, width=100%)
@@ -48,7 +50,6 @@ Template modelsTemplate as Relative(height=100%, width=100%)
 	TemplateStamp(template=addModelDialog) addModelDialog
 
 Template modelTemplate as Relative(height=100%, width=100%)
-	TemplateStamp(template=modelHeaderTemplate) headerStamp
 
 	Block(layout=Vertical Flexible CenterCenter, visible=false) openingModelBlock
 		Spinner(mode=Ring, color="secondary")
@@ -59,6 +60,12 @@ Template modelTemplate as Relative(height=100%, width=100%)
 			Block(layout=Vertical CenterCenter)
 				Image(value="/images/logo-expanded.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=340px, height=80px)
 				Text(value="Model not found", format=h4 airTop textCentered, translate=true) message
+
+	Block(layout=Vertical Flexible) contentBlock as Relative(height=100%, width=100%)
+		TemplateStamp(template=modelEditor) modelEditor
+
+Template modelEditor as Relative(height=100%, width=100%)
+	TemplateStamp(template=modelHeaderTemplate) headerStamp
 
 	Block(layout=Horizontal Flexible, visible=false) contentBlock as Resizable
 
@@ -176,6 +183,7 @@ Schema intinoFileBrowserInfo
 	Attribute itemAddress as Text
 	Attribute rootItem as Text
 	Attribute hideExtension as Bool
+	Attribute historyEnabled as Bool
 	Attribute items as Object(intinoFileBrowserItem) List
 	Attribute operations as Object(intinoFileBrowserOperation) List
 

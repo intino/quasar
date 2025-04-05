@@ -7,14 +7,14 @@ import io.quassar.editor.model.Language;
 
 import java.io.File;
 
-public class PublishLanguageCommand extends Command<Language> {
+public class DeployLanguageCommand extends Command<Language> {
 	public String name;
 	public String version;
 	public Language.Level level;
 
 	public static final String MavenDslFile = "%s/%s/%s-%s.jar";
 
-	public PublishLanguageCommand(EditorBox box) {
+	public DeployLanguageCommand(EditorBox box) {
 		super(box);
 	}
 

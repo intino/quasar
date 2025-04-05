@@ -20,6 +20,7 @@ public class IntinoFileBrowser extends AbstractIntinoFileBrowser<EditorBox> {
 	private String itemsAddress;
 	private IntinoFileBrowserItem selectedItem;
 	private String rootItem = null;
+	private boolean historyEnabled = true;
 
 	public IntinoFileBrowser(EditorBox box) {
 		super(box);
@@ -33,9 +34,10 @@ public class IntinoFileBrowser extends AbstractIntinoFileBrowser<EditorBox> {
 		this.rootItem = value;
 	}
 
-	public void items(List<IntinoFileBrowserItem> items, boolean hideExtension) {
+	public void items(List<IntinoFileBrowserItem> items, boolean hideExtension, boolean historyEnabled) {
 		this.items = items;
 		this.hideExtension = hideExtension;
+		this.historyEnabled = historyEnabled;
 	}
 
 	public void operations(List<IntinoFileBrowserOperation> operations) {
@@ -97,7 +99,7 @@ public class IntinoFileBrowser extends AbstractIntinoFileBrowser<EditorBox> {
 	}
 
 	private IntinoFileBrowserInfo info() {
-		return new IntinoFileBrowserInfo().rootItem(rootItem).itemAddress(itemsAddress).items(withRoot(fix(items))).operations(operations).hideExtension(hideExtension);
+		return new IntinoFileBrowserInfo().rootItem(rootItem).itemAddress(itemsAddress).items(withRoot(fix(items))).operations(operations).hideExtension(hideExtension).historyEnabled(historyEnabled);
 	}
 
 	private List<IntinoFileBrowserItem> fix(List<IntinoFileBrowserItem> items) {

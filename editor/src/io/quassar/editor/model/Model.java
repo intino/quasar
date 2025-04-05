@@ -1,6 +1,5 @@
 package io.quassar.editor.model;
 
-import java.io.File;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +19,7 @@ public class Model {
 	private boolean isPrivate = false;
 
 	public static final String DraftRelease = "draft";
+	public static final String Template = "__template";
 
 	public String name() {
 		return name;
@@ -137,4 +137,9 @@ public class Model {
 	public boolean isDraft(String release) {
 		return release != null && release.equals(Model.DraftRelease);
 	}
+
+	public boolean isTemplate() {
+		return name().equals(Model.Template);
+	}
+
 }

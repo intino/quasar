@@ -205,9 +205,7 @@ Format("minWidth:'130px'") minExecutiveIndicatorWidth
 Format("width:'500px'") block
 Format("fontSize:'35pt',color:'white',fontWeight:'bold'") blockTitle
 Format("fontSize:'16pt',color:'white',textAlign:'center'") blockDescription
-Format("border:'2px solid white',borderRadius:'20px',padding:'13px 30px',fontSize:'10pt'") blockMainAction
-Format("background:'#1b70c0',color:'white'") blockMainActionEnabled
-Format("background:'#555'") blockMainActionDisabled
+Format("border:'2px solid white',borderRadius:'20px',padding:'13px 30px',fontSize:'10pt',background:'#1b70c0',color:'white'") blockMainAction
 Format("color:'white',fontSize:'12pt',fontWeight:'bold'") blockAction
 Format("color:'white',fontSize:'18pt',border:'2px solid white',background:'#404040',borderRadius:'12px',width:'45px',textAlign:'center'") stepBudge
 Format("color:'white',fontSize:'14pt',marginTop:'5px',fontWeight:'bold'") stepTitle

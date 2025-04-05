@@ -14,14 +14,16 @@ Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, heigh
 				Text(value="Model with a DSL", format=blockTitle)
 				Text(value="Use existing Domain Specific Language (DSL) from our community to build your models", format=blockDescription)
 				Block(layout=Vertical CenterCenter, format=doubleAirTop)
-					Button(title="Start modelling", format=blockMainAction) startModeling as Action Addressable(EditorElements.home) Readonly
+					Button(title="Start modelling", format=blockMainAction, visible=false) startModeling as Action Addressable(EditorElements.home)
+					Button(title="Start modelling", format=blockMainAction, visible=false) startModelingLogin as Action
 					Link(title="Explore", format=blockAction airTop) exploreLanguages as Action Addressable(EditorElements.home)
 			Block(layout=Vertical Center) > Block(format=doubleAirLeft doubleAirRight doubleAirBottom)
 			Block(layout=Vertical Center, format=block)
 				Text(value="Build your own DSL", format=blockTitle)
 				Text(value="High expressive DSL without writing code to model any domain through expressive grammar", format=blockDescription)
 				Block(layout=Vertical CenterCenter, format=doubleAirTop)
-					Button(title="Start building", format=blockMainAction) startBuilding as Action Readonly
+					Button(title="Start building", format=blockMainAction) startBuilding as Action
+					Button(title="Start building", format=blockMainAction, visible=false) startBuildingLogin as Action
 					Link(title="Explore", format=blockAction airTop) exploreModels as Action Addressable(EditorElements.home)
 
 		Block(layout=Vertical Flexible CenterJustified Wrap, format=bringToFront doubleAirTop)

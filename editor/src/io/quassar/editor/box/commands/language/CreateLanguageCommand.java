@@ -6,6 +6,7 @@ import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.box.commands.model.CreateModelCommand;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.Model;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -31,6 +32,7 @@ public class CreateLanguageCommand extends Command<Language> {
 		File dsl = LanguageHelper.mavenDslFile(name, version, box);
 		Language language = box.languageManager().create(name, version, level, hint, description, dsl.exists() ? dsl : null, parent, author());
 		createDefaultReadme(language);
+		createTemplateModel(language);
 		return language;
 	}
 
@@ -42,6 +44,18 @@ public class CreateLanguageCommand extends Command<Language> {
 		} catch (IOException e) {
 			Logger.error(e);
 		}
+	}
+
+	private void createTemplateModel(Language language) {
+		CreateModelCommand command = new CreateModelCommand(box);
+		command.author = author;
+		command.language = language;
+		command.name = Model.Template;
+		command.title = language.name();
+		command.hint = "";
+		command.description = "";
+		command.owner = author;
+		command.execute();
 	}
 
 }

@@ -63,6 +63,8 @@ class IntinoFileBrowser extends AbstractIntinoFileBrowser {
 		    selectedItems: [],
 		    contextMenuTrigger: null,
 		    contextMenuPosition: { x: 0, y: 0 },
+		    hideExtension: false,
+		    historyEnabled: true,
 		};
 	};
 
@@ -76,7 +78,6 @@ class IntinoFileBrowser extends AbstractIntinoFileBrowser {
         const style = theme.isDark() ? { backgroundColor:'#1f1f1f', color:'#e3e3e3'} : {};
         const root = this.state.rootItem != null ? this.state.rootItem : "root";
         const hideExtension = this.state.hideExtension;
-        if (this.state.items.length <= 1) return (<div className="layout vertical flex center-center" style={{height:'100%',fontSize:'10pt'}}>{this.translate("No files")}</div>);
         return (
             <div id={this.props.id + "-container"} onContextMenu={this.handleOpenContextMenu.bind(this)} style={{position:'relative'}}>
                 {this.renderContextMenu()}
@@ -138,7 +139,14 @@ class IntinoFileBrowser extends AbstractIntinoFileBrowser {
     };
 
     refresh = (info) => {
-        this.setState({itemAddress: info.itemAddress, items: info.items, rootItem: info.rootItem, operations: info.operations, hideExtension: info.hideExtension });
+        this.setState({
+            itemAddress: info.itemAddress,
+            items: info.items,
+            rootItem: info.rootItem,
+            operations: info.operations,
+            hideExtension: info.hideExtension,
+            historyEnabled: info.historyEnabled
+        });
     };
 
     shortcutLabel = (shortcut) => {
@@ -219,7 +227,7 @@ class IntinoFileBrowser extends AbstractIntinoFileBrowser {
 
     handleSelectItems = (items, treeId) => {
         if (items.length <= 0) return;
-        history.push(this.state.itemAddress.replace(/:file/, items[0]), {});
+        if (this.state.historyEnabled) history.push(this.state.itemAddress.replace(/:file/, items[0]), {});
         this.requester.open(items[0]);
         this.setState({selectedItems: items});
     };

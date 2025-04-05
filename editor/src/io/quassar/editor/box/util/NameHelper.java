@@ -2,11 +2,12 @@ package io.quassar.editor.box.util;
 
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.Model;
 
 public class NameHelper {
 
 	public static boolean validName(String name) {
-		return name.matches("^[a-zA-Z0-9_-]*$");
+		return name.matches("^[a-zA-Z0-9_-]*$") && !name.equalsIgnoreCase(Model.Template);
 	}
 
 	public static boolean languageInUse(String value, EditorBox box) {

@@ -71,6 +71,12 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 		if (modelPage.modelStamp != null) modelPage.modelStamp.openStarting(language, model);
 	}
 
+	public void openTemplate(String language, String model) {
+		set(language, model);
+		openPage(Page.Model);
+		if (modelPage.modelStamp != null) modelPage.modelStamp.openTemplate(language, model);
+	}
+
 	private boolean openPage(Page page) {
 		refreshHeader();
 		if (current == page) return true;

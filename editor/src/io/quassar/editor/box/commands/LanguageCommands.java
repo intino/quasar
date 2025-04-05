@@ -2,10 +2,7 @@ package io.quassar.editor.box.commands;
 
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.language.*;
-import io.quassar.editor.box.commands.model.MakeModelPrivateCommand;
-import io.quassar.editor.box.commands.model.MakeModelPublicCommand;
 import io.quassar.editor.model.Language;
-import io.quassar.editor.model.Model;
 
 import java.io.File;
 import java.util.List;
@@ -27,8 +24,8 @@ public class LanguageCommands extends Commands {
 		return command.execute();
 	}
 
-	public Language publish(String name, String version, Language.Level level, String username) {
-		PublishLanguageCommand command = setup(new PublishLanguageCommand(box), username);
+	public Language deploy(String name, String version, Language.Level level, String username) {
+		DeployLanguageCommand command = setup(new DeployLanguageCommand(box), username);
 		command.name = name;
 		command.version = version;
 		command.level = level;

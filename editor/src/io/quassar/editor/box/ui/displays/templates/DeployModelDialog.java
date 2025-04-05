@@ -14,12 +14,12 @@ import io.quassar.editor.model.Model;
 
 import java.util.function.BiConsumer;
 
-public class PublishModelDialog extends AbstractPublishModelDialog<EditorBox> {
+public class DeployModelDialog extends AbstractDeployModelDialog<EditorBox> {
 	private Model model;
-	private BiConsumer<Model, String> publishListener;
-	private BiConsumer<Model, ExecutionResult> publishFailureListener;
+	private BiConsumer<Model, String> deployListener;
+	private BiConsumer<Model, ExecutionResult> deployFailureListener;
 
-	public PublishModelDialog(EditorBox box) {
+	public DeployModelDialog(EditorBox box) {
 		super(box);
 	}
 
@@ -27,12 +27,12 @@ public class PublishModelDialog extends AbstractPublishModelDialog<EditorBox> {
 		this.model = value;
 	}
 
-	public void onPublish(BiConsumer<Model, String> listener) {
-		this.publishListener = listener;
+	public void onDeploy(BiConsumer<Model, String> listener) {
+		this.deployListener = listener;
 	}
 
-	public void onPublishFailure(BiConsumer<Model, ExecutionResult> listener) {
-		this.publishFailureListener = listener;
+	public void onDeployFailure(BiConsumer<Model, ExecutionResult> listener) {
+		this.deployFailureListener = listener;
 	}
 
 	public void open() {
@@ -43,14 +43,14 @@ public class PublishModelDialog extends AbstractPublishModelDialog<EditorBox> {
 	public void init() {
 		super.init();
 		dialog.onOpen(e -> refreshDialog());
-		create.onExecute(e -> publish());
+		create.onExecute(e -> deploy());
 		versionTypeSelector.onSelect(this::updateVersion);
 		versionTypeSelector.selection("revisionOption");
 	}
 
 	private void refreshDialog() {
 		String value = ModelHelper.nextVersion(model, VersionType.Revision, box());
-		dialog.title("Publish %s".formatted(ModelHelper.label(model, language(), box())));
+		dialog.title("Deploy %s".formatted(ModelHelper.label(model, language(), box())));
 		refreshVersionBlock(value);
 		refreshLanguageBlock();
 	}
@@ -71,13 +71,13 @@ public class PublishModelDialog extends AbstractPublishModelDialog<EditorBox> {
 		languageSwitch.state(ToggleEvent.State.Off);
 	}
 
-	private void publish() {
+	private void deploy() {
 		if (!check()) return;
 		dialog.close();
 		if (!createRelease().success()) return;
 		createOrUpdateLanguage();
 		hideUserNotification();
-		publishListener.accept(model, version());
+		deployListener.accept(model, version());
 	}
 
 	private void createOrUpdateLanguage() {
@@ -93,13 +93,13 @@ public class PublishModelDialog extends AbstractPublishModelDialog<EditorBox> {
 
 	private void updateLanguage() {
 		notifyUser(translate("Updating language..."), UserMessage.Type.Loading);
-		box().commands(LanguageCommands.class).publish(model.name(), version(), Language.Level.L1, username());
+		box().commands(LanguageCommands.class).deploy(model.name(), version(), Language.Level.L1, username());
 	}
 
 	private ExecutionResult createRelease() {
 		notifyUser(translate("Creating release..."), UserMessage.Type.Loading);
 		ExecutionResult result = box().commands(ModelCommands.class).createRelease(model, version(), username());
-		if (!result.success()) publishFailureListener.accept(model, result);
+		if (!result.success()) deployFailureListener.accept(model, result);
 		hideUserNotification();
 		return result;
 	}

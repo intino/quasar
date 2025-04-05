@@ -1,16 +1,12 @@
 package io.quassar.editor.box.commands.model;
 
-import io.intino.alexandria.logger.Logger;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
-import org.apache.commons.io.IOUtils;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 public class CreateModelCommand extends Command<Model> {
 	public String name;

@@ -40,7 +40,7 @@ public class ModelManager {
 	public List<Model> visibleModels(Language language, String owner) {
 		Set<Model> result = new HashSet<>(publicModels(language, owner));
 		result.addAll(ownerModels(language, owner));
-		return result.stream().toList();
+		return new ArrayList<>(result);
 	}
 
 	public List<Model> models(Language language) {
@@ -58,7 +58,7 @@ public class ModelManager {
 	}
 
 	public List<Model> ownerModels(String language, String user) {
-		return models(language).stream().filter(w -> belongsTo(w, user)).collect(toList());
+		return models(language).stream().filter(m -> !m.isTemplate() && belongsTo(m, user)).collect(toList());
 	}
 
 	public List<Model> publicModels(Language language, String user) {
@@ -66,7 +66,7 @@ public class ModelManager {
 	}
 
 	public List<Model> publicModels(String language, String user) {
-		return models(language).stream().filter(m -> m.isPublic() || PermissionsHelper.hasPermissions(m, user)).collect(toList());
+		return models(language).stream().filter(m -> !m.isTemplate() && (m.isPublic() || PermissionsHelper.hasPermissions(m, user))).collect(toList());
 	}
 
 	public List<Model> privateModels(Language language, String user) {

@@ -1,5 +1,6 @@
 dsl Konos
 
+use Models
 use Users
 use UI
 use Theme
@@ -25,9 +26,9 @@ Template addModelDialog
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(dialog)
             Button(title="Add", size=Small, highlight=Fill) create as Action
 
-Template(layout=Horizontal) publishModelDialog
+Template(layout=Horizontal) deployModelDialog
 
-	Dialog(title="Publish model") dialog as Absolute(height=460px, width=650px)
+	Dialog(title="Deploy model") dialog as Absolute(height=460px, width=650px)
         Block(layout=Vertical) as Relative(height=100%, offsetHeight=40px)
 
 			Block(layout=Vertical, visible=false) versionPropertiesBlock
@@ -47,7 +48,7 @@ Template(layout=Horizontal) publishModelDialog
 		Divider
         Block(layout=Horizontal EndJustified)
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(dialog)
-            Button(title="Publish", size=Small, highlight=Fill) create as Action
+            Button(title="Deploy", size=Small, highlight=Fill) create as Action
 
 Template(layout=Horizontal) modelSettingsDialog
 
@@ -173,3 +174,4 @@ Template(layout=Horizontal) languageEditor as Relative(width=100%, height=100%)
         Block(layout=Horizontal EndJustified)
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addTagDialog)
             Button(title="Accept", size=Small, highlight=Fill) addTag as Action
+

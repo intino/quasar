@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -97,10 +98,11 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 	@Override
 	public void refresh() {
 		super.refresh();
+		if (model == null) return;
 		IntinoFileBrowser browser = fileBrowser.display();
 		browser.itemAddress(PathHelper.modelPath(model, release) + "&file=:file");
 		browser.rootItem(io.quassar.editor.box.models.File.ResourcesDirectory);
-		browser.items(IntinoFileBrowserHelper.fileBrowserItems(modelContainer.resourceFiles()), false);
+		browser.items(IntinoFileBrowserHelper.fileBrowserItems(modelContainer.resourceFiles()), false, !model.isTemplate());
 		browser.operations(operations());
 		browser.select(file != null ? IntinoFileBrowserHelper.itemOf(file) : null);
 		browser.refresh();
@@ -122,6 +124,7 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 	}
 
 	private List<IntinoFileBrowserOperation> operations() {
+		if (model == null) return Collections.emptyList();
 		return List.of(
 			new IntinoFileBrowserOperation().name("Add file...").shortcut(new IntinoFileBrowserOperationShortcut().ctrlKey(true).key("N")).enabled(PermissionsHelper.canEdit(model, release, session())),
 			new IntinoFileBrowserOperation().name("Add folder...").shortcut(new IntinoFileBrowserOperationShortcut().shiftKey(true).ctrlKey(true).key("N")).enabled(PermissionsHelper.canEdit(model, release, session())),

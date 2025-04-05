@@ -19,7 +19,7 @@ import io.quassar.editor.model.Model;
 
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -90,9 +90,10 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 	@Override
 	public void refresh() {
 		super.refresh();
+		if (model == null) return;
 		IntinoFileBrowser browser = fileBrowser.display();
 		browser.itemAddress(PathHelper.modelPath(model, release) + "&file=:file");
-		browser.items(IntinoFileBrowserHelper.fileBrowserItems(modelContainer.modelFiles()), true);
+		browser.items(IntinoFileBrowserHelper.fileBrowserItems(modelContainer.modelFiles()), true, !model.isTemplate());
 		browser.operations(operations());
 		browser.select(file != null ? IntinoFileBrowserHelper.itemOf(file) : null);
 		browser.refresh();
@@ -116,6 +117,7 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 	}
 
 	private List<IntinoFileBrowserOperation> operations() {
+		if (model == null) return Collections.emptyList();
 		return List.of(
 			new IntinoFileBrowserOperation().name("Add model file...").shortcut(new IntinoFileBrowserOperationShortcut().ctrlKey(true).key("N")).enabled(PermissionsHelper.canEdit(model, release, session())),
 			new IntinoFileBrowserOperation().name("Add folder...").shortcut(new IntinoFileBrowserOperationShortcut().shiftKey(true).ctrlKey(true).key("N")).enabled(PermissionsHelper.canEdit(model, release, session())),

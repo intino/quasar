@@ -24,7 +24,8 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	private Consumer<Model> buildListener;
 	private Consumer<Model> helpListener;
 	private Consumer<Model> cloneListener;
-	private BiConsumer<Model, ExecutionResult> publishListener;
+	private BiConsumer<Model, ExecutionResult> deployListener;
+	private Consumer<Model> editTemplateListener;
 
 	public ModelHeaderTemplate(EditorBox box) {
 		super(box);
@@ -42,6 +43,10 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		this.file = value;
 	}
 
+	public void onEditTemplate(Consumer<Model> listener) {
+		this.editTemplateListener = listener;
+	}
+
 	public void onBuild(Consumer<Model> listener) {
 		this.buildListener = listener;
 	}
@@ -54,8 +59,8 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		this.cloneListener = listener;
 	}
 
-	public void onPublish(BiConsumer<Model, ExecutionResult> listener) {
-		this.publishListener = listener;
+	public void onDeploy(BiConsumer<Model, ExecutionResult> listener) {
+		this.deployListener = listener;
 	}
 
 	@Override
@@ -67,11 +72,11 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		saveTitleEditor.onExecute(e -> saveTitle());
 		releaseSelector.onExecute(e -> openRelease(e.option()));
 		buildTrigger.onExecute(e -> build());
-		publishTrigger.onExecute(e -> publish());
+		deployTrigger.onExecute(e -> deploy());
 		cloneTrigger.onExecute(e -> cloneModel());
 		downloadTrigger.onExecute(e -> download(e.option()));
-		modelPublishDialog.onPublish((m, v) -> openRelease(v));
-		modelPublishDialog.onPublishFailure((m, v) -> publishListener.accept(m, v));
+		modelDeployDialog.onDeploy((m, v) -> openRelease(v));
+		modelDeployDialog.onDeployFailure((m, v) -> deployListener.accept(m, v));
 		modelSettingsTrigger.onExecute(e -> openSettingsDialog());
 		modelSettingsDialog.onRename(e -> notifier.dispatch(PathHelper.modelPath(model)));
 		modelSettingsDialog.onSave(e -> refresh());
@@ -85,19 +90,28 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		if (!contentBlock.isVisible()) return;
 		Project project = box().projectManager().find(model);
 		projectModelSelector.readonly(project == null);
+		title.readonly(model.isTemplate());
 		title.title(ModelHelper.label(model, language(), box()));
 		refreshReleaseSelector();
 		buildTrigger.visible(release == null || release.equals(translate(Model.DraftRelease)));
 		buildTrigger.readonly(!PermissionsHelper.canBuild(model, release, session(), box()));
-		publishTrigger.visible(release == null || release.equals(translate(Model.DraftRelease)));
-		publishTrigger.readonly(!PermissionsHelper.canPublish(model, release, session(), box()));
-		cloneTrigger.visible(true);
+		deployTrigger.visible(!model.isTemplate() && (release == null || release.equals(translate(Model.DraftRelease))));
+		deployTrigger.readonly(!PermissionsHelper.canDeploy(model, release, session(), box()));
+		cloneTrigger.visible(!model.isTemplate());
 		cloneTrigger.readonly(!PermissionsHelper.canClone(model, release, session(), box()));
+		editTemplateTrigger.visible(editTemplateListener != null);
+		editTemplateTrigger.site(PathHelper.modelTemplateUrl(model, session()));
+		editTemplateTrigger.readonly(!PermissionsHelper.canEditTemplate(model, release, session(), box()));
+		openLanguageTrigger.visible(box().languageManager().exists(model.name()));
+		if (openLanguageTrigger.isVisible()) openLanguageTrigger.address(path -> PathHelper.languagePath(path, model.name()));
+		modelSettingsTrigger.visible(!model.isTemplate());
 		modelSettingsTrigger.readonly(!PermissionsHelper.canEditSettings(model, release, session()));
 		downloadTrigger.visible(ModelHelper.validReleaseName(release, this::translate));
 	}
 
 	private void refreshReleaseSelector() {
+		releaseSelector.visible(!model.isTemplate());
+		if (!releaseSelector.isVisible()) return;
 		releaseSelector.clear();
 		List<String> options = new ArrayList<>(box().modelManager().releases(model)).reversed();
 		options.addFirst(translate(Model.DraftRelease));
@@ -114,9 +128,9 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		buildListener.accept(model);
 	}
 
-	private void publish() {
-		modelPublishDialog.model(model);
-		modelPublishDialog.open();
+	private void deploy() {
+		modelDeployDialog.model(model);
+		modelDeployDialog.open();
 	}
 
 	private void cloneModel() {

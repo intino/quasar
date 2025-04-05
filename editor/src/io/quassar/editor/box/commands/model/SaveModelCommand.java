@@ -3,7 +3,7 @@ package io.quassar.editor.box.commands.model;
 import io.intino.alexandria.logger.Logger;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command;
-import io.quassar.editor.box.commands.language.PublishLanguageCommand;
+import io.quassar.editor.box.commands.language.DeployLanguageCommand;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
@@ -73,7 +73,7 @@ public class SaveModelCommand extends Command<Boolean> {
 	}
 
 	private void publishLanguage(Language language) {
-		PublishLanguageCommand command = new PublishLanguageCommand(box);
+		DeployLanguageCommand command = new DeployLanguageCommand(box);
 		command.author = author;
 		command.name = language.name();
 		command.version = language.version();

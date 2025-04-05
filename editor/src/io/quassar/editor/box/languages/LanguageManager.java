@@ -63,7 +63,7 @@ public class LanguageManager {
 			File current = archetype.languages().logo(Language.nameOf(language.name()));
 			if (logo == null && current.exists()) { current.delete(); return; }
 			if (logo != null && logo.getAbsolutePath().equals(current.getAbsolutePath())) return;
-			Files.move(logo.toPath(), current.toPath());
+			if (logo != null) Files.move(logo.toPath(), current.toPath());
 		} catch (IOException e) {
 			Logger.error(e);
 		}
