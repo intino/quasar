@@ -9,40 +9,76 @@ Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, heigh
 
 	Block(layout=Vertical Center, format=doubleBottomSpaced) content as Relative(width=100%, height=100%)
 
-		Block(layout=Horizontal CenterJustified Wrap, format=doubleAirTop doubleTopSpaced bringToFront doubleAirBottom)
+		Block(layout=Vertical, format=landingSlogan)
+			Text(value="Domain Specific Languages to model the universe", translate=true, format=landingSloganText)
+
+		Block(layout=Horizontal CenterJustified Wrap, format=landingSection)
 			Block(layout=Vertical Center, format=block)
+				Text(value="The model is the product", format=blockSubtitle)
 				Text(value="Model with a DSL", format=blockTitle)
-				Text(value="Use existing Domain Specific Language (DSL) from our community to build your models", format=blockDescription)
-				Block(layout=Vertical CenterCenter, format=doubleAirTop)
+				Text(value="Use existing DSL from our community to build your models", format=blockDescription)
+
+				Block(layout=Vertical CenterCenter, format=doubleAirTop doubleAirBottom)
 					Button(title="Start modelling", format=blockMainAction, visible=false) startModeling as Action Addressable(EditorElements.home)
 					Button(title="Start modelling", format=blockMainAction, visible=false) startModelingLogin as Action
-					Link(title="Explore", format=blockAction airTop) exploreLanguages as Action Addressable(EditorElements.home)
+
+				Block(layout=Vertical Flexible CenterJustified Wrap, format=bringToFront doubleAirTop)
+					Block(layout=Vertical CenterCenter, format=doubleAirBottom)
+						Text(value="1", format=stepBudge)
+						Text(value="Model", format=stepTitle)
+						Text(value="Describe a problem or behavior using a DSL", format=stepDescription)
+					Block(layout=Vertical CenterCenter, format=doubleAirBottom doubleAirTop)
+						Text(value="2", format=stepBudge)
+						Text(value="Deliver value", format=stepTitle)
+						Text(value="Transform the model into a solution", format=stepDescription)
+
 			Block(layout=Vertical Center) > Block(format=doubleAirLeft doubleAirRight doubleAirBottom)
+
 			Block(layout=Vertical Center, format=block)
+				Text(value="A DSL for every domain", format=blockSubtitle)
 				Text(value="Build your own DSL", format=blockTitle)
-				Text(value="High expressive DSL without writing code to model any domain through expressive grammar", format=blockDescription)
-				Block(layout=Vertical CenterCenter, format=doubleAirTop)
+				Text(value="Design it as a model using metta", format=blockDescription)
+				Text(value="No code required", format=blockDescription)
+
+				Block(layout=Vertical CenterCenter, format=doubleAirTop doubleAirBottom)
 					Button(title="Start building", format=blockMainAction) startBuilding as Action
 					Button(title="Start building", format=blockMainAction, visible=false) startBuildingLogin as Action
-					Link(title="Explore", format=blockAction airTop) exploreModels as Action Addressable(EditorElements.home)
 
-		Block(layout=Vertical Flexible CenterJustified Wrap, format=bringToFront doubleAirTop)
-			Block(layout=Vertical CenterCenter, format=doubleAirBottom)
-				Text(value="1", format=stepBudge)
-				Text(value="Build", format=stepTitle)
-				Text(value="Design a DSL using Quassar's Metalanguage", format=stepDescription)
-			Block(layout=Vertical CenterCenter, format=doubleAirBottom doubleAirTop)
-				Text(value="2", format=stepBudge)
-				Text(value="Publish", format=stepTitle)
-				Text(value="Make your DSL available to other users", format=stepDescription)
-			Block(layout=Vertical CenterCenter, format=doubleAirBottom doubleAirTop)
-				Text(value="3", format=stepBudge)
-				Text(value="Model", format=stepTitle)
-				Text(value="Describe a problem or behavior with your DSL", format=stepDescription)
-			Block(layout=Vertical CenterCenter, format=doubleAirBottom doubleAirTop)
-				Text(value="4", format=stepBudge)
-				Text(value="Deploy", format=stepTitle)
-				Text(value="Let the model drive your software's behavior", format=stepDescription)
+				Block(layout=Vertical Flexible CenterJustified Wrap, format=bringToFront doubleAirTop)
+					Block(layout=Vertical CenterCenter, format=doubleAirBottom)
+						Text(value="3", format=stepBudge)
+						Text(value="Design", format=stepTitle)
+						Text(value="Model with metta, a DSL for designing other DSLs", format=stepDescription)
+					Block(layout=Vertical CenterCenter, format=doubleAirBottom doubleAirTop)
+						Text(value="2", format=stepBudge)
+						Text(value="Build and share", format=stepTitle)
+						Text(value="Make your DSL available to other users", format=stepDescription)
+
+		Block(layout=Vertical, format=landingSection) as Relative(width=60%)
+			Text(value="DSLs", translate=true, format=landingSectionTitle)
+			Block(format=landingCatalog) > TemplateStamp(template=languagesTemplate) languagesCatalog
+
+		Block(layout=Vertical Center, format=landingSection) as Relative(width=60%)
+			Text(value="In Quassar, every DSL starts with a model", format=blockTitle)
+			Text(value="You define your language as structured model using metta DSL", format=blockDescription)
+			Text(value="Then Quassar turns it into a new working DSL", format=blockDescription)
+
+			Block(layout=Horizontal Center, format=doubleAirTop doubleAirBottom)
+				Button(title="Explore", format=blockMainAction doubleAirLeft doubleAirRight) exploreLanguage as Action Addressable(EditorElements.language)
+				Button(title="Create DSL", format=blockMainAction doubleAirLeft doubleAirRight) createDsl as Action
+				Button(title="Create DSL", format=blockMainAction doubleAirLeft doubleAirRight, visible=false) createDslLogin as Action
+				Button(title="Examples", format=blockMainAction doubleAirLeft doubleAirRight) exploreExamples as Action Addressable(EditorElements.home)
+
+		Block(layout=Vertical Center, format=landingSection landingSectionBordered) as Relative(width=60%)
+			Text(value="'from metta to solutions'", format=blockTitle doubleAirBottom)
+			Text(value="Model your DSL with metta", format=blockSubtitle doubleAirTop)
+			Text(value="Start by modeling the structure and rules of your domain-specific language", format=blockDescription)
+			Text(value="You don't write code. You design the language as a model", format=blockDescription)
+			Text(value="Use your DSL to create domain models", format=blockSubtitle doubleAirTop)
+			Text(value="Once your DSL is ready, use it to describe real-world problems or logic in your domain", format=blockDescription)
+			Text(value="Forge software artifacts from models", format=blockSubtitle doubleAirTop)
+			Text(value="With one click, turn your models into code, configs, docs, or deployable components", format=blockDescription doubleAirBottom)
+			Image(value="/images/landing-metta.png", format=doubleAirTop doubleAirBottom) as Relative(width=60%)
 
 	Dialog(title="") modelsDialog as Relative(height=80%, width=60%)
         Block(layout=Horizontal) as Relative(height=100%, offsetHeight=40px)

@@ -17,7 +17,6 @@ import java.util.function.Consumer;
 
 public class LanguagesTemplate extends AbstractLanguagesTemplate<EditorBox> {
 	private LanguagesTab tab;
-	private boolean embedded = false;
 	private Consumer<Language> selectListener;
 
 	public LanguagesTemplate(EditorBox box) {
@@ -27,10 +26,6 @@ public class LanguagesTemplate extends AbstractLanguagesTemplate<EditorBox> {
 	public void open(String tab) {
 		this.tab = tab != null ? LanguagesTab.from(tab) : SessionHelper.languagesTab(session());
 		refresh();
-	}
-
-	public void embedded(boolean value) {
-		this.embedded = value;
 	}
 
 	public void filter(String condition) {
@@ -49,20 +44,14 @@ public class LanguagesTemplate extends AbstractLanguagesTemplate<EditorBox> {
 	public void init() {
 		super.init();
 		languagesCatalog.onAddItem(this::refresh);
+		searchBox.onEnterPress(e -> filter(e.value()));
+		searchBox.onChange(e -> filter(e.value()));
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
-		refreshHeader();
 		refreshLanguages();
-	}
-
-	private void refreshHeader() {
-		headerStamp.visible(!embedded);
-		if (!headerStamp.isVisible()) return;
-		headerStamp.tab(tab);
-		headerStamp.refresh();
 	}
 
 	private void refreshLanguages() {
@@ -75,24 +64,24 @@ public class LanguagesTemplate extends AbstractLanguagesTemplate<EditorBox> {
 		Language language = event.item();
 		LanguageItem item = event.component();
 		item.logo.value(LanguageHelper.logo(language, box()));
-		refreshTitle(language, item);
-		refreshTitleSelector(language, item);
-		item.hint.value(language.hint());
+		refreshName(language, item);
+		refreshNameSelector(language, item);
+		item.title.value(language.title());
 		item.description.value(language.description());
 	}
 
-	private void refreshTitle(Language language, LanguageItem item) {
-		item.title.visible(selectListener == null);
-		if (!item.title.isVisible()) return;
-		item.title.title(language.name());
-		item.title.address(path -> PathHelper.languagePath(path, language));
+	private void refreshName(Language language, LanguageItem item) {
+		item.name.visible(selectListener == null);
+		if (!item.name.isVisible()) return;
+		item.name.title(language.name());
+		item.name.address(path -> PathHelper.languagePath(path, language));
 	}
 
-	private void refreshTitleSelector(Language language, LanguageItem item) {
-		item.titleSelector.visible(selectListener != null);
-		if (!item.titleSelector.isVisible()) return;
-		item.titleSelector.title(language.name());
-		item.titleSelector.onExecute(e -> notifySelect(language));
+	private void refreshNameSelector(Language language, LanguageItem item) {
+		item.nameSelector.visible(selectListener != null);
+		if (!item.nameSelector.isVisible()) return;
+		item.nameSelector.title(language.name());
+		item.nameSelector.onExecute(e -> notifySelect(language));
 	}
 
 	private void notifySelect(Language language) {

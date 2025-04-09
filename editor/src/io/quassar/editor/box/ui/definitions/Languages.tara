@@ -5,54 +5,42 @@ use Models
 use UI
 use Theme
 
-Template(layout=Horizontal Center, format=subHeaderStyle) languagesHeaderTemplate
-
-	Block(layout=Horizontal Flexible)
-		Block(layout=Horizontal) as Relative(width=100%)
-			Text(value="public languages", format=doubleAirRight bold, visible=false) publicLanguagesText
-			Link(title="public languages", format=doubleAirRight, visible=false) publicLanguagesLink as Action Addressable(EditorElements.languages)
-			Text(value="my languages", format=bold, visible=false) myLanguagesText
-			Link(title="my languages", visible=false) myLanguagesLink as Action Addressable(EditorElements.languages)
-
-	Block(layout=Horizontal EndJustified)
-
 Template(layout=Horizontal Center, format=subHeaderStyle) languageHeaderTemplate
 
 	Block(layout=Horizontal Flexible)
 		Block(layout=Horizontal) as Relative(width=100%)
-			Text(value="my models", format=doubleAirRight bold) myModelsText
-			Link(title="my models", format=doubleAirRight, visible=false) myModelsLink as Action Addressable(EditorElements.language)
-			Text(value="public models", format=doubleAirRight bold, visible=false) publicModelsText
-			Link(title="public models", format=doubleAirRight, visible=false) publicModelsLink as Action Addressable(EditorElements.language)
+			Text(value="models", format=doubleAirRight bold) modelsText
+			Link(title="models", format=doubleAirRight, visible=false) modelsLink as Action Addressable(EditorElements.language)
+			Text(value="examples", format=doubleAirRight bold, visible=false) examplesText
+			Link(title="examples", format=doubleAirRight, visible=false) examplesLink as Action Addressable(EditorElements.language)
 
 	Block(layout=Horizontal EndJustified)
-		Button(title="open model", size=Small, format=airRight, visible=false) gotoModelTrigger as Action Addressable(EditorElements.model)
-		Button(title="settings", format=airRight, visible=false) settingsTrigger as Action
-
-	TemplateStamp(template=languageSettingsDialog) languageSettingsDialog
+		Text(value="help", format=doubleAirRight bold, visible=false) helpText
+		Link(title="help", format=doubleAirRight, visible=false) helpLink as Action Addressable(EditorElements.language)
+		Text(value="about", format=doubleAirRight bold) aboutText
+		Link(title="about", format=doubleAirRight, visible=false) aboutLink as Action Addressable(EditorElements.language)
 
 Template languagesTemplate as Relative(height=100%, width=100%)
-	TemplateStamp(template=languagesHeaderTemplate, visible=false) headerStamp
 
-	Block(layout=Horizontal Center, format=middleAirBottom)
-		SearchBox(collections=bodyBlock.contentBlock.languagesCatalog, visible=false) searchBox
+	Block(layout=Horizontal Center)
+		Text(visible=false, format=airTop doubleAirLeft doubleAirRight airBottom) searchBox as Editable(placeholder="Search...")
 
 	Block(layout=Vertical Flexible) bodyBlock as Relative(width=100%) AutoSize
 		Block(layout=Vertical Flexible Center) contentBlock as Relative(width=100%)
-			List(itemClass="io.quassar.editor.model.Language") languagesCatalog
-				noItemsMessage = "No languages"
+			List(itemClass="io.quassar.editor.model.Language") languagesCatalog as Navigable(position=Bottom)
+				noItemsMessage = "No DSLs"
 				Mold
 					Item(height=100px) languageItem
 						Block(layout=Horizontal Flexible, format=doubleBottomSpaced topSpaced bottomBordered)
 							Block(layout=Vertical Center) as Absolute(width=100px) > Image(colorInvertedWithDarkMode=true) logo as Absolute(width=60px)
 							Block(layout=Vertical Flexible)
-								Link(title="", format=h4 upperCase, visible=false) title as Action Addressable(EditorElements.language)
-								Link(title="", format=h4 upperCase, visible=false) titleSelector as Action
-								Text(format=h6 bold) hint
+								Link(title="", format=h4 upperCase, visible=false) name as Action Addressable(EditorElements.language)
+								Link(title="", format=h4 upperCase, visible=false) nameSelector as Action
+								Text(format=h6 bold) title
 								Text description
 
 Template languageTemplate as Relative(height=100%, width=100%, offsetHeight=2px)
-	TemplateStamp(template=languageHeaderTemplate) headerStamp
+	TemplateStamp(template=languageHeaderTemplate, visible=false) headerStamp
 
 	Block(layout=Vertical Flexible CenterCenter, visible=false) openingBlock
 		Spinner(mode=Ring, color="secondary")
@@ -66,19 +54,49 @@ Template languageTemplate as Relative(height=100%, width=100%, offsetHeight=2px)
 					Image(value="/images/logo-expanded.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=340px, height=80px)
 					Text(value="Language not found", format=h4 airTop textCentered, translate=true) message
 
-		Block(layout=Vertical Flexible Center) contentBlock as Relative(width=100%)
+		Block(layout=Vertical Flexible, format=whiteBackground) helpBlock as Relative(width=100%) AutoSize Conditional
+			Block(layout=Vertical Flexible Center) as Relative(width=80%)
+				Block(layout=Vertical Flexible, format=whiteBackground) as Relative(width=100%, height=100%)
+					Block(layout=Horizontal Center, format=bottomLightBordered middleTopSpaced middleBottomSpaced)
+						Block(layout=Horizontal Flexible)
+							Text(format=h2) helpTitle
+						Block(layout=Horizontal EndJustified, format=doubleAirRight)
+							Image(format=airRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) helpLogo as Absolute(height=50px)
+					HtmlViewer helpStamp
 
-			Block(layout=Horizontal Flexible, format=whiteBackground) as Relative(width=100%, height=100%) Resizable
+		Block(layout=Vertical Flexible) mainBlock as Relative(width=100%) Conditional
 
-				Block(layout=Vertical Flexible, format=doubleLeftSpaced doubleRightSpaced bottomSpaced topSpaced) modelsBlock as Relative(width=55%)
+			Block(layout=Horizontal Flexible, format=whiteBackground) mainContentBlock as Relative(width=100%, height=100%) Resizable
+
+				Block(layout=Vertical Flexible, format=doubleLeftSpaced doubleRightSpaced bottomSpaced topSpaced) modelsBlock as Relative(width=65%)
 					TemplateStamp(template=modelsTemplate) modelsStamp
 
-				Block(layout=Vertical Flexible) homeBlock as Relative(width=45%)
+				Block(layout=Vertical Flexible) homeBlock as Relative(width=35%)
 					Block(layout=Horizontal Flexible Center, format=bottomLightBordered middleTopSpaced middleBottomSpaced doubleLeftSpaced)
 						Block(layout=Horizontal Flexible)
-							Image(format=airRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) logo as Absolute(height=50px)
 							Text(format=h2) title
 						Block(layout=Horizontal EndJustified, format=doubleAirRight)
+							Image(format=airRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) logo as Absolute(height=50px)
 
-					Block(layout=Vertical Flexible, format=doubleLeftSpaced doubleRightSpaced doubleBottomSpaced) as AutoSize
-						HtmlViewer(format=fullHeight) homeStamp
+					Block(layout=Vertical Flexible, format=doubleAirTop doubleLeftSpaced doubleRightSpaced doubleBottomSpaced) viewsBlock as AutoSize
+						Block(visible=false) aboutBlock
+							Block(format=doubleAirBottom)
+								Text(value="title", format=h6 bold)
+								Text aboutTitle
+							Block(format=doubleAirBottom)
+								Text(value="what is it", format=h6 bold)
+								Text aboutDescription
+							Block(format=doubleAirBottom)
+								Text(value="how to cite", format=h6 bold)
+								Text aboutCitation
+							Block(format=doubleAirBottom)
+								Text(value="copyright and license", format=h6 bold)
+								Text aboutLicense
+
+						Block(visible=false) versionsBlock
+							Block(format=doubleAirBottom)
+								Text(value="versions", format=h6 bold)
+								TemplateStamp(template=languageReleaseHelp) helps as Multiple(noItemsMessage="No help available")
+
+Template languageReleaseHelp
+	Link(title="") titleLink as OpenSite(site=empty, target=Blank)

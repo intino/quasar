@@ -60,7 +60,12 @@ Format("height:'39px'") headerPanel
 Format("background:'#b9d1e3'", darkContent="background:'#2a3443'") headerPanelBackground
 Format("height:'100%'") displayHeaderPanel
 Format("background:'#000'") blackBackground
-Format("width:'100%',zIndex:'0',position:'absolute'") landingBackground
+Format("opacity:'0.6',width:'100%',color:'black',background:'white',padding:'5px 17px'", darkContent="color:'white',background:'#222'") landingSlogan
+Format("fontSize:'20pt'") landingSloganText
+Format("margin:'30px 0',opacity:'1'") landingSection
+Format("border:'2px solid white',background:'#196082'") landingSectionBordered
+Format("height:'500px',background:'white'", darkContent="background:'#2a3443'") landingCatalog
+Format("opacity:'0.8',color:'white',background:'#222',width:'100%',padding:'5px 10px',fontSize:'20pt'") landingSectionTitle
 Format("background:'transparent'") noBackground
 Format("padding:'10px'") spaced
 Format("padding:'20px'") doubleSpaced
@@ -203,7 +208,9 @@ Format("fontSize:'20pt',textAlign:'center',marginTop:'40px'") userNotGranted
 Format("minWidth:'250px'") selectorWidth
 Format("minWidth:'130px'") minExecutiveIndicatorWidth
 Format("width:'500px'") block
+Format("fontSize:'16pt',color:'white'") blockSubtitle
 Format("fontSize:'35pt',color:'white',fontWeight:'bold'") blockTitle
+Format("fontSize:'25pt',color:'white',fontWeight:'bold'") blockSubtitle
 Format("fontSize:'16pt',color:'white',textAlign:'center'") blockDescription
 Format("border:'2px solid white',borderRadius:'20px',padding:'13px 30px',fontSize:'10pt',background:'#1b70c0',color:'white'") blockMainAction
 Format("color:'white',fontSize:'12pt',fontWeight:'bold'") blockAction
@@ -290,6 +297,7 @@ Format("width:'100%',borderRadius:'3px',padding:'10px',background:'white',border
 Format("background:'white'", darkContent="background:'#424242'") tabPanel
 Format("margin:'0',borderRight:'1px solid #ddd'") leftTabPanel
 Format("borderRadius:'10px',border:'0',height:'100%'") panelDrawer
+Format("border:'1px solid #ddd',fontSize:'20pt'") dslNameFieldInput
 
 Format("padding:'15px 40px'") largeButton
 Format("position:'absolute',bottom:'0',left:'0',marginLeft:'6px',marginBottom:'7px'") userToolbar

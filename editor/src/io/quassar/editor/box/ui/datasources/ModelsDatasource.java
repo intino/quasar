@@ -9,6 +9,7 @@ import io.quassar.editor.box.models.ModelManager;
 import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.util.DatasourceHelper;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
 import io.quassar.editor.model.User;
 
@@ -23,14 +24,16 @@ public class ModelsDatasource extends PageDatasource<Model> {
 	protected final UISession session;
 	private final Language language;
 	private final LanguageTab tab;
+	private final LanguageRelease release;
 	private String condition;
 	private List<Filter> filters;
 	private Sorting sorting;
 
-	public ModelsDatasource(EditorBox box, UISession session, Language language, LanguageTab tab) {
+	public ModelsDatasource(EditorBox box, UISession session, Language language, LanguageRelease release, LanguageTab tab) {
 		this.box = box;
 		this.session = session;
 		this.language = language;
+		this.release = release;
 		this.tab = tab;
 	}
 
@@ -65,8 +68,7 @@ public class ModelsDatasource extends PageDatasource<Model> {
 
 	protected List<Model> load() {
 		ModelManager manager = box.modelManager();
-		if (tab == null) return manager.visibleModels(language, username());
-		return tab == LanguageTab.PublicModels ? manager.publicModels(language, username()) : manager.ownerModels(language, username());
+		return tab == LanguageTab.Examples ? manager.exampleModels(language, release) : manager.models(language, username());
 	}
 
 	protected String username() {
@@ -92,12 +94,12 @@ public class ModelsDatasource extends PageDatasource<Model> {
 		return models.stream().filter(m ->
 				DatasourceHelper.matches(m.name(), conditions) ||
 				DatasourceHelper.matches(m.owner(), conditions) ||
-				DatasourceHelper.matches(m.language(), conditions)
+				DatasourceHelper.matches(m.language().toString(), conditions)
 		).collect(toList());
 	}
 
 	private List<Model> sort(List<Model> models, List<String> sortings) {
-		if (sortings.contains("Language")) return models.stream().sorted(Comparator.comparing(m -> m.language() != null ? m.language() : "z")).toList();
+		if (sortings.contains("Language")) return models.stream().sorted(Comparator.comparing(m -> m.language() != null ? m.language().version() : "z")).toList();
 		else if (sortings.contains("Owner")) return models.stream().sorted(Comparator.comparing(m -> m.owner() != null ? m.owner() : "z")).toList();
 		return models.stream().sorted(Comparator.comparing(m -> m.name().toLowerCase())).toList();
 	}

@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/gen" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
     </content>
     <orderEntry type="jdk" jdkName="openjdk-21" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -109,5 +110,9 @@
     <orderEntry type="library" name="Intino: io.intino.alexandria:ui-framework:6.3.10" level="project" />
     <orderEntry type="library" name="Intino: org.apache.tika:tika-core:3.1.0" level="project" />
     <orderEntry type="library" name="Intino: org.slf4j:slf4j-api:2.0.16" level="project" />
+    <orderEntry type="library" name="Intino: systems.intino.datamatarts:anchor-map:1.0.0" level="project" />
+    <orderEntry type="library" name="Intino: org.slf4j:slf4j-nop:2.0.16" level="project" />
+    <orderEntry type="library" name="Intino: org.xerial:sqlite-jdbc:3.49.1.0" level="project" />
+    <orderEntry type="library" name="Intino: com.zaxxer:HikariCP:6.3.0" level="project" />
   </component>
 </module>

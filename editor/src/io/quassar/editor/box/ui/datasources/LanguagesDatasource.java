@@ -43,7 +43,8 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 
 	@Override
 	public List<Group> groups(String key) {
-		if (key.equalsIgnoreCase(DatasourceHelper.Owner)) return load().stream().map(Language::owner).distinct().map(o -> new Group().name(o).label(o)).toList();
+		LanguageManager manager = box.languageManager();
+		if (key.equalsIgnoreCase(DatasourceHelper.Owner)) return load().stream().map(manager::owner).distinct().map(o -> new Group().name(o).label(o)).toList();
 		return new ArrayList<>();
 	}
 
@@ -58,17 +59,17 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 	}
 
 	protected List<Language> load() {
-		LanguageManager manager = box.languageManager();
-		return manager.visibleLanguages(username());
+		return box.languageManager().visibleLanguages(username());
 	}
 
 	private List<Language> filterCondition(List<Language> languages, String condition) {
 		if (condition == null || condition.isEmpty()) return languages;
+		LanguageManager manager = box.languageManager();
 		String[] conditions = condition.toLowerCase().split(" ");
 		return languages.stream().filter(l ->
 				DatasourceHelper.matches(l.name(), conditions) ||
 				DatasourceHelper.matches(l.description(), conditions) ||
-				DatasourceHelper.matches(l.owner(), conditions)
+				DatasourceHelper.matches(manager.owner(l), conditions)
 		).collect(toList());
 	}
 

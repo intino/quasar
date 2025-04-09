@@ -2,24 +2,30 @@ package io.quassar.editor.model;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Model {
+	private String id;
 	private String name;
 	private String title;
-	private String hint;
 	private String description;
-	private String language;
+	private GavCoordinates language;
 	private String owner;
 	private Instant createDate;
 	private List<String> collaborators = new ArrayList<>();
-	private Map<String, String> tokens = new HashMap<>();
 	private boolean isPrivate = false;
 
 	public static final String DraftRelease = "draft";
 	public static final String Template = "__template";
+
+	public String id() {
+		return id;
+	}
+
+	public Model id(String id) {
+		this.id = id;
+		return this;
+	}
 
 	public String name() {
 		return name;
@@ -39,15 +45,6 @@ public class Model {
 		return this;
 	}
 
-	public String hint() {
-		return hint;
-	}
-
-	public Model hint(String hint) {
-		this.hint = hint;
-		return this;
-	}
-
 	public String description() {
 		return description;
 	}
@@ -57,11 +54,11 @@ public class Model {
 		return this;
 	}
 
-	public String language() {
+	public GavCoordinates language() {
 		return language;
 	}
 
-	public Model language(String value) {
+	public Model language(GavCoordinates value) {
 		this.language = value;
 		return this;
 	}
@@ -107,23 +104,6 @@ public class Model {
 	public Model isPrivate(boolean value) {
 		this.isPrivate = value;
 		return this;
-	}
-
-	public Map<String, String> tokens() {
-		return tokens;
-	}
-
-	public Model tokens(Map<String, String> tokenMap) {
-		this.tokens = tokenMap;
-		return this;
-	}
-
-	public void add(String app, String token) {
-		this.tokens.put(app, token);
-	}
-
-	public boolean isTemporal() {
-		return isPublic() && (owner == null || owner.equalsIgnoreCase(User.Anonymous));
 	}
 
 	public static Model clone(Model model) {

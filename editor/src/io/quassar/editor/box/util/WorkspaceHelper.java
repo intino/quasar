@@ -1,11 +1,14 @@
 package io.quassar.editor.box.util;
 
+import io.intino.alexandria.Scale;
+import io.intino.alexandria.Timetag;
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.models.File;
 import io.quassar.editor.box.models.Workspace;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
+import org.apache.commons.io.FileUtils;
 import org.eclipse.lsp4j.FileCreate;
 import org.eclipse.lsp4j.SymbolKind;
 import org.eclipse.lsp4j.WorkspaceSymbol;
@@ -13,7 +16,13 @@ import org.eclipse.lsp4j.WorkspaceSymbolLocation;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,7 +32,7 @@ public class WorkspaceHelper {
 
 	public static URI workspace(Model model, String release, Archetype archetype) {
 		try {
-			java.io.File workspace = archetype.languages().workspace(Language.nameOf(model.language()), model.name());
+			java.io.File workspace = archetype.models().workspace(ArchetypeHelper.relativePath(model), model.id());
 			if (release != null && !release.equals(Model.DraftRelease)) workspace = releaseWorkSpace(model, release, archetype);
 			return workspace.getAbsoluteFile().getCanonicalFile().toURI();
 		} catch (IOException e) {
@@ -33,14 +42,22 @@ public class WorkspaceHelper {
 	}
 
 	private static java.io.File releaseWorkSpace(Model model, String release, Archetype archetype) {
-		String language = Language.nameOf(model.language());
-		java.io.File releaseFile = archetype.languages().release(language, model.name(), release);
-		java.io.File workspace = archetype.tmp().releaseWorkspace(language, model.name(), release);
-		if (!releaseFile.exists()) return workspace;
-		java.io.File[] files = workspace.listFiles();
-		if (files != null && files.length > 0) return workspace;
-		ZipHelper.extract(archetype.languages().release(language, model.name(), release), workspace);
-		return workspace;
+		try {
+			java.io.File releaseFile = archetype.models().release(ArchetypeHelper.relativePath(model), model.id(), release);
+			java.io.File workspace = archetype.tmp().releaseWorkspace(model.id(), release);
+			if (!releaseFile.exists()) return workspace;
+			if (workspace.exists()) {
+				BasicFileAttributes attrs = Files.readAttributes(workspace.toPath(), BasicFileAttributes.class);
+				boolean isOld = Duration.between(LocalDateTime.now(), LocalDateTime.ofInstant(attrs.creationTime().toInstant(), ZoneId.of("UTC"))).abs().toHours() > 24;
+				if (!isOld) return workspace;
+				FileUtils.deleteDirectory(workspace);
+			}
+			ZipHelper.extract(releaseFile, workspace);
+			return workspace;
+		} catch (IOException e) {
+			Logger.error(e);
+			return null;
+		}
 	}
 
 	public static boolean isFile(WorkspaceSymbol symbol) {

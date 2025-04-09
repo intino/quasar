@@ -9,12 +9,14 @@ import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
 
 import java.util.Collections;
 
 public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 	private Language language;
+	private LanguageRelease release;
 	private LanguageTab tab;
 
 	public ModelsTemplate(EditorBox box) {
@@ -23,6 +25,10 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 
 	public void language(Language language) {
 		this.language = language;
+	}
+
+	public void release(LanguageRelease release) {
+		this.release = release;
 	}
 
 	public void tab(LanguageTab tab) {
@@ -40,8 +46,8 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
-		addModelTrigger.visible(tab == LanguageTab.OwnerModels);
-		ModelsDatasource source = new ModelsDatasource(box(), session(), language, tab);
+		addModelTrigger.visible(tab == LanguageTab.Models);
+		ModelsDatasource source = new ModelsDatasource(box(), session(), language, release, tab);
 		modelList.source(source);
 		modelList.reload();
 		searchBox.visible(source.itemCount(null, Collections.emptyList()) > DisplayHelper.MinItemsCount);
@@ -55,7 +61,7 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 		display.label.title(ModelHelper.label(model, language(), box()));
 		display.label.address(path -> PathHelper.modelPath(path, model));
 		display.description.value(model.description() != null && !model.description().equals(translate("(no description)")) ? model.description() : null);
-		display.owner.visible(tab == LanguageTab.PublicModels);
+		display.owner.visible(tab == LanguageTab.Examples);
 		if (display.owner.isVisible()) display.owner.value(model.owner());
 		display.createDate.value(model.createDate());
 	}

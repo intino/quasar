@@ -1,38 +1,48 @@
 package io.quassar.editor.box.ui.displays.templates;
 
-import io.intino.alexandria.logger.Logger;
-import io.intino.alexandria.ui.displays.UserMessage;
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.box.commands.LanguageCommands;
 import io.quassar.editor.box.ui.types.LanguageTab;
+import io.quassar.editor.box.ui.types.LanguageView;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.SessionHelper;
+import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.LanguageRelease;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
+import java.util.List;
+
+import static io.quassar.editor.box.util.DisplayHelper.valueOrDefault;
 
 public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 	private Language language;
+	private LanguageRelease release;
 	private LanguageTab tab;
+	private LanguageView view;
 
 	public LanguageTemplate(EditorBox box) {
 		super(box);
 	}
 
-	public void open(String language, String tab) {
+	public void open(String language, String tab, String view) {
 		this.language = box().languageManager().get(language);
+		this.release = null;
 		this.tab = tab != null ? LanguageTab.from(tab) : SessionHelper.languageTab(session());
+		this.view = view != null ? LanguageView.from(view) : SessionHelper.languageView(session());
+		refresh();
+	}
+
+	public void openHelp(String language, String version) {
+		this.language = box().languageManager().get(language);
+		this.release = this.language.release(version);
 		refresh();
 	}
 
 	@Override
 	public void init() {
 		super.init();
-		homeBlock.onShow(e -> refreshHome());
-		modelsBlock.onShow(e -> refreshModels());
-		headerStamp.onSaveSettings(e -> refresh());
+		helpBlock.onShow(e -> refreshHelpBlock());
+		mainBlock.onInit(e -> initMainBlock());
+		mainBlock.onShow(e -> refreshMainBlock());
 	}
 
 	@Override
@@ -40,41 +50,90 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 		super.refresh();
 		notFoundBlock.visible(language == null);
 		refreshHeader();
-		refreshContent();
+		refreshBlocks();
 	}
 
-	private void refreshHeader() {
-		headerStamp.language(language);
-		headerStamp.tab(tab);
-		headerStamp.refresh();
+	private void refreshBlocks() {
+		if (release != null) {
+			mainBlock.hide();
+			helpBlock.show();
+		}
+		else {
+			helpBlock.hide();
+			mainBlock.show();
+		}
 	}
 
-	private void refreshContent() {
+	private void refreshHelpBlock() {
+		helpTitle.value(translate(title(LanguageView.Help)).formatted(LanguageHelper.title(GavCoordinates.from(language, release))));
+		helpLogo.value(LanguageHelper.logo(language, box()));
+		String content = box().languageManager().loadHelp(language, release);
+		helpStamp.content(content);
+		helpStamp.refresh();
+	}
+
+	private void initMainBlock() {
+		mainBlock.mainContentBlock.homeBlock.onShow(e -> refreshHome());
+		mainBlock.mainContentBlock.modelsBlock.onShow(e -> refreshModels());
+	}
+
+	private void refreshMainBlock() {
 		refreshHome();
 		refreshModels();
 	}
 
-	private void refreshHome() {
-		title.value(language.name());
-		logo.value(LanguageHelper.logo(language, box()));
-		refreshHomeReadme();
+	private void refreshHeader() {
+		headerStamp.visible(release == null);
+		if (!headerStamp.isVisible()) return;
+		headerStamp.language(language);
+		headerStamp.tab(tab);
+		headerStamp.view(view);
+		headerStamp.refresh();
 	}
 
-	private void refreshHomeReadme() {
-		try {
-			File readme = box().archetype().languages().readme(language.name());
-			if (!readme.exists()) return;
-			homeStamp.content(Files.readString(readme.toPath()));
-			homeStamp.refresh();
-		} catch (IOException e) {
-			Logger.error(e);
-		}
+	private void refreshHome() {
+		title.value(translate(title()).formatted(language.name()));
+		logo.value(LanguageHelper.logo(language, box()));
+		refreshHelpVersions();
+		refreshAbout();
+	}
+
+	private String title() {
+		return title(view);
+	}
+
+	private String title(LanguageView view) {
+		if (view == LanguageView.Help) return "%s help";
+		return "about %s";
+	}
+
+	private void refreshHelpVersions() {
+		mainBlock.mainContentBlock.homeBlock.viewsBlock.versionsBlock.visible(view == LanguageView.Help);
+		if (!mainBlock.mainContentBlock.homeBlock.viewsBlock.versionsBlock.isVisible()) return;
+		List<LanguageRelease> releases = language.releases();
+		helps.clear();
+		releases.forEach(r -> fill(r, helps.add()));
+	}
+
+	private void refreshAbout() {
+		mainBlock.mainContentBlock.homeBlock.viewsBlock.aboutBlock.visible(view == null || view == LanguageView.About);
+		if (!mainBlock.mainContentBlock.homeBlock.viewsBlock.aboutBlock.isVisible()) return;
+		aboutTitle.value(language.title());
+		aboutDescription.value(valueOrDefault(language.description()));
+		aboutCitation.value(valueOrDefault(language.citation()));
+		aboutLicense.value(valueOrDefault(language.license()));
+	}
+
+	private void fill(LanguageRelease release, LanguageReleaseHelp display) {
+		display.language(language);
+		display.release(release);
+		display.refresh();
 	}
 
 	private void refreshModels() {
-		modelsBlock.modelsStamp.language(language);
-		modelsBlock.modelsStamp.tab(tab);
-		modelsBlock.modelsStamp.refresh();
+		mainBlock.mainContentBlock.modelsBlock.modelsStamp.language(language);
+		mainBlock.mainContentBlock.modelsBlock.modelsStamp.tab(tab);
+		mainBlock.mainContentBlock.modelsBlock.modelsStamp.refresh();
 	}
 
 }

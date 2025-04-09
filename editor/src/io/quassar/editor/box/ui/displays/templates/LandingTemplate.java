@@ -3,9 +3,12 @@ package io.quassar.editor.box.ui.displays.templates;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.ui.types.LandingDialog;
+import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.PathHelper;
+import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
 
 import java.util.Set;
@@ -39,51 +42,65 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 		startModelingLogin.onExecute(e -> gotoLogin(PathHelper.landingUrl(LandingDialog.StartModeling, session())));
 		startBuildingLogin.onExecute(e -> gotoLogin(PathHelper.homeUrl(session())));
 		startBuilding.onExecute(e -> startBuilding());
+		createDslLogin.onExecute(e -> gotoLogin(PathHelper.homeUrl(session())));
+		createDsl.onExecute(e -> startBuilding());
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
+		refreshMainBlocks();
+		refreshLanguagesCatalog();
+		openDialogIfRequired();
+	}
+
+	private void refreshMainBlocks() {
 		startModelingLogin.visible(user() == null);
 		startModeling.visible(user() != null);
 		if (startModeling.isVisible()) startModeling.address(path -> PathHelper.landingPath(path, LandingDialog.StartModeling));
-		exploreLanguages.address(path -> PathHelper.landingPath(path, LandingDialog.Languages));
-		exploreModels.address(path -> PathHelper.landingPath(path, LandingDialog.Models));
+		exploreLanguage.address(path -> PathHelper.languagePath(path, Language.Metta));
+		exploreExamples.address(path -> PathHelper.landingPath(path, LandingDialog.Examples));
 		startBuildingLogin.visible(user() == null);
 		startBuilding.visible(user() != null);
-		openDialogIfRequired();
+		createDslLogin.visible(user() == null);
+		createDsl.visible(user() != null);
+	}
+
+	private void refreshLanguagesCatalog() {
+		languagesCatalog.refresh();
 	}
 
 	private void openDialogIfRequired() {
 		if (dialog == null) { closing = true; languagesDialog.close(); modelsDialog.close(); }
 		if (dialog == LandingDialog.Languages) languagesDialog.open();
-		else if (dialog == LandingDialog.Models) modelsDialog.open();
+		else if (dialog == LandingDialog.Examples) modelsDialog.open();
 		else if (dialog == LandingDialog.StartModeling) languagesDialog.open();
 	}
 
 	private void refreshModelsDialog() {
 		closing = false;
-		modelsDialog.title("List of available models");
-		modelsStamp.language(box().languageManager().get(Language.Meta));
+		modelsDialog.title("Example Metta models");
+		modelsStamp.language(box().languageManager().get(Language.id(Language.QuassarGroup, Language.Metta)));
+		modelsStamp.tab(LanguageTab.Examples);
 		modelsStamp.refresh();
 	}
 
 	private void refreshLanguagesDialog() {
 		closing = false;
 		languagesDialog.title(dialog == LandingDialog.StartModeling ? "Select the language to start modeling with" : "Explore DSLs of our community");
-		languagesStamp.embedded(true);
 		languagesStamp.onSelect(dialog == LandingDialog.StartModeling ? this::startModeling : null);
 		languagesStamp.refresh();
 	}
 
 	private void startModeling(Language language) {
 		String name = ModelHelper.proposeName();
-		Model model = box().commands(ModelCommands.class).create(name, name, translate("(no hint)"), translate("(no description)"), language, username(), username());
+		LanguageRelease release = language.lastRelease();
+		Model model = box().commands(ModelCommands.class).create(name, name, translate("(no description)"), GavCoordinates.from(language, release), username(), username());
 		notifier.dispatch(PathHelper.startingModelPath(model));
 	}
 
 	private void startBuilding() {
-		startModeling(box().languageManager().get(Language.Meta));
+		startModeling(box().languageManager().get(Language.id(Language.QuassarGroup, Language.Metta)));
 	}
 
 	private void notifyClose() {

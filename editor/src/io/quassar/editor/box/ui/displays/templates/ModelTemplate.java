@@ -20,24 +20,24 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		super(box);
 	}
 
-	public void openStarting(String language, String model) {
-		open(language, model, null, null, null, null, true);
+	public void openStarting(String model) {
+		open(model, null, null, null, null, true);
 	}
 
-	public void openTemplate(String language, String model) {
-		open(model, Model.Template, Model.DraftRelease, null, null, null, false);
+	public void openTemplate(String model) {
+		open(model, Model.DraftRelease, null, null, null, false);
 	}
 
-	public void open(String language, String model, String release) {
-		open(language, model, release, null, null, null, false);
+	public void open(String model, String release) {
+		open(model, release, null, null, null, false);
 	}
 
-	public void open(String language, String model, String release, String view, String file, String position) {
-		open(language, model, release, view, file, position, false);
+	public void open(String model, String release, String view, String file, String position) {
+		open(model, release, view, file, position, false);
 	}
 
-	public void open(String language, String model, String release, String view, String file, String position, boolean showHelp) {
-		this.model = box().modelManager().get(language, model);
+	public void open(String model, String release, String view, String file, String position, boolean showHelp) {
+		this.model = box().modelManager().get(model);
 		this.release = release != null ? release : Model.DraftRelease;
 		this.selectedView = view != null ? ModelView.from(view) : SessionHelper.modelView(session());
 		ModelContainer modelContainer = this.model != null ? box().modelManager().modelContainer(this.model, this.release) : null;

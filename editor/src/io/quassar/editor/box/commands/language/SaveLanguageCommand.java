@@ -9,9 +9,8 @@ import java.util.List;
 
 public class SaveLanguageCommand extends Command<Boolean> {
 	public Language language;
-	public String hint;
+	public String title;
 	public String description;
-	public String fileExtension;
 	public Language.Level level;
 	public List<String> tags;
 	public File logo;
@@ -27,9 +26,8 @@ public class SaveLanguageCommand extends Command<Boolean> {
 	}
 
 	private void saveLanguage() {
-		language.hint(hint);
+		language.title(title);
 		language.description(description);
-		language.fileExtension(fileExtension);
 		language.level(level);
 		language.tags(tags);
 		box.languageManager().save(language);

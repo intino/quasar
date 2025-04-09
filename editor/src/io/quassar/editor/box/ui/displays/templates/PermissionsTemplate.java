@@ -20,13 +20,14 @@ public class PermissionsTemplate extends AbstractPermissionsTemplate<EditorBox> 
 		this.username = name;
 	}
 
-	public void language(String name) {
-		this.language = box().languageManager().get(name);
+	public void language(String id) {
+		if (id == null || id.isEmpty()) return;
+		this.language = box().languageManager().get(id);
 	}
 
 	public void model(String name) {
 		if (name == null || name.isEmpty()) return;
-		this.model = box().modelManager().get(language, name);
+		this.model = box().modelManager().get(name);
 	}
 
 	public void callback(String value) {

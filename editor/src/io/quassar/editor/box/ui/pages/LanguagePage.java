@@ -10,7 +10,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 public class LanguagePage extends AbstractLanguagePage {
+	public String group;
 	public String language;
+	public String version;
 	public String tab;
 	public String view;
 
@@ -18,7 +20,7 @@ public class LanguagePage extends AbstractLanguagePage {
 	public boolean hasPermissions() {
 		Language language = box.languageManager().get(this.language);
 		if (language == null) return false;
-		if (language.isPublic()) return true;
+		if (language.isQuassarLanguage()) return true;
 		User loggedUser = session.user();
 		return loggedUser != null && box.languageManager().hasAccess(language, loggedUser.username());
 	}

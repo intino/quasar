@@ -16,7 +16,7 @@ public class RemoveModelCommand extends Command<Boolean> {
 
 	@Override
 	public Boolean execute() {
-		Language language = box.languageManager().get(model.name());
+		Language language = box.languageManager().get(model);
 		if (language != null && ModelHelper.isMetamodel(model, box)) removeLanguage(language);
 		removeModel();
 		return true;

@@ -18,12 +18,12 @@ import io.quassar.editor.box.languages.artifactories.LocalLanguageArtifactory;
 import io.quassar.editor.box.models.ModelManager;
 import io.quassar.editor.box.projects.ProjectManager;
 import io.quassar.editor.box.users.UserManager;
-import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 import io.quassar.editor.model.Utilities;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.lsp4j.services.LanguageServer;
+import systems.intino.alexandria.datamarts.anchormap.AnchorMap;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,10 +33,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.emptyList;
-
 public class EditorBox extends AbstractBox {
 	private final Archetype archetype;
+	private AnchorMap index;
 	private AmidasOauthAccessor authService;
 	private LanguageLoader languageLoader;
 	private LanguageManager languageManager;
@@ -69,13 +68,14 @@ public class EditorBox extends AbstractBox {
 	}
 
 	public void beforeStart() {
+		index = new AnchorMap(archetype.index());
 		utilities = new Utilities(archetype.configuration().editor().utilities());
 		commandsFactory = new CommandsFactory(this);
 		languageLoader = new LanguageLoader(new LocalLanguageArtifactory(archetype));
-		languageManager = new LanguageManager(archetype, this::modelsProvider);
+		languageManager = new LanguageManager(archetype, index);
 		serverManager = new LanguageServerManager(languageLoader, this::workSpaceOf);
-		modelManager = new ModelManager(archetype, l -> languageManager.get(l), serverManager);
-		userManager = new UserManager(archetype);
+		modelManager = new ModelManager(archetype, index, l -> languageManager.get(l), serverManager);
+		userManager = new UserManager(archetype, index);
 		projectManager = new ProjectManager(archetype);
 		builderAccessor = new QuassarBuilderServiceAccessor(url(configuration.builderServiceUrl()));
 		setupServiceBuilder();
@@ -89,6 +89,11 @@ public class EditorBox extends AbstractBox {
 	}
 
 	public void beforeStop() {
+		try {
+			index.close();
+		} catch (IOException e) {
+			Logger.error(e);
+		}
 	}
 
 	public void afterStop() {
@@ -143,7 +148,7 @@ public class EditorBox extends AbstractBox {
 	private LanguageServer serverFor(Session session) {
 		try {
 			Map<String, List<String>> parameterMap = session.getUpgradeRequest().getParameterMap();
-			Model model = modelManager.get(parameterMap.get("dsl").getFirst(), parameterMap.get("model").getFirst());
+			Model model = modelManager.get(parameterMap.get("model").getFirst());
 			return serverManager.get(model, parameterMap.get("model-release").getFirst());
 		} catch (IOException | GitAPIException | URISyntaxException e) {
 			Logger.error(e);
@@ -159,18 +164,4 @@ public class EditorBox extends AbstractBox {
 		}
 	}
 
-	private Language.ModelsProvider modelsProvider(Language language) {
-		return new Language.ModelsProvider() {
-			@Override
-			public List<String> models() {
-				File[] models = archetype.languages().models(language.name()).listFiles();
-				return models != null ? Arrays.stream(models).map(File::getName).filter(name -> !name.startsWith(".")).toList() : emptyList();
-			}
-
-			@Override
-			public Model model(String name) {
-				return modelManager.get(language, name);
-			}
-		};
-	}
 }

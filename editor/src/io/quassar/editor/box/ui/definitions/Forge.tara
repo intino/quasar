@@ -1,0 +1,17 @@
+dsl Konos
+
+use Editors
+use Theme
+
+Template forgeTemplate as Relative(height=100%, width=100%)
+
+	Block(layout=Vertical Flexible CenterCenter, visible=false) notFoundBlock
+		Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
+			Block(layout=Vertical CenterCenter)
+				Image(value="/images/logo-expanded.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=340px, height=80px)
+				Text(value="Model not found", format=h4 airTop textCentered, translate=true) message
+
+	Block(layout=Vertical Flexible) contentBlock as Relative(height=100%, width=100%)
+
+		Block(layout=Vertical Flexible CenterCenter) createLanguageBlock as Conditional
+			TemplateStamp(template=createLanguageEditor) createLanguageStamp

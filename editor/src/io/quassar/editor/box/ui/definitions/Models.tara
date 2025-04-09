@@ -16,18 +16,18 @@ Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
 				Link(title="Save") saveTitleEditor as Action
 			Block(layout=Horizontal Center, format=doubleAirLeft)
 				SplitButton(title="draft", format=airRight minSelectorWidth, options="draft", defaultOption = "draft", visible=false) releaseSelector as Action
-				Button(title="build", size=Small) buildTrigger as Action > Shortcut(key="F9", metaKeys=Control)
-				Button(title="deploy", format=airRight, visible=false) deployTrigger as Action
-				Button(title="download", format=airRight, visible=false) downloadTrigger as Download(options="Model" "Accessor")
-				Button(title="clone", format=airRight, visible=false) cloneTrigger as Action
-				Button(title="model template", format=airRight, visible=false) editTemplateTrigger as OpenSite(site=empty, target=Blank)
+				Button(title="check", size=Small) checkTrigger as Action > Shortcut(key="F9", metaKeys=Control)
+				Button(title="commit", format=airRight, visible=false) commitTrigger as Action
+				Button(title="forge", format=airRight, visible=false) forgeTrigger as OpenSite(site=empty, target=Blank)
+				Button(title="download", format=airRight, visible=false) downloadTrigger as Download
+				Button(title="info", format=airRight, visible=false) infoTrigger as Action Readonly
+				Button(title="clone", format=airRight, visible=false) cloneTrigger as Action Affirmed("Cloning the model will create a copy and open it in a new browser tab. Do you want to proceed?")
 
-		Block(layout=Horizontal EndJustified)
-			Button(title="help", format=airRight) languageHelpTrigger as Action
-			Button(title="open language", format=airRight, visible=false) openLanguageTrigger as Action Addressable(EditorElements.language)
-			Button(title="settings", format=airRight, visible=false) modelSettingsTrigger as Action Readonly
+		Block(layout=Horizontal Center EndJustified)
+			Image(format=middleAirRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) languageLogo as Absolute(height=25px)
+			Button(title="", format=airRight) languageHelpTrigger as OpenSite(site=empty, target=Blank)
 
-	TemplateStamp(template=deployModelDialog) modelDeployDialog
+	TemplateStamp(template=commitModelDialog) commitModelDialog
 	TemplateStamp(template=modelSettingsDialog) modelSettingsDialog
 
 Template modelsTemplate as Relative(height=100%, width=100%)

@@ -70,8 +70,7 @@ public class AddModelZipCommand extends Command<Boolean> {
 	}
 
 	private String languageFileExtension() {
-		Language language = box.languageManager().get(model.language());
-		return language != null ? language.fileExtension() : "tara";
+		return Language.FileExtension.replace("\\.", "");
 	}
 
 }

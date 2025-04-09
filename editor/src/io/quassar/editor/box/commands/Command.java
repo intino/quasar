@@ -2,7 +2,7 @@ package io.quassar.editor.box.commands;
 
 import io.intino.builderservice.schemas.Message;
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.box.builder.BuildResult;
+import io.quassar.editor.box.builder.CheckResult;
 import io.quassar.editor.model.OperationResult;
 import io.quassar.editor.model.User;
 
@@ -37,7 +37,7 @@ public abstract class Command<T> {
 	}
 
 	protected ExecutionResult resultOf(OperationResult result, InputStream output) {
-		return ExecutionResult.build(List.of(new Message().kind(result.success() ? Message.Kind.INFO : Message.Kind.ERROR).content(result.message())), output);
+		return ExecutionResult.check(List.of(new Message().kind(result.success() ? Message.Kind.INFO : Message.Kind.ERROR).content(result.message())), output);
 	}
 
 	public interface ExecutionResult {
@@ -45,7 +45,7 @@ public abstract class Command<T> {
 		List<Message> messages();
 		InputStream output();
 
-		static ExecutionResult build(BuildResult result) {
+		static ExecutionResult check(CheckResult result) {
 			return new ExecutionResult() {
 				@Override
 				public boolean success() {
@@ -64,11 +64,11 @@ public abstract class Command<T> {
 			};
 		}
 
-		static ExecutionResult build(List<Message> messages) {
-			return build(messages, null);
+		static ExecutionResult check(List<Message> messages) {
+			return check(messages, null);
 		}
 
-		static ExecutionResult build(List<Message> messages, InputStream output) {
+		static ExecutionResult check(List<Message> messages, InputStream output) {
 			return new ExecutionResult() {
 				@Override
 				public boolean success() {

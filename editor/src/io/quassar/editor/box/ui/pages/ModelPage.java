@@ -20,7 +20,7 @@ public class ModelPage extends AbstractModelPage {
 
 	@Override
 	public boolean hasPermissions() {
-		Model model = box.modelManager().get(language, this.model);
+		Model model = box.modelManager().get(this.model);
 		if (model == null) return false;
 		if (model.isPublic()) return true;
 		User loggedUser = session.user();
@@ -30,7 +30,7 @@ public class ModelPage extends AbstractModelPage {
 	@Override
 	public String redirectUrl() {
 		String callbackUrl = URLEncoder.encode(session.browser().requestUrl(), StandardCharsets.UTF_8);
-		Model model = box.modelManager().get(language, this.model);
+		Model model = box.modelManager().get(this.model);
 		return model != null ? PathHelper.permissionsUrl(model, callbackUrl, session) : PathHelper.notFoundUrl(I18n.translate("Model", session.discoverLanguage()), session);
 	}
 

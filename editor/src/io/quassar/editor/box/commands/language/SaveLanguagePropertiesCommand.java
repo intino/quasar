@@ -6,7 +6,7 @@ import io.quassar.editor.model.Language;
 
 public class SaveLanguagePropertiesCommand extends Command<Boolean> {
 	public Language language;
-	public String hint;
+	public String title;
 	public String description;
 
 	public SaveLanguagePropertiesCommand(EditorBox box) {
@@ -20,7 +20,7 @@ public class SaveLanguagePropertiesCommand extends Command<Boolean> {
 	}
 
 	private void saveLanguage() {
-		language.hint(hint);
+		language.title(title);
 		language.description(description);
 		box.languageManager().save(language);
 	}

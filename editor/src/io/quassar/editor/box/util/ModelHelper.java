@@ -6,7 +6,6 @@ import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
@@ -20,15 +19,11 @@ public class ModelHelper {
 	}
 
 	public static String proposeName() {
-		return RandomNameGenerator.generate();
-	}
-
-	public static String proposeToken() {
-		return UUID.randomUUID().toString();
+		return ModelNameGenerator.generate();
 	}
 
 	public static boolean isMetamodel(Model model, EditorBox box) {
-		Language language = box.languageManager().get(model.name());
+		Language language = box.languageManager().get(model);
 		return language != null && (language.level() == Language.Level.L2 || language.level() == Language.Level.L3);
 	}
 

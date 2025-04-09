@@ -15,9 +15,7 @@ public class QuassarAction implements io.intino.alexandria.rest.RequestErrorHand
 	}
 
 	protected boolean check(Model quassarModel) {
-		if (quassarModel.isPublic()) return true;
-		if (box.configuration().editorShelfToken().equals(token)) return true;
-		return quassarModel.tokens().values().stream().anyMatch(t -> t.equals(token));
+		return quassarModel.isPublic();
 	}
 
 }

@@ -7,14 +7,17 @@ import io.intino.alexandria.ui.server.UIFile;
 import io.intino.alexandria.ui.services.push.UISession;
 import io.intino.alexandria.ui.services.push.User;
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.model.Language;
 
 import java.io.*;
 import java.util.function.Function;
 
 public class DisplayHelper {
 
-	public static long MinItemsCount = 6;
+	public static long MinItemsCount = 0;
+
+	public static String valueOrDefault(String value) {
+		return value != null && !value.isEmpty() ? value : "-";
+	}
 
 	public static String user(UISession session) {
 		User user = session.user();
@@ -30,11 +33,12 @@ public class DisplayHelper {
 		return true;
 	}
 
-	public static boolean checkLanguageName(TextEditable<?, ?> field, Language language, Function<String, String> translator, EditorBox box) {
+	public static boolean checkLanguageName(TextEditable<?, ?> field, Function<String, String> translator, EditorBox box) {
 		if (!check(field, translator)) return false;
 		if (!NameHelper.validName(field.value())) { field.error("Name contains non alphanumeric characters"); return false; }
+		if (NameHelper.reservedName(field.value())) { field.error("This name is reserved and cannot be used."); return false; }
 		if (NameHelper.languageInUse(field.value(), box)) { field.error("Already exists a language with that name"); return false; }
-		if (NameHelper.modelInUse(language, field.value(), box)) { field.error("Already exists a language with that name"); return false; }
+		if (NameHelper.modelInUse(field.value(), box)) { field.error("Already exists a model with that name"); return false; }
 		return true;
 	}
 

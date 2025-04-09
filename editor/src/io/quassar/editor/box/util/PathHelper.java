@@ -3,12 +3,10 @@ package io.quassar.editor.box.util;
 import io.intino.alexandria.ui.services.push.UISession;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.models.File;
-import io.quassar.editor.box.ui.types.LandingDialog;
-import io.quassar.editor.box.ui.types.LanguageTab;
-import io.quassar.editor.box.ui.types.LanguagesTab;
-import io.quassar.editor.box.ui.types.ModelView;
+import io.quassar.editor.box.ui.types.*;
 import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
 
 public class PathHelper {
@@ -21,8 +19,8 @@ public class PathHelper {
 		return "/";
 	}
 
-	public static String fileUrl(Language language, Model model, String release, File file, UISession session, EditorBox box) {
-		return session.browser().baseUrl() + "/languages/%s/models/%s/download/file".formatted(language.name(), model.name()) + "?token=%s&release=%s&file=%s".formatted(box.configuration().editorShelfToken(), release, file.uri());
+	public static String fileUrl(Model model, String release, File file, UISession session, EditorBox box) {
+		return session.browser().baseUrl() + "/models/%s/download/file".formatted(model.name()) + "?release=%s&file=%s".formatted(release, file.uri());
 	}
 
 	public static String landingUrl(LandingDialog dialog, UISession session) {
@@ -34,11 +32,11 @@ public class PathHelper {
 	}
 
 	public static String permissionsUrl(Language language, String callbackUrl, UISession session) {
-		return session.browser().baseUrl() + "/permissions?language=" + language.name() + "&callback=" + callbackUrl;
+		return session.browser().baseUrl() + "/permissions?language=" + language.id() + "&callback=" + callbackUrl;
 	}
 
 	public static String permissionsUrl(Model model, String callbackUrl, UISession session) {
-		return session.browser().baseUrl() + "/permissions?language=" + Language.nameOf(model.language()) + "&model=" + model.name() + "&callback=" + callbackUrl;
+		return session.browser().baseUrl() + "/permissions?model=" + model.name() + "&callback=" + callbackUrl;
 	}
 
 	public static String notFoundUrl(String type, UISession session) {
@@ -66,34 +64,41 @@ public class PathHelper {
 	}
 
 	public static String languagePath(Language language) {
-		return languagePath("/languages/:language", language, null);
+		return languagePath("/languages/:language", language.id(), null, null);
 	}
 
 	public static String languagePath(String language) {
-		return languagePath("/languages/:language", language, null);
+		return languagePath("/languages/:language", language, null, null);
 	}
 
 	public static String languagePath(String address, Language language) {
-		return languagePath(address, language, null);
+		return languagePath(address, language.id(), null, null);
 	}
 
 	public static String languagePath(String address, String language) {
-		return languagePath(address, language, null);
+		return languagePath(address, language, null, null);
+	}
+
+	public static String languagePath(String address, String language, LanguageTab tab, LanguageView view) {
+		String result = address.replace(":language", language);
+		result += tab != null ? (result.contains("?") ? "&" : "?") + "tab=" + tab.name().toLowerCase() : "";
+		result += view != null ? (result.contains("?") ? "&" : "?") + "view=" + view.name().toLowerCase() : "";
+		return result;
 	}
 
 	public static String languagePath(String address, Language language, LanguageTab tab) {
-		return address.replace(":language", language.name()) + (tab != null ? "?tab=" + tab.name().toLowerCase() : "");
+		return languagePath(address, language.id(), tab, null);
 	}
 
-	public static String languagePath(String address, String language, LanguageTab tab) {
-		return address.replace(":language", language) + (tab != null ? "?tab=" + tab.name().toLowerCase() : "");
+	public static String languagePath(String address, Language language, LanguageTab tab, LanguageView view) {
+		return languagePath(address, language.id(), tab, view);
 	}
 
 	public static String modelUrl(Model model, UISession session) {
-		return session.browser().baseUrl() + "/languages/" + Language.nameOf(model.language()) + "/models/" + model.name();
+		return session.browser().baseUrl() + "/models/" + model.name();
 	}
 
-	private static final String ModelPath = "/languages/:language/models/:model";
+	private static final String ModelPath = "/models/:model";
 	public static String modelPath(Model model) {
 		return modelPath(ModelPath, model, null, null, null, null);
 	}
@@ -124,7 +129,7 @@ public class PathHelper {
 	}
 
 	public static String modelPath(String address, Model model, String release, ModelView view, String file, FilePosition position) {
-		String result = address.replace(":language", Language.nameOf(model.language())).replace(":model", model.name());
+		String result = address.replace(":model", model.id());
 		result += release != null ? "?release=" + release : "";
 		result += view != null ? ((result.contains("?") ? "&" : "?") + "view=" + view.name()) : "";
 		result += file != null ? ((result.contains("?") ? "&" : "?") + "file=" + file) : "";
@@ -133,10 +138,32 @@ public class PathHelper {
 	}
 
 	public static String modelViewPath(String address, Model model, String release) {
-		String result = address.replace(":language", Language.nameOf(model.language())).replace(":model", model.name());
+		String result = address.replace(":model", model.name());
 		result += release != null ? "?release=" + release : "";
 		result += (result.contains("?") ? "&" : "?") + "view=:view";
 		return result;
+	}
+
+	public static String languageReleaseHelp(String address, Language language, LanguageRelease release) {
+		return languageReleaseHelp(address, language, release.version());
+	}
+
+	public static String languageReleaseHelp(String address, Language language, String release) {
+		return address.replace(":language", language.id()) + "?version=" + release;
+	}
+
+	private static final String LanguageReleaseHelpPath = "/languages/:language/help";
+	public static String languageReleaseHelp(Language language, LanguageRelease release) {
+		return languageReleaseHelp(LanguageReleaseHelpPath, language, release);
+	}
+
+	public static String languageReleaseHelp(Language language, String release) {
+		return languageReleaseHelp(LanguageReleaseHelpPath, language, release);
+	}
+
+	private static final String ForgePath = "/forge/:model/:release";
+	public static String forgeUrl(Model model, String release, UISession session) {
+		return session.browser().baseUrl() + ForgePath.replace(":model", model.id()).replace(":release", release);
 	}
 
 }

@@ -1,5 +1,6 @@
 dsl Konos
 
+use Forge
 use Landing
 use Editors
 use Models
@@ -11,11 +12,12 @@ Service EditorElements as UI(port = "{port}", title = "{title}", favicon = "/ico
 
 	Resource(path = "/") home as Page(homeTemplate) Main > Parameter dialog
 	Resource(path = "/about") about as Page(homeTemplate)
-	Resource(path = "/languages") languages as Page(homeTemplate) > Parameter tab
-	Resource(path = "/languages/:language") language as Page(homeTemplate) > Parameter tab
-	Resource(path = "/languages/:language/models/:model") model as Page(homeTemplate) > Parameter release; Parameter view; Parameter file; Parameter pos
-	Resource(path = "/languages/:language/models/:model/starting") startingModel as Page(homeTemplate)
-	Resource(path = "/languages/:language/models/:model/template") templateModel as Page(homeTemplate)
+	Resource(path = "/languages/:language") language as Page(homeTemplate) > Parameter tab; Parameter view
+	Resource(path = "/languages/:language/help") languageReleaseHelp as Page(homeTemplate) > Parameter version
+	Resource(path = "/languages/:language/template") languageReleaseTemplate as Page(homeTemplate) > Parameter version
+	Resource(path = "/models/:model") model as Page(homeTemplate) > Parameter release; Parameter view; Parameter file; Parameter pos
+	Resource(path = "/models/:model/starting") startingModel as Page(homeTemplate)
+	Resource(path = "/forge/:model/:release") forge as Page(homeTemplate)
 	Resource(path = "/login") login as Page(loginTemplate)
 	Resource(path = "/not-found") notFound as Page(notFoundTemplate) > Parameter type
 	Resource(path = "/permissions") permissions as Page(permissionsTemplate) > Parameter username; Parameter language; Parameter model; Parameter callback
@@ -28,9 +30,9 @@ Template homeTemplate as Relative(height=100%, width=100%)
 			Block(layout=Vertical Flexible CenterCenter) loading > Spinner(format=secondary)
 			Block(layout=Vertical Flexible) landingPage as Conditional > TemplateStamp(template=landingTemplate) landingStamp
 			Block(layout=Vertical Flexible) aboutPage as Conditional > TemplateStamp(template=aboutTemplate) aboutStamp
-			Block(layout=Vertical Flexible) languagesPage as Conditional > TemplateStamp(template=languagesTemplate) languagesStamp
 			Block(layout=Vertical Flexible) languagePage as Conditional > TemplateStamp(template=languageTemplate) languageStamp
 			Block(layout=Vertical Flexible) modelPage as Conditional > TemplateStamp(template=modelTemplate) modelStamp
+			Block(layout=Vertical Flexible) forgePage as Conditional > TemplateStamp(template=forgeTemplate) forgeStamp
 
 Template aboutTemplate as Relative(height=100%, width=100%)
 	Block(layout=Vertical Flexible, format=whiteBackground) bodyBlock as Relative(width=100%) AutoSize
@@ -42,8 +44,9 @@ Template(layout=Horizontal Center, format=headerStyle) headerTemplate
 
 	Block(layout=Horizontal Center Flexible, format=middleAirTop middleAirBottom middleAirLeft) languageView
 		Link(title="", format=logoLink) as Action Addressable(EditorElements.home)
-		Image(value="/images/logo-expanded-dark.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=130px, height=30px)
-		Text(value="/", format=whiteColor h2 airRight, visible=false) languageSeparator
+		Image(value="/images/logo-expanded-dark.png", format=airLeft, mobileReduceFactor=75%) as Absolute(width=130px, height=30px)
+		Text(value="DSL Forge", visible=false, format=h2 orangeColor bold airLeft) forgeTitle
+		Text(value="/", format=whiteColor h2 airLeft airRight, visible=false) languageSeparator
 		Text(value="", format=whiteColor h2, visible=false) languageTitleText
 		Link(title="", format=whiteColor h2, visible=false) languageTitleLink as Action Addressable(EditorElements.language)
 

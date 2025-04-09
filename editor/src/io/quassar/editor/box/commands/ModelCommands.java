@@ -4,13 +4,12 @@ import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.model.*;
 import io.quassar.editor.box.models.File;
 import io.quassar.editor.box.ui.types.ModelView;
-import io.quassar.editor.model.Language;
+import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Model;
 import io.quassar.editor.model.User;
 
 import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 
 public class ModelCommands extends Commands {
 
@@ -18,11 +17,10 @@ public class ModelCommands extends Commands {
 		super(box);
 	}
 
-	public Model create(String name, String title, String hint, String description, Language language, String owner, String username) {
+	public Model create(String name, String title, String description, GavCoordinates language, String owner, String username) {
 		CreateModelCommand command = setup(new CreateModelCommand(box), username);
 		command.name = name;
 		command.title = title;
-		command.hint = hint;
 		command.description = description;
 		command.language = language;
 		command.owner = owner;
@@ -71,20 +69,10 @@ public class ModelCommands extends Commands {
 		return command.execute();
 	}
 
-	public void save(Model model, String name, String title, String hint, String description, String username) {
-		SaveModelCommand command = setup(new SaveModelCommand(box), username);
-		command.model = model;
-		command.name = name;
-		command.title = title;
-		command.hint = hint;
-		command.description = description;
-		command.execute();
-	}
-
-	public void saveProperties(Model model, String hint, String description, String username) {
+	public void saveProperties(Model model, String title, String description, String username) {
 		SaveModelPropertiesCommand command = setup(new SaveModelPropertiesCommand(box), username);
 		command.model = model;
-		command.hint = hint;
+		command.title = title;
 		command.description = description;
 		command.execute();
 	}
@@ -100,13 +88,6 @@ public class ModelCommands extends Commands {
 		SaveModelCollaboratorsCommand command = setup(new SaveModelCollaboratorsCommand(box), username);
 		command.model = model;
 		command.collaborators = collaborators;
-		command.execute();
-	}
-
-	public void save(Model model, Map<String, String> tokens, String username) {
-		SaveModelTokensCommand command = setup(new SaveModelTokensCommand(box), username);
-		command.model = model;
-		command.tokens = tokens;
 		command.execute();
 	}
 
@@ -159,8 +140,8 @@ public class ModelCommands extends Commands {
 		command.execute();
 	}
 
-	public Command.ExecutionResult build(Model model, String username) {
-		BuildModelCommand command = setup(new BuildModelCommand(box), username);
+	public Command.ExecutionResult check(Model model, String username) {
+		CheckModelCommand command = setup(new CheckModelCommand(box), username);
 		command.model = model;
 		command.release = Model.DraftRelease;
 		return command.execute();

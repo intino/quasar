@@ -1,54 +1,76 @@
 package io.quassar.editor.model;
 
+import io.quassar.editor.box.util.VersionNumberComparator;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Language {
 	private String name;
-	private String version;
+	private String group;
+	private String metamodel;
 	private Level level;
-	private String parent;
-	private String hint;
+	private GavCoordinates parent;
+	private String title;
 	private String description;
-	private String owner;
-	private String fileExtension;
+	private List<String> accessList;
+	private String acknowledgment;
+	private String credits;
+	private String citation;
+	private String license;
 	private List<String> tagList;
-	private boolean isPrivate;
-	private List<String> accessPatterns;
+	private List<LanguageRelease> releaseList;
 	private Instant createDate;
-	private transient ModelsProvider modelsProvider;
 
-	public static final String Meta = "meta";
+	public static final String FileExtension = ".tara";
+	public static final String QuassarGroup = "tara.dsl";
+	public static final String Metta = "meta";
+
+	public static String groupFrom(String id) {
+		return id.split("\\.")[0];
+	}
+
+	public static String nameFrom(String id) {
+		return id.split("\\.")[1];
+	}
+
+	public static String id(String group, String name) {
+		if (group.equalsIgnoreCase(Language.QuassarGroup)) return name;
+		return name + "." + group;
+	}
+
+	public String id() {
+		return id(group, name);
+	}
 
 	public enum Level { L1, L2, L3 }
 
 	public Language() {
-		this.isPrivate = true;
 		this.tagList = new ArrayList<>();
-		this.accessPatterns = new ArrayList<>();
+		this.accessList = new ArrayList<>();
+		this.releaseList = new ArrayList<>();
 	}
 
 	public Language(String name) {
 		this.name = name;
-		this.version = "1.0.0";
 		this.tagList = new ArrayList<>();
 		this.createDate = Instant.now();
-		this.fileExtension = "tara";
-		this.isPrivate = true;
+		this.releaseList = new ArrayList<>();
 	}
 
-	public void modelsProvider(ModelsProvider provider) {
-		this.modelsProvider = provider;
+	public String group() {
+		return group;
 	}
 
-	public static String nameOf(String id) {
-		return id.split(":")[0];
+	public Language group(String group) {
+		this.group = group;
+		return this;
 	}
 
-	public static String versionOf(String id) {
-		String[] split = id.split(":");
-		return split.length > 1 ? split[1] : null;
+	public boolean isQuassarLanguage() {
+		return group.equals(Language.QuassarGroup);
 	}
 
 	public String name() {
@@ -60,12 +82,12 @@ public class Language {
 		return this;
 	}
 
-	public String version() {
-		return version;
+	public String metamodel() {
+		return metamodel;
 	}
 
-	public Language version(String version) {
-		this.version = version;
+	public Language metamodel(String metamodel) {
+		this.metamodel = metamodel;
 		return this;
 	}
 
@@ -78,12 +100,21 @@ public class Language {
 		return this;
 	}
 
-	public String hint() {
-		return hint;
+	public GavCoordinates parent() {
+		return parent;
 	}
 
-	public Language hint(String hint) {
-		this.hint = hint;
+	public Language parent(GavCoordinates parent) {
+		this.parent = parent;
+		return this;
+	}
+
+	public String title() {
+		return title;
+	}
+
+	public Language title(String value) {
+		this.title = value;
 		return this;
 	}
 
@@ -96,47 +127,48 @@ public class Language {
 		return this;
 	}
 
-	public String owner() {
-		return owner;
+	public List<String> access() {
+		return accessList;
 	}
 
-	public Language owner(String owner) {
-		this.owner = owner;
+	public Language access(List<String> values) {
+		this.accessList = values;
 		return this;
 	}
 
-	public String fileExtension() {
-		return fileExtension;
+	public String acknowledgment() {
+		return acknowledgment;
 	}
 
-	public Language fileExtension(String fileExtension) {
-		this.fileExtension = fileExtension;
+	public Language acknowledgment(String acknowledgment) {
+		this.acknowledgment = acknowledgment;
 		return this;
 	}
 
-	public String parent() {
-		return parent;
+	public String credits() {
+		return credits;
 	}
 
-	public Language parent(String parent) {
-		this.parent = parent;
+	public Language credits(String credits) {
+		this.credits = credits;
 		return this;
 	}
 
-	public List<String> models() {
-		return modelsProvider.models();
+	public String citation() {
+		return citation;
 	}
 
-	public long modelsCount() {
-		return modelsProvider.models().size();
+	public Language citation(String citation) {
+		this.citation = citation;
+		return this;
 	}
 
-	public Instant createDate() {
-		return createDate;
+	public String license() {
+		return license;
 	}
 
-	public Language createDate(Instant createDate) {
-		this.createDate = createDate;
+	public Language license(String license) {
+		this.license = license;
 		return this;
 	}
 
@@ -149,35 +181,46 @@ public class Language {
 		return this;
 	}
 
-	public boolean isFoundational() {
-		return parent == null || parent.isEmpty();
+	public List<LanguageRelease> releases() {
+		return releaseList;
 	}
 
-	public boolean isPublic() {
-		return !isPrivate;
+	public LanguageRelease release(String version) {
+		return releaseList.stream().filter(r -> r.version().equals(version)).findFirst().orElse(null);
 	}
 
-	public boolean isPrivate() {
-		return isPrivate;
+	public LanguageRelease lastRelease() {
+		List<LanguageRelease> releases = releases();
+		return !releases.isEmpty() ? releases.stream().sorted((o1, o2) -> VersionNumberComparator.getInstance().compare(o2.version(), o1.version())).toList().getFirst() : null;
 	}
 
-	public Language isPrivate(boolean value) {
-		this.isPrivate = value;
+	public Language releases(List<LanguageRelease> releaseList) {
+		this.releaseList = releaseList;
 		return this;
 	}
 
-	public List<String> accessPatterns() {
-		return accessPatterns;
+	public void add(LanguageRelease release) {
+		this.releaseList.add(release);
 	}
 
-	public Language accessPatterns(List<String> values) {
-		this.accessPatterns = values;
+	public Instant createDate() {
+		return createDate;
+	}
+
+	public Language createDate(Instant createDate) {
+		this.createDate = createDate;
 		return this;
 	}
 
-	public interface ModelsProvider {
-		List<String> models();
-		Model model(String name);
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || getClass() != o.getClass()) return false;
+		Language language = (Language) o;
+		return Objects.equals(id(), language.id());
 	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(id());
+	}
 }

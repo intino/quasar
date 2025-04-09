@@ -5,7 +5,9 @@ import io.intino.ls.IntinoLanguageServer;
 import io.quassar.editor.box.models.File;
 import io.quassar.editor.box.models.FileReader;
 import io.quassar.editor.box.models.Workspace;
+import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.WorkspaceHelper;
+import io.quassar.editor.model.Language;
 import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.WorkspaceSymbol;
 import org.eclipse.lsp4j.WorkspaceSymbolParams;
@@ -59,7 +61,7 @@ public class ModelReader implements FileReader {
 	}
 
 	private List<File> filter(List<File> files) {
-		return files.stream().filter(f -> f.name().contains(workspace.language().fileExtension()) || (f.isDirectory() && !f.isResource())).toList();
+		return files.stream().filter(f -> f.name().contains(Language.FileExtension) || (f.isDirectory() && !f.isResource())).toList();
 	}
 
 	private java.io.File location(io.quassar.editor.box.models.File file) {

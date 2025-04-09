@@ -7,7 +7,6 @@ import io.quassar.editor.box.schemas.IntinoDslEditorFilePosition;
 import io.quassar.editor.box.schemas.IntinoDslEditorSetup;
 import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.FilePosition;
-import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 import org.apache.commons.io.IOUtils;
 
@@ -99,7 +98,7 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 	}
 
 	private IntinoDslEditorSetup info() {
-		return new IntinoDslEditorSetup().dslName(Language.nameOf(model.language())).modelName(model.name()).modelRelease(release).readonly(!PermissionsHelper.canEdit(model, release, session()));
+		return new IntinoDslEditorSetup().dslName(model.language().artifactId()).modelName(model.name()).modelRelease(release).readonly(!PermissionsHelper.canEdit(model, release, session()));
 	}
 
 	private IntinoDslEditorFile file() {
@@ -113,16 +112,12 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 
 	private String content() {
 		try {
-			InputStream content = box().modelManager().content(language(), model, release, uri);
+			InputStream content = box().modelManager().content(model, release, uri);
 			return content != null ? IOUtils.toString(content, StandardCharsets.UTF_8) : "";
 		} catch (IOException e) {
 			Logger.error(e);
 			return "";
 		}
-	}
-
-	private Language language() {
-		return box().languageManager().get(model.language());
 	}
 
 }

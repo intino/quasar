@@ -4,16 +4,15 @@ import io.intino.alexandria.Json;
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.languages.LanguageServerManager;
-import io.quassar.editor.box.util.PermissionsHelper;
+import io.quassar.editor.box.util.ArchetypeHelper;
 import io.quassar.editor.box.util.VersionNumberComparator;
 import io.quassar.editor.box.util.ZipHelper;
-import io.quassar.editor.model.Language;
-import io.quassar.editor.model.Model;
-import io.quassar.editor.model.OperationResult;
+import io.quassar.editor.model.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.tika.Tika;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.lsp4j.services.LanguageServer;
+import systems.intino.alexandria.datamarts.anchormap.AnchorMap;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,77 +23,53 @@ import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class ModelManager {
+	private final AnchorMap index;
 	private final Archetype archetype;
-	private final Function<String, Language> languageLoader;
+	private final Function<GavCoordinates, Language> languageLoader;
 	private final LanguageServerManager serverManager;
 
-	public ModelManager(Archetype archetype, Function<String, Language> languageLoader, LanguageServerManager serverManager) {
+	public ModelManager(Archetype archetype, AnchorMap index, Function<GavCoordinates, Language> languageLoader, LanguageServerManager serverManager) {
+		this.index = index;
 		this.archetype = archetype;
 		this.languageLoader = languageLoader;
 		this.serverManager = serverManager;
 	}
 
-	public List<Model> visibleModels(Language language, String owner) {
-		Set<Model> result = new HashSet<>(publicModels(language, owner));
-		result.addAll(ownerModels(language, owner));
-		return new ArrayList<>(result);
+	public List<Model> models(Language language, String owner) {
+		Set<String> result = new HashSet<>(index.search("model").with("language", language.id()).with("owner", owner).execute());
+		result.addAll(index.search("model").with("language", language.id()).with("contributor", owner).execute());
+		result.addAll(index.search("model").with("language", language.id()).with("is-private", "false").execute());
+		return result.stream().map(id -> id.replace(":model", "")).map(this::get).toList();
 	}
 
-	public List<Model> models(Language language) {
-		return models(language.name());
+	public List<Model> models(String owner) {
+		Set<String> result = new HashSet<>(index.search("model").with("owner", owner).execute());
+		result.addAll(index.search("model").with("contributor", owner).execute());
+		result.addAll(index.search("model").with("is-private", "false").execute());
+		return result.stream().map(id -> id.replace(":model", "")).map(this::get).toList();
 	}
 
-	public List<Model> models(String language) {
-		File[] root = archetype.languages().models(Language.nameOf(language)).listFiles();
-		if (root == null) return Collections.emptyList();
-		return Arrays.stream(root).filter(File::isDirectory).map(d -> get(language, d.getName())).filter(Objects::nonNull).collect(toList());
+	public List<Model> exampleModels(Language language, LanguageRelease release) {
+		if (release != null) return release.examples().stream().map(this::get).toList();
+		return language.releases().stream().map(LanguageRelease::examples).flatMap(Collection::stream).map(this::get).toList();
 	}
 
-	public List<Model> ownerModels(Language language, String user) {
-		return ownerModels(language.name(), user);
+	public boolean exists(String key) {
+		return get(locate(key)) != null;
 	}
 
-	public List<Model> ownerModels(String language, String user) {
-		return models(language).stream().filter(m -> !m.isTemplate() && belongsTo(m, user)).collect(toList());
-	}
-
-	public List<Model> publicModels(Language language, String user) {
-		return publicModels(language.name(), user);
-	}
-
-	public List<Model> publicModels(String language, String user) {
-		return models(language).stream().filter(m -> !m.isTemplate() && (m.isPublic() || PermissionsHelper.hasPermissions(m, user))).collect(toList());
-	}
-
-	public List<Model> privateModels(Language language, String user) {
-		return privateModels(language.name(), user);
-	}
-
-	public List<Model> privateModels(String language, String user) {
-		return ownerModels(language, user).stream().filter(Model::isPrivate).collect(toList());
-	}
-
-	public boolean exists(Language language, String name) {
-		return exists(language.name(), name);
-	}
-
-	public boolean exists(String language, String name) {
-		return models(language).stream().anyMatch(m -> m.name().equals(name));
-	}
-
-	public Model get(Language language, String id) {
-		return get(language.name(), id);
-	}
-
-	public Model get(String language, String id) {
+	public Model get(String key) {
 		try {
-			if (!new File(archetype.languages().models(Language.nameOf(language)), id).exists()) return null;
-			File properties = archetype.languages().properties(Language.nameOf(language), id);
-			if (!properties.exists()) return null;
-			return Json.fromJson(Files.readString(properties.toPath()), Model.class);
+			String id = locate(key);
+			File settings = archetype.models().settings(ArchetypeHelper.relativeModelPath(id), id);
+			if (!settings.exists()) {
+				cleanArchetypeTrashFor(key);
+				return null;
+			}
+			return Json.fromJson(Files.readString(settings.toPath()), Model.class);
 		} catch (IOException e) {
 			Logger.error(e);
 			return null;
@@ -102,25 +77,21 @@ public class ModelManager {
 	}
 
 	public List<String> releases(Model model) {
-		List<File> releases = archetype.languages().releases(languageNameOf(model), model.name());
+		List<File> releases = archetype.models().releases(ArchetypeHelper.relativeModelPath(model.id()), model.id());
 		return releases.stream().map(f -> f.getName().replace(".zip", "")).sorted((o1, o2) -> VersionNumberComparator.getInstance().compare(o1, o2)).toList();
 	}
 
 	public File release(Model model, String version) {
-		return archetype.languages().release(languageNameOf(model), model.name(), version);
+		return archetype.models().release(ArchetypeHelper.relativeModelPath(model.id()), model.id(), version);
 	}
 
-	public File releaseAccessor(Model model, String version) {
-		return archetype.languages().releaseAccessor(languageNameOf(model), model.name(), version);
-	}
-
-	public Model create(String name, String title, String hint, String description, Language language, String owner) {
+	public Model create(String name, String title, String description, GavCoordinates language, String owner) {
 		Model model = new Model();
+		model.id(UUID.randomUUID().toString());
 		model.name(name);
 		model.title(title);
-		model.hint(hint);
 		model.description(description);
-		model.language(language.name());
+		model.language(language);
 		model.owner(owner);
 		model.isPrivate(true);
 		model.createDate(Instant.now());
@@ -130,12 +101,13 @@ public class ModelManager {
 
 	public Model clone(Model model, String release, String name, String owner) {
 		Model result = Model.clone(model);
+		result.id(UUID.randomUUID().toString());
 		result.name(name);
 		result.owner(owner);
 		result.createDate(Instant.now());
 		save(result);
 		new WorkspaceWriter(workspace(model, release), server(model, release)).clone(result, server(result, Model.DraftRelease));
-		return get(languageNameOf(model), name);
+		return get(name);
 	}
 
 	public boolean isWorkspaceEmpty(Model model, String release) {
@@ -145,25 +117,28 @@ public class ModelManager {
 	}
 
 	public Workspace workspace(Model model, String release) {
-		return new Workspace(language(model), model, release, archetype);
+		return new Workspace(model, release, languageLoader.apply(model.language()), archetype);
 	}
 
 	public io.quassar.editor.box.models.File copy(Model model, String filename, io.quassar.editor.box.models.File source) {
 		return new WorkspaceWriter(workspace(model, Model.DraftRelease), server(model, Model.DraftRelease)).copy(filename, source);
 	}
 
-	public OperationResult createRelease(Model model, String release, InputStream accessor) {
+	public OperationResult createRelease(Model model, String release) {
 		try {
 			if (isWorkspaceEmpty(model, Model.DraftRelease)) return OperationResult.Error("Workspace is empty");
-			File releaseFile = archetype.languages().release(languageNameOf(model), model.name(), release);
-			ZipHelper.zipFolder(workspace(model, Model.DraftRelease).root().toPath(), releaseFile.toPath());
-			File accessorDestiny = releaseAccessor(model, release);
-			FileUtils.copyInputStreamToFile(accessor, accessorDestiny);
+			File releaseFile = archetype.models().release(ArchetypeHelper.relativeModelPath(model.id()), model.id(), release);
+			ZipHelper.zip(workspace(model, Model.DraftRelease).root().toPath(), manifest(model, release), releaseFile.toPath());
+			index.on(model.id(), "model").set("release", release).commit();
 			return OperationResult.Success();
 		} catch (Exception e) {
 			Logger.error(e);
 			return OperationResult.Error(e.getMessage());
 		}
+	}
+
+	private String manifest(Model model, String release) {
+		return Json.toString(new ModelRelease(release, model.language(), model.owner()));
 	}
 
 	public boolean existsFile(Model model, String name, io.quassar.editor.box.models.File parent) {
@@ -197,7 +172,8 @@ public class ModelManager {
 
 	public void save(Model model) {
 		try {
-			Files.writeString(archetype.languages().properties(languageNameOf(model), model.name()).toPath(), Json.toString(model));
+			index.on(model.id(), "model").set("name", model.name()).set("owner", model.owner()).set("language", model.language().languageId()).set("is-private", String.valueOf(model.isPrivate())).commit();
+			Files.writeString(archetype.models().settings(ArchetypeHelper.relativePath(model), model.id()).toPath(), Json.toString(model));
 		} catch (IOException e) {
 			Logger.error(e);
 		}
@@ -219,9 +195,10 @@ public class ModelManager {
 
 	public void remove(Model model) {
 		try {
-			File rootDir = archetype.languages().model(languageNameOf(model), model.name());
+			File rootDir = archetype.models().get(ArchetypeHelper.relativePath(model), model.id());
 			if (!rootDir.exists()) return;
 			FileUtils.deleteDirectory(rootDir);
+			// TODO JJ index.on(model.id(), "model").remove().commit();
 		} catch (IOException e) {
 			Logger.error(e);
 		}
@@ -231,13 +208,8 @@ public class ModelManager {
 		return new ModelContainer(workspace(model, release), server(model, release));
 	}
 
-	public InputStream content(Language language, Model model, String release, String uri) {
+	public InputStream content(Model model, String release, String uri) {
 		return new WorkspaceReader(workspace(model, release), server(model, release)).content(uri);
-	}
-
-	private boolean belongsTo(Model model, String user) {
-		if (model == null) return false;
-		return user != null && model.owner() != null && user.equals(model.owner());
 	}
 
 	private LanguageServer server(Model model, String release) {
@@ -247,14 +219,6 @@ public class ModelManager {
 			Logger.error(e);
 			return null;
 		}
-	}
-
-	private Language language(Model model) {
-		return languageLoader.apply(languageNameOf(model));
-	}
-
-	private String languageNameOf(Model model) {
-		return Language.nameOf(model.language());
 	}
 
 	public boolean isTextFile(Model model, String release, io.quassar.editor.box.models.File file) {
@@ -272,6 +236,21 @@ public class ModelManager {
 		} catch (IOException ignored) {
 			return false;
 		}
+	}
+
+	private void cleanArchetypeTrashFor(String id) {
+		archetype.models().get(ArchetypeHelper.relativeModelPath(id), id).delete();
+		String[] list = archetype.models().get(ArchetypeHelper.relativeModelPath(id)).list();
+		if (list == null || list.length == 0) archetype.models().get(ArchetypeHelper.relativeModelPath(id)).delete();
+	}
+
+	private String locate(String key) {
+		Map<String, String> modelMap = index.search("model").execute().stream().collect(toMap(u -> nameOf(index.get(u.replace(":model", ""), "model")), u -> u.replace(":model", "")));
+		return modelMap.getOrDefault(key, key);
+	}
+
+	private String nameOf(List<String> values) {
+		return values.stream().filter(v -> v.startsWith("name=")).map(v -> v.replace("name=", "")).findFirst().orElse(null);
 	}
 
 }

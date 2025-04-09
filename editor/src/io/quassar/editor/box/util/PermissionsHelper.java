@@ -2,6 +2,7 @@ package io.quassar.editor.box.util;
 
 import io.intino.alexandria.ui.services.push.UISession;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
@@ -21,19 +22,21 @@ public class PermissionsHelper {
 		return model.collaborators().stream().anyMatch(c -> c.equals(username));
 	}
 
+	private static boolean hasPermissions(Language language, UISession session, EditorBox box) {
+		String username = session.user() != null ? session.user().username() : null;
+		String owner = box.languageManager().owner(language);
+		return owner != null && owner.equals(username);
+	}
+
 	public static boolean canRemove(Model model, UISession session, EditorBox box) {
 		if (!hasPermissions(model, session)) return false;
-		if (box.languageManager().exists(model.name())) return false;
+		if (box.languageManager().exists(model)) return false;
 		return !ModelHelper.isMetamodel(model, box);
 	}
 
 	public static boolean canEdit(Language language, UISession session, EditorBox box) {
-		if (language.isFoundational()) return false;
-		Language parentLanguage = box.languageManager().get(language.parent());
-		if (parentLanguage == null) return false;
-		Model model = box.modelManager().get(parentLanguage, language.name());
-		if (model == null) return false;
-		return hasPermissions(model, session);
+		if (language.isQuassarLanguage()) return false;
+		return hasPermissions(language, session, box);
 	}
 
 	public static boolean canRemove(Language language, UISession session, EditorBox box) {
@@ -41,12 +44,12 @@ public class PermissionsHelper {
 		return box.modelManager().models(language.name()).isEmpty();
 	}
 
-	public static boolean canBuild(Model model, String version, UISession session, EditorBox box) {
+	public static boolean canCheck(Model model, String version, UISession session, EditorBox box) {
 		if (!hasPermissions(model, session)) return false;
 		return !box.modelManager().isWorkspaceEmpty(model, version);
 	}
 
-	public static boolean canDeploy(Model model, String version, UISession session, EditorBox box) {
+	public static boolean canCommit(Model model, String version, UISession session, EditorBox box) {
 		if (model.isTemplate()) return false;
 		if (!hasPermissions(model, session)) return false;
 		return !box.modelManager().isWorkspaceEmpty(model, version);
@@ -59,12 +62,11 @@ public class PermissionsHelper {
 		return !box.modelManager().isWorkspaceEmpty(model, version);
 	}
 
-	public static boolean canEditTemplate(Model model, String version, UISession session, EditorBox box) {
+	public static boolean canEditTemplate(GavCoordinates languageCoordinates, UISession session, EditorBox box) {
+		Language language = box.languageManager().get(languageCoordinates);
 		if (session.user() == null) return false;
-		if (!isOwner(model, session)) return false;
-		Language language = box.languageManager().get(model.name());
-		if (language == null) return false;
-		return box.modelManager().exists(language, Model.Template);
+		if (!hasPermissions(language, session, box)) return false;
+		return language.release(languageCoordinates.version()) != null;
 	}
 
 	private static boolean isOwner(Model model, UISession session) {
@@ -80,6 +82,10 @@ public class PermissionsHelper {
 
 	public static boolean canEditSettings(Model model, String release, UISession session) {
 		return hasPermissions(model, session);
+	}
+
+	public static boolean canForge(Model model, String release, UISession session) {
+		return hasPermissions(model, session) && release != null && !release.equals(Model.DraftRelease);
 	}
 
 	public static boolean canOpenModel(Language language, UISession session, EditorBox box) {

@@ -1,0 +1,98 @@
+package io.quassar.editor.box.ui.displays.templates;
+
+import io.intino.alexandria.ui.displays.UserMessage;
+import io.intino.alexandria.ui.displays.events.SelectionEvent;
+import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.commands.Command.ExecutionResult;
+import io.quassar.editor.box.commands.ModelCommands;
+import io.quassar.editor.box.ui.types.VersionType;
+import io.quassar.editor.box.util.ModelHelper;
+import io.quassar.editor.model.Model;
+
+import java.util.function.BiConsumer;
+
+public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
+	private Model model;
+	private BiConsumer<Model, String> commitListener;
+	private BiConsumer<Model, ExecutionResult> commitFailureListener;
+
+	public CommitModelDialog(EditorBox box) {
+		super(box);
+	}
+
+	public void model(Model value) {
+		this.model = value;
+	}
+
+	public void onCommit(BiConsumer<Model, String> listener) {
+		this.commitListener = listener;
+	}
+
+	public void onCommitFailure(BiConsumer<Model, ExecutionResult> listener) {
+		this.commitFailureListener = listener;
+	}
+
+	public void open() {
+		dialog.open();
+	}
+
+	@Override
+	public void init() {
+		super.init();
+		dialog.onOpen(e -> refreshDialog());
+		create.onExecute(e -> commit());
+		versionTypeSelector.onSelect(this::updateVersion);
+		versionTypeSelector.selection("revisionOption");
+	}
+
+	private void refreshDialog() {
+		String value = ModelHelper.nextVersion(model, VersionType.Revision, box());
+		dialog.title("Commit %s".formatted(ModelHelper.label(model, language(), box())));
+		refreshVersionBlock(value);
+	}
+
+	private void refreshVersionBlock(String value) {
+		versionPropertiesBlock.visible(true);
+		if (!versionPropertiesBlock.isVisible()) return;
+		version.value(value);
+		versionTypeSelector.selection("revisionOption");
+		versionTypeSelector.readonly(value.equals("1.0.0"));
+	}
+
+	private void commit() {
+		if (!check()) return;
+		dialog.close();
+		if (!createRelease().success()) return;
+		hideUserNotification();
+		commitListener.accept(model, version());
+	}
+
+	private ExecutionResult createRelease() {
+		notifyUser(translate("Committing..."), UserMessage.Type.Loading);
+		ExecutionResult result = box().commands(ModelCommands.class).createRelease(model, version(), username());
+		if (!result.success()) commitFailureListener.accept(model, result);
+		hideUserNotification();
+		return result;
+	}
+
+	private String version() {
+		String result = version.value();
+		return result != null && !result.isEmpty() ? result : ModelHelper.nextVersion(model, VersionType.Revision, box());
+	}
+
+	private boolean check() {
+		return true;
+	}
+
+	private void updateVersion(SelectionEvent event) {
+		version.value(ModelHelper.nextVersion(model, versionType(event), box()));
+	}
+
+	private VersionType versionType(SelectionEvent event) {
+		String selected = (String) event.selection().getFirst();
+		if (selected.equals("revisionOption")) return VersionType.Revision;
+		if (selected.equals("minorVersionOption")) return VersionType.MinorVersion;
+		return VersionType.MajorVersion;
+	}
+
+}

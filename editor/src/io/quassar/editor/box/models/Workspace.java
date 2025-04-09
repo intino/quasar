@@ -8,15 +8,15 @@ import io.quassar.editor.model.Model;
 import java.net.URI;
 
 public class Workspace {
-	private final Language language;
 	private final Model model;
 	private final String release;
+	private final Language language;
 	private final Archetype archetype;
 
-	public Workspace(Language language, Model model, String release, Archetype archetype) {
-		this.language = language;
+	public Workspace(Model model, String release, Language language, Archetype archetype) {
 		this.model = model;
 		this.release = release;
+		this.language = language;
 		this.archetype = archetype;
 	}
 
@@ -38,6 +38,6 @@ public class Workspace {
 	}
 
 	public Workspace clone(Model destinyModel) {
-		return new Workspace(language, destinyModel, release, archetype);
+		return new Workspace(destinyModel, release, language, archetype);
 	}
 }

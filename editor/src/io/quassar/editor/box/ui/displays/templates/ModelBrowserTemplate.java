@@ -97,9 +97,8 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 		browser.operations(operations());
 		browser.select(file != null ? IntinoFileBrowserHelper.itemOf(file) : null);
 		browser.refresh();
-		Language language = box().languageManager().get(model.language());
 		addFileField.readonly(!PermissionsHelper.canEdit(model, release, session()));
-		addFileField.allowedTypesByName(List.of(FileEditable.Type.Text.name(), FileEditable.Type.Zip.name(), "." + language.fileExtension()));
+		addFileField.allowedTypesByName(List.of(FileEditable.Type.Text.name(), FileEditable.Type.Zip.name(), Language.FileExtension));
 	}
 
 	private void createBrowser() {
@@ -203,8 +202,7 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 
 	private void rename(IntinoFileBrowserItem item, String newName) {
 		File file = modelContainer.file(item.uri());
-		Language language = box().languageManager().get(model.language());
-		if (!newName.endsWith(language.fileExtension())) newName += "." + language.fileExtension();
+		if (!newName.endsWith(Language.FileExtension)) newName += Language.FileExtension;
 		changeListener.accept(box().commands(ModelCommands.class).rename(model, newName, file, username()));
 	}
 
@@ -220,7 +218,7 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 	}
 
 	private String withExtension(String name) {
-		String extension = "." + box().languageManager().get(model.language()).fileExtension();
+		String extension = Language.FileExtension;
 		return name.endsWith(extension) ? name : name + extension;
 	}
 

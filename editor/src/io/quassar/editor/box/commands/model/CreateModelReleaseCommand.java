@@ -15,13 +15,13 @@ public class CreateModelReleaseCommand extends Command<ExecutionResult> {
 
 	@Override
 	public ExecutionResult execute() {
-		ExecutionResult result = compile();
+		ExecutionResult result = check();
 		if (!result.success()) return result;
-		return resultOf(box.modelManager().createRelease(model, version, result.output()));
+		return resultOf(box.modelManager().createRelease(model, version));
 	}
 
-	private ExecutionResult compile() {
-		BuildModelCommand command = new BuildModelCommand(box);
+	private ExecutionResult check() {
+		CheckModelCommand command = new CheckModelCommand(box);
 		command.author = author;
 		command.model = model;
 		command.release = version;

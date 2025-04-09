@@ -30,16 +30,12 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 		this.language = language;
 	}
 
-	public String hint() {
-		return hintField.value();
+	public String title() {
+		return titleField.value();
 	}
 
 	public String description() {
 		return descriptionField.value();
-	}
-
-	public String fileExtension() {
-		return fileExtensionField.value();
 	}
 
 	public List<String> tags() {
@@ -49,7 +45,7 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 	public File logo() {
 		if (!logoExists) return null;
 		File tmpFile = new File(box().archetype().tmp().root(), language.name() + "-logo.png");
-		return tmpFile.exists() ? tmpFile : box().archetype().languages().logo(language.name());
+		return tmpFile.exists() ? tmpFile : box().languageManager().loadLogo(language);
 	}
 
 	public void onRemove(Consumer<Language> listener) {
@@ -57,9 +53,8 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 	}
 
 	public boolean check() {
-		if (!DisplayHelper.check(hintField, this::translate)) return false;
-		if (!DisplayHelper.check(descriptionField, this::translate)) return false;
-		return DisplayHelper.check(fileExtensionField, this::translate);
+		if (!DisplayHelper.check(titleField, this::translate)) return false;
+		return DisplayHelper.check(descriptionField, this::translate);
 	}
 
 	@Override
@@ -76,12 +71,11 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 	public void refresh() {
 		super.refresh();
 		tagSet = new HashSet<>(language.tags());
-		File logo = box().archetype().languages().logo(language.name());
+		File logo = box().languageManager().loadLogo(language);
 		logoExists = logo.exists();
 		logoField.value(logo.exists() ? logo : null);
-		hintField.value(language.hint());
+		titleField.value(language.title());
 		descriptionField.value(language.description());
-		fileExtensionField.value(language.fileExtension());
 		refreshTags();
 		removeLanguage.readonly(!PermissionsHelper.canRemove(language, session(), box()));
 	}

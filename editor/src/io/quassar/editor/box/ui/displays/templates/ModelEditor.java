@@ -1,7 +1,6 @@
 package io.quassar.editor.box.ui.displays.templates;
 
 import io.intino.alexandria.MimeTypes;
-import io.intino.alexandria.logger.Logger;
 import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.displays.events.SelectionEvent;
 import io.intino.alexandria.ui.utils.DelayerUtil;
@@ -14,6 +13,7 @@ import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.box.schemas.IntinoFileBrowserItem;
 import io.quassar.editor.box.ui.displays.IntinoDslEditor;
 import io.quassar.editor.box.ui.types.ModelView;
+import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.FilePosition;
@@ -21,15 +21,12 @@ import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class ModelEditor extends AbstractModelEditor<EditorBox> {
 	private Model model;
@@ -64,10 +61,6 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 
 	public void showHelp(boolean value) {
 		this.showHelp = value;
-	}
-
-	public void onEditTemplate(Consumer<Model> listener) {
-		headerStamp.onEditTemplate(listener);
 	}
 
 	@Override
@@ -109,8 +102,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 	}
 
 	private void initHeader() {
-		headerStamp.onBuild(m -> build());
-		headerStamp.onHelp(m -> helpDialog.open());
+		headerStamp.onCheck(m -> check());
 		headerStamp.onClone(m -> cloneModel());
 		headerStamp.onDeploy((m, e) -> updateConsole(e));
 	}
@@ -165,7 +157,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 			refreshFileEditorToolbar();
 		});
 		editor.onSaveFile(this::saveFile);
-		editor.onBuild(e -> build());
+		editor.onBuild(e -> check());
 	}
 
 	private void initFileModifiedDialog() {
@@ -230,12 +222,11 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 
 	private void refreshNonEditableFileBlock() {
 		if (!nonEditableFileBlock.isVisible()) return;
-		Language language = box().languageManager().get(model.language());
-		fileField.value(new io.intino.alexandria.ui.File().filename(selectedFile.uri()).mimeType(MimeTypes.contentTypeOf(selectedFile.extension())).value(urlOf(PathHelper.fileUrl(language, model, release, selectedFile, session(), box()))));
+		fileField.value(new io.intino.alexandria.ui.File().filename(selectedFile.uri()).mimeType(MimeTypes.contentTypeOf(selectedFile.extension())).value(urlOf(PathHelper.fileUrl(model, release, selectedFile, session(), box()))));
 	}
 
 	private String withoutExtensionIfModelFile(String name) {
-		return io.quassar.editor.box.models.File.isResource(name) ? name : name.replace("." + box().languageManager().get(model.language()).fileExtension(), "");
+		return io.quassar.editor.box.models.File.isResource(name) ? name : name.replace(Language.FileExtension, "");
 	}
 
 	private void open(IntinoFileBrowserItem item) {
@@ -270,7 +261,6 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 	}
 
 	private void reload() {
-		Language language = box().languageManager().get(model.language());
 		modelContainer = box().modelManager().modelContainer(model, release);
 		refresh();
 	}
@@ -304,11 +294,11 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		if (file != null) open(file);
 	}
 
-	private void build() {
-		notifyUser(translate("Building model..."), UserMessage.Type.Loading);
-		Command.ExecutionResult result = box().commands(ModelCommands.class).build(model, username());
+	private void check() {
+		notifyUser(translate("Checking model..."), UserMessage.Type.Loading);
+		Command.ExecutionResult result = box().commands(ModelCommands.class).check(model, username());
 		updateConsole(result);
-		if (result.success()) notifyUser("Model built successfully", UserMessage.Type.Success);
+		if (result.success()) notifyUser("Model checked successfully", UserMessage.Type.Success);
 		else hideUserNotification();
 	}
 
@@ -320,16 +310,10 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 	}
 
 	private void refreshHelpDialog() {
-		try {
-			Language language = box().languageManager().get(model.language());
-			java.io.File readme = box().archetype().languages().readme(language.name());
-			helpDialog.title("%s help".formatted(language.name()));
-			if (!readme.exists()) return;
-			helpStamp.content(Files.readString(readme.toPath()));
-			helpStamp.refresh();
-		} catch (IOException e) {
-			Logger.error(e);
-		}
+		String help = box().languageManager().loadHelp(model.language());
+		helpDialog.title("%s help".formatted(LanguageHelper.title(model.language())));
+		helpStamp.content(help);
+		helpStamp.refresh();
 	}
 
 	private URL urlOf(String url) {

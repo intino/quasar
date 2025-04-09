@@ -3,6 +3,7 @@ package io.quassar.editor.box.languages;
 import io.intino.alexandria.logger.Logger;
 import io.intino.tara.Language;
 import io.quassar.editor.box.util.StringHelper;
+import io.quassar.editor.model.GavCoordinates;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,26 +17,25 @@ import java.util.Map;
 
 public class LanguageLoader {
 	private final LanguageArtifactory artifactory;
-	private final Map<String, Language> languageMap = new HashMap<>();
+	private final Map<GavCoordinates, Language> languageMap = new HashMap<>();
 
 	public LanguageLoader(LanguageArtifactory artifactory) {
 		this.artifactory = artifactory;
 	}
 
-	public Language get(String name) throws IOException {
-		if (languageMap.containsKey(name)) return languageMap.get(name);
-		File jarFile = artifactory.retrieve(name);
-		Language language = load(name, jarFile);
-		languageMap.put(name, language);
+	public Language get(GavCoordinates gav) throws IOException {
+		if (languageMap.containsKey(gav)) return languageMap.get(gav);
+		File jarFile = artifactory.retrieve(gav);
+		Language language = load(gav, jarFile);
+		languageMap.put(gav, language);
 		return language;
 	}
 
-	private Language load(String dsl, File jar) throws IOException {
+	private Language load(GavCoordinates gav, File jar) throws IOException {
 		try {
-			String[] parts = dsl.split(":");
 			final ClassLoader classLoader = createClassLoader(jar);
 			if (classLoader == null) return null;
-			Class<?> cls = classLoader.loadClass("tara.dsl." + firstUpperCase(StringHelper.kebabCaseToCamelCase(parts[0])));
+			Class<?> cls = classLoader.loadClass(gav.groupId() + "." + firstUpperCase(StringHelper.kebabCaseToCamelCase(gav.artifactId())));
 			return (Language) cls.getConstructors()[0].newInstance();
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			Logger.error(e);

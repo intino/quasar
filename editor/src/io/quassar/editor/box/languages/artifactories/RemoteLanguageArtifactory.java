@@ -3,6 +3,8 @@ package io.quassar.editor.box.languages.artifactories;
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.languages.LanguageArtifactory;
+import io.quassar.editor.box.util.ArchetypeHelper;
+import io.quassar.editor.model.GavCoordinates;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -27,16 +29,15 @@ public class RemoteLanguageArtifactory implements LanguageArtifactory {
 	}
 
 	@Override
-	public File retrieve(String language) throws IOException {
-		return download(language);
+	public File retrieve(GavCoordinates gav) throws IOException {
+		return download(gav);
 	}
 
-	public File download(String dsl) throws IOException {
-		String[] parts = dsl.split(":");
-		String filename = parts[0] + "-" + parts[1].toLowerCase() + ".jar";
-		File file = archetype.languages().dslFile(parts[0]);
+	public File download(GavCoordinates gav) throws IOException {
+		String filename = gav.artifactId() + "-" + gav.version().toLowerCase() + ".jar";
+		File file = archetype.languages().releaseDsl(ArchetypeHelper.languageDirectoryName(gav.languageId()), gav.version());
 		if (file.exists()) return file;
-		URL url = URI.create(String.join("/", artifactory.toString(), "tara/dsl", parts[0], parts[1], filename)).toURL();
+		URL url = URI.create(String.join("/", artifactory.toString(), gav.groupId(), gav.artifactId(), gav.version(), filename)).toURL();
 		Files.write(file.toPath(), connect(url).readAllBytes());
 		return file;
 	}

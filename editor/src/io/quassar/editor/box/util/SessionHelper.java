@@ -2,6 +2,7 @@ package io.quassar.editor.box.util;
 
 import io.intino.alexandria.ui.services.push.UISession;
 import io.quassar.editor.box.ui.types.LanguageTab;
+import io.quassar.editor.box.ui.types.LanguageView;
 import io.quassar.editor.box.ui.types.LanguagesTab;
 import io.quassar.editor.box.ui.types.ModelView;
 
@@ -23,8 +24,19 @@ public class SessionHelper {
 	}
 
 	public static LanguageTab languageTab(UISession session) {
+		if (session.user() == null) return LanguageTab.Examples;
 		String result = session.preference("language-tab");
-		return result != null && !result.isEmpty() ? LanguageTab.from(result) : (session.user() != null ? LanguageTab.OwnerModels : LanguageTab.PublicModels);
+		return result != null && !result.isEmpty() ? LanguageTab.from(result) : LanguageTab.Models;
+	}
+
+	public static void register(UISession session, LanguageView view) {
+		if (view == null) return;
+		session.add("language-view", view.name());
+	}
+
+	public static LanguageView languageView(UISession session) {
+		String result = session.preference("language-view");
+		return result != null && !result.isEmpty() ? LanguageView.from(result) : LanguageView.About;
 	}
 
 	public static void register(UISession session, ModelView view) {

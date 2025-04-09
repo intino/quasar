@@ -2,7 +2,9 @@ package io.quassar.editor.box.commands;
 
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.language.*;
+import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.LanguageRelease;
 
 import java.io.File;
 import java.util.List;
@@ -13,7 +15,7 @@ public class LanguageCommands extends Commands {
 		super(box);
 	}
 
-	public Language create(String name, String version, String parent, Language.Level level, String hint, String description, String username) {
+	public Language create(String name, String version, GavCoordinates parent, Language.Level level, String hint, String description, String username) {
 		CreateLanguageCommand command = setup(new CreateLanguageCommand(box), username);
 		command.name = name;
 		command.version = version;
@@ -24,37 +26,37 @@ public class LanguageCommands extends Commands {
 		return command.execute();
 	}
 
-	public Language deploy(String name, String version, Language.Level level, String username) {
-		DeployLanguageCommand command = setup(new DeployLanguageCommand(box), username);
-		command.name = name;
+	public Language createRelease(Language language, String version, Language.Level level, String username) {
+		CreateLanguageReleaseCommand command = setup(new CreateLanguageReleaseCommand(box), username);
+		command.language = language;
 		command.version = version;
 		command.level = level;
 		return command.execute();
 	}
 
-	public void saveProperties(Language language, String hint, String description, String username) {
+	public void saveProperties(Language language, String title, String description, String username) {
 		SaveLanguagePropertiesCommand command = setup(new SaveLanguagePropertiesCommand(box), username);
 		command.language = language;
-		command.hint = hint;
+		command.title = title;
 		command.description = description;
 		command.execute();
 	}
 
-	public void save(Language language, String hint, String description, String fileExtension, Language.Level level, List<String> tags, File logo, String username) {
+	public void save(Language language, String title, String description, Language.Level level, List<String> tags, File logo, String username) {
 		SaveLanguageCommand command = setup(new SaveLanguageCommand(box), username);
 		command.language = language;
-		command.hint = hint;
+		command.title = title;
 		command.description = description;
-		command.fileExtension = fileExtension;
 		command.level = level;
 		command.tags = tags;
 		command.logo = logo;
 		command.execute();
 	}
 
-	public void saveReadme(Language language, String content, String username) {
-		SaveLanguageReadmeCommand command = setup(new SaveLanguageReadmeCommand(box), username);
+	public void saveHelp(Language language, LanguageRelease release, String content, String username) {
+		SaveLanguageHelpCommand command = setup(new SaveLanguageHelpCommand(box), username);
 		command.language = language;
+		command.release = release;
 		command.content = content;
 		command.execute();
 	}
@@ -65,16 +67,10 @@ public class LanguageCommands extends Commands {
 		return command.execute();
 	}
 
-	public void makePrivate(Language language, List<String> accessPatterns, String username) {
-		MakeLanguagePrivateCommand command = setup(new MakeLanguagePrivateCommand(box), username);
+	public void saveAccess(Language language, List<String> access, String username) {
+		SaveLanguageAccessCommand command = setup(new SaveLanguageAccessCommand(box), username);
 		command.language = language;
-		command.accessPatterns = accessPatterns;
-		command.execute();
-	}
-
-	public void makePublic(Language language, String username) {
-		MakeLanguagePublicCommand command = setup(new MakeLanguagePublicCommand(box), username);
-		command.language = language;
+		command.access = access;
 		command.execute();
 	}
 
