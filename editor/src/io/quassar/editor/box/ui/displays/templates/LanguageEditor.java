@@ -2,25 +2,25 @@ package io.quassar.editor.box.ui.displays.templates;
 
 import io.intino.alexandria.Resource;
 import io.intino.alexandria.logger.Logger;
-import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.displays.events.ChangeEvent;
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.box.commands.LanguageCommands;
 import io.quassar.editor.box.util.DisplayHelper;
-import io.quassar.editor.box.util.PermissionsHelper;
+import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.model.Language;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
-import java.util.*;
 import java.util.function.Consumer;
 
 public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 	private Language language;
-	private Set<String> tagSet;
-	private Consumer<Language> removeListener;
-	private boolean logoExists = false;
+	private boolean logoExists;
+	private Consumer<Boolean> checkNameListener;
+	private Consumer<String> changeNameListener;
+	private Consumer<File> changeLogoListener;
 
 	public LanguageEditor(EditorBox box) {
 		super(box);
@@ -30,101 +30,105 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 		this.language = language;
 	}
 
-	public String title() {
-		return titleField.value();
+	public void onCheckName(Consumer<Boolean> listener) {
+		this.checkNameListener = listener;
 	}
 
-	public String description() {
-		return descriptionField.value();
+	public void onChangeName(Consumer<String> listener) {
+		this.changeNameListener = listener;
 	}
 
-	public List<String> tags() {
-		return new ArrayList<>(tagSet);
+	public void onChangeLogo(Consumer<File> listener) {
+		this.changeLogoListener = listener;
+	}
+
+	public String name() {
+		return nameField.value();
 	}
 
 	public File logo() {
 		if (!logoExists) return null;
-		File tmpFile = new File(box().archetype().tmp().root(), language.name() + "-logo.png");
-		return tmpFile.exists() ? tmpFile : box().languageManager().loadLogo(language);
+		File tmpFile = new File(box().archetype().tmp().root(), id() + "-logo.png");
+		return tmpFile.exists() ? tmpFile : (language != null ? box().languageManager().loadLogo(language) : null);
 	}
 
-	public void onRemove(Consumer<Language> listener) {
-		this.removeListener = listener;
+	public void focus() {
+		nameField.focus();
 	}
 
 	public boolean check() {
-		if (!DisplayHelper.check(titleField, this::translate)) return false;
-		return DisplayHelper.check(descriptionField, this::translate);
+		return DisplayHelper.checkLanguageName(nameField, this::translate, box());
 	}
 
 	@Override
 	public void init() {
 		super.init();
-		addTagDialog.onOpen(e -> refreshTagDialog());
+		nameField.onEnterPress(e -> notifyChangeName());
+		nameField.onChange(e -> refreshState());
+		changeName.onExecute(e -> changeName());
+		changeName.signChecker((sign, reason) -> sign.equals(nameField.value()));
 		logoField.onChange(this::updateLogo);
-		addTag.onExecute(e -> addTag());
-		tagField.onEnterPress(e -> addTag());
-		removeLanguage.onExecute(e -> removeLanguage());
+		generateLogo.onExecute(e -> generateLogo());
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
-		tagSet = new HashSet<>(language.tags());
-		File logo = box().languageManager().loadLogo(language);
-		logoExists = logo.exists();
-		logoField.value(logo.exists() ? logo : null);
-		titleField.value(language.title());
-		descriptionField.value(language.description());
-		refreshTags();
-		removeLanguage.readonly(!PermissionsHelper.canRemove(language, session(), box()));
+		File logo = language != null ? box().languageManager().loadLogo(language) : null;
+		logoExists = logo != null && logo.exists();
+		nameField.value(language != null ? language.name() : null);
+		logoField.value(logoExists ? logo : null);
+		changeName.visible(language != null);
+		generateLogo.readonly(language == null);
+		if (changeName.isVisible()) changeName.readonly(true);
 	}
 
-	private void refreshTagDialog() {
-		tagField.value(null);
+	private void refreshState() {
+		boolean valid = DisplayHelper.checkLanguageName(nameField, this::translate, box());
+		boolean emptyName = nameField.value() == null || nameField.value().isEmpty();
+		validNameIcon.visible(valid && !emptyName);
+		invalidNameIcon.visible(!valid && !emptyName);
+		generateLogo.readonly(emptyName);
+		changeName.readonly(!valid || (language != null && language.name().equals(nameField.value())));
+		if (checkNameListener != null) checkNameListener.accept(valid);
 	}
 
-	private void refreshTags() {
-		tags.clear();
-		tagSet.stream().sorted(Comparator.naturalOrder()).forEach(o -> fill(o, tags.add()));
-	}
-
-	private void fill(String tag, TagEditor display) {
-		display.tag(tag);
-		display.onRemove(o -> removeTag(tag));
-		display.refresh();
-	}
-
-	private void removeTag(String tag) {
-		tagSet.remove(tag);
-		refreshTags();
-	}
-
-	private void addTag() {
-		if (!DisplayHelper.check(tagField, this::translate)) return;
-		addTagDialog.close();
-		tagSet.add(tagField.value());
-		refreshTags();
+	private void generateLogo() {
+		File destiny = logoFile();
+		if (destiny.exists()) destiny.delete();
+		LanguageHelper.generateLogo(nameField.value(), destiny);
+		if (changeLogoListener != null) changeLogoListener.accept(destiny);
+		logoField.value(language != null ? box().languageManager().loadLogo(language) : destiny);
 	}
 
 	private void updateLogo(ChangeEvent event) {
 		try {
-			File tmpFile = new File(box().archetype().tmp().root(), language.name() + "-logo.png");
+			File tmpFile = logoFile();
 			if (tmpFile.exists()) tmpFile.delete();
 			Resource value = event.value();
-			if (value != null) Files.write(tmpFile.toPath(), value.bytes());
 			logoExists = value != null;
-			logoField.value(value != null ? tmpFile : null);
+			if (value != null) Files.write(tmpFile.toPath(), value.bytes());
+			if (changeLogoListener != null) changeLogoListener.accept(value != null ? logo() : null);
+			logoField.value(value != null ? box().languageManager().loadLogo(language) : null);
 		} catch (IOException e) {
 			Logger.error(e);
 		}
 	}
 
-	private void removeLanguage() {
-		notifyUser(translate("Removing language..."), UserMessage.Type.Loading);
-		box().commands(LanguageCommands.class).remove(language, username());
-		notifyUser(translate("Language removed successfully..."), UserMessage.Type.Success);
-		removeListener.accept(language);
+	@NotNull
+	private File logoFile() {
+		return new File(box().archetype().tmp().root(), id() + "-logo.png");
+	}
+
+	private void notifyChangeName() {
+		if (changeNameListener == null) return;
+		changeNameListener.accept(nameField.value());
+	}
+
+	private void changeName() {
+		if (changeNameListener == null) return;
+		changeNameListener.accept(nameField.value());
+		refresh();
 	}
 
 }

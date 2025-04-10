@@ -27,6 +27,7 @@ TARGETS:{ime editor}
     - releaseHelp(dsl, version) in "{dsl}/releases/{version}/help.html"
     - releaseKit(dsl, version) in "{dsl}/releases/{version}/kit.json"
     - releaseTools(dsl, version) in "{dsl}/releases/{version}/tools.json"
+    - releaseReaders(dsl, version) in "{dsl}/releases/{version}/readers" with ".zip"
     - releaseReader(dsl, version, programmingLanguage) in "{dsl}/releases/{version}/readers/{programmingLanguage}.zip"
 
 + projects in "projects"

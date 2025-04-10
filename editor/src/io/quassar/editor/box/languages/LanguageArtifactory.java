@@ -7,4 +7,5 @@ import java.io.IOException;
 
 public interface LanguageArtifactory {
 	File retrieve(GavCoordinates gav) throws IOException;
+	String mainClass(GavCoordinates gav);
 }

@@ -82,11 +82,11 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 		if (languagePage.languageStamp != null) languagePage.languageStamp.openHelp(language, version);
 	}
 
-	public void openForge(String model, String release) {
+	public void openForge(String model, String release, String view) {
 		set(null, release, model);
 		appInForge = true;
 		openPage(Page.Forge);
-		if (forgePage.forgeStamp != null) forgePage.forgeStamp.open(model, release);
+		if (forgePage.forgeStamp != null) forgePage.forgeStamp.open(model, release, view);
 	}
 
 	private boolean openPage(Page page) {

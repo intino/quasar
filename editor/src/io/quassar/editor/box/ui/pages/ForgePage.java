@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 public class ForgePage extends AbstractForgePage {
 	public String model;
 	public String release;
+	public String view;
 
 	@Override
 	public boolean hasPermissions() {

@@ -1,13 +1,17 @@
 package io.quassar.editor.box.ui.displays.templates;
 
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.ui.types.LanguageView;
+import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.LanguageHelper;
+import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.SessionHelper;
 import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
+import io.quassar.editor.model.Model;
 
 import java.util.List;
 
@@ -78,6 +82,7 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 	}
 
 	private void refreshMainBlock() {
+		mainBlock.mainContentBlock.modelsBlock.modelsStamp.onCreateModel(tab != LanguageTab.Examples ? e -> createModel() : null);
 		refreshHome();
 		refreshModels();
 	}
@@ -134,6 +139,12 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 		mainBlock.mainContentBlock.modelsBlock.modelsStamp.language(language);
 		mainBlock.mainContentBlock.modelsBlock.modelsStamp.tab(tab);
 		mainBlock.mainContentBlock.modelsBlock.modelsStamp.refresh();
+	}
+
+	private Model createModel() {
+		LanguageRelease release = language.lastRelease();
+		String name = ModelHelper.proposeName();
+		return box().commands(ModelCommands.class).create(name, name, "", GavCoordinates.from(language, release), DisplayHelper.user(session()), username());
 	}
 
 }

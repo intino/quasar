@@ -4,9 +4,8 @@ import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.model.*;
 import io.quassar.editor.box.models.File;
 import io.quassar.editor.box.ui.types.ModelView;
-import io.quassar.editor.model.GavCoordinates;
-import io.quassar.editor.model.Model;
-import io.quassar.editor.model.User;
+import io.quassar.editor.box.util.ModelHelper;
+import io.quassar.editor.model.*;
 
 import java.io.InputStream;
 import java.util.List;
@@ -24,6 +23,23 @@ public class ModelCommands extends Commands {
 		command.description = description;
 		command.language = language;
 		command.owner = owner;
+		return command.execute();
+	}
+
+	public Model createTemplate(Language language, LanguageRelease release, String username) {
+		CreateModelCommand command = setup(new CreateModelCommand(box), username);
+		command.language = GavCoordinates.from(language, release);
+		command.name = ModelHelper.proposeName();
+		command.title = language.name();
+		command.description = "";
+		command.isTemplate = true;
+		return command.execute();
+	}
+
+	public Model createExample(Language language, LanguageRelease release, String username) {
+		CreateExampleModelCommand command = setup(new CreateExampleModelCommand(box), username);
+		command.language = language;
+		command.release = release;
 		return command.execute();
 	}
 

@@ -8,16 +8,20 @@ import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.PathHelper;
+import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
 
 import java.util.Collections;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 	private Language language;
 	private LanguageRelease release;
 	private LanguageTab tab;
+	private Function<Boolean, Model> createModelListener;
 
 	public ModelsTemplate(EditorBox box) {
 		super(box);
@@ -35,18 +39,21 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 		this.tab = tab;
 	}
 
+	public void onCreateModel(Function<Boolean, Model> listener) {
+		this.createModelListener = listener;
+	}
+
 	@Override
 	public void init() {
 		super.init();
-		addModelDialog.onCreate(this::open);
-		addModelTrigger.onExecute(e -> openAddModelDialog());
+		addModelTrigger.onExecute(e -> notifyCreateModel());
 		modelList.onAddItem(this::refresh);
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
-		addModelTrigger.visible(tab == LanguageTab.Models);
+		addModelTrigger.visible(createModelListener != null && PermissionsHelper.canAddModel(language, session(), box()));
 		ModelsDatasource source = new ModelsDatasource(box(), session(), language, release, tab);
 		modelList.source(source);
 		modelList.reload();
@@ -66,13 +73,10 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 		display.createDate.value(model.createDate());
 	}
 
-	private void openAddModelDialog() {
-		addModelDialog.language(language);
-		addModelDialog.open();
-	}
-
-	private void open(Model model) {
-		notifier.dispatch(PathHelper.modelPath(model));
+	private void notifyCreateModel() {
+		if (createModelListener == null) return;
+		Model model = createModelListener.apply(true);
+		notifier.dispatch(PathHelper.startingModelPath(model));
 	}
 
 }

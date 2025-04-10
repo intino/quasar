@@ -14,9 +14,9 @@ public class Model {
 	private Instant createDate;
 	private List<String> collaborators = new ArrayList<>();
 	private boolean isPrivate = false;
+	private boolean isTemplate = false;
 
 	public static final String DraftRelease = "draft";
-	public static final String Template = "__template";
 
 	public String id() {
 		return id;
@@ -106,6 +106,15 @@ public class Model {
 		return this;
 	}
 
+	public boolean isTemplate() {
+		return isTemplate;
+	}
+
+	public Model isTemplate(boolean value) {
+		this.isTemplate = value;
+		return this;
+	}
+
 	public static Model clone(Model model) {
 		Model result = new Model();
 		result.language = model.language();
@@ -116,10 +125,6 @@ public class Model {
 
 	public boolean isDraft(String release) {
 		return release != null && release.equals(Model.DraftRelease);
-	}
-
-	public boolean isTemplate() {
-		return name().equals(Model.Template);
 	}
 
 }

@@ -39,6 +39,11 @@ public class PermissionsHelper {
 		return hasPermissions(language, session, box);
 	}
 
+	public static boolean canAddModel(Language language, UISession session, EditorBox box) {
+		if (session.user() == null) return false;
+		return box.languageManager().hasAccess(language, session.user().username());
+	}
+
 	public static boolean canRemove(Language language, UISession session, EditorBox box) {
 		if (!canEdit(language, session, box)) return false;
 		return box.modelManager().models(language.name()).isEmpty();

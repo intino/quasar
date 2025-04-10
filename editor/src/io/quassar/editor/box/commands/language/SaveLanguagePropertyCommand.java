@@ -1,0 +1,36 @@
+package io.quassar.editor.box.commands.language;
+
+import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.commands.Command;
+import io.quassar.editor.model.Language;
+import io.quassar.editor.model.LanguageProperty;
+
+import java.io.File;
+import java.util.List;
+
+public class SaveLanguagePropertyCommand extends Command<Boolean> {
+	public Language language;
+	public LanguageProperty property;
+	public Object value;
+
+	public SaveLanguagePropertyCommand(EditorBox box) {
+		super(box);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Boolean execute() {
+		if (property == LanguageProperty.Title) language.title((String) value);
+		if (property == LanguageProperty.Description) language.description((String) value);
+		if (property == LanguageProperty.Acknowledgment) language.acknowledgment((String) value);
+		if (property == LanguageProperty.Credits) language.credits((String) value);
+		if (property == LanguageProperty.Citation) language.citation((String) value);
+		if (property == LanguageProperty.Tags) language.tags((List<String>) value);
+		if (property == LanguageProperty.GrantAccess) language.grantAccessList((List<String>) value);
+		if (property == LanguageProperty.License) language.license((String) value);
+		if (property == LanguageProperty.Logo) box.languageManager().saveLogo(language, (File) value);
+		box.languageManager().save(language);
+		return true;
+	}
+
+}

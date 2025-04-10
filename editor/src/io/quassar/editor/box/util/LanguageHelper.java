@@ -5,6 +5,7 @@ import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
+import tara.dsl.Meta;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -16,7 +17,7 @@ import java.util.UUID;
 
 public class LanguageHelper {
 
-	public void generateLogo(String language, File destiny) {
+	public static void generateLogo(String language, File destiny) {
 		try {
 			BufferedImage image = new LanguageLogoGenerator().put(language.charAt(0)).image();
 			ImageIO.write(image, "png", destiny);
@@ -25,9 +26,10 @@ public class LanguageHelper {
 		}
 	}
 
+	public static final String TaraDslPackage = "tara.dsl.";
 	public static final String MavenDslFile = "%s/repository/tara/dsl/%s/%s/%s-%s.jar";
-	public static File mavenDslFile(Language language, String version, EditorBox box) {
-		return new File(MavenDslFile.formatted(box.configuration().languageRepository(), mavenDirectory(language), version, Formatters.normalizeLanguageName(language.name()), version));
+	public static File mavenDslFile(Model metamodel, String version, EditorBox box) {
+		return new File(MavenDslFile.formatted(box.configuration().languageRepository(), mavenDirectory(metamodel), version, Formatters.normalizeLanguageName(metamodel.name()), version));
 	}
 
 	public static String title(GavCoordinates release) {
@@ -48,8 +50,8 @@ public class LanguageHelper {
 		}
 	}
 
-	private static String mavenDirectory(Language language) {
-		return language.name().toLowerCase().replace("-", "");
+	private static String mavenDirectory(Model metamodel) {
+		return metamodel.name().toLowerCase().replace("-", "");
 	}
 
 }

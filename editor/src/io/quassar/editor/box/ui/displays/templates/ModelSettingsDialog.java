@@ -10,6 +10,7 @@ import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.LanguageProperty;
 import io.quassar.editor.model.Model;
 import io.quassar.editor.model.User;
 
@@ -119,7 +120,8 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 	private void saveLanguageProperties() {
 		Language language = box().languageManager().get(model);
 		if (language == null) return;
-		box().commands(LanguageCommands.class).saveProperties(language, model.title(), model.description(), username());
+		box().commands(LanguageCommands.class).save(language, LanguageProperty.Title, model.title(), username());
+		box().commands(LanguageCommands.class).save(language, LanguageProperty.Description, model.description(), username());
 	}
 
 }

@@ -4,7 +4,6 @@ import io.intino.alexandria.Json;
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.util.ArchetypeHelper;
-import io.quassar.editor.box.util.VersionNumberComparator;
 import io.quassar.editor.model.*;
 import org.apache.commons.io.FileUtils;
 import systems.intino.alexandria.datamarts.anchormap.AnchorMap;
@@ -48,18 +47,19 @@ public class LanguageManager {
 		return Arrays.stream(root).filter(File::isDirectory).map(this::languageOf).filter(Objects::nonNull).collect(toList());
 	}
 
-	public Language create(String name, Language.Level level, String title, String description, GavCoordinates parent) {
-		Language language = new Language(name);
+	public Language create(String group, String name, Model metamodel, Language.Level level, String title, String description) {
+		Language language = new Language(group, name);
+		language.metamodel(metamodel.id());
 		language.level(level);
 		language.title(title);
 		language.description(description);
-		language.parent(parent);
+		language.parent(metamodel.language());
 		language.createDate(Instant.now());
 		return save(language);
 	}
 
 	public LanguageRelease createRelease(Language language, String version, File dsl) {
-		LanguageRelease release = new LanguageRelease(version, null, emptyList());
+		LanguageRelease release = new LanguageRelease().version(version);
 		language.add(release);
 		save(language);
 		saveDsl(language, version, dsl);
@@ -75,7 +75,10 @@ public class LanguageManager {
 			File current = archetype.languages().logo(normalize(language.id()));
 			if (logo == null && current.exists()) { current.delete(); return; }
 			if (logo != null && logo.getAbsolutePath().equals(current.getAbsolutePath())) return;
-			if (logo != null) Files.move(logo.toPath(), current.toPath());
+			if (logo != null) {
+				if (current.exists()) current.delete();
+				Files.move(logo.toPath(), current.toPath());
+			}
 		} catch (IOException e) {
 			Logger.error(e);
 		}
@@ -114,6 +117,17 @@ public class LanguageManager {
 		}
 	}
 
+	public File loadReader(Language language, LanguageRelease release, String programmingLanguage) {
+		if (release == null) return null;
+		List<File> readers = archetype.languages().releaseReaders(normalize(language.id()), release.version());
+		return readers.stream().filter(r -> r.getName().startsWith(programmingLanguage + ".")).findFirst().orElse(null);
+	}
+
+	public List<File> loadReaders(Language language, LanguageRelease release) {
+		if (release == null) return null;
+		return archetype.languages().releaseReaders(normalize(language.id()), release.version());
+	}
+
 	public boolean exists(Model model) {
 		return get(model) != null;
 	}
@@ -144,11 +158,6 @@ public class LanguageManager {
 		return get(gav.languageId());
 	}
 
-	public void saveAccess(Language language, List<String> access) {
-		language.access(access);
-		save(language);
-	}
-
 	public void remove(Language language) {
 		try {
 			File rootDir = archetype.languages().get(normalize(language.id()));
@@ -174,13 +183,16 @@ public class LanguageManager {
 		String owner = owner(language);
 		if (owner == null && language.isQuassarLanguage()) return true;
 		if (owner != null && owner.equals(user)) return true;
-		List<String> patternList = language.access();
+		List<String> patternList = language.grantAccessList();
 		return patternList.stream().anyMatch(p -> matches(p, user));
 	}
 
 	public String owner(Language language) {
-		List<String> ownerList = index.search("user").with("language", language.name()).execute();
-		return !ownerList.isEmpty() ? ownerList.getFirst().replace(":user", "") : null;
+		return ownerOf(index.get(language.metamodel(), "model"));
+	}
+
+	private String ownerOf(List<String> values) {
+		return values.stream().filter(v -> v.startsWith("owner=")).map(v -> v.replace("owner=", "")).findFirst().orElse(null);
 	}
 
 	private Language languageOf(File file) {

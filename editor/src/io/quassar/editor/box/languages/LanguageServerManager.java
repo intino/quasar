@@ -55,7 +55,7 @@ public class LanguageServerManager {
 	}
 
 	private String key(Model model, String release) {
-		return model.name() + release;
+		return model.id() + release;
 	}
 
 	private LanguageServer create(Model model, String release) throws IOException {

@@ -39,6 +39,9 @@ public class LanguageHeaderTemplate extends AbstractLanguageHeaderTemplate<Edito
 	public void refresh() {
 		super.refresh();
 		if (language == null) return;
+		String owner = box().languageManager().owner(language);
+		metamodelLink.visible(owner != null && owner.equals(username()));
+		if (metamodelLink.isVisible()) metamodelLink.address(path -> PathHelper.modelPath(box().modelManager().get(language.metamodel())));
 		refreshModels();
 		refreshExamples();
 		refreshHelp();

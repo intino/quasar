@@ -1,6 +1,5 @@
 package io.quassar.editor.box.ui.displays.templates;
 
-import io.intino.alexandria.ui.displays.UserMessage;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.box.ui.types.ModelView;

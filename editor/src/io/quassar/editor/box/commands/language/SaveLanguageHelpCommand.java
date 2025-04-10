@@ -7,7 +7,7 @@ import io.quassar.editor.model.LanguageRelease;
 
 public class SaveLanguageHelpCommand extends Command<Boolean> {
 	public Language language;
-	public LanguageRelease release;
+	public String release;
 	public String content;
 
 	public SaveLanguageHelpCommand(EditorBox box) {
@@ -17,7 +17,7 @@ public class SaveLanguageHelpCommand extends Command<Boolean> {
 	@Override
 	public Boolean execute() {
 		if (content == null) return false;
-		box.languageManager().saveHelp(language, release.version(), content);
+		box.languageManager().saveHelp(language, release, content);
 		return true;
 	}
 

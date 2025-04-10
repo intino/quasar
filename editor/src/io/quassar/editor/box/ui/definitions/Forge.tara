@@ -1,5 +1,6 @@
 dsl Konos
 
+use Languages
 use Editors
 use Theme
 
@@ -15,3 +16,6 @@ Template forgeTemplate as Relative(height=100%, width=100%)
 
 		Block(layout=Vertical Flexible CenterCenter) createLanguageBlock as Conditional
 			TemplateStamp(template=createLanguageEditor) createLanguageStamp
+
+		Block(layout=Vertical Flexible) languageBlock as Conditional
+			TemplateStamp(template=languageForgeTemplate) languageStamp

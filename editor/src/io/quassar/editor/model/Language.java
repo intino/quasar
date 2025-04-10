@@ -15,7 +15,7 @@ public class Language {
 	private GavCoordinates parent;
 	private String title;
 	private String description;
-	private List<String> accessList;
+	private List<String> grantAccessList;
 	private String acknowledgment;
 	private String credits;
 	private String citation;
@@ -49,15 +49,17 @@ public class Language {
 
 	public Language() {
 		this.tagList = new ArrayList<>();
-		this.accessList = new ArrayList<>();
+		this.grantAccessList = new ArrayList<>();
 		this.releaseList = new ArrayList<>();
 	}
 
-	public Language(String name) {
+	public Language(String group, String name) {
+		this.group = group;
 		this.name = name;
 		this.tagList = new ArrayList<>();
-		this.createDate = Instant.now();
+		this.grantAccessList = new ArrayList<>();
 		this.releaseList = new ArrayList<>();
+		this.createDate = Instant.now();
 	}
 
 	public String group() {
@@ -127,12 +129,12 @@ public class Language {
 		return this;
 	}
 
-	public List<String> access() {
-		return accessList;
+	public List<String> grantAccessList() {
+		return grantAccessList;
 	}
 
-	public Language access(List<String> values) {
-		this.accessList = values;
+	public Language grantAccessList(List<String> values) {
+		this.grantAccessList = values;
 		return this;
 	}
 

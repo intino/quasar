@@ -20,7 +20,7 @@ public class PathHelper {
 	}
 
 	public static String fileUrl(Model model, String release, File file, UISession session, EditorBox box) {
-		return session.browser().baseUrl() + "/models/%s/download/file".formatted(model.name()) + "?release=%s&file=%s".formatted(release, file.uri());
+		return session.browser().baseUrl() + "/models/%s/download/file".formatted(model.id()) + "?release=%s&file=%s".formatted(release, file.uri());
 	}
 
 	public static String landingUrl(LandingDialog dialog, UISession session) {
@@ -36,7 +36,7 @@ public class PathHelper {
 	}
 
 	public static String permissionsUrl(Model model, String callbackUrl, UISession session) {
-		return session.browser().baseUrl() + "/permissions?model=" + model.name() + "&callback=" + callbackUrl;
+		return session.browser().baseUrl() + "/permissions?model=" + model.id() + "&callback=" + callbackUrl;
 	}
 
 	public static String notFoundUrl(String type, UISession session) {
@@ -95,7 +95,11 @@ public class PathHelper {
 	}
 
 	public static String modelUrl(Model model, UISession session) {
-		return session.browser().baseUrl() + "/models/" + model.name();
+		return modelUrl(model, null, session);
+	}
+
+	public static String modelUrl(Model model, String release, UISession session) {
+		return session.browser().baseUrl() + "/models/" + model.id() + (release != null ? "?release=" + release : "");
 	}
 
 	private static final String ModelPath = "/models/:model";
@@ -138,7 +142,7 @@ public class PathHelper {
 	}
 
 	public static String modelViewPath(String address, Model model, String release) {
-		String result = address.replace(":model", model.name());
+		String result = address.replace(":model", model.id());
 		result += release != null ? "?release=" + release : "";
 		result += (result.contains("?") ? "&" : "?") + "view=:view";
 		return result;
@@ -164,6 +168,12 @@ public class PathHelper {
 	private static final String ForgePath = "/forge/:model/:release";
 	public static String forgeUrl(Model model, String release, UISession session) {
 		return session.browser().baseUrl() + ForgePath.replace(":model", model.id()).replace(":release", release);
+	}
+
+	public static String forgePath(String address, String model, String release) {
+		String result = address.replace(":model", model).replace(":release", release);
+		result += "?" + "view=:view";
+		return result;
 	}
 
 }

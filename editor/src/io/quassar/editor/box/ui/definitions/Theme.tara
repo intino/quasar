@@ -64,7 +64,7 @@ Format("opacity:'0.6',width:'100%',color:'black',background:'white',padding:'5px
 Format("fontSize:'20pt'") landingSloganText
 Format("margin:'30px 0',opacity:'1'") landingSection
 Format("border:'2px solid white',background:'#196082'") landingSectionBordered
-Format("height:'500px',background:'white'", darkContent="background:'#2a3443'") landingCatalog
+Format("height:'700px',background:'white'", darkContent="background:'#2a3443'") landingCatalog
 Format("opacity:'0.8',color:'white',background:'#222',width:'100%',padding:'5px 10px',fontSize:'20pt'") landingSectionTitle
 Format("background:'transparent'") noBackground
 Format("padding:'10px'") spaced
@@ -176,7 +176,7 @@ Format("minWidth:'200px'") parameterMinWidth
 Format("minWidth:'100px'") minPhotoWidth
 Format("height:'100%'") usersStampFormat
 Format("position:'relative'") relative
-Format("position:'absolute',right:'0',marginRight:'40px',marginTop:'3px'") clearLinkField
+Format("position:'absolute',right:'0',marginRight:'3px',marginTop:'3px'") rightIconField
 Format("textAlign:'end'") endJustified
 Format("padding:'10px 35px'") riskSliderStyle
 Format("background:'#efefef'", darkContent="background:'#404348'") greyBackground
@@ -297,7 +297,8 @@ Format("width:'100%',borderRadius:'3px',padding:'10px',background:'white',border
 Format("background:'white'", darkContent="background:'#424242'") tabPanel
 Format("margin:'0',borderRight:'1px solid #ddd'") leftTabPanel
 Format("borderRadius:'10px',border:'0',height:'100%'") panelDrawer
-Format("border:'1px solid #ddd',fontSize:'20pt'") dslNameFieldInput
+Format("fontSize:'20pt'") dslFieldInput
+Format("position:'absolute',bottom:'0',zIndex:'1'") languageEditorLogoStyle
 
 Format("padding:'15px 40px'") largeButton
 Format("position:'absolute',bottom:'0',left:'0',marginLeft:'6px',marginBottom:'7px'") userToolbar

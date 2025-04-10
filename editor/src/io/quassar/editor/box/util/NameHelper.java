@@ -1,7 +1,6 @@
 package io.quassar.editor.box.util;
 
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.model.Model;
 
 import java.util.List;
 
@@ -13,7 +12,7 @@ public class NameHelper {
 
 	private static final List<String> ReservedNames = List.of("core", "base", "common", "shared", "system", "default", "template", "example", "sample", "internal", "package", "namespace", "type", "class", "element", "structure", "syntax", "grammar", "schema", "attribute", "operation", "rule", "statement", "expression", "object", "instance", "interface", "abstract", "entity", "function", "dsl", "forge", "model", "models", "language", "languages", "builder", "editor", "workspace", "engine", "app", "manifest", "resources", "project", "user");
 	public static boolean reservedName(String name) {
-		return name.equalsIgnoreCase(Model.Template) || ReservedNames.contains(name.toLowerCase());
+		return ReservedNames.contains(name.toLowerCase());
 	}
 
 	public static boolean languageInUse(String value, EditorBox box) {

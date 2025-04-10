@@ -35,7 +35,8 @@ public class LanguageLoader {
 		try {
 			final ClassLoader classLoader = createClassLoader(jar);
 			if (classLoader == null) return null;
-			Class<?> cls = classLoader.loadClass(gav.groupId() + "." + firstUpperCase(StringHelper.kebabCaseToCamelCase(gav.artifactId())));
+			//Class<?> cls = classLoader.loadClass(gav.groupId() + "." + firstUpperCase(StringHelper.kebabCaseToCamelCase(gav.artifactId())));
+			Class<?> cls = classLoader.loadClass(artifactory.mainClass(gav));
 			return (Language) cls.getConstructors()[0].newInstance();
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			Logger.error(e);

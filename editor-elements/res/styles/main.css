@@ -2,3 +2,11 @@
     background: no-repeat black url("../landing.jpg");
     background-size: 100%;
 }
+
+.MuiInput-formControl {
+    border: 2px solid #ddd;
+}
+
+.MuiInput-formControl textarea, .MuiInput-formControl input {
+    margin-left: 5px !important;
+}

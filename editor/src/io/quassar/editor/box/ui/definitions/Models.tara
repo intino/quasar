@@ -47,8 +47,6 @@ Template modelsTemplate as Relative(height=100%, width=100%)
 						Text owner as Labeled("Owner")
 						Date createDate as Labeled("Create date")
 
-	TemplateStamp(template=addModelDialog) addModelDialog
-
 Template modelTemplate as Relative(height=100%, width=100%)
 
 	Block(layout=Vertical Flexible CenterCenter, visible=false) openingModelBlock

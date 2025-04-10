@@ -1,10 +1,7 @@
 package io.quassar.editor.box.util;
 
 import io.intino.alexandria.ui.services.push.UISession;
-import io.quassar.editor.box.ui.types.LanguageTab;
-import io.quassar.editor.box.ui.types.LanguageView;
-import io.quassar.editor.box.ui.types.LanguagesTab;
-import io.quassar.editor.box.ui.types.ModelView;
+import io.quassar.editor.box.ui.types.*;
 
 public class SessionHelper {
 
@@ -47,6 +44,16 @@ public class SessionHelper {
 	public static ModelView modelView(UISession session) {
 		String result = session.preference("model-view");
 		return result != null && !result.isEmpty() ? ModelView.from(result) : ModelView.Model;
+	}
+
+	public static void register(UISession session, ForgeView view) {
+		if (view == null) return;
+		session.add("forge-view", view.name());
+	}
+
+	public static ForgeView forgeView(UISession session) {
+		String result = session.preference("forge-view");
+		return result != null && !result.isEmpty() ? ForgeView.from(result) : ForgeView.Properties;
 	}
 
 }

@@ -42,19 +42,19 @@ public class ModelManager {
 		Set<String> result = new HashSet<>(index.search("model").with("language", language.id()).with("owner", owner).execute());
 		result.addAll(index.search("model").with("language", language.id()).with("contributor", owner).execute());
 		result.addAll(index.search("model").with("language", language.id()).with("is-private", "false").execute());
-		return result.stream().map(id -> id.replace(":model", "")).map(this::get).toList();
+		return result.stream().map(id -> id.replace(":model", "")).map(this::get).filter(m -> !m.isTemplate()).toList();
 	}
 
 	public List<Model> models(String owner) {
 		Set<String> result = new HashSet<>(index.search("model").with("owner", owner).execute());
 		result.addAll(index.search("model").with("contributor", owner).execute());
 		result.addAll(index.search("model").with("is-private", "false").execute());
-		return result.stream().map(id -> id.replace(":model", "")).map(this::get).toList();
+		return result.stream().map(id -> id.replace(":model", "")).map(this::get).filter(m -> !m.isTemplate()).toList();
 	}
 
 	public List<Model> exampleModels(Language language, LanguageRelease release) {
 		if (release != null) return release.examples().stream().map(this::get).toList();
-		return language.releases().stream().map(LanguageRelease::examples).flatMap(Collection::stream).map(this::get).toList();
+		return language.releases().stream().map(LanguageRelease::examples).flatMap(Collection::stream).distinct().map(this::get).toList();
 	}
 
 	public boolean exists(String key) {
@@ -85,7 +85,7 @@ public class ModelManager {
 		return archetype.models().release(ArchetypeHelper.relativeModelPath(model.id()), model.id(), version);
 	}
 
-	public Model create(String name, String title, String description, GavCoordinates language, String owner) {
+	public Model create(String name, String title, String description, GavCoordinates language, boolean isTemplate, String owner) {
 		Model model = new Model();
 		model.id(UUID.randomUUID().toString());
 		model.name(name);
@@ -94,6 +94,7 @@ public class ModelManager {
 		model.language(language);
 		model.owner(owner);
 		model.isPrivate(true);
+		model.isTemplate(isTemplate);
 		model.createDate(Instant.now());
 		save(model);
 		return model;
@@ -108,6 +109,10 @@ public class ModelManager {
 		save(result);
 		new WorkspaceWriter(workspace(model, release), server(model, release)).clone(result, server(result, Model.DraftRelease));
 		return get(name);
+	}
+
+	public void copyWorkSpace(Model template, Model model) {
+		new WorkspaceWriter(workspace(template, Model.DraftRelease), server(template, Model.DraftRelease)).clone(model, server(model, Model.DraftRelease));
 	}
 
 	public boolean isWorkspaceEmpty(Model model, String release) {
@@ -245,8 +250,8 @@ public class ModelManager {
 	}
 
 	private String locate(String key) {
-		Map<String, String> modelMap = index.search("model").execute().stream().collect(toMap(u -> nameOf(index.get(u.replace(":model", ""), "model")), u -> u.replace(":model", "")));
-		return modelMap.getOrDefault(key, key);
+		Map<String, String> modelMap = index.search("model").execute().stream().collect(toMap(u -> u.replace(":model", ""), u -> nameOf(index.get(u.replace(":model", ""), "model"))));
+		return modelMap.entrySet().stream().filter(e -> e.getValue().equals(key)).map(Map.Entry::getKey).findFirst().orElse(key);
 	}
 
 	private String nameOf(List<String> values) {

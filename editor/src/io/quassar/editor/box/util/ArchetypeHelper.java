@@ -10,6 +10,7 @@ public class ArchetypeHelper {
 	}
 
 	public static String relativeModelPath(String id) {
+		if (id == null) return null;
 		if (!id.contains("-")) return id;
 		int pos = id.indexOf("-");
 		return id.substring(0, pos);
