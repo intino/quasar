@@ -224,7 +224,7 @@ Template(layout=Vertical Flexible, format=doubleSpaced) languageKitTemplate
 			Text(value="Examples", translate=true, format=h5 bold middleAirBottom)
 			TemplateStamp(template=modelsTemplate) modelsCatalog
 
-Template languageToolsTemplate
+Template(layout=Vertical Flexible, format=doubleSpaced) languageToolsTemplate
 	Block(layout=Vertical Flexible, visible=false) selectVersionBlock
 		Text(value="Select version on right panel to open tools")
 
