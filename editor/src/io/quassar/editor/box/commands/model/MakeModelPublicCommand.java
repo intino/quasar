@@ -13,7 +13,7 @@ public class MakeModelPublicCommand extends Command<Boolean> {
 
 	@Override
 	public Boolean execute() {
-		box.modelManager().makePublic(model);
+		model.isPrivate(false);
 		return true;
 	}
 

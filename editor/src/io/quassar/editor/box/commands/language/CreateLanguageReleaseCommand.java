@@ -4,7 +4,6 @@ import io.intino.alexandria.logger.Logger;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.builder.ModelChecker;
 import io.quassar.editor.box.commands.Command;
-import io.quassar.editor.box.commands.model.CheckModelCommand;
 import io.quassar.editor.box.commands.model.CreateModelCommand;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.ModelHelper;
@@ -36,8 +35,6 @@ public class CreateLanguageReleaseCommand extends Command<LanguageRelease> {
 		createDefaultHelp(language, release);
 		Model template = createTemplateModel(language, release);
 		release.template(template.id());
-		language.add(release);
-		box.languageManager().save(language);
 		return release;
 	}
 
@@ -62,7 +59,7 @@ public class CreateLanguageReleaseCommand extends Command<LanguageRelease> {
 	private Model createTemplateModel(Language language, LanguageRelease release) {
 		CreateModelCommand command = new CreateModelCommand(box);
 		command.author = author;
-		command.language = GavCoordinates.from(language, release);
+		command.language = GavCoordinates.fromString(language, release);
 		command.name = ModelHelper.proposeName();
 		command.title = language.name();
 		command.description = "";

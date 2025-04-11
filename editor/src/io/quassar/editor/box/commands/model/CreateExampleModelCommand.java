@@ -8,8 +8,6 @@ import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
 
-import java.io.InputStream;
-
 public class CreateExampleModelCommand extends Command<Model> {
 	public Language language;
 	public LanguageRelease release;
@@ -22,8 +20,7 @@ public class CreateExampleModelCommand extends Command<Model> {
 	@Override
 	public Model execute() {
 		Model model = createModel();
-		release.examples().add(model.id());
-		box.languageManager().save(language);
+		release.addExample(model.id());
 		return model;
 	}
 
@@ -31,7 +28,7 @@ public class CreateExampleModelCommand extends Command<Model> {
 		String name = ModelHelper.proposeName();
 		CreateModelCommand command = new CreateModelCommand(box);
 		command.author = author;
-		command.language = GavCoordinates.from(language, release);
+		command.language = GavCoordinates.fromString(language, release);
 		command.name = name;
 		command.title = name;
 		command.description = "";

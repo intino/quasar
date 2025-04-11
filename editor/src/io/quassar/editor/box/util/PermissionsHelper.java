@@ -41,6 +41,7 @@ public class PermissionsHelper {
 
 	public static boolean canAddModel(Language language, UISession session, EditorBox box) {
 		if (session.user() == null) return false;
+		if (language.releases().isEmpty()) return false;
 		return box.languageManager().hasAccess(language, session.user().username());
 	}
 

@@ -1,194 +1,150 @@
 package io.quassar.editor.model;
 
+import io.quassar.editor.box.util.SubjectHelper;
 import io.quassar.editor.box.util.VersionNumberComparator;
+import systems.intino.datamarts.subjectindex.model.Subject;
+import systems.intino.datamarts.subjectindex.model.Subjects;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Language {
-	private String name;
-	private String group;
-	private String metamodel;
-	private Level level;
-	private GavCoordinates parent;
-	private String title;
-	private String description;
-	private List<String> grantAccessList;
-	private String acknowledgment;
-	private String credits;
-	private String citation;
-	private String license;
-	private List<String> tagList;
-	private List<LanguageRelease> releaseList;
-	private Instant createDate;
+public class Language extends SubjectWrapper {
 
 	public static final String FileExtension = ".tara";
 	public static final String QuassarGroup = "tara.dsl";
 	public static final String Metta = "meta";
 
-	public static String groupFrom(String id) {
-		return id.split("\\.")[0];
-	}
-
-	public static String nameFrom(String id) {
-		return id.split("\\.")[1];
-	}
-
 	public static String id(String group, String name) {
-		if (group.equalsIgnoreCase(Language.QuassarGroup)) return name;
+		if (group == null || group.equalsIgnoreCase(Language.QuassarGroup)) return name;
 		return name + "." + group;
 	}
 
 	public String id() {
-		return id(group, name);
+		return id(group(), name());
 	}
 
 	public enum Level { L1, L2, L3 }
 
-	public Language() {
-		this.tagList = new ArrayList<>();
-		this.grantAccessList = new ArrayList<>();
-		this.releaseList = new ArrayList<>();
-	}
-
-	public Language(String group, String name) {
-		this.group = group;
-		this.name = name;
-		this.tagList = new ArrayList<>();
-		this.grantAccessList = new ArrayList<>();
-		this.releaseList = new ArrayList<>();
-		this.createDate = Instant.now();
+	public Language(Subject subject) {
+		super(subject);
 	}
 
 	public String group() {
-		return group;
+		return get("group");
 	}
 
-	public Language group(String group) {
-		this.group = group;
-		return this;
+	public void group(String group) {
+		set("group", group);
 	}
 
 	public boolean isQuassarLanguage() {
-		return group.equals(Language.QuassarGroup);
+		return group().equals(Language.QuassarGroup);
 	}
 
 	public String name() {
-		return name;
+		return get("name");
 	}
 
-	public Language name(String name) {
-		this.name = name;
-		return this;
+	public void name(String value) {
+		set("name", value);
 	}
 
 	public String metamodel() {
-		return metamodel;
+		return get("metamodel");
 	}
 
-	public Language metamodel(String metamodel) {
-		this.metamodel = metamodel;
-		return this;
+	public void metamodel(String value) {
+		set("metamodel", value);
 	}
 
 	public Level level() {
-		return level;
+		return Level.valueOf(get("level"));
 	}
 
-	public Language level(Level level) {
-		this.level = level;
-		return this;
+	public void level(Level value) {
+		set("level", value.name());
 	}
 
 	public GavCoordinates parent() {
-		return parent;
+		return GavCoordinates.fromString(get("parent"));
 	}
 
-	public Language parent(GavCoordinates parent) {
-		this.parent = parent;
-		return this;
+	public void parent(GavCoordinates value) {
+		set("parent", value.toString());
 	}
 
 	public String title() {
-		return title;
+		return get("title");
 	}
 
-	public Language title(String value) {
-		this.title = value;
-		return this;
+	public void title(String value) {
+		set("title", value);
 	}
 
 	public String description() {
-		return description;
+		return get("description");
 	}
 
-	public Language description(String description) {
-		this.description = description;
-		return this;
+	public void description(String value) {
+		set("description", value);
 	}
 
 	public List<String> grantAccessList() {
-		return grantAccessList;
+		return getList("access");
 	}
 
-	public Language grantAccessList(List<String> values) {
-		this.grantAccessList = values;
-		return this;
+	public void grantAccessList(List<String> values) {
+		putList("access", values);
 	}
 
 	public String acknowledgment() {
-		return acknowledgment;
+		return get("acknowledgment");
 	}
 
-	public Language acknowledgment(String acknowledgment) {
-		this.acknowledgment = acknowledgment;
-		return this;
+	public void acknowledgment(String acknowledgment) {
+		set("acknowledgment", acknowledgment);
 	}
 
 	public String credits() {
-		return credits;
+		return get("credits");
 	}
 
-	public Language credits(String credits) {
-		this.credits = credits;
-		return this;
+	public void credits(String credits) {
+		set("credits", credits);
 	}
 
 	public String citation() {
-		return citation;
+		return get("citation");
 	}
 
-	public Language citation(String citation) {
-		this.citation = citation;
-		return this;
+	public void citation(String citation) {
+		set("citation", citation);
 	}
 
 	public String license() {
-		return license;
+		return get("license");
 	}
 
-	public Language license(String license) {
-		this.license = license;
-		return this;
+	public void license(String license) {
+		set("license", license);
 	}
 
 	public List<String> tags() {
-		return tagList;
+		return getList("tag");
 	}
 
-	public Language tags(List<String> tagList) {
-		this.tagList = tagList;
-		return this;
+	public void tags(List<String> tagList) {
+		putList("tag", tagList);
 	}
 
 	public List<LanguageRelease> releases() {
-		return releaseList;
+		Subjects subjects = subject.children().filter(s -> s.is(SubjectHelper.LanguageReleaseType));
+		return subjects.stream().map(this::releaseOf).toList();
 	}
 
 	public LanguageRelease release(String version) {
-		return releaseList.stream().filter(r -> r.version().equals(version)).findFirst().orElse(null);
+		return releases().stream().filter(r -> r.version().equals(version)).findFirst().orElse(null);
 	}
 
 	public LanguageRelease lastRelease() {
@@ -196,22 +152,12 @@ public class Language {
 		return !releases.isEmpty() ? releases.stream().sorted((o1, o2) -> VersionNumberComparator.getInstance().compare(o2.version(), o1.version())).toList().getFirst() : null;
 	}
 
-	public Language releases(List<LanguageRelease> releaseList) {
-		this.releaseList = releaseList;
-		return this;
-	}
-
-	public void add(LanguageRelease release) {
-		this.releaseList.add(release);
-	}
-
 	public Instant createDate() {
-		return createDate;
+		return Instant.parse(get("create-date"));
 	}
 
-	public Language createDate(Instant createDate) {
-		this.createDate = createDate;
-		return this;
+	public void createDate(Instant createDate) {
+		set("create-date", createDate.toString());
 	}
 
 	@Override
@@ -225,4 +171,9 @@ public class Language {
 	public int hashCode() {
 		return Objects.hashCode(id());
 	}
+
+	private LanguageRelease releaseOf(Subject subject) {
+		return new LanguageRelease(subject);
+	}
+
 }

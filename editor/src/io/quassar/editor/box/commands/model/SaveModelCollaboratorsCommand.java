@@ -18,7 +18,6 @@ public class SaveModelCollaboratorsCommand extends Command<Boolean> {
 	@Override
 	public Boolean execute() {
 		model.collaborators(collaborators.stream().map(User::name).toList());
-		box.modelManager().save(model);
 		return true;
 	}
 

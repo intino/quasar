@@ -20,9 +20,7 @@ public class RenameLanguageCommand extends Command<Boolean> {
 	@Override
 	public Boolean execute() {
 		if (language.name().equals(newName)) return true;
-		if (!renameLanguage()) return false;
-		box.languageManager().save(language);
-		return true;
+		return renameLanguage();
 	}
 
 	private boolean renameLanguage() {

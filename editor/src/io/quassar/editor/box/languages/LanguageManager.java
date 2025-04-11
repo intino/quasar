@@ -1,30 +1,35 @@
 package io.quassar.editor.box.languages;
 
-import io.intino.alexandria.Json;
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.util.ArchetypeHelper;
-import io.quassar.editor.model.*;
+import io.quassar.editor.box.util.SubjectHelper;
+import io.quassar.editor.model.GavCoordinates;
+import io.quassar.editor.model.Language;
+import io.quassar.editor.model.LanguageRelease;
+import io.quassar.editor.model.Model;
 import org.apache.commons.io.FileUtils;
-import systems.intino.alexandria.datamarts.anchormap.AnchorMap;
+import systems.intino.datamarts.subjectindex.SubjectTree;
+import systems.intino.datamarts.subjectindex.model.Subject;
+import systems.intino.datamarts.subjectindex.model.Subjects;
+import systems.intino.datamarts.subjectindex.model.Tokens;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.Instant;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
-
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
 
 public class LanguageManager {
 	private final Archetype archetype;
-	private final AnchorMap index;
+	private final SubjectTree subjectTree;
 
-	public LanguageManager(Archetype archetype, AnchorMap index) {
+	public LanguageManager(Archetype archetype, SubjectTree subjectTree) {
 		this.archetype = archetype;
-		this.index = index;
+		this.subjectTree = subjectTree;
 	}
 
 	public List<Language> visibleLanguages(String owner) {
@@ -42,26 +47,26 @@ public class LanguageManager {
 	}
 
 	public List<Language> languages() {
-		File[] root = archetype.languages().root().listFiles();
-		if (root == null) return emptyList();
-		return Arrays.stream(root).filter(File::isDirectory).map(this::languageOf).filter(Objects::nonNull).collect(toList());
+		return subjectTree.subjects(SubjectHelper.LanguageType).roots().stream().map(this::get).toList();
 	}
 
 	public Language create(String group, String name, Model metamodel, Language.Level level, String title, String description) {
-		Language language = new Language(group, name);
-		language.metamodel(metamodel.id());
+		Language language = new Language(subjectTree.create(SubjectHelper.languagePath(group, name)));
+		language.group(group);
+		language.name(name);
 		language.level(level);
 		language.title(title);
 		language.description(description);
-		language.parent(metamodel.language());
 		language.createDate(Instant.now());
-		return save(language);
+		if (metamodel == null) return language;
+		language.metamodel(metamodel.id());
+		language.parent(metamodel.language());
+		return language;
 	}
 
 	public LanguageRelease createRelease(Language language, String version, File dsl) {
-		LanguageRelease release = new LanguageRelease().version(version);
-		language.add(release);
-		save(language);
+		LanguageRelease release = new LanguageRelease(subjectTree.create(SubjectHelper.pathOf(language, version)));
+		release.version(version);
 		saveDsl(language, version, dsl);
 		return release;
 	}
@@ -134,51 +139,42 @@ public class LanguageManager {
 
 	public boolean exists(String language) {
 		if (new File(archetype.languages().root(), normalize(language)).exists()) return true;
-		List<String> result = index.search("language").with("name", normalize(language)).execute();
-		if (!result.isEmpty()) return true;
-		return !index.get(normalize(language), "language").isEmpty();
+		return !subjectTree.subjects(SubjectHelper.LanguageType).with("name", normalize(language)).roots().isEmpty();
 	}
 
 	public Language getDefault() {
 		return languages().stream().findFirst().orElse(null);
 	}
 
-	public Language get(String language) {
-		return languageOf(language);
-	}
-
 	public Language getWithMetamodel(Model model) {
-		List<String> result = index.search("language").with("metamodel", model.id()).execute();
-		return !result.isEmpty() ? get(result.getFirst().replace(":language", "")) : null;
+		Subjects result = subjectTree.subjects(SubjectHelper.LanguageType).with("metamodel", model.id()).roots();
+		return !result.isEmpty() ? get(result.get(0)) : null;
 	}
 
 	public Language get(Model model) {
-		List<String> predicates = index.get(model.id(), "model");
-		return predicates.stream().filter(p -> p.startsWith("language=")).map(p -> get(p.replace("language=", ""))).findFirst().orElse(null);
+		Subject subject = subjectTree.get(SubjectHelper.pathOf(model));
+		Tokens.Values values = subject.tokens().get("language");
+		return values.iterator().hasNext() ? get(values.first()) : null;
 	}
 
 	public Language get(GavCoordinates gav) {
 		return get(gav.languageId());
 	}
 
+	public Language get(String id) {
+		return get(subjectTree.get(SubjectHelper.languagePath(id)));
+	}
+
 	public void remove(Language language) {
 		try {
 			File rootDir = archetype.languages().get(normalize(language.id()));
 			if (!rootDir.exists()) return;
+			language.releases().forEach(r -> subjectTree.drop(SubjectHelper.pathOf(language, r)));
+			subjectTree.drop(SubjectHelper.pathOf(language));
 			FileUtils.deleteDirectory(rootDir);
 		} catch (IOException e) {
 			Logger.error(e);
 		}
-	}
-
-	public Language save(Language language) {
-		try {
-			index.on(language.id(), "language").set("metamodel", language.metamodel()).set("name", language.name()).commit();
-			Files.writeString(archetype.languages().properties(normalize(language.id())).toPath(), Json.toString(language));
-		} catch (IOException e) {
-			Logger.error(e);
-		}
-		return language;
 	}
 
 	public boolean hasAccess(Language language, String user) {
@@ -191,27 +187,8 @@ public class LanguageManager {
 	}
 
 	public String owner(Language language) {
-		return ownerOf(index.get(language.metamodel(), "model"));
-	}
-
-	private String ownerOf(List<String> values) {
-		return values.stream().filter(v -> v.startsWith("owner=")).map(v -> v.replace("owner=", "")).findFirst().orElse(null);
-	}
-
-	private Language languageOf(File file) {
-		return languageOf(file.getName());
-	}
-
-	private Language languageOf(String id) {
-		try {
-			if (!exists(id)) return null;
-			File properties = archetype.languages().properties(normalize(id));
-			if (!properties.exists()) return null;
-			return Json.fromJson(Files.readString(properties.toPath()), Language.class);
-		} catch (IOException e) {
-			Logger.error(e);
-			return null;
-		}
+		Subject subject = subjectTree.get(SubjectHelper.modelPath(language.metamodel()));
+		return subject != null && subject.tokens().get("owner").iterator().hasNext() ? subject.tokens().get("owner").first() : null;
 	}
 
 	private boolean matches(String regex, String user) {
@@ -233,6 +210,11 @@ public class LanguageManager {
 
 	private String normalize(String language) {
 		return ArchetypeHelper.languageDirectoryName(language);
+	}
+
+	private Language get(Subject subject) {
+		if (subject == null || subject.isNull()) return null;
+		return new Language(subject);
 	}
 
 }

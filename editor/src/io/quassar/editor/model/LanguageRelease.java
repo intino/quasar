@@ -1,37 +1,40 @@
 package io.quassar.editor.model;
 
-import java.util.ArrayList;
+import systems.intino.datamarts.subjectindex.model.Subject;
+
 import java.util.List;
 
-public class LanguageRelease {
-	private String version;
-	private String template;
-	private List<String> examples = new ArrayList<>();
+public class LanguageRelease extends SubjectWrapper {
 
-	public String version() {
-		return version;
+	public LanguageRelease(Subject subject) {
+		super(subject);
 	}
 
-	public LanguageRelease version(String version) {
-		this.version = version;
-		return this;
+	public String version() {
+		return get("version");
+	}
+
+	public void version(String version) {
+		set("version", version);
 	}
 
 	public String template() {
-		return template;
+		return get("template");
 	}
 
-	public LanguageRelease template(String template) {
-		this.template = template;
-		return this;
+	public void template(String template) {
+		set("template", template);
 	}
 
 	public List<String> examples() {
-		return examples;
+		return getList("example");
 	}
 
-	public LanguageRelease examples(List<String> examples) {
-		this.examples = examples;
-		return this;
+	public void examples(List<String> examples) {
+		putList("example", examples);
+	}
+
+	public void addExample(String example) {
+		put("example", example);
 	}
 }

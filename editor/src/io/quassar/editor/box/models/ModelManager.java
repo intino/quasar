@@ -5,6 +5,7 @@ import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.languages.LanguageServerManager;
 import io.quassar.editor.box.util.ArchetypeHelper;
+import io.quassar.editor.box.util.SubjectHelper;
 import io.quassar.editor.box.util.VersionNumberComparator;
 import io.quassar.editor.box.util.ZipHelper;
 import io.quassar.editor.model.*;
@@ -12,44 +13,47 @@ import org.apache.commons.io.FileUtils;
 import org.apache.tika.Tika;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.lsp4j.services.LanguageServer;
-import systems.intino.alexandria.datamarts.anchormap.AnchorMap;
+import systems.intino.datamarts.subjectindex.SubjectTree;
+import systems.intino.datamarts.subjectindex.model.Subject;
+import systems.intino.datamarts.subjectindex.model.Subjects;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.time.Instant;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
-
-import static java.util.stream.Collectors.toMap;
+import java.util.stream.Collectors;
 
 public class ModelManager {
-	private final AnchorMap index;
+	private final SubjectTree subjectTree;
 	private final Archetype archetype;
 	private final Function<GavCoordinates, Language> languageLoader;
 	private final LanguageServerManager serverManager;
 
-	public ModelManager(Archetype archetype, AnchorMap index, Function<GavCoordinates, Language> languageLoader, LanguageServerManager serverManager) {
-		this.index = index;
+	public ModelManager(Archetype archetype, SubjectTree subjectTree, Function<GavCoordinates, Language> languageLoader, LanguageServerManager serverManager) {
+		this.subjectTree = subjectTree;
 		this.archetype = archetype;
 		this.languageLoader = languageLoader;
 		this.serverManager = serverManager;
 	}
 
 	public List<Model> models(Language language, String owner) {
-		Set<String> result = new HashSet<>(index.search("model").with("language", language.id()).with("owner", owner).execute());
-		result.addAll(index.search("model").with("language", language.id()).with("contributor", owner).execute());
-		result.addAll(index.search("model").with("language", language.id()).with("is-private", "false").execute());
-		return result.stream().map(id -> id.replace(":model", "")).map(this::get).filter(m -> !m.isTemplate()).toList();
+		Map<String, Subject> ownerSubjects = mapOf(subjectTree.subjects(SubjectHelper.ModelType).with("language", language.id()).with("owner", owner).with("is-private", "true").with("is-template", "false").roots());
+		Map<String, Subject> contributorSubjects = mapOf(subjectTree.subjects(SubjectHelper.ModelType).with("language", language.id()).with("contributor", owner).with("is-private", "true").with("is-template", "false").roots());
+		ownerSubjects.putAll(contributorSubjects);
+		return ownerSubjects.values().stream().map(this::get).toList();
 	}
 
 	public List<Model> models(String owner) {
-		Set<String> result = new HashSet<>(index.search("model").with("owner", owner).execute());
-		result.addAll(index.search("model").with("contributor", owner).execute());
-		result.addAll(index.search("model").with("is-private", "false").execute());
-		return result.stream().map(id -> id.replace(":model", "")).map(this::get).filter(m -> !m.isTemplate()).toList();
+		Map<String, Subject> ownerSubjects = mapOf(subjectTree.subjects(SubjectHelper.ModelType).with("owner", owner).with("is-private", "true").with("is-template", "false").roots());
+		Map<String, Subject> contributorSubjects = mapOf(subjectTree.subjects(SubjectHelper.ModelType).with("contributor", owner).with("is-private", "true").with("is-template", "false").roots());
+		ownerSubjects.putAll(contributorSubjects);
+		return ownerSubjects.values().stream().map(this::get).toList();
 	}
 
 	public List<Model> exampleModels(Language language, LanguageRelease release) {
@@ -58,22 +62,13 @@ public class ModelManager {
 	}
 
 	public boolean exists(String key) {
-		return get(locate(key)) != null;
+		return get(key) != null;
 	}
 
 	public Model get(String key) {
-		try {
-			String id = locate(key);
-			File settings = archetype.models().settings(ArchetypeHelper.relativeModelPath(id), id);
-			if (!settings.exists()) {
-				cleanArchetypeTrashFor(key);
-				return null;
-			}
-			return Json.fromJson(Files.readString(settings.toPath()), Model.class);
-		} catch (IOException e) {
-			Logger.error(e);
-			return null;
-		}
+		Subject subject = subjectTree.get(SubjectHelper.modelPath(key));
+		if (subject.isNull()) subject = subjectTree.subjects(SubjectHelper.ModelType).with("name", key).roots().stream().findFirst().orElse(null);
+		return subject != null && !subject.isNull() ? new Model(subject) : null;
 	}
 
 	public List<String> releases(Model model) {
@@ -85,9 +80,9 @@ public class ModelManager {
 		return archetype.models().release(ArchetypeHelper.relativeModelPath(model.id()), model.id(), version);
 	}
 
-	public Model create(String name, String title, String description, GavCoordinates language, boolean isTemplate, String owner) {
-		Model model = new Model();
-		model.id(UUID.randomUUID().toString());
+	public Model create(String id, String name, String title, String description, GavCoordinates language, boolean isTemplate, String owner) {
+		Model model = new Model(subjectTree.create(SubjectHelper.modelPath(id)));
+		model.id(id);
 		model.name(name);
 		model.title(title);
 		model.description(description);
@@ -96,17 +91,19 @@ public class ModelManager {
 		model.isPrivate(true);
 		model.isTemplate(isTemplate);
 		model.createDate(Instant.now());
-		save(model);
 		return model;
 	}
 
 	public Model clone(Model model, String release, String name, String owner) {
-		Model result = Model.clone(model);
-		result.id(UUID.randomUUID().toString());
+		String id = UUID.randomUUID().toString();
+		Model result = new Model(subjectTree.create(SubjectHelper.modelPath(id)));
+		result.id(id);
 		result.name(name);
+		result.language(model.language());
 		result.owner(owner);
+		result.isPrivate(true);
+		result.isTemplate(false);
 		result.createDate(Instant.now());
-		save(result);
 		new WorkspaceWriter(workspace(model, release), server(model, release)).clone(result, server(result, Model.DraftRelease));
 		return get(name);
 	}
@@ -133,8 +130,11 @@ public class ModelManager {
 		try {
 			if (isWorkspaceEmpty(model, Model.DraftRelease)) return OperationResult.Error("Workspace is empty");
 			File releaseFile = archetype.models().release(ArchetypeHelper.relativeModelPath(model.id()), model.id(), release);
-			ZipHelper.zip(workspace(model, Model.DraftRelease).root().toPath(), manifest(model, release), releaseFile.toPath());
-			index.on(model.id(), "model").set("release", release).commit();
+			ModelRelease modelRelease = new ModelRelease(subjectTree.create(SubjectHelper.pathOf(model, release)));
+			modelRelease.version(release);
+			modelRelease.language(model.language());
+			modelRelease.owner(model.owner());
+			ZipHelper.zip(workspace(model, Model.DraftRelease).root().toPath(), manifest(modelRelease), releaseFile.toPath());
 			return OperationResult.Success();
 		} catch (Exception e) {
 			Logger.error(e);
@@ -142,8 +142,8 @@ public class ModelManager {
 		}
 	}
 
-	private String manifest(Model model, String release) {
-		return Json.toString(new ModelRelease(release, model.language(), model.owner()));
+	private String manifest(ModelRelease modelRelease) {
+		return Json.toString(modelRelease);
 	}
 
 	public boolean existsFile(Model model, String name, io.quassar.editor.box.models.File parent) {
@@ -175,25 +175,6 @@ public class ModelManager {
 		}
 	}
 
-	public void save(Model model) {
-		try {
-			index.on(model.id(), "model").set("name", model.name()).set("owner", model.owner()).set("language", model.language().languageId()).set("is-private", String.valueOf(model.isPrivate())).commit();
-			Files.writeString(archetype.models().settings(ArchetypeHelper.relativePath(model), model.id()).toPath(), Json.toString(model));
-		} catch (IOException e) {
-			Logger.error(e);
-		}
-	}
-
-	public void makePrivate(Model model) {
-		model.isPrivate(true);
-		save(model);
-	}
-
-	public void makePublic(Model model) {
-		model.isPrivate(false);
-		save(model);
-	}
-
 	public void remove(Model model, io.quassar.editor.box.models.File file) {
 		new WorkspaceWriter(workspace(model, Model.DraftRelease), server(model, Model.DraftRelease)).remove(file);
 	}
@@ -202,8 +183,9 @@ public class ModelManager {
 		try {
 			File rootDir = archetype.models().get(ArchetypeHelper.relativePath(model), model.id());
 			if (!rootDir.exists()) return;
+			releases(model).forEach(r -> subjectTree.drop(SubjectHelper.pathOf(model, r)));
+			subjectTree.drop(SubjectHelper.pathOf(model));
 			FileUtils.deleteDirectory(rootDir);
-			// TODO JJ index.on(model.id(), "model").remove().commit();
 		} catch (IOException e) {
 			Logger.error(e);
 		}
@@ -243,19 +225,12 @@ public class ModelManager {
 		}
 	}
 
-	private void cleanArchetypeTrashFor(String id) {
-		archetype.models().get(ArchetypeHelper.relativeModelPath(id), id).delete();
-		String[] list = archetype.models().get(ArchetypeHelper.relativeModelPath(id)).list();
-		if (list == null || list.length == 0) archetype.models().get(ArchetypeHelper.relativeModelPath(id)).delete();
+	private Map<String, Subject> mapOf(Subjects subjects) {
+		return subjects.stream().collect(Collectors.toMap(Subject::identifier, s -> s));
 	}
 
-	private String locate(String key) {
-		Map<String, String> modelMap = index.search("model").execute().stream().collect(toMap(u -> u.replace(":model", ""), u -> nameOf(index.get(u.replace(":model", ""), "model"))));
-		return modelMap.entrySet().stream().filter(e -> e.getValue().equals(key)).map(Map.Entry::getKey).findFirst().orElse(key);
-	}
-
-	private String nameOf(List<String> values) {
-		return values.stream().filter(v -> v.startsWith("name=")).map(v -> v.replace("name=", "")).findFirst().orElse(null);
+	private Model get(Subject subject) {
+		return new Model(subject);
 	}
 
 }

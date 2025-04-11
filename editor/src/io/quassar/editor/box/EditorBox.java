@@ -10,18 +10,20 @@ import io.intino.builderservice.schemas.RegisterBuilder;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.commands.Commands;
 import io.quassar.editor.box.commands.CommandsFactory;
-import io.quassar.editor.box.languages.*;
+import io.quassar.editor.box.languages.LanguageLoader;
+import io.quassar.editor.box.languages.LanguageManager;
+import io.quassar.editor.box.languages.LanguageServerManager;
+import io.quassar.editor.box.languages.LanguageServerWebSocketHandler;
 import io.quassar.editor.box.languages.artifactories.LocalLanguageArtifactory;
 import io.quassar.editor.box.models.ModelManager;
 import io.quassar.editor.box.projects.ProjectManager;
 import io.quassar.editor.box.users.UserManager;
-import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 import io.quassar.editor.model.Utilities;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.lsp4j.services.LanguageServer;
-import systems.intino.alexandria.datamarts.anchormap.AnchorMap;
+import systems.intino.datamarts.subjectindex.SubjectTree;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +35,7 @@ import java.util.Map;
 
 public class EditorBox extends AbstractBox {
 	private final Archetype archetype;
-	private AnchorMap index;
+	private SubjectTree subjectTree;
 	private AmidasOauthAccessor authService;
 	private LanguageLoader languageLoader;
 	private LanguageManager languageManager;
@@ -66,17 +68,24 @@ public class EditorBox extends AbstractBox {
 	}
 
 	public void beforeStart() {
-		index = new AnchorMap(archetype.index());
+		boolean exists = archetype.index().exists();
+		subjectTree = new SubjectTree(archetype.index());
 		utilities = new Utilities(archetype.configuration().editor().utilities());
 		commandsFactory = new CommandsFactory(this);
-		languageLoader = new LanguageLoader(new LocalLanguageArtifactory(archetype, id -> modelManager.get(languageManager.get(id).metamodel())));
-		languageManager = new LanguageManager(archetype, index);
+		languageLoader = new LanguageLoader(new LocalLanguageArtifactory(archetype, this::modelWithLanguage));
+		languageManager = new LanguageManager(archetype, subjectTree);
 		serverManager = new LanguageServerManager(languageLoader, this::workSpaceOf);
-		modelManager = new ModelManager(archetype, index, l -> languageManager.get(l), serverManager);
-		userManager = new UserManager(archetype, index);
+		modelManager = new ModelManager(archetype, subjectTree, l -> languageManager.get(l), serverManager);
+		userManager = new UserManager(archetype, subjectTree);
 		projectManager = new ProjectManager(archetype);
 		builderAccessor = new QuassarBuilderServiceAccessor(url(configuration.builderServiceUrl()));
 		setupServiceBuilder();
+		if (!exists) new SubjectGenerator(this).generate();
+	}
+
+	private Model modelWithLanguage(String id) {
+		String metamodel = languageManager.get(id).metamodel();
+		return metamodel != null ? modelManager.get(metamodel) : null;
 	}
 
 	private URI workSpaceOf(Model model, String version) {
@@ -88,7 +97,7 @@ public class EditorBox extends AbstractBox {
 
 	public void beforeStop() {
 		try {
-			index.close();
+			subjectTree.close();
 		} catch (IOException e) {
 			Logger.error(e);
 		}

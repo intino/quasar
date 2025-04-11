@@ -30,7 +30,6 @@ public class SaveLanguageCommand extends Command<Boolean> {
 		language.description(description);
 		language.level(level);
 		language.tags(tags);
-		box.languageManager().save(language);
 		box.languageManager().saveLogo(language, logo);
 	}
 

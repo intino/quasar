@@ -2,43 +2,37 @@ TARGETS:{ime editor}
 
 + configuration
     - modelSequence() in "model-sequence.tsv"
+    - defaultLanguages() in "default-languages.tsv"
+    - defaultModels() in "default-models.tsv"
 
     + editor
         - utilities in "utilities.txt"
 
-- index() in "index.iam"
+- index() in "index.inx"
 - readme() in "readme.html"
 
 + models in "models"
     - get(path) in "{path}"
     - get(path, name) in "{path}/{name}"
-    - settings(path, name) in "{path}/{name}/settings.json"
     - workspace(path, name) in "{path}/{name}/workspace"
     - releases(path, name) in "{path}/{name}/releases" with ".zip"
     - release(path, name, version) in "{path}/{name}/releases/{version}.zip"
 
 + languages in "dsls"
     - get(dsl) in "{dsl}"
-    - properties(dsl) in "{dsl}/properties.json"
     - logo(dsl) in "{dsl}/logo.png"
     - releases(dsl) in "{dsl}/releases"
     - release(dsl, version) in "{dsl}/releases/{version}"
     - releaseDsl(dsl, version) in "{dsl}/releases/{version}/dsl.jar"
     - releaseHelp(dsl, version) in "{dsl}/releases/{version}/help.html"
-    - releaseKit(dsl, version) in "{dsl}/releases/{version}/kit.json"
-    - releaseTools(dsl, version) in "{dsl}/releases/{version}/tools.json"
     - releaseReaders(dsl, version) in "{dsl}/releases/{version}/readers" with ".zip"
     - releaseReader(dsl, version, programmingLanguage) in "{dsl}/releases/{version}/readers/{programmingLanguage}.zip"
 
 + projects in "projects"
-    - properties(name) in "{name}/properties.json"
 
 + users in "users"
     - user(username) in "{username}"
-    - properties(username) in "{username}/settings.json"
     - photo(username) in "{username}/photo.png"
-    - models(username) in "{username}/models.tsv"
-    - projects(username) in "{username}/projects.tsv"
 
 + tmp
     - upload(name) in "uploads/{name}"

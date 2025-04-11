@@ -1,50 +1,47 @@
 package io.quassar.editor.model;
 
-import java.util.ArrayList;
+import systems.intino.datamarts.subjectindex.model.Subject;
+
 import java.util.List;
 
-public class User {
-	private String id;
-	private String name;
-	private List<String> adminTeams = new ArrayList<>();
-	private List<String> memberTeams = new ArrayList<>();
+public class User extends SubjectWrapper {
 
 	public static final String Anonymous = "anonymous";
 
-	public String id() {
-		return id;
+	public User(Subject subject) {
+		super(subject);
 	}
 
-	public User id(String id) {
-		this.id = id;
-		return this;
+	public String id() {
+		return get("id");
+	}
+
+	public void id(String value) {
+		set("id", value);
 	}
 
 	public String name() {
-		return name;
+		return get("name");
 	}
 
-	public User name(String name) {
-		this.name = name;
-		return this;
+	public void name(String name) {
+		set("name", name);
 	}
 
 	public List<String> adminTeams() {
-		return adminTeams;
+		return getList("admin-team");
 	}
 
-	public User adminTeams(List<String> adminTeams) {
-		this.adminTeams = adminTeams;
-		return this;
+	public void adminTeams(List<String> values) {
+		putList("admin-team", values);
 	}
 
 	public List<String> memberTeams() {
-		return memberTeams;
+		return getList("member-team");
 	}
 
-	public User memberTeams(List<String> memberTeams) {
-		this.memberTeams = memberTeams;
-		return this;
+	public void memberTeams(List<String> values) {
+		putList("member-team", values);
 	}
 
 }

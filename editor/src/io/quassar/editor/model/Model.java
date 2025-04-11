@@ -1,126 +1,104 @@
 package io.quassar.editor.model;
 
+import systems.intino.datamarts.subjectindex.model.Subject;
+
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
-public class Model {
-	private String id;
-	private String name;
-	private String title;
-	private String description;
-	private GavCoordinates language;
-	private String owner;
-	private Instant createDate;
-	private List<String> collaborators = new ArrayList<>();
-	private boolean isPrivate = false;
-	private boolean isTemplate = false;
+public class Model extends SubjectWrapper {
 
 	public static final String DraftRelease = "draft";
 
-	public String id() {
-		return id;
+	public Model(Subject subject) {
+		super(subject);
 	}
 
-	public Model id(String id) {
-		this.id = id;
-		return this;
+	public String id() {
+		return get("id");
+	}
+
+	public void id(String value) {
+		set("id", value);
 	}
 
 	public String name() {
-		return name;
+		return get("name");
 	}
 
-	public Model name(String name) {
-		this.name = name;
-		return this;
+	public void name(String value) {
+		set("name", value);
 	}
 
 	public String title() {
-		return title;
+		return get("title");
 	}
 
-	public Model title(String title) {
-		this.title = title;
-		return this;
+	public void title(String value) {
+		set("title", value);
 	}
 
 	public String description() {
-		return description;
+		return get("description");
 	}
 
-	public Model description(String description) {
-		this.description = description;
-		return this;
+	public void description(String value) {
+		set("description", value);
 	}
 
 	public GavCoordinates language() {
-		return language;
+		return GavCoordinates.fromString(get("language"));
 	}
 
-	public Model language(GavCoordinates value) {
-		this.language = value;
-		return this;
+	public void language(GavCoordinates value) {
+		set("language", value.toString());
 	}
 
 	public String owner() {
-		return owner;
+		return get("owner");
 	}
 
-	public Model owner(String owner) {
-		this.owner = owner;
-		return this;
+	public void owner(String owner) {
+		set("owner", owner);
 	}
 
 	public Instant createDate() {
-		return createDate;
+		return Instant.parse(get("create-date"));
 	}
 
-	public Model createDate(Instant date) {
-		this.createDate = date;
-		return this;
+	public void createDate(Instant date) {
+		set("create-date", date.toString());
 	}
 
 	public List<String> collaborators() {
-		return collaborators;
+		return getList("collaborator");
 	}
 
-	public void collaborators(List<String> value) {
-		this.collaborators = new ArrayList<>(value);
+	public void collaborators(List<String> values) {
+		putList("collaborator", values);
 	}
 
 	public void add(String collaborator) {
-		this.collaborators.add(collaborator);
+		put("collaborator", collaborator);
 	}
 
 	public boolean isPublic() {
-		return !isPrivate;
+		return !isPrivate();
 	}
 
 	public boolean isPrivate() {
-		return isPrivate;
+		return Boolean.parseBoolean(get("is-private"));
 	}
 
-	public Model isPrivate(boolean value) {
-		this.isPrivate = value;
-		return this;
+	public void isPrivate(boolean value) {
+		set("is-private", String.valueOf(value));
 	}
 
 	public boolean isTemplate() {
-		return isTemplate;
+		return Boolean.parseBoolean(get("is-template"));
 	}
 
-	public Model isTemplate(boolean value) {
-		this.isTemplate = value;
-		return this;
-	}
-
-	public static Model clone(Model model) {
-		Model result = new Model();
-		result.language = model.language();
-		result.owner = model.owner();
-		result.isPrivate = true;
-		return result;
+	public void isTemplate(boolean value) {
+		set("is-template", String.valueOf(value));
 	}
 
 	public boolean isDraft(String release) {

@@ -95,7 +95,7 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 	private void startModeling(Language language) {
 		String name = ModelHelper.proposeName();
 		LanguageRelease release = language.lastRelease();
-		Model model = box().commands(ModelCommands.class).create(name, name, translate("(no description)"), GavCoordinates.from(language, release), username(), username());
+		Model model = box().commands(ModelCommands.class).create(name, name, translate("(no description)"), GavCoordinates.fromString(language, release), username(), username());
 		notifier.dispatch(PathHelper.startingModelPath(model));
 	}
 

@@ -4,7 +4,12 @@ import java.util.Objects;
 
 public record GavCoordinates(String groupId, String artifactId, String version) {
 
-	public static GavCoordinates from(Language language, LanguageRelease release) {
+	public static GavCoordinates fromString(String content) {
+		String[] split = content.split(":");
+		return new GavCoordinates(split[0], split[1], split[2]);
+	}
+
+	public static GavCoordinates fromString(Language language, LanguageRelease release) {
 		return new GavCoordinates(language.group(), language.name(), release.version());
 	}
 

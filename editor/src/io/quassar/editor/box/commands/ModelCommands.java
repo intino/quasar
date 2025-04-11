@@ -28,7 +28,7 @@ public class ModelCommands extends Commands {
 
 	public Model createTemplate(Language language, LanguageRelease release, String username) {
 		CreateModelCommand command = setup(new CreateModelCommand(box), username);
-		command.language = GavCoordinates.from(language, release);
+		command.language = GavCoordinates.fromString(language, release);
 		command.name = ModelHelper.proposeName();
 		command.title = language.name();
 		command.description = "";

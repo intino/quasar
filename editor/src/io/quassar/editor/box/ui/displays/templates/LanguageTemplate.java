@@ -1,5 +1,6 @@
 package io.quassar.editor.box.ui.displays.templates;
 
+import io.intino.alexandria.ui.displays.UserMessage;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.ui.types.LanguageTab;
@@ -69,7 +70,7 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 	}
 
 	private void refreshHelpBlock() {
-		helpTitle.value(translate(title(LanguageView.Help)).formatted(LanguageHelper.title(GavCoordinates.from(language, release))));
+		helpTitle.value(translate(title(LanguageView.Help)).formatted(LanguageHelper.title(GavCoordinates.fromString(language, release))));
 		helpLogo.value(LanguageHelper.logo(language, box()));
 		String content = box().languageManager().loadHelp(language, release);
 		helpStamp.content(content);
@@ -144,7 +145,7 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 	private Model createModel() {
 		LanguageRelease release = language.lastRelease();
 		String name = ModelHelper.proposeName();
-		return box().commands(ModelCommands.class).create(name, name, "", GavCoordinates.from(language, release), DisplayHelper.user(session()), username());
+		return box().commands(ModelCommands.class).create(name, name, "", GavCoordinates.fromString(language, release), DisplayHelper.user(session()), username());
 	}
 
 }

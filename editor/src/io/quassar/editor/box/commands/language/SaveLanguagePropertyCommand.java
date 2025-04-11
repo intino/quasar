@@ -29,7 +29,6 @@ public class SaveLanguagePropertyCommand extends Command<Boolean> {
 		if (property == LanguageProperty.GrantAccess) language.grantAccessList((List<String>) value);
 		if (property == LanguageProperty.License) language.license((String) value);
 		if (property == LanguageProperty.Logo) box.languageManager().saveLogo(language, (File) value);
-		box.languageManager().save(language);
 		return true;
 	}
 

@@ -17,7 +17,6 @@ public class SaveModelPropertiesCommand extends Command<Boolean> {
 	public Boolean execute() {
 		model.title(title);
 		model.description(description);
-		box.modelManager().save(model);
 		return true;
 	}
 

@@ -9,6 +9,7 @@ import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
 
 import java.io.InputStream;
+import java.util.UUID;
 
 public class CreateModelCommand extends Command<Model> {
 	public String name;
@@ -24,9 +25,10 @@ public class CreateModelCommand extends Command<Model> {
 
 	@Override
 	public Model execute() {
-		Model model = box.modelManager().create(name, title, description, language, isTemplate, owner);
+		Model model = box.modelManager().create(UUID.randomUUID().toString(), name, title, description, language, isTemplate, owner);
 		Language language = box.languageManager().get(this.language);
 		LanguageRelease release = language.release(this.language.version());
+		if (isTemplate) release.template(model.id());
 		Model template = release.template() != null ? box.modelManager().get(release.template()) : null;
 		if (template != null) box.modelManager().copyWorkSpace(template, model);
 		else createDefaultWorkspace(model);
