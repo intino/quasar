@@ -5,6 +5,7 @@ import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.builder.ModelChecker;
 import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.box.commands.Command.ExecutionResult;
+import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Model;
 
 import java.io.IOException;
@@ -21,7 +22,7 @@ public class CheckModelCommand extends Command<ExecutionResult> {
 	@Override
 	public ExecutionResult execute() {
 		try {
-			ModelChecker checker = new ModelChecker(model, release, box);
+			ModelChecker checker = new ModelChecker(model, new GavCoordinates(model.language().groupId(), model.name(), release), box);
 			return ExecutionResult.check(checker.check(author()));
 		} catch (IOException e) {
 			return ExecutionResult.check(List.of(new Message().kind(Message.Kind.ERROR).content(e.getMessage())));

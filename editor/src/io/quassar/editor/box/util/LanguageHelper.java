@@ -29,7 +29,11 @@ public class LanguageHelper {
 	public static final String TaraDslPackage = "tara.dsl.";
 	public static final String MavenDslFile = "%s/repository/tara/dsl/%s/%s/%s-%s.jar";
 	public static File mavenDslFile(Model metamodel, String version, EditorBox box) {
-		return new File(MavenDslFile.formatted(box.configuration().languageRepository(), mavenDirectory(metamodel), version, Formatters.normalizeLanguageName(metamodel.name()), version));
+		return new File(MavenDslFile.formatted(box.configuration().languageRepository(), mavenDirectory(metamodel.name()), version, Formatters.normalizeLanguageName(metamodel.name()), version));
+	}
+
+	public static File mavenDslFile(Language language, String version, EditorBox box) {
+		return new File(MavenDslFile.formatted(box.configuration().languageRepository(), mavenDirectory(language.name()), version, Formatters.normalizeLanguageName(language.name()), version));
 	}
 
 	public static String title(GavCoordinates release) {
@@ -50,8 +54,8 @@ public class LanguageHelper {
 		}
 	}
 
-	private static String mavenDirectory(Model metamodel) {
-		return metamodel.name().toLowerCase().replace("-", "");
+	private static String mavenDirectory(String name) {
+		return name.toLowerCase().replace("-", "");
 	}
 
 }

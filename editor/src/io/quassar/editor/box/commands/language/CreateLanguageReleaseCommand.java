@@ -2,7 +2,9 @@ package io.quassar.editor.box.commands.language;
 
 import io.intino.alexandria.logger.Logger;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.builder.ModelChecker;
 import io.quassar.editor.box.commands.Command;
+import io.quassar.editor.box.commands.model.CheckModelCommand;
 import io.quassar.editor.box.commands.model.CreateModelCommand;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.ModelHelper;
@@ -28,7 +30,8 @@ public class CreateLanguageReleaseCommand extends Command<LanguageRelease> {
 	@Override
 	public LanguageRelease execute() {
 		Model metamodel = box.modelManager().get(language.metamodel());
-		File dsl = LanguageHelper.mavenDslFile(metamodel, version, box);
+		check(metamodel);
+		File dsl = LanguageHelper.mavenDslFile(language, version, box);
 		LanguageRelease release = box.languageManager().createRelease(language, version, dsl.exists() ? dsl : null);
 		createDefaultHelp(language, release);
 		Model template = createTemplateModel(language, release);
@@ -36,6 +39,14 @@ public class CreateLanguageReleaseCommand extends Command<LanguageRelease> {
 		language.add(release);
 		box.languageManager().save(language);
 		return release;
+	}
+
+	private void check(Model metamodel) {
+		try {
+			new ModelChecker(metamodel, new GavCoordinates(metamodel.language().groupId(), language.name(), version), box).check(author);
+		} catch (IOException e) {
+			Logger.error(e);
+		}
 	}
 
 	private void createDefaultHelp(Language language, LanguageRelease release) {

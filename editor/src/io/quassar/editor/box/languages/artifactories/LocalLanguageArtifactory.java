@@ -32,6 +32,6 @@ public class LocalLanguageArtifactory implements LanguageArtifactory {
 	public String mainClass(GavCoordinates gav) {
 		Model model = metamodelProvider.provide(gav.languageId());
 		if (model == null) return gav.groupId() + "." + Formatters.firstUpperCase(StringHelper.kebabCaseToCamelCase(gav.artifactId()));
-		return LanguageHelper.TaraDslPackage + Formatters.firstUpperCase(StringHelper.kebabCaseToCamelCase(model.name()));
+		return LanguageHelper.TaraDslPackage + Formatters.firstUpperCase(StringHelper.kebabCaseToCamelCase(gav.artifactId()));
 	}
 }

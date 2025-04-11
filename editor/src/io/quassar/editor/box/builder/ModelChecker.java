@@ -13,6 +13,7 @@ import io.intino.ls.document.FileDocumentManager;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.util.Formatters;
 import io.quassar.editor.box.util.TarUtils;
+import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
@@ -27,17 +28,16 @@ import java.util.List;
 import static io.intino.builderservice.schemas.OperationResult.State.Running;
 
 public class ModelChecker {
-
 	private final Model model;
-	private final String release;
+	private final GavCoordinates destiny;
 	private final Language language;
 	private final DocumentManager manager;
 	private final QuassarBuilderServiceAccessor accessor;
 	private final String quassarBuilder;
 
-	public ModelChecker(Model model, String release, EditorBox box) throws IOException {
+	public ModelChecker(Model model, GavCoordinates destiny, EditorBox box) throws IOException {
 		this.model = model;
-		this.release = release;
+		this.destiny = destiny;
 		this.language = box.languageManager().get(model.language());
 		this.manager = new FileDocumentManager(box.modelManager().workspace(model, Model.DraftRelease).root());
 		this.accessor = box.builderAccessor();
@@ -101,8 +101,8 @@ public class ModelChecker {
 				.generationPackage("")
 				.language(Formatters.normalizeLanguageName(language.name()))
 				.languageVersion(model.language().version())
-				.project(Formatters.normalizeLanguageName(model.name()))
-				.projectVersion(release);
+				.project(Formatters.normalizeLanguageName(destiny.artifactId()))
+				.projectVersion(destiny.version());
 	}
 
 }
