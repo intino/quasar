@@ -133,7 +133,10 @@ public class LanguageManager {
 	}
 
 	public boolean exists(String language) {
-		return new File(archetype.languages().root(), normalize(language)).exists();
+		if (new File(archetype.languages().root(), normalize(language)).exists()) return true;
+		List<String> result = index.search("language").with("name", normalize(language)).execute();
+		if (!result.isEmpty()) return true;
+		return !index.get(normalize(language), "language").isEmpty();
 	}
 
 	public Language getDefault() {
@@ -170,7 +173,7 @@ public class LanguageManager {
 
 	public Language save(Language language) {
 		try {
-			index.on(language.id(), "language").set("metamodel", language.metamodel()).commit();
+			index.on(language.id(), "language").set("metamodel", language.metamodel()).set("name", language.name()).commit();
 			Files.writeString(archetype.languages().properties(normalize(language.id())).toPath(), Json.toString(language));
 		} catch (IOException e) {
 			Logger.error(e);

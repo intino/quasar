@@ -1,5 +1,6 @@
 package io.quassar.editor.box.ui.displays.templates;
 
+import io.intino.alexandria.ui.displays.UserMessage;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.LanguageCommands;
 import io.quassar.editor.model.Language;
@@ -53,7 +54,11 @@ public class LanguageHelpTemplate extends AbstractLanguageHelpTemplate<EditorBox
 	}
 
 	private void createVersion() {
+		notifyUser("Creating version...", UserMessage.Type.Loading);
+		createVersion.readonly(true);
 		createVersionListener.accept(box().commands(LanguageCommands.class).createRelease(language, release, username()));
+		createVersion.readonly(false);
+		hideUserNotification();
 	}
 
 }
