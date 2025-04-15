@@ -10,7 +10,7 @@ import io.intino.tara.builder.core.errorcollection.TaraException;
 import io.intino.tara.builder.core.operation.model.ModelOperation;
 import io.intino.tara.model.Level;
 import io.intino.tara.processors.model.Model;
-import io.quassar.builder.modelaccessor.ModelAccessorGenerator;
+import io.quassar.builder.modelreader.ModelReaderGenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,10 +22,10 @@ import static io.intino.builder.BuildConstants.DSL_VERSION;
 import static io.intino.builder.BuildConstants.GENERATION_PACKAGE;
 import static io.intino.tara.model.Level.M2;
 
-public class GenerateModelAccessorOperation extends ModelOperation {
+public class GenerateModelReaderOperation extends ModelOperation {
 	private final CompilerConfiguration configuration;
 
-	public GenerateModelAccessorOperation(CompilationUnit unit) {
+	public GenerateModelReaderOperation(CompilationUnit unit) {
 		super(unit);
 		this.configuration = unit.configuration();
 	}
@@ -35,7 +35,7 @@ public class GenerateModelAccessorOperation extends ModelOperation {
 		if (model.mograms().isEmpty() || model.mograms().stream().allMatch(m -> m.level() == Level.M1)) return;
 		new LayerGenerationOperation(unit).call(model);
 		if (isM2(model) && hasM3()) generateMetaModel();
-		new ModelAccessorGenerator(unit.configuration()).generate();
+		new ModelReaderGenerator(unit.configuration()).generate();
 	}
 
 	private void generateMetaModel() {

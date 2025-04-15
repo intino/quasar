@@ -1,13 +1,13 @@
-rule type(io.quassar.builder.modelaccessor)
+rule type(modelreader)
 	package $package;
 
-    import io.flogo.model.$outDsl+firstUpperCase~Graph;
+    import $package.$outDsl+firstUpperCase~Graph;
     import io.intino.magritte.builder.StashBuilder;
 
     import java.io.File;
     import java.util.List;
 
-    public class ModelAccessor {
+    public class ModelReader {
     	public static $outDsl+firstUpperCase~Graph load(File $outDsl~File) {
     		return load(List.of($outDsl~File));
     	}

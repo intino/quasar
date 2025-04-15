@@ -32,6 +32,6 @@ public class BuilderRunnerUseCaseTest {
 	@Test
 	@Ignore
 	public void should_run_quassar_builder_with_m2_2() {
-		QuassarcRunner.main(new String[]{"test-res/prueba-m2.txt"});
+		QuassarcRunner.main(new String[]{"test-res/picota-m2.txt"});
 	}
 }

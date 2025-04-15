@@ -1,4 +1,4 @@
-package io.quassar.builder.modelaccessor;
+package io.quassar.builder.modelreader;
 
 import io.intino.builder.CompilerConfiguration;
 import io.intino.itrules.Engine;
@@ -8,30 +8,30 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-public class ModelAccessorGenerator {
+public class ModelReaderGenerator {
 
 	private final CompilerConfiguration conf;
 
-	public ModelAccessorGenerator(CompilerConfiguration conf) {
+	public ModelReaderGenerator(CompilerConfiguration conf) {
 		this.conf = conf;
 	}
 
 	public void generate() {
 		generateModelAccessorClass();
 		File pom = generatePom();
-		if (pom != null) new MavenExecutor().run(pom, new File(conf.outDirectory(), "mvn.log"));
+		if (pom != null) new MavenExecutor().run(pom, new File(conf.moduleDirectory(), "mvn.log"));
 	}
 
 	private void generateModelAccessorClass() {
 		try {
-			FrameBuilder builder = new FrameBuilder().add("modelaccessor")
+			FrameBuilder builder = new FrameBuilder().add("modelreader")
 					.add("outdsl", conf.dsl().outDsl())
 					.add("version", conf.version())
 					.add("package", conf.generationPackage());
-			String content = new Engine(new ModelAccessorTemplate()).render(builder.toFrame());
+			String content = new Engine(new ModelReaderTemplate()).render(builder.toFrame());
 			File dir = new File(conf.srcDirectory(), conf.generationPackage().replace(".", "/"));
 			dir.mkdirs();
-			Files.writeString(new File(dir, "ModelAccessor.java").toPath(), content);
+			Files.writeString(new File(dir, "ModelReader.java").toPath(), content);
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}
