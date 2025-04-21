@@ -1,8 +1,8 @@
 import io.intino.tara.builder.core.CompilationUnit;
 import io.intino.tara.builder.core.errorcollection.CompilationFailedException;
 import io.intino.tara.builder.core.operation.model.ModelOperation;
-import io.intino.tara.model.Mogram;
-import io.intino.tara.processors.model.Model;
+import io.intino.tara.builder.model.Model;
+import io.intino.tara.language.model.Mogram;
 
 public class DummyModelOperation extends ModelOperation {
 
@@ -12,7 +12,7 @@ public class DummyModelOperation extends ModelOperation {
 
 	@Override
 	public void call(Model model) throws CompilationFailedException {
-		for (Mogram mogram : model.mograms()) {
+		for (Mogram mogram : model.components()) {
 			System.out.println(mogram.name() + "; ");
 		}
 	}
