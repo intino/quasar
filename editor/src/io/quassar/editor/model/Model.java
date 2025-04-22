@@ -1,6 +1,6 @@
 package io.quassar.editor.model;
 
-import systems.intino.datamarts.subjectindex.model.Subject;
+import systems.intino.datamarts.subjectstore.model.Subject;
 
 import java.time.Instant;
 import java.util.List;
@@ -14,11 +14,7 @@ public class Model extends SubjectWrapper {
 	}
 
 	public String id() {
-		return get("id");
-	}
-
-	public void id(String value) {
-		set("id", value);
+		return subject.name();
 	}
 
 	public String name() {
@@ -46,15 +42,25 @@ public class Model extends SubjectWrapper {
 	}
 
 	public GavCoordinates language() {
-		return GavCoordinates.fromString(get("language"));
+		return language(subject);
+	}
+
+	public static GavCoordinates language(Subject subject) {
+		return new GavCoordinates(subject.get("language-group"), subject.get("language-name"), subject.get("language-version"));
 	}
 
 	public void language(GavCoordinates value) {
-		set("language", value.toString());
+		set("language-group", value.groupId());
+		set("language-name", value.artifactId());
+		set("language-version", value.version());
 	}
 
 	public String owner() {
-		return get("owner");
+		return owner(subject);
+	}
+
+	public static String owner(Subject subject) {
+		return subject.get("owner");
 	}
 
 	public void owner(String owner) {
@@ -86,19 +92,37 @@ public class Model extends SubjectWrapper {
 	}
 
 	public boolean isPrivate() {
-		return Boolean.parseBoolean(get("is-private"));
+		return visibility() == Visibility.Private;
 	}
 
 	public void isPrivate(boolean value) {
-		set("is-private", String.valueOf(value));
+		visibility(value ? Visibility.Private : Visibility.Public);
+	}
+
+	public enum Visibility { Private, Public }
+	public Visibility visibility() {
+		return Visibility.valueOf(get("visibility"));
+	}
+
+	public void visibility(Visibility value) {
+		set("visibility", value.name());
+	}
+
+	public boolean isExample() {
+		return usage() == Usage.Example;
 	}
 
 	public boolean isTemplate() {
-		return Boolean.parseBoolean(get("is-template"));
+		return usage() == Usage.Template;
 	}
 
-	public void isTemplate(boolean value) {
-		set("is-template", String.valueOf(value));
+	public enum Usage { Template, Example, EndUser }
+	public Usage usage() {
+		return Usage.valueOf(get("usage"));
+	}
+
+	public void usage(Usage usage) {
+		set("usage", usage.name());
 	}
 
 	public boolean isDraft(String release) {

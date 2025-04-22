@@ -1,43 +1,53 @@
 package io.quassar.editor.model;
 
-import systems.intino.datamarts.subjectindex.model.Subject;
-import systems.intino.datamarts.subjectindex.model.Tokens;
+import io.quassar.editor.box.util.SubjectHelper;
+import systems.intino.datamarts.subjectstore.model.Subject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SubjectWrapper {
 	protected transient final Subject subject;
+	private final Map<String, String> cache = new HashMap<>();
+	private final Map<String, List<String>> listCache = new HashMap<>();
 
 	public SubjectWrapper(Subject subject) {
 		this.subject = subject;
 	}
 
 	protected List<String> getList(String name) {
-		List<String> result = new ArrayList<>();
-		subject.tokens().get(name).forEach(result::add);
+		if (listCache.containsKey(name)) return listCache.get(name);
+		List<String> result = new ArrayList<>(SubjectHelper.terms(subject, name));
+		listCache.put(name, result);
 		return result;
 	}
 
 	protected String get(String name) {
-		Tokens.Values values = subject.tokens().get(name);
-		return values.iterator().hasNext() ? values.first() : null;
+		if (cache.containsKey(name)) return cache.get(name);
+		List<String> terms = SubjectHelper.terms(subject, name);
+		cache.put(name, !terms.isEmpty() ? terms.getFirst() : null);
+		return cache.get(name);
 	}
 
 	protected void set(String name, String value) {
+		cache.remove(name);
 		if (value == null) return;
-		subject.update().set(name, value).commit();
+		subject.index().set(name, value).terminate();
 	}
 
 	protected void put(String name, String value) {
-		subject.update().put(name, value).commit();
+		cache.remove(name);
+		subject.index().put(name, value).terminate();
 	}
 
 	protected void putList(String name, List<String> values) {
-		Subject.Transaction feed = subject.update();
-		feed.del(name);
-		values.forEach(v -> feed.put(name, v));
-		feed.commit();
+		cache.remove(name);
+		Subject.Updating updating = subject.index();
+		updating.del(name);
+		values.forEach(v -> updating.put(name, v));
+		updating.terminate();
 	}
 
 }

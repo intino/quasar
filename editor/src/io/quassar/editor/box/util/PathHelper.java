@@ -176,4 +176,10 @@ public class PathHelper {
 		return result;
 	}
 
+	public static String forgeReleasePath(String address, String model, String view) {
+		String result = address.replace(":model", model);
+		result += "?" + "view=%s".formatted(view);
+		return result;
+	}
+
 }

@@ -102,7 +102,7 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 		IntinoFileBrowser browser = fileBrowser.display();
 		browser.itemAddress(PathHelper.modelPath(model, release) + "&file=:file");
 		browser.rootItem(io.quassar.editor.box.models.File.ResourcesDirectory);
-		browser.items(IntinoFileBrowserHelper.fileBrowserItems(modelContainer.resourceFiles()), false, !model.isTemplate());
+		browser.items(IntinoFileBrowserHelper.fileBrowserItems(modelContainer.resourceFiles()), false, true);
 		browser.operations(operations());
 		browser.select(file != null ? IntinoFileBrowserHelper.itemOf(file) : null);
 		browser.refresh();

@@ -141,7 +141,7 @@ Template languageForgeTemplate as Relative(height=100%, width=100%)
 						TemplateStamp(template=languageToolsTemplate) toolsStamp
 				Block(format=greyBackground, visible=false) versionSelectorBlock as Relative(width=10%)
 					Text(value="Versions", translate=true, format=h5 bold middleAirTop middleAirLeft middleAirBottom)
-					Selector versionSelector as ListBox
+					Selector versionSelector as ListBox Addressable(EditorElements.forge)
 
 Template(layout=Vertical Flexible) languageInfoTemplate
 	Block(layout=Vertical, format=doubleAirBottom relative)
@@ -234,7 +234,70 @@ Template(layout=Vertical Flexible, format=doubleSpaced) languageToolsTemplate
 			Button(title="Create version", highlight=Fill, format=doubleAirTop) createVersion as Action
 
 	Block(layout=Vertical Flexible, visible=false) versionBlock
-		Text(value="Aqui van las tools")
+		Text(value="Specify how a model, written with this DSL, is converted into a concrete artifact.", translate=true, format=airBottom)
+		Text(value="Available tools", translate=true, format=h5 airBottom)
+		TemplateStamp(template=languageToolTemplate) tools as Multiple(noItemsMessage="No tools defined", spacing=DP16)
+		Link(title="[add]", format=airTop) as OpenDialog(dialog)
+
+	Dialog(title="Add tool") dialog as Relative(width=60%, height=60%)
+        Block content as Relative(height=100%, offsetHeight=45px)
+			Wizard(position=Top, style=ContentOnly, format=fullWidth) wizard
+				Step step1
+					Block(format=setupStepHeader)
+						Text(value="Tool name", format=setupStepTitle, translate=true)
+						Text(value="Set the name for the tool", format=setupStepSubtitle, translate=true)
+					Block(format=setupStepContent)
+						Text(format=airBottom) toolNameField as Editable("Enter the tool name") Focused
+				Step step2 as Labeled("")
+					Block(format=setupStepHeader)
+						Text(value="Tool type", format=setupStepTitle, translate=true)
+						Text(value="Indicate the type of tool that will be created to deploy the model built by the user", format=setupStepSubtitle, translate=true)
+					Block(format=setupStepContent)
+						Selector toolTypeSelector as ListBox
+							Text(value="Docker image factory") dockerImageFactoryOption as Option
+							Text(value="Deploy site factory") deploySiteFactoryOption as Option
+							Text(value="Build instructions") buildInstructionsOption as Option
+				Step step3
+					Block(format=setupStepHeader)
+						Text(value="Setup tool", format=setupStepTitle, translate=true)
+						Text(value="Configure the selected tool type", format=setupStepSubtitle, translate=true)
+					Block(format=setupStepContent)
+						TemplateStamp(template=languageToolEditor) toolEditor
+		Divider
+        Block(layout=Horizontal EndJustified)
+            WizardNavigator(wizard=content.wizard)
+
+Template languageToolTemplate
+	Text(format=bold) name
+	TemplateStamp(template=languageToolParameter) parameters as Multiple(noItemsMessage="No parameters")
+	Link(title="[remove]") removeLink as Action Affirmed("Confirm that you want to delete the tool")
+
+Template(layout=Horizontal) languageToolParameter
+	Text(format=grey airRight) name
+	Text value
+
+Template languageToolEditor
+
+	Block dockerImageFactoryBlock as Relative(height=100%, width=100%) Conditional
+		Block(format=doubleAirBottom)
+			Text(value="Docker image url", translate=true)
+			Text(format=airBottom) dockerImageField as Editable Focused
+		Block
+			Text(value="Docker image run parameters", translate=true)
+			Text(format=airBottom) dockerImageRunField as Editable
+
+	Block deploySiteFactoryBlock as Relative(height=100%, width=100%) Conditional
+		Block
+			Text(value="Deploy site url. It must contain two parameters: [model] and [release]", translate=true)
+			Text(format=airBottom) siteUrlField as Editable(placeholder="https://[your-site]?model=[model]&release=[release]") Focused
+
+	Block buildInstructionsBlock as Relative(height=100%, width=100%) Conditional
+		Block(format=doubleAirBottom)
+			Text(value="Install instructions", translate=true)
+			Text(format=airBottom) installInstructionsField as Editable Memo(height=4Rows) Focused
+		Block
+			Text(value="Execution instructions", translate=true)
+			Text(format=airBottom) executionInstructionsField as Editable Memo(height=4Rows)
 
 Template modelReaderTemplate
 	Link(title="") titleLink as Download

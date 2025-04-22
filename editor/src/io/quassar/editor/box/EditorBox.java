@@ -23,7 +23,7 @@ import io.quassar.editor.model.Utilities;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.lsp4j.services.LanguageServer;
-import systems.intino.datamarts.subjectindex.SubjectTree;
+import systems.intino.datamarts.subjectstore.SubjectStore;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +35,7 @@ import java.util.Map;
 
 public class EditorBox extends AbstractBox {
 	private final Archetype archetype;
-	private SubjectTree subjectTree;
+	private SubjectStore subjectStore;
 	private AmidasOauthAccessor authService;
 	private LanguageLoader languageLoader;
 	private LanguageManager languageManager;
@@ -69,14 +69,14 @@ public class EditorBox extends AbstractBox {
 
 	public void beforeStart() {
 		boolean exists = archetype.index().exists();
-		subjectTree = new SubjectTree(archetype.index());
+		subjectStore = new SubjectStore("jdbc:sqlite:" + archetype.index());
 		utilities = new Utilities(archetype.configuration().editor().utilities());
 		commandsFactory = new CommandsFactory(this);
 		languageLoader = new LanguageLoader(new LocalLanguageArtifactory(archetype, this::modelWithLanguage));
-		languageManager = new LanguageManager(archetype, subjectTree);
+		languageManager = new LanguageManager(archetype, subjectStore);
 		serverManager = new LanguageServerManager(languageLoader, this::workSpaceOf);
-		modelManager = new ModelManager(archetype, subjectTree, l -> languageManager.get(l), serverManager);
-		userManager = new UserManager(archetype, subjectTree);
+		modelManager = new ModelManager(archetype, subjectStore, l -> languageManager.get(l), serverManager);
+		userManager = new UserManager(archetype, subjectStore);
 		projectManager = new ProjectManager(archetype);
 		builderAccessor = new QuassarBuilderServiceAccessor(url(configuration.builderServiceUrl()));
 		setupServiceBuilder();
@@ -96,11 +96,7 @@ public class EditorBox extends AbstractBox {
 	}
 
 	public void beforeStop() {
-		try {
-			subjectTree.close();
-		} catch (IOException e) {
-			Logger.error(e);
-		}
+		subjectStore.close();
 	}
 
 	public void afterStop() {

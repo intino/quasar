@@ -3,6 +3,7 @@ package io.quassar.editor.box.ui.displays.templates;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.ui.types.ForgeView;
 import io.quassar.editor.box.util.PathHelper;
+import io.quassar.editor.box.util.SubjectHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
@@ -54,8 +55,9 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 	}
 
 	private void refreshView() {
+		Model model = box().modelManager().get(language.metamodel());
 		versionSelectorBlock.visible(view != null && view != ForgeView.Properties);
-		viewSelector.address(path -> PathHelper.forgePath(path, language.metamodel(), release));
+		viewSelector.address(path -> PathHelper.forgePath(path, model.id(), release));
 		if (view != null) viewSelector.selection(view.name());
 		hideViews();
 		if (view == ForgeView.Help) helpBlock.show();
@@ -110,6 +112,7 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 	private void refreshVersions() {
 		Model metamodel = box().modelManager().get(language.metamodel());
 		List<String> releases = box().modelManager().releases(metamodel);
+		versionSelector.address(path -> PathHelper.forgeReleasePath(path, metamodel.id(), viewSelector.selection().getFirst()));
 		versionSelector.clear();
 		versionSelector.addAll(releases);
 		if (release != null) versionSelector.selection(release);

@@ -1,6 +1,6 @@
 package io.quassar.editor.model;
 
-import systems.intino.datamarts.subjectindex.model.Subject;
+import systems.intino.datamarts.subjectstore.model.Subject;
 
 import java.util.List;
 

@@ -5,6 +5,7 @@ import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
+import tara.dsl.Meta;
 
 public class PermissionsHelper {
 
@@ -90,7 +91,11 @@ public class PermissionsHelper {
 		return hasPermissions(model, session);
 	}
 
-	public static boolean canForge(Model model, String release, UISession session) {
+	public static boolean canForge(Model model, Language language, String release, UISession session) {
+		return hasPermissions(model, session) && release != null && !release.equals(Model.DraftRelease);
+	}
+
+	public static boolean canOpenTools(Model model, Language language, String release, UISession session) {
 		return hasPermissions(model, session) && release != null && !release.equals(Model.DraftRelease);
 	}
 

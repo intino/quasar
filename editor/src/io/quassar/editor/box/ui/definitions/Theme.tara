@@ -367,24 +367,7 @@ Format("position:'relative'") item
 Format("minWidth:'365px'") userItem
 Format("textTransform:'uppercase'") upperCase
 Format("fontStyle:'italic',color:'#777'") message
-
-// Sumus
-Format("background:'white',border:'1px solid #eee',position:'relative'") cubeDialogStyle
-Format("position:'absolute',bottom:'0',left:'0',marginLeft:'10px',marginBottom:'4px'") filtersSummaryStyle
-Format("position:'absolute',bottom:'0',left:'0',marginLeft:'10px',marginBottom:'-33px',zIndex:'1'") addFiltersSummaryStyle
-Format("position:'absolute',bottom:'0px',right:'0px',marginRight:'500px',marginBottom:'-35px',zIndex:'1',right:'0'") zoomLevelStyle
-Format("filter:'grayscale(100%)'") greyImage
-Format("position:'absolute',right:'0',marginRight:'10px'") incidentsToolbar
-Format("position:'absolute',top:'0',marginTop:'3px',marginLeft:'10px',zIndex:'2',width:'calc(100% - 280px)'") operativeToolbar
-Format("marginTop:'5px',marginBottom:'10px',marginLeft:'8px'") summaryMessageStyle
-Format("padding:'10px',width:'300px',height:'350px'") dimensionConfigurationDialogStyle
-Format("position:'absolute',right:'0',marginRight:'10px',marginTop:'9px'") searchIcon
-Format("position:'absolute',bottom:'0',width:'100%',padding:'5px 10px',background:'#c7e4f6',zIndex:'2'") notifierStyle
-
-// Monet
-Format("width:'100%',height:'calc(100% - 20px)',marginTop:'20px',position:'absolute'") disabledOrder
-Format("width:'100%',height:'calc(100% - 20px)',marginTop:'20px',position:'absolute'") highlightedOrder
-Format("position:'absolute',top:'0',right:'0',marginTop:'3px',padding:'0 10px',marginRight:'5px'") orderMessageStyle
-Format("bottom:'0',right:'0',marginBottom:'21px',position:'absolute',background:'#006cad',color:'white',marginRight:'2px',padding:'0px 25px'") savingStyle
-Format("height:'auto'") checkListWizardIndexEntryStyle
-Format("minHeight:'450px',marginRight:'15px'") orderEditorWithPhoto
+Format("paddingBottom:'5px'") setupStepHeader
+Format("fontSize:'13pt',fontWeight:'bold'") setupStepTitle
+Format("color:'#777'") setupStepSubtitle
+Format("padding:'20px 0',overflow:'auto',height:'calc(100% - 90px)'") setupStepContent

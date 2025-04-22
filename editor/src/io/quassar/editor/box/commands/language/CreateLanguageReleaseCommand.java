@@ -63,7 +63,7 @@ public class CreateLanguageReleaseCommand extends Command<LanguageRelease> {
 		command.name = ModelHelper.proposeName();
 		command.title = language.name();
 		command.description = "";
-		command.isTemplate = true;
+		command.usage = Model.Usage.Template;
 		command.owner = author;
 		return command.execute();
 	}

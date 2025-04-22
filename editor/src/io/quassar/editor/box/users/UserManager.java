@@ -5,8 +5,8 @@ import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.util.SubjectHelper;
 import io.quassar.editor.model.User;
 import org.apache.commons.io.FileUtils;
-import systems.intino.datamarts.subjectindex.SubjectTree;
-import systems.intino.datamarts.subjectindex.model.Subject;
+import systems.intino.datamarts.subjectstore.SubjectStore;
+import systems.intino.datamarts.subjectstore.model.Subject;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,15 +15,15 @@ import java.util.UUID;
 
 public class UserManager {
 	private final Archetype archetype;
-	private final SubjectTree subjectTree;
+	private final SubjectStore subjectStore;
 
-	public UserManager(Archetype archetype, SubjectTree subjectTree) {
+	public UserManager(Archetype archetype, SubjectStore store) {
 		this.archetype = archetype;
-		this.subjectTree = subjectTree;
+		this.subjectStore = store;
 	}
 
 	public List<User> users() {
-		return subjectTree.subjects(SubjectHelper.UserType).roots().stream().map(this::get).toList();
+		return subjectStore.subjects().type(SubjectHelper.UserType).roots().collect().stream().map(this::get).toList();
 	}
 
 	public boolean exists(String key) {
@@ -31,14 +31,14 @@ public class UserManager {
 	}
 
 	public User get(String key) {
-		Subject subject = subjectTree.get(SubjectHelper.userPath(key));
-		if (subject.isNull()) subject = subjectTree.subjects(SubjectHelper.UserType).with("name", key).roots().stream().findFirst().orElse(null);
+		Subject subject = subjectStore.open(SubjectHelper.userPath(key));
+		if (subject == null || subject.isNull()) subject = subjectStore.subjects().type(SubjectHelper.UserType).with("name", key).collect().stream().findFirst().orElse(null);
 		return get(subject);
 	}
 
 	public User create(String name) {
 		String id = UUID.randomUUID().toString();
-		User user = new User(subjectTree.create(SubjectHelper.userPath(id)));
+		User user = new User(subjectStore.create(SubjectHelper.userPath(id)));
 		user.id(id);
 		user.name(name);
 		return user;
@@ -48,7 +48,7 @@ public class UserManager {
 		try {
 			File rootDir = archetype.users().user(user.name());
 			if (!rootDir.exists()) return;
-			subjectTree.drop(SubjectHelper.pathOf(user));
+			subjectStore.open(SubjectHelper.pathOf(user)).drop();
 			FileUtils.deleteDirectory(rootDir);
 		} catch (IOException e) {
 			Logger.error(e);

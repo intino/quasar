@@ -16,7 +16,7 @@ public class CreateModelCommand extends Command<Model> {
 	public String title;
 	public String description;
 	public GavCoordinates language;
-	public boolean isTemplate = false;
+	public Model.Usage usage = Model.Usage.EndUser;
 	public String owner;
 
 	public CreateModelCommand(EditorBox box) {
@@ -25,10 +25,10 @@ public class CreateModelCommand extends Command<Model> {
 
 	@Override
 	public Model execute() {
-		Model model = box.modelManager().create(UUID.randomUUID().toString(), name, title, description, language, isTemplate, owner);
+		Model model = box.modelManager().create(UUID.randomUUID().toString(), name, title, description, language, usage, owner);
 		Language language = box.languageManager().get(this.language);
 		LanguageRelease release = language.release(this.language.version());
-		if (isTemplate) release.template(model.id());
+		if (usage == Model.Usage.Template) release.template(model.id());
 		Model template = release.template() != null ? box.modelManager().get(release.template()) : null;
 		if (template != null) box.modelManager().copyWorkSpace(template, model);
 		else createDefaultWorkspace(model);

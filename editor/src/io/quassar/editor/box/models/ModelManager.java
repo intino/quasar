@@ -13,9 +13,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.tika.Tika;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.lsp4j.services.LanguageServer;
-import systems.intino.datamarts.subjectindex.SubjectTree;
-import systems.intino.datamarts.subjectindex.model.Subject;
-import systems.intino.datamarts.subjectindex.model.Subjects;
+import systems.intino.datamarts.subjectstore.SubjectStore;
+import systems.intino.datamarts.subjectstore.model.Subject;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,28 +29,28 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ModelManager {
-	private final SubjectTree subjectTree;
+	private final SubjectStore subjectStore;
 	private final Archetype archetype;
 	private final Function<GavCoordinates, Language> languageLoader;
 	private final LanguageServerManager serverManager;
 
-	public ModelManager(Archetype archetype, SubjectTree subjectTree, Function<GavCoordinates, Language> languageLoader, LanguageServerManager serverManager) {
-		this.subjectTree = subjectTree;
+	public ModelManager(Archetype archetype, SubjectStore store, Function<GavCoordinates, Language> languageLoader, LanguageServerManager serverManager) {
+		this.subjectStore = store;
 		this.archetype = archetype;
 		this.languageLoader = languageLoader;
 		this.serverManager = serverManager;
 	}
 
 	public List<Model> models(Language language, String owner) {
-		Map<String, Subject> ownerSubjects = mapOf(subjectTree.subjects(SubjectHelper.ModelType).with("language", language.id()).with("owner", owner).with("is-private", "true").with("is-template", "false").roots());
-		Map<String, Subject> contributorSubjects = mapOf(subjectTree.subjects(SubjectHelper.ModelType).with("language", language.id()).with("contributor", owner).with("is-private", "true").with("is-template", "false").roots());
+		Map<String, Subject> ownerSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("language-group", language.group()).with("language-name", language.name()).with("owner", owner).with("visibility", Model.Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> contributorSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("language-group", language.group()).with("language-name", language.name()).with("contributor", owner).with("visibility", Model.Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
 		ownerSubjects.putAll(contributorSubjects);
 		return ownerSubjects.values().stream().map(this::get).toList();
 	}
 
 	public List<Model> models(String owner) {
-		Map<String, Subject> ownerSubjects = mapOf(subjectTree.subjects(SubjectHelper.ModelType).with("owner", owner).with("is-private", "true").with("is-template", "false").roots());
-		Map<String, Subject> contributorSubjects = mapOf(subjectTree.subjects(SubjectHelper.ModelType).with("contributor", owner).with("is-private", "true").with("is-template", "false").roots());
+		Map<String, Subject> ownerSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("owner", owner).with("visibility", Model.Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> contributorSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("contributor", owner).with("visibility", Model.Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
 		ownerSubjects.putAll(contributorSubjects);
 		return ownerSubjects.values().stream().map(this::get).toList();
 	}
@@ -66,8 +65,8 @@ public class ModelManager {
 	}
 
 	public Model get(String key) {
-		Subject subject = subjectTree.get(SubjectHelper.modelPath(key));
-		if (subject.isNull()) subject = subjectTree.subjects(SubjectHelper.ModelType).with("name", key).roots().stream().findFirst().orElse(null);
+		Subject subject = subjectStore.open(SubjectHelper.modelPath(key));
+		if (subject == null || subject.isNull()) subject = subjectStore.subjects().type(SubjectHelper.ModelType).with("name", key).collect().stream().findFirst().orElse(null);
 		return subject != null && !subject.isNull() ? new Model(subject) : null;
 	}
 
@@ -80,29 +79,27 @@ public class ModelManager {
 		return archetype.models().release(ArchetypeHelper.relativeModelPath(model.id()), model.id(), version);
 	}
 
-	public Model create(String id, String name, String title, String description, GavCoordinates language, boolean isTemplate, String owner) {
-		Model model = new Model(subjectTree.create(SubjectHelper.modelPath(id)));
-		model.id(id);
+	public Model create(String id, String name, String title, String description, GavCoordinates language, Model.Usage usage, String owner) {
+		Model model = new Model(subjectStore.create(SubjectHelper.modelPath(id)));
 		model.name(name);
 		model.title(title);
 		model.description(description);
 		model.language(language);
 		model.owner(owner);
 		model.isPrivate(true);
-		model.isTemplate(isTemplate);
+		model.usage(usage);
 		model.createDate(Instant.now());
 		return model;
 	}
 
 	public Model clone(Model model, String release, String name, String owner) {
 		String id = UUID.randomUUID().toString();
-		Model result = new Model(subjectTree.create(SubjectHelper.modelPath(id)));
-		result.id(id);
+		Model result = new Model(subjectStore.create(SubjectHelper.modelPath(id)));
 		result.name(name);
 		result.language(model.language());
 		result.owner(owner);
 		result.isPrivate(true);
-		result.isTemplate(false);
+		result.usage(Model.Usage.EndUser);
 		result.createDate(Instant.now());
 		new WorkspaceWriter(workspace(model, release), server(model, release)).clone(result, server(result, Model.DraftRelease));
 		return get(name);
@@ -130,7 +127,7 @@ public class ModelManager {
 		try {
 			if (isWorkspaceEmpty(model, Model.DraftRelease)) return OperationResult.Error("Workspace is empty");
 			File releaseFile = archetype.models().release(ArchetypeHelper.relativeModelPath(model.id()), model.id(), release);
-			ModelRelease modelRelease = new ModelRelease(subjectTree.create(SubjectHelper.pathOf(model, release)));
+			ModelRelease modelRelease = new ModelRelease(subjectStore.create(SubjectHelper.pathOf(model, release)));
 			modelRelease.version(release);
 			modelRelease.language(model.language());
 			modelRelease.owner(model.owner());
@@ -183,8 +180,8 @@ public class ModelManager {
 		try {
 			File rootDir = archetype.models().get(ArchetypeHelper.relativePath(model), model.id());
 			if (!rootDir.exists()) return;
-			releases(model).forEach(r -> subjectTree.drop(SubjectHelper.pathOf(model, r)));
-			subjectTree.drop(SubjectHelper.pathOf(model));
+			releases(model).forEach(r -> subjectStore.open(SubjectHelper.pathOf(model, r)).drop());
+			subjectStore.open(SubjectHelper.pathOf(model)).drop();
 			FileUtils.deleteDirectory(rootDir);
 		} catch (IOException e) {
 			Logger.error(e);
@@ -225,7 +222,7 @@ public class ModelManager {
 		}
 	}
 
-	private Map<String, Subject> mapOf(Subjects subjects) {
+	private Map<String, Subject> mapOf(List<Subject> subjects) {
 		return subjects.stream().collect(Collectors.toMap(Subject::identifier, s -> s));
 	}
 

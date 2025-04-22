@@ -8,7 +8,7 @@ TARGETS:{ime editor}
     + editor
         - utilities in "utilities.txt"
 
-- index() in "index.inx"
+- index() in "index.iss"
 - readme() in "readme.html"
 
 + models in "models"

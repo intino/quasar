@@ -77,7 +77,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		initBrowsers();
 		initFileEditor();
 		initFileModifiedDialog();
-		tabSelector.onSelect(this::updateSelectedBlock);
+		//tabSelector.onSelect(this::updateSelectedBlock);
 		helpDialog.onOpen(e -> refreshHelpDialog());
 		console.onClose(e -> consoleBlock.hide());
 	}
@@ -91,7 +91,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 	}
 
 	private void refreshContent() {
-		if (!model.isTemplate()) tabSelector.address(path -> PathHelper.modelViewPath(path, model, release));
+		tabSelector.address(path -> PathHelper.modelViewPath(path, model, release));
 		contentBlock.visible(model != null);
 		if (!contentBlock.isVisible()) return;
 		if (selectedFile != null) tabSelector.select(selectedFile.isResource() ? "resources" : "model");
@@ -200,11 +200,12 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 	}
 
 	private void refreshFile() {
-		boolean validFile = selectedFile != null && !selectedFile.isDirectory() && box().modelManager().isTextFile(model, release, selectedFile);
+		boolean isDirectory = selectedFile != null && selectedFile.isDirectory();
+		boolean textFile = selectedFile != null && !isDirectory && box().modelManager().isTextFile(model, release, selectedFile);
 		fileNotSelectedBlock.visible(selectedFile == null || selectedFile.isDirectory());
-		nonEditableFileBlock.visible(selectedFile != null && !validFile);
-		editableFileBlock.visible(validFile);
-		filename.value(validFile ? withoutExtensionIfModelFile(selectedFile.name()) : "");
+		nonEditableFileBlock.visible(selectedFile != null && !isDirectory && !textFile);
+		editableFileBlock.visible(textFile);
+		filename.value(textFile ? withoutExtensionIfModelFile(selectedFile.name()) : "");
 		refreshFileEditorToolbar();
 		refreshEditableFileBlock();
 		refreshNonEditableFileBlock();

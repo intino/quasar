@@ -1,7 +1,7 @@
 package io.quassar.editor.model;
 
 import com.google.gson.annotations.SerializedName;
-import systems.intino.datamarts.subjectindex.model.Subject;
+import systems.intino.datamarts.subjectstore.model.Subject;
 
 public class ModelRelease extends SubjectWrapper {
 
@@ -20,11 +20,13 @@ public class ModelRelease extends SubjectWrapper {
 
 	@SerializedName("language")
 	public GavCoordinates language() {
-		return GavCoordinates.fromString(get("language"));
+		return new GavCoordinates(get("language-group"), get("language-name"), get("language-version"));
 	}
 
 	public void language(GavCoordinates value) {
-		set("language", value.toString());
+		set("language-group", value.groupId());
+		set("language-name", value.artifactId());
+		set("language-version", value.version());
 	}
 
 	@SerializedName("owner")

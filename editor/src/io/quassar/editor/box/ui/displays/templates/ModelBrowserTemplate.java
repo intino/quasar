@@ -93,7 +93,7 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 		if (model == null) return;
 		IntinoFileBrowser browser = fileBrowser.display();
 		browser.itemAddress(PathHelper.modelPath(model, release) + "&file=:file");
-		browser.items(IntinoFileBrowserHelper.fileBrowserItems(modelContainer.modelFiles()), true, !model.isTemplate());
+		browser.items(IntinoFileBrowserHelper.fileBrowserItems(modelContainer.modelFiles()), true, true);
 		browser.operations(operations());
 		browser.select(file != null ? IntinoFileBrowserHelper.itemOf(file) : null);
 		browser.refresh();

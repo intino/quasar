@@ -2,12 +2,11 @@ package io.quassar.editor.box.commands;
 
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.language.*;
-import io.quassar.editor.box.commands.model.CreateModelCommand;
-import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.model.*;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 public class LanguageCommands extends Commands {
 
@@ -71,4 +70,21 @@ public class LanguageCommands extends Commands {
 		return command.execute();
 	}
 
+	public void addTool(Language language, String release, String name, LanguageTool.Type type, Map<String, String> parameters, String username) {
+		AddLanguageReleaseToolCommand command = setup(new AddLanguageReleaseToolCommand(box), username);
+		command.language = language;
+		command.release = release;
+		command.name = name;
+		command.type = type;
+		command.parameters = parameters;
+		command.execute();
+	}
+
+	public void removeTool(Language language, String release, LanguageTool tool, String username) {
+		RemoveLanguageReleaseToolCommand command = setup(new RemoveLanguageReleaseToolCommand(box), username);
+		command.language = language;
+		command.release = release;
+		command.tool = tool;
+		command.execute();
+	}
 }

@@ -3,33 +3,29 @@ package io.quassar.editor.box.languages;
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.util.ArchetypeHelper;
+import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.SubjectHelper;
-import io.quassar.editor.model.GavCoordinates;
-import io.quassar.editor.model.Language;
-import io.quassar.editor.model.LanguageRelease;
-import io.quassar.editor.model.Model;
+import io.quassar.editor.model.*;
 import org.apache.commons.io.FileUtils;
-import systems.intino.datamarts.subjectindex.SubjectTree;
-import systems.intino.datamarts.subjectindex.model.Subject;
-import systems.intino.datamarts.subjectindex.model.Subjects;
-import systems.intino.datamarts.subjectindex.model.Tokens;
+import systems.intino.datamarts.subjectstore.SubjectStore;
+import systems.intino.datamarts.subjectstore.model.Subject;
+import systems.intino.datamarts.subjectstore.model.Term;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class LanguageManager {
 	private final Archetype archetype;
-	private final SubjectTree subjectTree;
+	private final SubjectStore subjectStore;
 
-	public LanguageManager(Archetype archetype, SubjectTree subjectTree) {
+	public LanguageManager(Archetype archetype, SubjectStore store) {
 		this.archetype = archetype;
-		this.subjectTree = subjectTree;
+		this.subjectStore = store;
 	}
 
 	public List<Language> visibleLanguages(String owner) {
@@ -47,11 +43,11 @@ public class LanguageManager {
 	}
 
 	public List<Language> languages() {
-		return subjectTree.subjects(SubjectHelper.LanguageType).roots().stream().map(this::get).toList();
+		return subjectStore.subjects().type(SubjectHelper.LanguageType).roots().collect().stream().map(this::get).toList();
 	}
 
 	public Language create(String group, String name, Model metamodel, Language.Level level, String title, String description) {
-		Language language = new Language(subjectTree.create(SubjectHelper.languagePath(group, name)));
+		Language language = new Language(subjectStore.create(SubjectHelper.languagePath(group, name)));
 		language.group(group);
 		language.name(name);
 		language.level(level);
@@ -65,10 +61,28 @@ public class LanguageManager {
 	}
 
 	public LanguageRelease createRelease(Language language, String version, File dsl) {
-		LanguageRelease release = new LanguageRelease(subjectTree.create(SubjectHelper.pathOf(language, version)));
+		LanguageRelease release = new LanguageRelease(subjectStore.create(SubjectHelper.pathOf(language, version)));
 		release.version(version);
 		saveDsl(language, version, dsl);
 		return release;
+	}
+
+	public LanguageTool createReleaseTool(Language language, LanguageRelease release, String name, LanguageTool.Type type, Map<String, String> parameters) {
+		LanguageTool tool = new LanguageTool(subjectStore.create(SubjectHelper.pathOf(language, release, name)));
+		tool.type(type);
+		parameters.forEach((key, value) -> createReleaseToolParameter(language, release, tool, key, value));
+		return tool;
+	}
+
+	private void createReleaseToolParameter(Language language, LanguageRelease release, LanguageTool tool, String key, String value) {
+		LanguageTool.Parameter parameter = new LanguageTool.Parameter(subjectStore.create(SubjectHelper.pathOf(language, release, tool, key)));
+		parameter.value(value);
+	}
+
+	public boolean removeReleaseTool(Language language, LanguageRelease release, LanguageTool tool) {
+		Subject subject = subjectStore.create(SubjectHelper.pathOf(language, release, tool));
+		subject.drop();
+		return true;
 	}
 
 	public File loadLogo(Language language) {
@@ -139,7 +153,7 @@ public class LanguageManager {
 
 	public boolean exists(String language) {
 		if (new File(archetype.languages().root(), normalize(language)).exists()) return true;
-		return !subjectTree.subjects(SubjectHelper.LanguageType).with("name", normalize(language)).roots().isEmpty();
+		return !subjectStore.subjects().type(SubjectHelper.LanguageType).with("name", normalize(language)).collect().isEmpty();
 	}
 
 	public Language getDefault() {
@@ -147,14 +161,13 @@ public class LanguageManager {
 	}
 
 	public Language getWithMetamodel(Model model) {
-		Subjects result = subjectTree.subjects(SubjectHelper.LanguageType).with("metamodel", model.id()).roots();
-		return !result.isEmpty() ? get(result.get(0)) : null;
+		List<systems.intino.datamarts.subjectstore.model.Subject> result = subjectStore.subjects().type(SubjectHelper.LanguageType).with("metamodel", SubjectHelper.modelPath(model.id())).collect();
+		if (result.isEmpty()) result = subjectStore.subjects().type(SubjectHelper.LanguageType).with("metamodel", model.id()).collect();
+		return !result.isEmpty() ? get(result.getFirst()) : null;
 	}
 
 	public Language get(Model model) {
-		Subject subject = subjectTree.get(SubjectHelper.pathOf(model));
-		Tokens.Values values = subject.tokens().get("language");
-		return values.iterator().hasNext() ? get(values.first()) : null;
+		return get(Model.language(subjectStore.open(SubjectHelper.pathOf(model))));
 	}
 
 	public Language get(GavCoordinates gav) {
@@ -162,15 +175,15 @@ public class LanguageManager {
 	}
 
 	public Language get(String id) {
-		return get(subjectTree.get(SubjectHelper.languagePath(id)));
+		return get(subjectStore.open(SubjectHelper.languagePath(id)));
 	}
 
 	public void remove(Language language) {
 		try {
 			File rootDir = archetype.languages().get(normalize(language.id()));
 			if (!rootDir.exists()) return;
-			language.releases().forEach(r -> subjectTree.drop(SubjectHelper.pathOf(language, r)));
-			subjectTree.drop(SubjectHelper.pathOf(language));
+			language.releases().forEach(r -> subjectStore.open(SubjectHelper.pathOf(language, r)).drop());
+			subjectStore.open(SubjectHelper.pathOf(language)).drop();
 			FileUtils.deleteDirectory(rootDir);
 		} catch (IOException e) {
 			Logger.error(e);
@@ -187,8 +200,8 @@ public class LanguageManager {
 	}
 
 	public String owner(Language language) {
-		Subject subject = subjectTree.get(SubjectHelper.modelPath(language.metamodel()));
-		return subject != null && subject.tokens().get("owner").iterator().hasNext() ? subject.tokens().get("owner").first() : null;
+		String metamodel = language.metamodel();
+		return metamodel != null ? Model.owner(subjectStore.open(SubjectHelper.modelPath(metamodel))) : null;
 	}
 
 	private boolean matches(String regex, String user) {

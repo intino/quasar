@@ -32,7 +32,7 @@ public class ModelCommands extends Commands {
 		command.name = ModelHelper.proposeName();
 		command.title = language.name();
 		command.description = "";
-		command.isTemplate = true;
+		command.usage = Model.Usage.Template;
 		return command.execute();
 	}
 

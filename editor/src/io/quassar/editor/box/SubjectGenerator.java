@@ -4,10 +4,14 @@ import io.intino.alexandria.logger.Logger;
 import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,7 +30,8 @@ public class SubjectGenerator {
 	}
 
 	private void registerLanguages() {
-		linesOf(box.archetype().configuration().defaultLanguages()).stream().skip(1).forEach(this::registerLanguage);
+		List<String> lines = linesOf(box.archetype().configuration().defaultLanguages(), "default-languages.tsv");
+		lines.stream().skip(1).forEach(this::registerLanguage);
 	}
 
 	private void registerLanguage(String line) {
@@ -37,17 +42,32 @@ public class SubjectGenerator {
 	}
 
 	private void registerModels() {
-		linesOf(box.archetype().configuration().defaultModels()).stream().skip(1).forEach(this::registerModel);
+		List<String> lines = linesOf(box.archetype().configuration().defaultModels(), "default-models.tsv");
+		lines.stream().skip(1).forEach(this::registerModel);
 	}
 
 	private void registerModel(String line) {
 		String[] content = line.split("\t");
-		box.modelManager().create(content[0], content[1], content[3], content[4], GavCoordinates.fromString(content[2]), false, null);
+		box.modelManager().create(content[0], content[1], content[3], content[4], GavCoordinates.fromString(content[2]), Model.Usage.EndUser, null);
+	}
+
+	private List<String> linesOf(File file, String defaultResource) {
+		return file.exists() ? linesOf(file) : linesOf(SubjectGenerator.class.getResource("/" + defaultResource));
 	}
 
 	private List<String> linesOf(File file) {
 		try {
 			return Files.readAllLines(file.toPath());
+		} catch (IOException e) {
+			Logger.error(e);
+			return Collections.emptyList();
+		}
+	}
+
+	private List<String> linesOf(URL resource) {
+		try {
+			String content = IOUtils.toString(resource, StandardCharsets.UTF_8);
+			return content != null ? List.of(content.split("\n")) : Collections.emptyList();
 		} catch (IOException e) {
 			Logger.error(e);
 			return Collections.emptyList();

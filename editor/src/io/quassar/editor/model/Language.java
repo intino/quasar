@@ -2,12 +2,12 @@ package io.quassar.editor.model;
 
 import io.quassar.editor.box.util.SubjectHelper;
 import io.quassar.editor.box.util.VersionNumberComparator;
-import systems.intino.datamarts.subjectindex.model.Subject;
-import systems.intino.datamarts.subjectindex.model.Subjects;
+import systems.intino.datamarts.subjectstore.model.Subject;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public class Language extends SubjectWrapper {
 
@@ -67,11 +67,13 @@ public class Language extends SubjectWrapper {
 	}
 
 	public GavCoordinates parent() {
-		return GavCoordinates.fromString(get("parent"));
+		return new GavCoordinates(get("parent-group"), get("parent-name"), get("parent-version"));
 	}
 
 	public void parent(GavCoordinates value) {
-		set("parent", value.toString());
+		set("parent-group", value.groupId());
+		set("parent-name", value.artifactId());
+		set("parent-version", value.version());
 	}
 
 	public String title() {
@@ -139,8 +141,8 @@ public class Language extends SubjectWrapper {
 	}
 
 	public List<LanguageRelease> releases() {
-		Subjects subjects = subject.children().filter(s -> s.is(SubjectHelper.LanguageReleaseType));
-		return subjects.stream().map(this::releaseOf).toList();
+		Stream<Subject> result = subject.children().collect().stream().filter(s -> s.is(SubjectHelper.LanguageReleaseType));
+		return result.map(this::releaseOf).toList();
 	}
 
 	public LanguageRelease release(String version) {

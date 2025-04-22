@@ -21,7 +21,9 @@ public class ResourcesReader implements FileReader {
 
 	@Override
 	public List<io.quassar.editor.box.models.File> files() {
-		try(Stream<Path> paths = Files.walk(new File(workspace.root(), io.quassar.editor.box.models.File.ResourcesDirectory).toPath())) {
+		File resourcesDirectory = new File(workspace.root(), io.quassar.editor.box.models.File.ResourcesDirectory);
+		if (!resourcesDirectory.exists()) return Collections.emptyList();
+		try(Stream<Path> paths = Files.walk(resourcesDirectory.toPath())) {
 			return paths.map(p -> WorkspaceHelper.fileOf(p, workspace)).toList();
 		} catch (IOException e) {
 			Logger.error(e);

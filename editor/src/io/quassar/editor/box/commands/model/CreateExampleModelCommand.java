@@ -32,6 +32,7 @@ public class CreateExampleModelCommand extends Command<Model> {
 		command.name = name;
 		command.title = name;
 		command.description = "";
+		command.usage = Model.Usage.Example;
 		command.owner = author;
 		return command.execute();
 	}
