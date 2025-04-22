@@ -23,7 +23,7 @@ public class UserManager {
 	}
 
 	public List<User> users() {
-		return subjectStore.subjects().type(SubjectHelper.UserType).roots().collect().stream().map(this::get).toList();
+		return subjectStore.subjects().type(SubjectHelper.UserType).isRoot().collect().stream().map(this::get).toList();
 	}
 
 	public boolean exists(String key) {

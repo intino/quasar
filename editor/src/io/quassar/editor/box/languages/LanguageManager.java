@@ -43,7 +43,7 @@ public class LanguageManager {
 	}
 
 	public List<Language> languages() {
-		return subjectStore.subjects().type(SubjectHelper.LanguageType).roots().collect().stream().map(this::get).toList();
+		return subjectStore.subjects().type(SubjectHelper.LanguageType).isRoot().collect().stream().map(this::get).toList();
 	}
 
 	public Language create(String group, String name, Model metamodel, Language.Level level, String title, String description) {
