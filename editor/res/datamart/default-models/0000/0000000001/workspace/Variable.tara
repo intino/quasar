@@ -1,0 +1,97 @@
+dsl Meta
+
+Concept:Named Variable
+	def string hint = empty
+
+	Concept Syntactic as generalization // Asegura que el dato cumpla con la estructura y formato esperados
+		!! Check that the data is unique with respect to the rest of the features of the same type. Only applicable for text type features
+		sub Unique
+		!! Controls the format of a value by using a regular expression defined in resources with same name than indicated in name variable. Only applicable for text type features
+		sub:IfText Format > def resource name
+		!! Check that value length is the same than indicated in value attribute. Only applicable for text type features
+		sub:IfText FixedLength > def integer value
+		!! Check the length of a value. Only applicable for text type features
+		sub:IfText Length > def integer min; def integer max
+		!! Check the data codification of a value. Only applicable for text type features
+		sub:IfText Encoding > def string encoding
+		!! Check the data is normalized based on criterion defined. Only applicable for text type features
+		sub:IfText Normalization > def word[]:{TitleCase LowerCase UpperCase NoInnerSpaces NoLeadingSpaces NoTrailingSpaces NoMultipleInnerSpaces NoRepeatedCharacters NoEmoji NoControlCharacters NoSpaces NoSpecialCharacters NoNumeric NoLeadingZeros NoSQL NoXML NoJson} criteria
+		sub:IfText Pattern
+			!! Controls data ends with other text. Only applicable for text type features
+			facet Ending > def string value
+			!! Check if data starts with other text
+			facet Starting > def string value
+		!! Check the accuracy of the data
+		sub:IfNumber Precision > def integer decimals
+		!! Check if value arrives with unit defined. Only applicable for number/measurement type features
+		sub:IfNumber Unit > def string value
+		!! Check if value is greater or equal than min value defined. Only applicable for number/measurement type features
+		sub:IfNumber Min > def double value
+		!! Check if value is lower or equal than max value defined. Only applicable for number/measurement type features
+		sub:IfNumber Max > def double value
+		!! Check if value is greater or equal than min value and lower or equal than max value defined. Only applicable for number/measurement type features
+		sub:IfNumber Scale > def double min; def double max
+
+	Concept Semantic as generalization // Asegura que el dato sea comprensible y tenga sentido
+		!! Validates that the recorded data partially or completely matches the new value, ensuring its consistency and reliability. For example, a name that is spelled in different ways
+		sub Concordance
+		!! Checks that the data ensures the required condition based on decision rules
+		sub Required > Concept:{0..1} When > def Variable variable; def resource ruleSet
+		!! Checks that the data ensures the empty condition based on decision rules
+		sub Empty > Concept:{0..1} When > def Variable variable; def resource ruleSet
+		!! Checks that the feature is not applicable based on decision rules defined with condition
+		sub NotApplicable > Concept:{1..1} When > def Variable variable; def resource ruleSet
+		!! Checks that location is inside wkt geometry
+		sub Inside > def resource geometry
+
+	Concept Pragmatic as generalization // Asegura que el dato sea útil y realista
+		!! Ensures that the data is useful based on a condition that must be met
+		sub Feasible
+			!! Ensures that the data is useful based on a condition that must be met
+			facet Validation > def resource type
+			!! Checks if the data follows a normal distribution
+			facet NormalProbability > def double mean; def double deviation
+		!! Ensures that date does not contains future dates. Only applicable for date type features
+		sub:IfDate NoFutureDate
+		!! Ensures that date does not contains past dates. Only applicable for date type features
+		sub:IfDate NoPastDate
+		!! Ensures that the entered value does not contain offensive expressions, inappropriate language, or aggressive terms
+		sub Ethical
+		!! Ensures that the new value is consistent with previously entered values
+		sub Consistency
+		!! Ensures that the new value is consistent temporaly with previously entered values
+		sub TemporalConsistency > def double:{%} dv; def long:Scale dt
+		!! Ensures that the entered value is related to the value of another characteristic. For example, to ensure dependencies between fields
+		sub Coherence > def Variable variable; def resource ruleSet
+		!! Check if values arrives with periodicity defined with min/max variables
+		sub Period > def integer:Scale min; def integer:Scale max
+		!! Check if values arrives with periodicity defined with period value
+		sub Periodicity > def word:Period period
+		!! Check if the data is too old
+		sub Decay > def integer:Scale max
+		!! Check that only changes are recorded. If a value is equal to a previous one, it is discarded.
+		sub Retention
+		!! Check that the values follow an ascending or descending criterion. For example, age, which is ascending. Only applicable for number/measurement type features
+		sub:IfNumber Monotonicity > def word:{Ascending Descending} criterion
+		!! Ensures that a state remains for a period of time before changing. Only applicable for states
+		sub:IfState Persistence > def long:Scale dt
+		!! Ensures that you reach a new state from a valid one. Only applicable for states
+		sub:IfState Transition > def State from
+		!! Validates integrity against an existing database
+		sub Integrity
+
+	sub Feature
+		facet GeoLocation
+		facet Text
+		facet Identifier
+		facet Numeric
+		facet Date
+		facet Category > def resource categorization
+		facet Reference > def Subject subject
+
+	sub Measurement
+		facet Vector > def string[] dimensions
+
+	sub State
+		Concept:{1..1} Domain > def string[] categories
+		Concept:{0..1} Default > def string category

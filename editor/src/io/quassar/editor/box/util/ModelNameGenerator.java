@@ -5,8 +5,8 @@ import java.io.InputStream;
 import java.util.Random;
 
 public class ModelNameGenerator {
-	private static final String[] Adjectives = load("/model-name-generator/adjectives");
-	private static final String[] Nouns = load("/model-name-generator/nouns");
+	private static final String[] Adjectives = load("/generators/model-name-generator/adjectives");
+	private static final String[] Nouns = load("/generators/model-name-generator/nouns");
 	private static final Random Random = new Random();
 
 	public static String generate() {

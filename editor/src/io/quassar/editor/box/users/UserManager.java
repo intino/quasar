@@ -11,7 +11,6 @@ import systems.intino.datamarts.subjectstore.model.Subject;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 public class UserManager {
 	private final Archetype archetype;
@@ -36,8 +35,7 @@ public class UserManager {
 		return get(subject);
 	}
 
-	public User create(String name) {
-		String id = UUID.randomUUID().toString();
+	public User create(String id, String name) {
 		User user = new User(subjectStore.create(SubjectHelper.userPath(id)));
 		user.id(id);
 		user.name(name);

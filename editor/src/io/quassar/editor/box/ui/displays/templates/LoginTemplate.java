@@ -6,6 +6,7 @@ import io.intino.alexandria.ui.displays.events.Event;
 import io.intino.alexandria.ui.displays.events.KeyPressEvent;
 import io.intino.alexandria.ui.displays.events.SelectionEvent;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.commands.UserCommands;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.User;
 
@@ -68,7 +69,7 @@ public class LoginTemplate extends AbstractLoginTemplate<EditorBox> {
 
 	private void login(String username) {
 		User user = box().userManager().get(username);
-		if (user == null) user = box().userManager().create(username);
+		if (user == null) user = box().commands(UserCommands.class).create(username, username());
 		session().user(new io.intino.alexandria.ui.services.push.User().username(user.name()).fullName(user.name()));
 		notifier.redirect(redirectUrl(user));
 	}

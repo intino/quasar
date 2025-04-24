@@ -92,8 +92,7 @@ public class ModelManager {
 		return model;
 	}
 
-	public Model clone(Model model, String release, String name, String owner) {
-		String id = UUID.randomUUID().toString();
+	public Model clone(Model model, String release, String id, String name, String owner) {
 		Model result = new Model(subjectStore.create(SubjectHelper.modelPath(id)));
 		result.name(name);
 		result.language(model.language());

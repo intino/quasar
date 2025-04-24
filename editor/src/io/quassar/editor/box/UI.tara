@@ -48,7 +48,7 @@ Template(layout=Horizontal Center, format=headerStyle) headerTemplate
 		Text(value="DSL Forge", visible=false, format=h2 orangeColor bold airLeft) forgeTitle
 		Text(value="/", format=whiteColor h2 airLeft airRight, visible=false) languageSeparator
 		Text(value="", format=whiteColor h2, visible=false) languageTitleText
-		Link(title="", format=whiteColor h2, visible=false) languageTitleLink as Action Addressable(EditorElements.language)
+		Link(title="", format=h2, visible=false) languageTitleLink as Action Addressable(EditorElements.language)
 
 	Block(layout=Horizontal EndJustified)
 		MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode

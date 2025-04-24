@@ -3,6 +3,7 @@ package io.quassar.editor.box.ui.displays.templates;
 import io.intino.alexandria.ui.displays.components.BlockConditional;
 import io.intino.alexandria.ui.services.push.User;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.commands.UserCommands;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
@@ -141,7 +142,7 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 		User user = session().user();
 		if (user == null) return;
 		if (box().userManager().exists(user.username())) return;
-		box().userManager().create(user.username());
+		box().commands(UserCommands.class).create(user.username(), username());
 	}
 
 }

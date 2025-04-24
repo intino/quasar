@@ -8,12 +8,17 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class SubjectGenerator {
 	private final EditorBox box;
@@ -30,8 +35,9 @@ public class SubjectGenerator {
 	}
 
 	private void registerLanguages() {
-		List<String> lines = linesOf(box.archetype().configuration().defaultLanguages(), "default-languages.tsv");
+		List<String> lines = linesOf(box.archetype().configuration().defaultLanguages(), "datamart/default-languages.tsv");
 		lines.stream().skip(1).forEach(this::registerLanguage);
+		copyDir("datamart/default-languages", box.archetype().languages().root());
 	}
 
 	private void registerLanguage(String line) {
@@ -42,8 +48,32 @@ public class SubjectGenerator {
 	}
 
 	private void registerModels() {
-		List<String> lines = linesOf(box.archetype().configuration().defaultModels(), "default-models.tsv");
+		List<String> lines = linesOf(box.archetype().configuration().defaultModels(), "datamart/default-models.tsv");
 		lines.stream().skip(1).forEach(this::registerModel);
+		copyDir("datamart/default-models", box.archetype().models().root());
+	}
+
+	private void copyDir(String dir, File destiny) {
+		try {
+			Path source = Paths.get(SubjectGenerator.class.getResource("/" + dir).toURI());
+			try(Stream<Path> paths = Files.walk(source)) {
+				paths.forEach(path -> {
+					try {
+						Path destinoPath = destiny.toPath().resolve(source.relativize(path).toString());
+						if (Files.isDirectory(path)) {
+							Files.createDirectories(destinoPath);
+						} else {
+							Files.createDirectories(destinoPath.getParent());
+							Files.copy(path, destinoPath, StandardCopyOption.REPLACE_EXISTING);
+						}
+					} catch (IOException e) {
+						throw new UncheckedIOException(e);
+					}
+				});
+			}
+		} catch (URISyntaxException | IOException e) {
+			Logger.error(e);
+		}
 	}
 
 	private void registerModel(String line) {
