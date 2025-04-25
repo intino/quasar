@@ -3,21 +3,21 @@ package io.quassar.editor.box.languages;
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.util.ArchetypeHelper;
-import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.SubjectHelper;
 import io.quassar.editor.model.*;
 import org.apache.commons.io.FileUtils;
 import systems.intino.datamarts.subjectstore.SubjectStore;
 import systems.intino.datamarts.subjectstore.model.Subject;
-import systems.intino.datamarts.subjectstore.model.Term;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.Instant;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class LanguageManager {
 	private final Archetype archetype;

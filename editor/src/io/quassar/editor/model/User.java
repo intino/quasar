@@ -7,6 +7,7 @@ import java.util.List;
 public class User extends SubjectWrapper {
 
 	public static final String Anonymous = "anonymous";
+	public static final String Quassar = "quassar";
 
 	public User(Subject subject) {
 		super(subject);

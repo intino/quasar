@@ -4,6 +4,7 @@ import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageProperty;
+import io.quassar.editor.model.Visibility;
 
 import java.io.File;
 import java.util.List;
@@ -29,6 +30,7 @@ public class SaveLanguagePropertyCommand extends Command<Boolean> {
 		if (property == LanguageProperty.GrantAccess) language.grantAccessList((List<String>) value);
 		if (property == LanguageProperty.License) language.license((String) value);
 		if (property == LanguageProperty.Logo) box.languageManager().saveLogo(language, (File) value);
+		if (property == LanguageProperty.Visibility) language.visibility((Visibility) value);
 		return true;
 	}
 

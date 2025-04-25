@@ -19,6 +19,7 @@ import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
+import org.apache.commons.collections4.sequence.DeleteCommand;
 
 import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
@@ -78,6 +79,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		initFileEditor();
 		initFileModifiedDialog();
 		//tabSelector.onSelect(this::updateSelectedBlock);
+		helpDialog.onClose(e -> notifier.dispatch(PathHelper.modelPath(model, release)));
 		helpDialog.onOpen(e -> refreshHelpDialog());
 		console.onClose(e -> consoleBlock.hide());
 	}

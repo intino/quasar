@@ -17,7 +17,7 @@ public class Language extends SubjectWrapper {
 
 	public static String id(String group, String name) {
 		if (group == null || group.equalsIgnoreCase(Language.QuassarGroup)) return name;
-		return name + "." + group;
+		return group + "." + name;
 	}
 
 	public String id() {
@@ -152,6 +152,26 @@ public class Language extends SubjectWrapper {
 	public LanguageRelease lastRelease() {
 		List<LanguageRelease> releases = releases();
 		return !releases.isEmpty() ? releases.stream().sorted((o1, o2) -> VersionNumberComparator.getInstance().compare(o2.version(), o1.version())).toList().getFirst() : null;
+	}
+
+	public boolean isPublic() {
+		return !isPrivate();
+	}
+
+	public boolean isPrivate() {
+		return visibility() == Visibility.Private;
+	}
+
+	public void isPrivate(boolean value) {
+		visibility(value ? Visibility.Private : Visibility.Public);
+	}
+
+	public Visibility visibility() {
+		return get("visibility") == null ? Visibility.Private : Visibility.valueOf(get("visibility"));
+	}
+
+	public void visibility(Visibility value) {
+		set("visibility", value.name());
 	}
 
 	public Instant createDate() {

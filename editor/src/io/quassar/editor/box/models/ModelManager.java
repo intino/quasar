@@ -24,7 +24,6 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -42,16 +41,20 @@ public class ModelManager {
 	}
 
 	public List<Model> models(Language language, String owner) {
-		Map<String, Subject> ownerSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("language-group", language.group()).with("language-name", language.name()).with("owner", owner).with("visibility", Model.Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
-		Map<String, Subject> contributorSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("language-group", language.group()).with("language-name", language.name()).with("contributor", owner).with("visibility", Model.Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> ownerSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("language-group", language.group()).with("language-name", language.name()).with("owner", owner).with("visibility", Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> contributorSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("language-group", language.group()).with("language-name", language.name()).with("contributor", owner).with("visibility", Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> quassarSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("language-group", language.group()).with("language-name", language.name()).with("owner", User.Quassar).with("visibility", Visibility.Public.name()).with("usage", Model.Usage.EndUser.name()).collect());
 		ownerSubjects.putAll(contributorSubjects);
+		ownerSubjects.putAll(quassarSubjects);
 		return ownerSubjects.values().stream().map(this::get).toList();
 	}
 
 	public List<Model> models(String owner) {
-		Map<String, Subject> ownerSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("owner", owner).with("visibility", Model.Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
-		Map<String, Subject> contributorSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("contributor", owner).with("visibility", Model.Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> ownerSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("owner", owner).with("visibility", Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> contributorSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("contributor", owner).with("visibility", Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> quassarSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("owner", User.Quassar).with("visibility", Visibility.Public.name()).with("usage", Model.Usage.EndUser.name()).collect());
 		ownerSubjects.putAll(contributorSubjects);
+		ownerSubjects.putAll(quassarSubjects);
 		return ownerSubjects.values().stream().map(this::get).toList();
 	}
 

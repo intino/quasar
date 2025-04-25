@@ -1,6 +1,5 @@
 package io.quassar.editor.box.util;
 
-import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
 public class ArchetypeHelper {
@@ -15,7 +14,7 @@ public class ArchetypeHelper {
 	}
 
 	public static String languageDirectoryName(String name) {
-		return name.replace("." + Language.QuassarGroup, "");
+		return name.contains(".") ? name.substring(name.lastIndexOf(".")+1) : name;
 	}
 
 }

@@ -99,9 +99,8 @@ public class Model extends SubjectWrapper {
 		visibility(value ? Visibility.Private : Visibility.Public);
 	}
 
-	public enum Visibility { Private, Public }
 	public Visibility visibility() {
-		return Visibility.valueOf(get("visibility"));
+		return get("visibility") == null ? Visibility.Private : Visibility.valueOf(get("visibility"));
 	}
 
 	public void visibility(Visibility value) {

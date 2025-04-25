@@ -149,13 +149,20 @@ Template(layout=Vertical Flexible) languageInfoTemplate
 	Block(format=doubleAirBottom)
 		Text(value="Metamodel", translate=true, format=h5 bold middleAirBottom)
 		Block(layout=Horizontal) > Link(title="") metamodelLink as OpenSite(site=empty, target=Blank)
-	Block(format=doubleAirBottom doubleAirTop)
-		Text(value="Grant access", translate=true, format=h5 bold middleAirBottom)
-		Text(value="List of patterns separated by semicolon with access to this language", translate=true, format=message middleAirBottom)
-		Text grantAccessField as Editable Memo(height=5Rows)
-	Block(format=doubleAirBottom doubleAirTop)
-		Text(value="Copyright and license", translate=true, format=h5 bold middleAirBottom)
-		Text licenseField as Editable Memo(height=5Rows)
+	Block(format=doubleAirBottom)
+		Text(value="Visibility", translate=true, format=h5 bold middleAirBottom)
+		Block(layout=Horizontal)
+			Selector visibilitySelector as ComboBox
+				Text(value="Public") publicVisibilityOption as Option
+				Text(value="Private") privateVisibilityOption as Option
+	Block(visible=false) publicVisibilityBlock
+		Block(format=doubleAirBottom doubleAirTop)
+			Text(value="Restrict access to only this email accounts", translate=true, format=h5 bold middleAirBottom)
+			Text(value="List of patterns separated by semicolon with access to this language", translate=true, format=message middleAirBottom)
+			Text grantAccessField as Editable Memo(height=5Rows)
+		Block(format=doubleAirBottom doubleAirTop)
+			Text(value="Copyright and license", translate=true, format=h5 bold middleAirBottom)
+			Text licenseField as Editable Memo(height=5Rows)
 
 Template(layout=Vertical Flexible, format=doubleSpaced) languagePropertiesTemplate
 	Block(format=doubleAirBottom)
@@ -281,9 +288,11 @@ Template languageToolEditor
 	Block dockerImageFactoryBlock as Relative(height=100%, width=100%) Conditional
 		Block(format=doubleAirBottom)
 			Text(value="Docker image url", translate=true)
+			Text(value="Use [model] or [release] to indicate current model/release version", format=description, translate=true)
 			Text(format=airBottom) dockerImageField as Editable Focused
 		Block
 			Text(value="Docker image run parameters", translate=true)
+			Text(value="Use [model] or [release] to indicate current model/release version", format=description, translate=true)
 			Text(format=airBottom) dockerImageRunField as Editable
 
 	Block deploySiteFactoryBlock as Relative(height=100%, width=100%) Conditional

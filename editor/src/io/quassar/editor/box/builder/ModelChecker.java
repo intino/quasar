@@ -45,8 +45,9 @@ public class ModelChecker {
 	}
 
 	public CheckResult check(String user) {
+		File taraFiles = null;
 		try {
-			File taraFiles = taraFiles();
+			taraFiles = taraFiles();
 			if (taraFiles == null)
 				return CheckResult.failure(new Message().kind(Message.Kind.ERROR).content("Model files not found"));
 			CheckResult result = doCheck(taraFiles);
@@ -57,6 +58,9 @@ public class ModelChecker {
 		} catch (Throwable t) {
 			Logger.error(t);
 			return CheckResult.failure(new Message().kind(Message.Kind.ERROR).content("Unknown error"));
+		}
+		finally {
+			if (taraFiles != null) taraFiles.delete();
 		}
 	}
 

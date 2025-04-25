@@ -4,6 +4,7 @@ import io.intino.alexandria.logger.Logger;
 import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
+import io.quassar.editor.model.User;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -78,7 +79,8 @@ public class SubjectGenerator {
 
 	private void registerModel(String line) {
 		String[] content = line.split("\t");
-		box.modelManager().create(content[0], content[1], content[3], content[4], GavCoordinates.fromString(content[2]), Model.Usage.EndUser, null);
+		Model model = box.modelManager().create(content[0], content[1], content[3], content[4], GavCoordinates.fromString(content[2]), Model.Usage.EndUser, User.Quassar);
+		model.isPrivate(false);
 	}
 
 	private List<String> linesOf(File file, String defaultResource) {

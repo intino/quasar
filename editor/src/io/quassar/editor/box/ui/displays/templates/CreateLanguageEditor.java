@@ -46,6 +46,7 @@ public class CreateLanguageEditor extends AbstractCreateLanguageEditor<EditorBox
 	}
 
 	private void createLanguage() {
+		if (!editorStamp.check()) return;
 		create.readonly(true);
 		notifyUser("Creating language...", UserMessage.Type.Loading);
 		Language language = box().commands(LanguageCommands.class).create(editorStamp.name(), metamodel, Language.Level.L1, editorStamp.logo(), username());
