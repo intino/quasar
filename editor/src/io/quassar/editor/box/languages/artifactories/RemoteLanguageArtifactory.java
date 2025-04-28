@@ -51,7 +51,7 @@ public class RemoteLanguageArtifactory implements LanguageArtifactory {
 
 	public File download(GavCoordinates gav) throws IOException {
 		String filename = gav.artifactId() + "-" + gav.version().toLowerCase() + ".jar";
-		File file = archetype.languages().releaseDsl(ArchetypeHelper.languageDirectoryName(gav.languageId()), gav.version());
+		File file = archetype.languages().releaseDsl(gav.languageId(), gav.version());
 		if (file.exists()) return file;
 		URL url = URI.create(String.join("/", artifactory.toString(), gav.groupId(), gav.artifactId(), gav.version(), filename)).toURL();
 		Files.write(file.toPath(), connect(url).readAllBytes());

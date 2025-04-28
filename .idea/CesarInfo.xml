@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Cesar.Info">
+    <serverInfo>{&quot;deploy-quassar-dev&quot;:{&quot;name&quot;:&quot;deploy-quassar-dev&quot;,&quot;type&quot;:&quot;Dev&quot;,&quot;processes&quot;:[{&quot;container&quot;:&quot;deploy-quassar-dev&quot;,&quot;artifact&quot;:&quot;builder-service-1.0.0-SNAPSHOT.jar&quot;,&quot;debugPort&quot;:0,&quot;managementPort&quot;:10002,&quot;running&quot;:false,&quot;debugging&quot;:false},{&quot;container&quot;:&quot;deploy-quassar-dev&quot;,&quot;artifact&quot;:&quot;editor-1.0.0-SNAPSHOT.jar&quot;,&quot;debugPort&quot;:0,&quot;managementPort&quot;:10003,&quot;running&quot;:false,&quot;debugging&quot;:false}]}}</serverInfo>
+  </component>
+</project>

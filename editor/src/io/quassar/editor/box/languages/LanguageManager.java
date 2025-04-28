@@ -2,7 +2,6 @@ package io.quassar.editor.box.languages;
 
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
-import io.quassar.editor.box.util.ArchetypeHelper;
 import io.quassar.editor.box.util.SubjectHelper;
 import io.quassar.editor.model.*;
 import org.apache.commons.io.FileUtils;
@@ -86,12 +85,12 @@ public class LanguageManager {
 	}
 
 	public File loadLogo(Language language) {
-		return archetype.languages().logo(normalize(language.id()));
+		return archetype.languages().logo(language.id());
 	}
 
 	public void saveLogo(Language language, File logo) {
 		try {
-			File current = archetype.languages().logo(normalize(language.id()));
+			File current = archetype.languages().logo(language.id());
 			if (logo == null && current.exists()) { current.delete(); return; }
 			if (logo != null && logo.getAbsolutePath().equals(current.getAbsolutePath())) return;
 			if (logo != null) {
@@ -106,7 +105,7 @@ public class LanguageManager {
 	public void saveDsl(Language language, String release, File dsl) {
 		try {
 			if (dsl == null) return;
-			File destiny = archetype.languages().releaseDsl(normalize(language.id()), release);
+			File destiny = archetype.languages().releaseDsl(language.id(), release);
 			if (destiny.exists()) destiny.delete();
 			Files.copy(dsl.toPath(), destiny.toPath());
 		} catch (IOException e) {
@@ -129,7 +128,7 @@ public class LanguageManager {
 	public void saveHelp(Language language, String release, String content) {
 		try {
 			if (content == null) return;
-			File destiny = archetype.languages().releaseHelp(normalize(language.id()), release);
+			File destiny = archetype.languages().releaseHelp(language.id(), release);
 			Files.writeString(destiny.toPath(), content);
 		} catch (IOException e) {
 			Logger.error(e);
@@ -138,13 +137,13 @@ public class LanguageManager {
 
 	public File loadReader(Language language, LanguageRelease release, String programmingLanguage) {
 		if (release == null) return null;
-		List<File> readers = archetype.languages().releaseReaders(normalize(language.id()), release.version());
+		List<File> readers = archetype.languages().releaseReaders(language.id(), release.version());
 		return readers.stream().filter(r -> r.getName().startsWith(programmingLanguage + ".")).findFirst().orElse(null);
 	}
 
 	public List<File> loadReaders(Language language, LanguageRelease release) {
 		if (release == null) return null;
-		return archetype.languages().releaseReaders(normalize(language.id()), release.version());
+		return archetype.languages().releaseReaders(language.id(), release.version());
 	}
 
 	public boolean exists(Model model) {
@@ -152,8 +151,8 @@ public class LanguageManager {
 	}
 
 	public boolean exists(String language) {
-		if (new File(archetype.languages().root(), normalize(language)).exists()) return true;
-		return !subjectStore.subjects().type(SubjectHelper.LanguageType).with("name", normalize(language)).collect().isEmpty();
+		if (new File(archetype.languages().root(), language).exists()) return true;
+		return !subjectStore.subjects().type(SubjectHelper.LanguageType).with("name", language).collect().isEmpty();
 	}
 
 	public Language getDefault() {
@@ -180,7 +179,7 @@ public class LanguageManager {
 
 	public void remove(Language language) {
 		try {
-			File rootDir = archetype.languages().get(normalize(language.id()));
+			File rootDir = archetype.languages().get(language.id());
 			if (!rootDir.exists()) return;
 			language.releases().forEach(r -> subjectStore.open(SubjectHelper.pathOf(language, r)).drop());
 			subjectStore.open(SubjectHelper.pathOf(language)).drop();
@@ -212,17 +211,13 @@ public class LanguageManager {
 	private String loadHelp(String language, String release) {
 		try {
 			if (release == null) return null;
-			File helpFile = archetype.languages().releaseHelp(normalize(language), release);
+			File helpFile = archetype.languages().releaseHelp(language, release);
 			if (!helpFile.exists()) return null;
 			return Files.readString(helpFile.toPath());
 		} catch (IOException e) {
 			Logger.error(e);
 			return null;
 		}
-	}
-
-	private String normalize(String language) {
-		return ArchetypeHelper.languageDirectoryName(language);
 	}
 
 	private Language get(Subject subject) {

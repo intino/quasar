@@ -7,7 +7,8 @@ import java.util.List;
 public class NameHelper {
 
 	public static boolean validName(String name) {
-		return name.matches("^[a-zA-Z0-9_-]*$");
+		if (name == null || name.endsWith(".")) return false;
+		return name.matches("^[a-zA-Z0-9\\\\._-]*$");
 	}
 
 	private static final List<String> ReservedNames = List.of("core", "base", "common", "shared", "system", "default", "template", "example", "sample", "internal", "package", "namespace", "type", "class", "element", "structure", "syntax", "grammar", "schema", "attribute", "operation", "rule", "statement", "expression", "object", "instance", "interface", "abstract", "entity", "function", "dsl", "forge", "model", "models", "language", "languages", "builder", "editor", "workspace", "engine", "app", "manifest", "resources", "project", "user");

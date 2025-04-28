@@ -33,7 +33,7 @@ public class DisplayHelper {
 		return true;
 	}
 
-	public static boolean checkLanguageName(TextEditable<?, ?> field, Function<String, String> translator, EditorBox box) {
+	public static boolean checkLanguageId(TextEditable<?, ?> field, Function<String, String> translator, EditorBox box) {
 		if (!check(field, translator)) return false;
 		if (!NameHelper.validName(field.value())) { field.error("Name contains non alphanumeric characters"); return false; }
 		if (NameHelper.reservedName(field.value())) { field.error("This name is reserved and cannot be used."); return false; }

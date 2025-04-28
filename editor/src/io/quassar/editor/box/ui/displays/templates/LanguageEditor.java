@@ -11,15 +11,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.util.function.Consumer;
 
 public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 	private Language language;
 	private boolean logoExists;
-	private Consumer<Boolean> checkNameListener;
-	private Consumer<String> changeNameListener;
+	private Consumer<Boolean> checkIdListener;
+	private Consumer<String> changeIdListener;
 	private Consumer<File> changeLogoListener;
 
 	public LanguageEditor(EditorBox box) {
@@ -30,20 +29,20 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 		this.language = language;
 	}
 
-	public void onCheckName(Consumer<Boolean> listener) {
-		this.checkNameListener = listener;
+	public void onCheckId(Consumer<Boolean> listener) {
+		this.checkIdListener = listener;
 	}
 
-	public void onChangeName(Consumer<String> listener) {
-		this.changeNameListener = listener;
+	public void onChangeId(Consumer<String> listener) {
+		this.changeIdListener = listener;
 	}
 
 	public void onChangeLogo(Consumer<File> listener) {
 		this.changeLogoListener = listener;
 	}
 
-	public String name() {
-		return nameField.value();
+	public String languageId() {
+		return idField.value();
 	}
 
 	public File logo() {
@@ -53,20 +52,20 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 	}
 
 	public void focus() {
-		nameField.focus();
+		idField.focus();
 	}
 
 	public boolean check() {
-		return DisplayHelper.checkLanguageName(nameField, this::translate, box());
+		return DisplayHelper.checkLanguageId(idField, this::translate, box());
 	}
 
 	@Override
 	public void init() {
 		super.init();
-		nameField.onEnterPress(e -> notifyChangeName());
-		nameField.onChange(e -> refreshState());
-		changeName.onExecute(e -> changeName());
-		changeName.signChecker((sign, reason) -> sign.equals(nameField.value()));
+		idField.onEnterPress(e -> notifyChangeName());
+		idField.onChange(e -> refreshState());
+		changeId.onExecute(e -> changeName());
+		changeId.signChecker((sign, reason) -> sign.equals(idField.value()));
 		logoField.onChange(this::updateLogo);
 		generateLogo.onExecute(e -> generateLogo());
 	}
@@ -76,27 +75,29 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 		super.refresh();
 		File logo = language != null ? box().languageManager().loadLogo(language) : null;
 		logoExists = logo != null && logo.exists();
-		nameField.value(language != null ? language.name() : null);
+		idField.value(language != null ? language.id() : null);
 		logoField.value(logoExists ? logo : null);
-		changeName.visible(language != null);
+		changeId.visible(language != null);
 		generateLogo.readonly(language == null);
-		if (changeName.isVisible()) changeName.readonly(true);
+		if (changeId.isVisible()) changeId.readonly(true);
 	}
 
 	private void refreshState() {
-		boolean valid = DisplayHelper.checkLanguageName(nameField, this::translate, box());
-		boolean emptyName = nameField.value() == null || nameField.value().isEmpty();
-		validNameIcon.visible(valid && !emptyName);
-		invalidNameIcon.visible(!valid && !emptyName);
-		generateLogo.readonly(emptyName);
-		changeName.readonly(!valid || (language != null && language.name().equals(nameField.value())));
-		if (checkNameListener != null) checkNameListener.accept(valid);
+		boolean sameName = language == null || Language.nameFrom(idField.value()).equals(language.name());
+		boolean valid = sameName && DisplayHelper.checkLanguageId(idField, this::translate, box());
+		if (!sameName) idField.error(translate("Language can't change its language name part (%s) once created").formatted(language.name()));
+		boolean emptyId = idField.value() == null || idField.value().isEmpty();
+		validIdIcon.visible(valid && !emptyId);
+		invalidIdIcon.visible(!valid && !emptyId);
+		generateLogo.readonly(emptyId);
+		changeId.readonly(!valid || (language != null && language.name().equals(idField.value())));
+		if (checkIdListener != null) checkIdListener.accept(valid);
 	}
 
 	private void generateLogo() {
 		File destiny = logoFile();
 		if (destiny.exists()) destiny.delete();
-		LanguageHelper.generateLogo(nameField.value(), destiny);
+		LanguageHelper.generateLogo(Language.nameFrom(idField.value()), destiny);
 		if (changeLogoListener != null) changeLogoListener.accept(destiny);
 		logoField.value(language != null ? box().languageManager().loadLogo(language) : destiny);
 	}
@@ -121,13 +122,13 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 	}
 
 	private void notifyChangeName() {
-		if (changeNameListener == null) return;
-		changeNameListener.accept(nameField.value());
+		if (changeIdListener == null) return;
+		changeIdListener.accept(idField.value());
 	}
 
 	private void changeName() {
-		if (changeNameListener == null) return;
-		changeNameListener.accept(nameField.value());
+		if (changeIdListener == null) return;
+		changeIdListener.accept(idField.value());
 		refresh();
 	}
 

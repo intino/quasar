@@ -20,6 +20,14 @@ public class Language extends SubjectWrapper {
 		return group + "." + name;
 	}
 
+	public static String groupFrom(String id) {
+		return id.contains(".") ? id.substring(0, id.indexOf(".")) : "";
+	}
+
+	public static String nameFrom(String id) {
+		return id.contains(".") ? id.substring(id.indexOf(".")+1) : id;
+	}
+
 	public String id() {
 		return id(group(), name());
 	}

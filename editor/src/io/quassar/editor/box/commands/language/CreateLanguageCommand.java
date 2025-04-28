@@ -8,7 +8,7 @@ import io.quassar.editor.model.Model;
 import java.io.File;
 
 public class CreateLanguageCommand extends Command<Language> {
-	public String name;
+	public String id;
 	public Model metamodel;
 	public Language.Level level;
 	public File logo;
@@ -19,8 +19,7 @@ public class CreateLanguageCommand extends Command<Language> {
 
 	@Override
 	public Language execute() {
-		String group = box.userManager().get(author).id();
-		Language language = box.languageManager().create(group, name, metamodel, level, metamodel.title(), metamodel.description());
+		Language language = box.languageManager().create(Language.groupFrom(id), Language.nameFrom(id), metamodel, level, metamodel.title(), metamodel.description());
 		box.languageManager().saveLogo(language, logo);
 		return language;
 	}

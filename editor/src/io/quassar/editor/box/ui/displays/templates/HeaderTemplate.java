@@ -55,10 +55,10 @@ public class HeaderTemplate extends AbstractHeaderTemplate<EditorBox> {
 	private void refreshLanguage() {
 		languageSeparator.visible(language != null);
 		languageTitleText.visible(language != null && model == null && release == null);
-		if (languageTitleText.isVisible()) languageTitleText.value(language.name());
+		if (languageTitleText.isVisible()) languageTitleText.value(language.id());
 		languageTitleLink.visible(language != null && (model != null || release != null));
 		if (!languageTitleLink.isVisible()) return;
-		languageTitleLink.title(language.name());
+		languageTitleLink.title(language.id());
 		languageTitleLink.address(path -> PathHelper.languagePath(path, language, null));
 	}
 

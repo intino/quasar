@@ -32,7 +32,7 @@ public class LanguageInfoTemplate extends AbstractLanguageInfoTemplate<EditorBox
 	@Override
 	public void init() {
 		super.init();
-		editorStamp.onChangeName(this::rename);
+		editorStamp.onChangeId(this::rename);
 		editorStamp.onChangeLogo(e -> save(LanguageProperty.Logo, e));
 		grantAccessField.onChange(e -> save(LanguageProperty.GrantAccess, grantAccessList()));
 		licenseField.onChange(e -> save(LanguageProperty.License, licenseField.value()));

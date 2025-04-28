@@ -14,9 +14,9 @@ public class LanguageCommands extends Commands {
 		super(box);
 	}
 
-	public Language create(String name, Model metamodel, Language.Level level, File logo, String username) {
+	public Language create(String id, Model metamodel, Language.Level level, File logo, String username) {
 		CreateLanguageCommand command = setup(new CreateLanguageCommand(box), username);
-		command.name = name;
+		command.id = id;
 		command.metamodel = metamodel;
 		command.level = level;
 		command.logo = logo;
@@ -41,7 +41,7 @@ public class LanguageCommands extends Commands {
 	public boolean rename(Language language, String newName, String username) {
 		RenameLanguageCommand command = setup(new RenameLanguageCommand(box), username);
 		command.language = language;
-		command.newName = newName;
+		command.newId = newName;
 		return command.execute();
 	}
 

@@ -49,6 +49,15 @@ public class ModelManager {
 		return ownerSubjects.values().stream().map(this::get).toList();
 	}
 
+	public List<Model> models(Language language) {
+		Map<String, Subject> ownerSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("language-group", language.group()).with("language-name", language.name()).collect());
+		Map<String, Subject> contributorSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("language-group", language.group()).with("language-name", language.name()).collect());
+		Map<String, Subject> quassarSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("language-group", language.group()).with("language-name", language.name()).collect());
+		ownerSubjects.putAll(contributorSubjects);
+		ownerSubjects.putAll(quassarSubjects);
+		return ownerSubjects.values().stream().map(this::get).toList();
+	}
+
 	public List<Model> models(String owner) {
 		Map<String, Subject> ownerSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("owner", owner).with("visibility", Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
 		Map<String, Subject> contributorSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("contributor", owner).with("visibility", Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());

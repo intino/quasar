@@ -98,7 +98,7 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 	}
 
 	private void refreshHome() {
-		title.value(translate(title()).formatted(language.name()));
+		title.value(translate(title()).formatted(language.id()));
 		logo.value(LanguageHelper.logo(language, box()));
 		refreshHelpVersions();
 		refreshAbout();

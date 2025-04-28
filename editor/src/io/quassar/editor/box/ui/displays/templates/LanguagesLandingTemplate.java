@@ -78,14 +78,14 @@ public class LanguagesLandingTemplate extends AbstractLanguagesLandingTemplate<E
 	private void refreshName(Language language, LanguageLandingItem item) {
 		item.name.visible(selectListener == null);
 		if (!item.name.isVisible()) return;
-		item.name.title(language.name());
+		item.name.title(language.id());
 		item.name.address(path -> PathHelper.languagePath(path, language));
 	}
 
 	private void refreshNameSelector(Language language, LanguageLandingItem item) {
 		item.nameSelector.visible(selectListener != null);
 		if (!item.nameSelector.isVisible()) return;
-		item.nameSelector.title(language.name());
+		item.nameSelector.title(language.id());
 		item.nameSelector.onExecute(e -> notifySelect(language));
 	}
 

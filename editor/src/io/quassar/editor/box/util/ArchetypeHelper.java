@@ -13,8 +13,4 @@ public class ArchetypeHelper {
 		return id.length() > 4 ? id.substring(0, 4) : id;
 	}
 
-	public static String languageDirectoryName(String name) {
-		return name.contains(".") ? name.substring(name.lastIndexOf(".")+1) : name;
-	}
-
 }

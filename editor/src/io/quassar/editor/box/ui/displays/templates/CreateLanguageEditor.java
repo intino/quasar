@@ -33,8 +33,8 @@ public class CreateLanguageEditor extends AbstractCreateLanguageEditor<EditorBox
 	@Override
 	public void init() {
 		super.init();
-		editorStamp.onCheckName(valid -> create.readonly(!valid));
-		editorStamp.onChangeName(valid -> createLanguage());
+		editorStamp.onCheckId(valid -> create.readonly(!valid));
+		editorStamp.onChangeId(valid -> createLanguage());
 		create.onExecute(e -> createLanguage());
 	}
 
@@ -49,7 +49,7 @@ public class CreateLanguageEditor extends AbstractCreateLanguageEditor<EditorBox
 		if (!editorStamp.check()) return;
 		create.readonly(true);
 		notifyUser("Creating language...", UserMessage.Type.Loading);
-		Language language = box().commands(LanguageCommands.class).create(editorStamp.name(), metamodel, Language.Level.L1, editorStamp.logo(), username());
+		Language language = box().commands(LanguageCommands.class).create(editorStamp.languageId(), metamodel, Language.Level.L1, editorStamp.logo(), username());
 		hideUserNotification();
 		create.readonly(false);
 		createListener.accept(language);

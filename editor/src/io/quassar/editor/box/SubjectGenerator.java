@@ -1,6 +1,7 @@
 package io.quassar.editor.box;
 
 import io.intino.alexandria.logger.Logger;
+import io.quassar.editor.box.util.DirUtils;
 import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
@@ -38,7 +39,7 @@ public class SubjectGenerator {
 	private void registerLanguages() {
 		List<String> lines = linesOf(box.archetype().configuration().defaultLanguages(), "datamart/default-languages.tsv");
 		lines.stream().skip(1).forEach(this::registerLanguage);
-		copyDir("datamart/default-languages", box.archetype().languages().root());
+		DirUtils.copyDir("datamart/default-languages", box.archetype().languages().root());
 	}
 
 	private void registerLanguage(String line) {
@@ -51,30 +52,7 @@ public class SubjectGenerator {
 	private void registerModels() {
 		List<String> lines = linesOf(box.archetype().configuration().defaultModels(), "datamart/default-models.tsv");
 		lines.stream().skip(1).forEach(this::registerModel);
-		copyDir("datamart/default-models", box.archetype().models().root());
-	}
-
-	private void copyDir(String dir, File destiny) {
-		try {
-			Path source = Paths.get(SubjectGenerator.class.getResource("/" + dir).toURI());
-			try(Stream<Path> paths = Files.walk(source)) {
-				paths.forEach(path -> {
-					try {
-						Path destinoPath = destiny.toPath().resolve(source.relativize(path).toString());
-						if (Files.isDirectory(path)) {
-							Files.createDirectories(destinoPath);
-						} else {
-							Files.createDirectories(destinoPath.getParent());
-							Files.copy(path, destinoPath, StandardCopyOption.REPLACE_EXISTING);
-						}
-					} catch (IOException e) {
-						throw new UncheckedIOException(e);
-					}
-				});
-			}
-		} catch (URISyntaxException | IOException e) {
-			Logger.error(e);
-		}
+		DirUtils.copyDir("datamart/default-models", box.archetype().models().root());
 	}
 
 	private void registerModel(String line) {
