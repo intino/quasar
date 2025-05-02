@@ -4,6 +4,7 @@ import io.intino.alexandria.exceptions.InternalServerError;
 import io.intino.alexandria.exceptions.NotFound;
 import io.intino.builderservice.konos.BuilderServiceBox;
 import io.intino.builderservice.konos.actions.*;
+import io.intino.builderservice.konos.rest.resources.GetOutputResourceResource;
 import io.intino.builderservice.konos.schemas.BuilderInfo;
 import io.intino.builderservice.konos.schemas.RegisterBuilder;
 import io.intino.builderservice.konos.schemas.RunOperationContext;
@@ -74,8 +75,8 @@ public class BuilderTest {
 		var output = new GetOutputResourceAction();
 		output.box = box;
 		output.ticket = ticket;
-		output.output = "out";
+		output.output = GetOutputResourceResource.Output.Build;
 		Resource execute = output.execute();
-		Files.write(new File(TEST_RES + "out.tar").toPath(), execute.inputStream().readAllBytes());
+		Files.write(new File(TEST_RES + "build.tar").toPath(), execute.inputStream().readAllBytes());
 	}
 }

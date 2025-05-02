@@ -19,8 +19,8 @@ rule type(pom)
 		</repositories>
 
 		<build>
-			<outputDirectory>out/production/$name~-model-reader</outputDirectory>
-			<directory>out/build/$name~-model-reader</directory>
+			<outputDirectory>out/production/$name~-model-reader-java</outputDirectory>
+			<directory>out/build/$name~-model-reader-java</directory>
 			<plugins>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>

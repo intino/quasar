@@ -17,28 +17,27 @@ import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.List;
 
+import static io.intino.builderservice.QuassarBuilderServiceAccessor.OutputResourceOutput.Build;
 import static io.intino.builderservice.schemas.OperationResult.State.Running;
 
 public class ModelBuilder {
 	private final Model model;
-	private final GavCoordinates destiny;
+	private final GavCoordinates destination;
 	private final Language language;
 	private final DocumentManager manager;
 	private final QuassarBuilderServiceAccessor accessor;
 	private final String quassarBuilder;
 
-	public ModelBuilder(Model model, GavCoordinates destiny, EditorBox box) throws IOException {
+	public ModelBuilder(Model model, GavCoordinates destination, EditorBox box) throws IOException {
 		this.model = model;
-		this.destiny = destiny;
+		this.destination = destination;
 		this.language = box.languageManager().get(model.language());
 		this.manager = new FileDocumentManager(box.modelManager().workspace(model, Model.DraftRelease).root());
 		this.accessor = box.builderAccessor();
@@ -55,8 +54,7 @@ public class ModelBuilder {
 		} catch (Throwable t) {
 			Logger.error(t);
 			return CheckResult.failure(new Message().kind(Message.Kind.ERROR).content("Unknown error"));
-		}
-		finally {
+		} finally {
 			if (taraFiles != null) taraFiles.delete();
 		}
 	}
@@ -71,7 +69,7 @@ public class ModelBuilder {
 
 	private Resource artifacts(CheckResult result) throws InternalServerError, NotFound {
 		OperationResult output = accessor.getOperationOutput(result.ticket());
-		return output.outRef() != null ? accessor.getOutputResource(result.ticket(), output.outRef(), null) : null;
+		return output.buildRef() != null ? accessor.getOutputResource(result.ticket(), Build, null) : null;
 	}
 
 	private CheckResult doCheck(File taraFiles) throws InternalServerError, IOException, NotFound, InterruptedException, URISyntaxException {
@@ -113,8 +111,8 @@ public class ModelBuilder {
 				.generationPackage("")
 				.language(Formatters.normalizeLanguageName(language.name()))
 				.languageVersion(model.language().version())
-				.project(Formatters.normalizeLanguageName(destiny.artifactId()))
-				.projectVersion(destiny.version());
+				.project(Formatters.normalizeLanguageName(destination.artifactId()))
+				.projectVersion(destination.version());
 	}
 
 }

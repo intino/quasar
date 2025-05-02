@@ -26,7 +26,7 @@ Service builder-service as REST(host = "", port = "{port}")
 	Resource(path = "operation/:ticket/outputs/:output") outputResource
 		Get
 			Parameter(in = path) ticket as Text
-			Parameter(in = path) output as Text
+			Parameter(in = path) output as Word("Src" "Gen" "Res" "Out" "Build")
 			Parameter(in = query) excludeFilePattern as Text
 			Response file as File
 			Exception(code = NotFound)
