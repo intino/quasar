@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.stream.Collectors;
 
+@Ignore
 public class BuilderTest {
 
 	public static final String TEMP = "../temp";

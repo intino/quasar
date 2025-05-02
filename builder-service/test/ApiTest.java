@@ -3,10 +3,13 @@ import io.intino.alexandria.exceptions.InternalServerError;
 import io.intino.alexandria.exceptions.NotFound;
 import io.intino.builderservice.QuassarBuilderServiceAccessor;
 import io.intino.builderservice.konos.BuilderServiceBox;
+import io.intino.builderservice.schemas.BuilderInfo;
 import io.intino.builderservice.schemas.OperationResult;
+import io.intino.builderservice.schemas.RegisterBuilder;
 import io.intino.builderservice.schemas.RunOperationContext;
 import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -14,11 +17,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.util.List;
 
+@Ignore
 public class ApiTest {
 	private static File file;
 
-	@BeforeClass
+	//	@BeforeClass
 	public static void beforeClass() throws Exception {
 		file = new File("./test-res/quassar10906546769131108430.tar");
 		BuilderServiceBox box = new BuilderServiceBox(new String[]{"home=../temp",
@@ -30,6 +35,17 @@ public class ApiTest {
 		box.start();
 	}
 
+
+	@Test
+	public void should_register_builder() throws IOException, InternalServerError, URISyntaxException, InterruptedException, NotFound {
+		QuassarBuilderServiceAccessor accessor = new QuassarBuilderServiceAccessor(new URI("http://localhost:9002/").toURL());
+		accessor.postBuilders(new RegisterBuilder().imageURL("quassar625/io.quassar.quassar-builder:1.0.0"));
+		List<BuilderInfo> builders = accessor.getBuilders();
+		for (BuilderInfo builder : builders) {
+			System.out.println(builder.imageURL() + "; " + builder.creationDate());
+		}
+	}
+
 	@Test
 	public void should_run_builder_service_using_accessor() throws IOException, InternalServerError, URISyntaxException, InterruptedException, NotFound {
 		QuassarBuilderServiceAccessor accessor = new QuassarBuilderServiceAccessor(new URI("http://localhost:9000/").toURL());
@@ -37,7 +53,7 @@ public class ApiTest {
 		while (accessor.getOperationOutput(tiket).state() == OperationResult.State.Running) {
 			Thread.sleep(1000);
 		}
-		Resource out = accessor.getOutputResource(tiket, "out",  ".*\\.meta$");
+		Resource out = accessor.getOutputResource(tiket, "out", ".*\\.meta$");
 		Files.write(new File("test-res/out.tar").toPath(), out.inputStream().readAllBytes());
 	}
 

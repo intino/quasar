@@ -19,8 +19,10 @@ import java.util.Map;
 public class BuilderStore {
 	private final File indexFile;
 	private final Map<String, BuilderInfo> index;
+	private final DockerManager dockerManager;
 
-	public BuilderStore(File directory) {
+	public BuilderStore(DockerManager dockerManager, File directory) {
+		this.dockerManager = dockerManager;
 		directory.mkdirs();
 		this.indexFile = new File(directory, "builders.json");
 		this.index = load(indexFile);
@@ -43,7 +45,7 @@ public class BuilderStore {
 
 	public void put(RegisterBuilder info) {
 		try {
-			DockerManager.download(info.imageURL(), info.registryToken());
+			dockerManager.download(info.imageURL(), info.registryToken());
 			this.index.put(info.imageURL(), new BuilderInfo().imageURL(info.imageURL()));
 			saveIndex();
 		} catch (InterruptedException | IOException e) {

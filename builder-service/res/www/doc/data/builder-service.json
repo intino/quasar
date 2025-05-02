@@ -226,38 +226,43 @@
     }
   },
   "definitions": {
-    "OperationResult": {
+    "RegisterBuilder": {
       "required": [
-        "state",
-        "genRef",
-        "srcRef",
-        "resRef",
-        "outRef",
-        "success",
-        "messages"
+        "imageURL",
+        "registryToken"
       ],
       "properties": {
-        "state": {
+        "imageURL": {
           "type": "string"
         },
-        "genRef": {
+        "registryToken": {
+          "type": "string"
+        }
+      }
+    },
+    "BuilderInfo": {
+      "required": [
+        "imageURL",
+        "operations",
+        "targetLanguages",
+        "creationDate",
+        "properties"
+      ],
+      "properties": {
+        "imageURL": {
           "type": "string"
         },
-        "srcRef": {
+        "operations": {
           "type": "string"
         },
-        "resRef": {
+        "targetLanguages": {
           "type": "string"
         },
-        "outRef": {
+        "creationDate": {
           "type": "string"
         },
-        "success": {
-          "type": "boolean"
-        },
-        "messages": {
-          "type": "object",
-          "$ref": "#/definitions/Message"
+        "properties": {
+          "type": "java.util.map"
         }
       }
     },
@@ -288,20 +293,6 @@
         },
         "column": {
           "type": "integer"
-        }
-      }
-    },
-    "RegisterBuilder": {
-      "required": [
-        "imageURL",
-        "registryToken"
-      ],
-      "properties": {
-        "imageURL": {
-          "type": "string"
-        },
-        "registryToken": {
-          "type": "string"
         }
       }
     },
@@ -339,29 +330,38 @@
         }
       }
     },
-    "BuilderInfo": {
+    "OperationResult": {
       "required": [
-        "imageURL",
-        "operations",
-        "targetLanguages",
-        "creationDate",
-        "properties"
+        "state",
+        "genRef",
+        "srcRef",
+        "resRef",
+        "outRef",
+        "success",
+        "messages"
       ],
       "properties": {
-        "imageURL": {
+        "state": {
           "type": "string"
         },
-        "operations": {
+        "genRef": {
           "type": "string"
         },
-        "targetLanguages": {
+        "srcRef": {
           "type": "string"
         },
-        "creationDate": {
+        "resRef": {
           "type": "string"
         },
-        "properties": {
-          "type": "java.util.map"
+        "outRef": {
+          "type": "string"
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "messages": {
+          "type": "object",
+          "$ref": "#/definitions/Message"
         }
       }
     }

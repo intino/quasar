@@ -12,23 +12,27 @@ import java.util.List;
 import java.util.Map;
 
 public class DockerManager {
+	private final String url;
 
+	public DockerManager(String url) {
+		this.url = url;
+	}
 
-	public static void download(String imageURL) throws InterruptedException, IOException {
-		try (DockerClient dockerClient = DockerClientBuilder.getInstance().build()) {
+	public void download(String imageURL) throws InterruptedException, IOException {
+		try (DockerClient dockerClient = dockerClient()) {
 			dockerClient.pullImageCmd(imageURL).exec(new PullImageResultCallback()).awaitCompletion();
 		}
 	}
 
-	public static void download(String imageURL, String registryToken) throws InterruptedException, IOException {
-		try (DockerClient dockerClient = DockerClientBuilder.getInstance().build()) {
-			dockerClient.authConfig().withRegistrytoken(registryToken);
+	public void download(String imageURL, String registryToken) throws InterruptedException, IOException {
+		try (DockerClient dockerClient = dockerClient()) {
+			if (registryToken != null) dockerClient.authConfig().withRegistrytoken(registryToken);
 			dockerClient.pullImageCmd(imageURL).exec(new PullImageResultCallback()).awaitCompletion();
 		}
 	}
 
-	public static BuilderInfo builderInfo(String imageURL) throws Conflict, IOException {
-		try (DockerClient dockerClient = DockerClientBuilder.getInstance().build()) {
+	public BuilderInfo builderInfo(String imageURL) throws Conflict, IOException {
+		try (DockerClient dockerClient = dockerClient()) {
 			InspectImageResponse imageInfo = dockerClient.inspectImageCmd(imageURL).exec();
 			BuilderInfo builderInfo = new BuilderInfo();
 			if (imageInfo.getConfig() == null || imageInfo.getConfig().getLabels() == null)
@@ -47,5 +51,9 @@ public class DockerManager {
 					.operations(List.of(operations))
 					.properties(labels);
 		}
+	}
+
+	private DockerClient dockerClient() {
+		return url != null ? DockerClientBuilder.getInstance(url).build() : DockerClientBuilder.getInstance().build();
 	}
 }

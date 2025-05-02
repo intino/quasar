@@ -23,10 +23,10 @@ Artifact("io.intino", "1.0.0-SNAPSHOT") builder-service
 			Snapshot("https://artifactory.intino.io/artifactory/snapshot-libraries")
 
 	Deployment(server = deploy-quassar-dev, runConfiguration = dev)
-
 	Parameter("language-repository")
 	Parameter("port")
 	Parameter("home")
+	Parameter("docker-url")
 	Parameter("dockerhub-auth-file")
 
 RunConfiguration local
@@ -39,6 +39,7 @@ RunConfiguration dev
 	Argument("port", "9002")
 	Argument("home", "/home/intino")
 	Argument("language-repository", "/Users/oroncal/.m2")
+	Argument("docker-url", "tcp://127.0.0.1:2375")
 	Argument("dockerhub-auth-file", "/home/intino/configuration/dockerhub.properties")
 
 Server(type=Dev) deploy-quassar-dev
