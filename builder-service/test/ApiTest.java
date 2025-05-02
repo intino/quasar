@@ -21,13 +21,13 @@ import java.util.List;
 
 @Ignore
 public class ApiTest {
-	public static final String URL = "http://localhost:9000/";
+	public static final String URL = "http://localhost:9002/";
 	private static File file;
 
 	@BeforeClass
 	public static void beforeClass() throws Exception {
 		file = new File("./test-res/quassar10906546769131108430.tar");
-		localQuassar();
+//		localQuassar();
 	}
 
 	private static void localQuassar() throws IOException {

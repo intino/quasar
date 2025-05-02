@@ -12,11 +12,8 @@ Artifact("io.intino", "1.0.0-SNAPSHOT") builder-service
 		Compile("io.intino.itrules", "engine", "2.0.2")
 		Compile("com.github.docker-java", "docker-java", "3.5.0")
 		Compile("org.apache.commons", "commons-compress", "1.27.1")
-
 		Test("io.intino", "quassar-builder-service-accessor", "1.0.0-SNAPSHOT")
-
 	Package(mode = ModulesAndLibrariesLinkedByManifest) as Runnable(mainClass = "io.intino.builderservice.konos.Main")
-
     Distribution
         Artifactory("intino-maven")
 			Release("https://artifactory.intino.io/artifactory/release-libraries")
@@ -38,7 +35,7 @@ RunConfiguration local
 RunConfiguration dev
 	Argument("port", "9002")
 	Argument("home", "/home/intino")
-	Argument("language-repository", "/Users/oroncal/.m2")
+	Argument("language-repository", "/home/intino/.m2/repository")
 	Argument("docker-url", "tcp://127.0.0.1:2375")
 	Argument("dockerhub-auth-file", "/home/intino/configuration/dockerhub.properties")
 

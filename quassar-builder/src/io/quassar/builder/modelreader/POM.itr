@@ -14,7 +14,7 @@ rule type(pom)
 			<repository>
 				<id>intino-maven</id>
 				<name>intino-maven-releases</name>
-				<url>https://artifactory.intino.io/artifactory/release-libraries</url>
+				<url>https://artifactory.intino.io/artifactory/releases</url>
 			</repository>
 		</repositories>
 
@@ -37,24 +37,22 @@ rule type(pom)
 								<sources>
 									<source>gen</source>
 									<source>src</source>
-
 								</sources>
 							</configuration>
 						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>3.3.1</version>
+					<executions>
 						<execution>
-							<id>add-test-source</id>
-							<phase>generate-test-sources</phase>
+							<id>attach-sources</id>
 							<goals>
-								<goal>add-test-source</goal>
+								<goal>jar-no-fork</goal>
 							</goals>
-							<configuration>
-								<sources>
-									<source>test</source>
-									<source>test-gen</source>
-
-								</sources>
-							</configuration>
-							</execution>
+						</execution>
 					</executions>
 				</plugin>
 			</plugins>

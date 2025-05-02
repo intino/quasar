@@ -55,7 +55,11 @@ public record ProjectDirectory(File root) {
 	}
 
 	public File out() {
-		return new File(root.getAbsolutePath(), "out");
+		return new File(root.getAbsolutePath(), "out" + File.separator + "production");
+	}
+
+	public File build() {
+		return new File(root.getAbsolutePath(), "out"+ File.separator + "build");
 	}
 
 	public File gen() {

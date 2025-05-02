@@ -53,7 +53,6 @@ public class BuilderStore {
 		}
 	}
 
-
 	public synchronized void saveIndex() {
 		try {
 			Files.writeString(indexFile.toPath(), Json.toJson(index));

@@ -1,6 +1,8 @@
 package io.intino.builderservice.konos.runner;
 
+import com.github.dockerjava.api.model.AccessMode;
 import com.github.dockerjava.api.model.Bind;
+import com.github.dockerjava.api.model.SELContext;
 import com.github.dockerjava.api.model.Volume;
 import io.intino.builderservice.konos.BuilderStore;
 import io.intino.builderservice.konos.schemas.BuilderInfo;
@@ -11,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.AbstractMap;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.UUID;
@@ -19,7 +20,7 @@ import java.util.UUID;
 import static io.intino.builderservice.konos.runner.ProjectDirectory.PROJECT_BIND;
 
 public class BuilderRunner {
-	public static final String M2_BIND = "/root/.m2";
+	public static final String REPOSITORY = "/root/.m2/repository";
 	private final BuilderStore store;
 	private final ContainerManager manager;
 	private final File workspace;
@@ -39,11 +40,11 @@ public class BuilderRunner {
 		List<File> srcFiles = moveFiles(tarSources, hostProject.root());
 		List<String> srcPaths = mapPaths(srcFiles, hostProject);
 		ProjectDirectory containerProject = new ProjectDirectory(new File(PROJECT_BIND));
-		RunConfigurationRenderer renderer = new RunConfigurationRenderer(params, containerProject, srcPaths, new File(M2_BIND));
+		RunConfigurationRenderer renderer = new RunConfigurationRenderer(params, containerProject, srcPaths, new File(REPOSITORY));
 		Files.writeString(hostProject.argsFile().toPath().toAbsolutePath(), renderer.build());
 		String container = manager.createContainer(info.imageURL(), ticket,
-				new Bind(hostProject.root().getCanonicalFile().getAbsolutePath(), new Volume(PROJECT_BIND)),
-				new Bind(languagesRepository.getAbsolutePath(), new Volume(M2_BIND)));
+				new Bind(hostProject.root().getCanonicalFile().getAbsolutePath(), new Volume(PROJECT_BIND), AccessMode.rw, SELContext.single),
+				new Bind(languagesRepository.getAbsolutePath(), new Volume(REPOSITORY), AccessMode.rw, SELContext.single));
 		manager.start(container);
 		return new SimpleEntry<>(ticket, srcFiles);
 	}

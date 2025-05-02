@@ -48,6 +48,10 @@ public class GetOutputResourceAction implements io.intino.alexandria.rest.Reques
 					if (emptyIfNull(directory.out().listFiles()).length == 0) throw new NotFound("Directory is empty");
 					tar(directory.out(), filter, file);
 				}
+				case "build" -> {
+					if (emptyIfNull(directory.build().listFiles()).length == 0) throw new NotFound("Directory is empty");
+					tar(directory.out(), filter, file);
+				}
 				default -> throw new NotFound("Output not found");
 			}
 			return new Resource("file", file);

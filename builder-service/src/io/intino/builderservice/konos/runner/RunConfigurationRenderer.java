@@ -1,6 +1,5 @@
 package io.intino.builderservice.konos.runner;
 
-
 import io.intino.builderservice.konos.schemas.RunOperationContext;
 
 import java.io.File;
@@ -31,6 +30,7 @@ public class RunConfigurationRenderer {
 		writer.write(NL);
 		writer.write(PROJECT + NL + params.project() + NL);
 		writer.write(MODULE + NL + params.project() + NL);
+		writer.write(ARTIFACT_ID + NL + params.project() + NL);
 		writePaths(writer);
 		writer.write(MAKE + NL + true + NL);
 		writer.write(TEST + NL + false + NL);

@@ -3,13 +3,13 @@ package io.quassar.builder.modelreader;
 import io.intino.builder.CompilerConfiguration;
 import io.intino.itrules.Engine;
 import io.intino.itrules.FrameBuilder;
+import io.intino.tara.builder.utils.FileSystemUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
 public class ModelReaderGenerator {
-
 	private final CompilerConfiguration conf;
 
 	public ModelReaderGenerator(CompilerConfiguration conf) {
@@ -19,7 +19,13 @@ public class ModelReaderGenerator {
 	public void generate() {
 		generateModelAccessorClass();
 		File pom = generatePom();
-		if (pom != null) new MavenExecutor().run(pom, new File(conf.moduleDirectory(), "mvn.log"));
+		if (pom != null) {
+			new MavenExecutor().run(pom, new File(conf.moduleDirectory(), "mvn.log"));
+			File build = new File(pom.getParentFile(), "out/build/" + conf.module() + "-model-reader");
+			FileSystemUtils.removeDir(new File(build, "maven-archiver"));
+			FileSystemUtils.removeDir(new File(build, "maven-status"));
+			FileSystemUtils.removeDir(new File(build, "generated-sources"));
+		}
 	}
 
 	private void generateModelAccessorClass() {

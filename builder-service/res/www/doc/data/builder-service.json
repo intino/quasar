@@ -148,7 +148,7 @@
     },
     "operation/{ticket}/output": {
       "get": {
-        "operationId": "Service_25_2_11923308223",
+        "operationId": "Service_23_2_11923308223",
         "consumes": [
           "text/plain; charset\u003dutf-8",
           " application/json",
@@ -180,7 +180,7 @@
     },
     "operation/{ticket}/outputs/{output}": {
       "get": {
-        "operationId": "Service_29_2_1156810421",
+        "operationId": "Service_27_2_1156811383",
         "consumes": [
           "text/plain; charset\u003dutf-8",
           " application/json",
@@ -233,6 +233,7 @@
         "srcRef",
         "resRef",
         "outRef",
+        "buildRef",
         "success",
         "messages"
       ],
@@ -252,12 +253,29 @@
         "outRef": {
           "type": "string"
         },
+        "buildRef": {
+          "type": "string"
+        },
         "success": {
           "type": "boolean"
         },
         "messages": {
           "type": "object",
           "$ref": "#/definitions/Message"
+        }
+      }
+    },
+    "RegisterBuilder": {
+      "required": [
+        "imageURL",
+        "registryToken"
+      ],
+      "properties": {
+        "imageURL": {
+          "type": "string"
+        },
+        "registryToken": {
+          "type": "string"
         }
       }
     },
@@ -295,6 +313,32 @@
         }
       }
     },
+    "BuilderInfo": {
+      "required": [
+        "imageURL",
+        "operations",
+        "targetLanguages",
+        "creationDate",
+        "properties"
+      ],
+      "properties": {
+        "imageURL": {
+          "type": "string"
+        },
+        "operations": {
+          "type": "string"
+        },
+        "targetLanguages": {
+          "type": "string"
+        },
+        "creationDate": {
+          "type": "string"
+        },
+        "properties": {
+          "type": "java.util.map"
+        }
+      }
+    },
     "Message": {
       "required": [
         "type",
@@ -322,46 +366,6 @@
         },
         "column": {
           "type": "integer"
-        }
-      }
-    },
-    "BuilderInfo": {
-      "required": [
-        "imageURL",
-        "operations",
-        "targetLanguages",
-        "creationDate",
-        "properties"
-      ],
-      "properties": {
-        "imageURL": {
-          "type": "string"
-        },
-        "operations": {
-          "type": "string"
-        },
-        "targetLanguages": {
-          "type": "string"
-        },
-        "creationDate": {
-          "type": "string"
-        },
-        "properties": {
-          "type": "java.util.map"
-        }
-      }
-    },
-    "RegisterBuilder": {
-      "required": [
-        "imageURL",
-        "registryToken"
-      ],
-      "properties": {
-        "imageURL": {
-          "type": "string"
-        },
-        "registryToken": {
-          "type": "string"
         }
       }
     }
