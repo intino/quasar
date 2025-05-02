@@ -25,8 +25,9 @@ TARGETS:{ime editor}
     - release(dsl, version) in "{dsl}/releases/{version}"
     - releaseDsl(dsl, version) in "{dsl}/releases/{version}/dsl.jar"
     - releaseHelp(dsl, version) in "{dsl}/releases/{version}/help.html"
-    - releaseReaders(dsl, version) in "{dsl}/releases/{version}/readers" with ".zip"
-    - releaseReader(dsl, version, programmingLanguage) in "{dsl}/releases/{version}/readers/{programmingLanguage}.zip"
+    - releaseGraph(dsl, version) in "{dsl}/releases/{version}/graph.json"
+    - releaseReaders(dsl, version) in "{dsl}/releases/{version}/readers"
+    - releaseReader(dsl, version, name) in "{dsl}/releases/{version}/readers/{name}"
 
 + projects in "projects"
 
@@ -36,5 +37,6 @@ TARGETS:{ime editor}
 
 + tmp
     - upload(name) in "uploads/{name}"
+    - builds(name) in "builds/{name}"
     - model(language, model) in "{language}/{model}"
     - releaseWorkspace(model, version) in "{model}/{version}"

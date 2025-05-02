@@ -5,26 +5,24 @@ import io.intino.builderservice.schemas.Message;
 import java.io.InputStream;
 import java.util.List;
 
-public record CheckResult(List<Message> messages, InputStream output) {
+import static java.util.Collections.emptyList;
+
+public record CheckResult(String ticket, List<Message> messages) {
 
 	public boolean success() {
-		return messages.stream().allMatch(m -> m.kind() != Message.Kind.ERROR);
+		return messages.isEmpty() || messages.stream().allMatch(m -> m.kind() != Message.Kind.ERROR);
 	}
 
-	public static CheckResult success(InputStream output, Message... messages) {
-		return success(output, List.of(messages));
+	public static CheckResult success(String ticket) {
+		return new CheckResult(ticket, emptyList());
 	}
 
-	public static CheckResult success(InputStream output, List<Message> messages) {
-		return new CheckResult(messages, output);
+	public static CheckResult failure(String ticket, List<Message> messages) {
+		return new CheckResult(ticket, messages);
 	}
 
-	public static CheckResult failure(List<Message> messages) {
-		return new CheckResult(messages, null);
-	}
-
-	public static CheckResult failure(Message... messages) {
-		return failure(List.of(messages));
+	public static CheckResult failure(Message message) {
+		return new CheckResult(null, List.of(message));
 	}
 
 }

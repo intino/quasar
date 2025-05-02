@@ -15,13 +15,22 @@ import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+
+import static java.util.Collections.emptyList;
 
 public class FilesCleanerAction {
 	public EditorBox box;
 
 	public void execute() {
-		clean(box.archetype().tmp().root());
+		temporalDirectories().forEach(this::clean);
+	}
+
+	private List<File> temporalDirectories() {
+		File[] files = box.archetype().tmp().root().listFiles();
+		if (files == null) return emptyList();
+		return Arrays.stream(files).filter(File::isDirectory).toList();
 	}
 
 	private void clean(File root) {

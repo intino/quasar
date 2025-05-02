@@ -1,6 +1,7 @@
 package io.quassar.editor.box.ui.displays.templates;
 
 import io.intino.alexandria.ui.displays.UserMessage;
+import io.intino.alexandria.ui.server.UIFile;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.LanguageCommands;
 import io.quassar.editor.box.commands.ModelCommands;
@@ -43,11 +44,13 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 		createVersion.onExecute(e -> createVersion());
 		createTemplate.onExecute(e -> createTemplate());
 		modelsCatalog.onCreateModel(e -> createModel());
+		downloadGraphLink.onExecute(e -> downloadGraph());
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
+		graphBlock.visible(box().languageManager().loadGraph(language, release()) != null);
 		selectVersionBlock.visible(release == null);
 		versionBlock.visible(release != null && release() != null);
 		versionNotCreatedBlock.visible(release != null && release() == null);
@@ -106,6 +109,15 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 
 	private Model createModel() {
 		return box().commands(ModelCommands.class).createExample(language, release(), username());
+	}
+
+	private UIFile downloadGraph() {
+		File graph = box().languageManager().loadGraph(language, release());
+		return DisplayHelper.uiFile(filename(graph), graph);
+	}
+
+	private String filename(File graph) {
+		return language.name() + "-" + release + "-" + (graph != null ? graph.getName() : "graph.json");
 	}
 
 }

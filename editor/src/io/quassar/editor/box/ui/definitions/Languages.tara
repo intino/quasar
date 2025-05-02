@@ -215,6 +215,10 @@ Template(layout=Vertical Flexible, format=doubleSpaced) languageKitTemplate
 			Button(title="Create version", highlight=Fill, format=doubleAirTop) createVersion as Action
 
 	Block(layout=Vertical Flexible, visible=false) versionBlock
+		Block(format=doubleAirBottom) graphBlock
+			Text(value="Graph", translate=true, format=h5 bold)
+			Link(title="download") downloadGraphLink as Download
+
 		Block(format=doubleAirBottom)
 			Text(value="Model readers", translate=true, format=h5 bold)
 			TemplateStamp(template=modelReaderTemplate) readers as Multiple(arrangement=Horizontal, spacing=DP16, noItemsMessage="There are no readers available")

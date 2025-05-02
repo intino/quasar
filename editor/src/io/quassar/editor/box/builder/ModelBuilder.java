@@ -20,6 +20,7 @@ import io.quassar.editor.model.Model;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -27,7 +28,7 @@ import java.util.List;
 
 import static io.intino.builderservice.schemas.OperationResult.State.Running;
 
-public class ModelChecker {
+public class ModelBuilder {
 	private final Model model;
 	private final GavCoordinates destiny;
 	private final Language language;
@@ -35,7 +36,7 @@ public class ModelChecker {
 	private final QuassarBuilderServiceAccessor accessor;
 	private final String quassarBuilder;
 
-	public ModelChecker(Model model, GavCoordinates destiny, EditorBox box) throws IOException {
+	public ModelBuilder(Model model, GavCoordinates destiny, EditorBox box) throws IOException {
 		this.model = model;
 		this.destiny = destiny;
 		this.language = box.languageManager().get(model.language());
@@ -50,11 +51,7 @@ public class ModelChecker {
 			taraFiles = taraFiles();
 			if (taraFiles == null)
 				return CheckResult.failure(new Message().kind(Message.Kind.ERROR).content("Model files not found"));
-			CheckResult result = doCheck(taraFiles);
-			if (!result.success()) return result;
-			manager.commit(user);
-			manager.push();
-			return result;
+			return doCheck(taraFiles);
 		} catch (Throwable t) {
 			Logger.error(t);
 			return CheckResult.failure(new Message().kind(Message.Kind.ERROR).content("Unknown error"));
@@ -62,6 +59,19 @@ public class ModelChecker {
 		finally {
 			if (taraFiles != null) taraFiles.delete();
 		}
+	}
+
+	public BuildResult build(String user) throws InternalServerError, NotFound {
+		CheckResult result = check(user);
+		if (!result.success()) return BuildResult.failure(result.messages());
+		manager.commit(user);
+		manager.push();
+		return BuildResult.success(result.messages(), artifacts(result));
+	}
+
+	private Resource artifacts(CheckResult result) throws InternalServerError, NotFound {
+		OperationResult output = accessor.getOperationOutput(result.ticket());
+		return output.outRef() != null ? accessor.getOutputResource(result.ticket(), output.outRef(), null) : null;
 	}
 
 	private CheckResult doCheck(File taraFiles) throws InternalServerError, IOException, NotFound, InterruptedException, URISyntaxException {
@@ -75,9 +85,7 @@ public class ModelChecker {
 			Thread.sleep(1000);
 			output = accessor.getOperationOutput(ticket);
 		}
-		if (!output.success()) return CheckResult.failure(output.messages());
-		Resource resource = output.outRef() != null ? accessor.getOutputResource(ticket, output.outRef(), null) : null;
-		return CheckResult.success(resource != null ? resource.inputStream() : new ByteArrayInputStream(new byte[0]));
+		return output.success() ? CheckResult.success(ticket) : CheckResult.failure(ticket, output.messages());
 	}
 
 	private File taraFiles() {

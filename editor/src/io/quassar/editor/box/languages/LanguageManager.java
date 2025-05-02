@@ -12,10 +12,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class LanguageManager {
@@ -103,14 +100,36 @@ public class LanguageManager {
 	}
 
 	public void saveDsl(Language language, String release, File dsl) {
-		try {
-			if (dsl == null) return;
-			File destiny = archetype.languages().releaseDsl(language.id(), release);
-			if (destiny.exists()) destiny.delete();
-			Files.copy(dsl.toPath(), destiny.toPath());
-		} catch (IOException e) {
-			Logger.error(e);
-		}
+		copy(dsl, archetype.languages().releaseDsl(language.id(), release));
+	}
+
+	public File loadGraph(Language language, LanguageRelease release) {
+		if (release == null) return null;
+		File file = archetype.languages().releaseGraph(language.id(), release.version());
+		if (!file.exists()) return null;
+		return file;
+	}
+
+	public void saveGraph(Language language, String release, File graph) {
+		copy(graph, archetype.languages().releaseGraph(language.id(), release));
+	}
+
+	public File loadReader(Language language, LanguageRelease release, String name) {
+		if (release == null) return null;
+		File file = archetype.languages().releaseReader(language.id(), release.version(), name);
+		if (!file.exists()) return null;
+		return file;
+	}
+
+	public List<File> loadReaders(Language language, LanguageRelease release) {
+		if (release == null) return null;
+		File[] files = archetype.languages().releaseReaders(language.id(), release.version()).listFiles();
+		if (files == null) return Collections.emptyList();
+		return Arrays.stream(files).filter(f -> f.isFile() && !f.getName().startsWith(".")).toList();
+	}
+
+	public void saveReaders(Language language, String release, List<File> readers) {
+		copy(readers, archetype.languages().releaseReaders(language.id(), release));
 	}
 
 	public String loadHelp(Language language, String version) {
@@ -133,17 +152,6 @@ public class LanguageManager {
 		} catch (IOException e) {
 			Logger.error(e);
 		}
-	}
-
-	public File loadReader(Language language, LanguageRelease release, String programmingLanguage) {
-		if (release == null) return null;
-		List<File> readers = archetype.languages().releaseReaders(language.id(), release.version());
-		return readers.stream().filter(r -> r.getName().startsWith(programmingLanguage + ".")).findFirst().orElse(null);
-	}
-
-	public List<File> loadReaders(Language language, LanguageRelease release) {
-		if (release == null) return null;
-		return archetype.languages().releaseReaders(language.id(), release.version());
 	}
 
 	public boolean exists(Model model) {
@@ -223,6 +231,25 @@ public class LanguageManager {
 	private Language get(Subject subject) {
 		if (subject == null || subject.isNull()) return null;
 		return new Language(subject);
+	}
+
+	private void copy(File source, File destiny) {
+		try {
+			if (source == null) return;
+			if (destiny.exists()) destiny.delete();
+			Files.copy(source.toPath(), destiny.toPath());
+		} catch (IOException e) {
+			Logger.error(e);
+		}
+	}
+
+	private void copy(List<File> source, File destiny) {
+		try {
+			if (!destiny.exists()) destiny.mkdirs();
+			for (File file : source) Files.copy(file.toPath(), new File(destiny, file.getName()).toPath());
+		} catch (IOException e) {
+			Logger.error(e);
+		}
 	}
 
 }

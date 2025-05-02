@@ -2,7 +2,7 @@ package io.quassar.editor.box.commands.model;
 
 import io.intino.builderservice.schemas.Message;
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.box.builder.ModelChecker;
+import io.quassar.editor.box.builder.ModelBuilder;
 import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.box.commands.Command.ExecutionResult;
 import io.quassar.editor.model.GavCoordinates;
@@ -22,8 +22,8 @@ public class CheckModelCommand extends Command<ExecutionResult> {
 	@Override
 	public ExecutionResult execute() {
 		try {
-			ModelChecker checker = new ModelChecker(model, new GavCoordinates(model.language().groupId(), model.name(), release), box);
-			return ExecutionResult.check(checker.check(author()));
+			ModelBuilder builder = new ModelBuilder(model, new GavCoordinates(model.language().groupId(), model.name(), release), box);
+			return ExecutionResult.check(builder.check(author()));
 		} catch (IOException e) {
 			return ExecutionResult.check(List.of(new Message().kind(Message.Kind.ERROR).content(e.getMessage())));
 		}

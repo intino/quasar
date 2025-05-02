@@ -48,6 +48,7 @@ public class DisplayHelper {
 
 	public static UIFile uiFile(String label, File content) {
 		try {
+			if (!content.exists()) return uiFile(label, new ByteArrayInputStream(new byte[0]));
 			return uiFile(label, new FileInputStream(content));
 		} catch (FileNotFoundException e) {
 			Logger.error(e);

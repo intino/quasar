@@ -33,42 +33,18 @@ public abstract class Command<T> {
 	}
 
 	protected ExecutionResult resultOf(OperationResult result) {
-		return resultOf(result, null);
-	}
-
-	protected ExecutionResult resultOf(OperationResult result, InputStream output) {
-		return ExecutionResult.check(List.of(new Message().kind(result.success() ? Message.Kind.INFO : Message.Kind.ERROR).content(result.message())), output);
+		return ExecutionResult.check(List.of(new Message().kind(result.success() ? Message.Kind.INFO : Message.Kind.ERROR).content(result.message())));
 	}
 
 	public interface ExecutionResult {
 		boolean success();
 		List<Message> messages();
-		InputStream output();
 
 		static ExecutionResult check(CheckResult result) {
-			return new ExecutionResult() {
-				@Override
-				public boolean success() {
-					return result.messages().stream().noneMatch(m -> m.kind() == Message.Kind.ERROR);
-				}
-
-				@Override
-				public List<Message> messages() {
-					return result.messages();
-				}
-
-				@Override
-				public InputStream output() {
-					return result.output();
-				}
-			};
+			return check(result.messages());
 		}
 
 		static ExecutionResult check(List<Message> messages) {
-			return check(messages, null);
-		}
-
-		static ExecutionResult check(List<Message> messages, InputStream output) {
 			return new ExecutionResult() {
 				@Override
 				public boolean success() {
@@ -78,11 +54,6 @@ public abstract class Command<T> {
 				@Override
 				public List<Message> messages() {
 					return messages;
-				}
-
-				@Override
-				public InputStream output() {
-					return output;
 				}
 			};
 		}

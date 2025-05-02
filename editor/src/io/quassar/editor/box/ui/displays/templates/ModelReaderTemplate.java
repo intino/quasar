@@ -37,7 +37,7 @@ public class ModelReaderTemplate extends AbstractModelReaderTemplate<EditorBox> 
 	@Override
 	public void refresh() {
 		super.refresh();
-		titleLink.title(reader.getName().replace(".zip", ""));
+		titleLink.title(reader.getName().replace(".zip", "").replace("reader-", ""));
 	}
 
 	private String filename() {
