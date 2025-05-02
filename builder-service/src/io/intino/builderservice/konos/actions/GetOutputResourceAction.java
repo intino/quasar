@@ -20,11 +20,11 @@ import java.nio.file.Files;
 import static io.intino.builderservice.konos.utils.Tar.tar;
 
 public class GetOutputResourceAction implements io.intino.alexandria.rest.RequestErrorHandler {
+	public GetOutputResourceResource.Output output;
 	public BuilderServiceBox box;
 	public io.intino.alexandria.http.server.AlexandriaHttpContext context;
 	public String ticket;
 	public String excludeFilePattern;
-	public GetOutputResourceResource.Output output;
 
 	public io.intino.alexandria.Resource execute() throws NotFound, InternalServerError {
 		ProjectDirectory directory = ProjectDirectory.of(box.workspace(), ticket);

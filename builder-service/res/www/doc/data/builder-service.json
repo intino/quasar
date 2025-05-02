@@ -226,6 +226,50 @@
     }
   },
   "definitions": {
+    "Message": {
+      "required": [
+        "type",
+        "kind",
+        "content",
+        "uri",
+        "line",
+        "column"
+      ],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "uri": {
+          "type": "string"
+        },
+        "line": {
+          "type": "integer"
+        },
+        "column": {
+          "type": "integer"
+        }
+      }
+    },
+    "RegisterBuilder": {
+      "required": [
+        "imageURL",
+        "registryToken"
+      ],
+      "properties": {
+        "imageURL": {
+          "type": "string"
+        },
+        "registryToken": {
+          "type": "string"
+        }
+      }
+    },
     "BuilderInfo": {
       "required": [
         "imageURL",
@@ -283,50 +327,6 @@
         },
         "generationPackage": {
           "type": "string"
-        }
-      }
-    },
-    "RegisterBuilder": {
-      "required": [
-        "imageURL",
-        "registryToken"
-      ],
-      "properties": {
-        "imageURL": {
-          "type": "string"
-        },
-        "registryToken": {
-          "type": "string"
-        }
-      }
-    },
-    "Message": {
-      "required": [
-        "type",
-        "kind",
-        "content",
-        "uri",
-        "line",
-        "column"
-      ],
-      "properties": {
-        "type": {
-          "type": "string"
-        },
-        "kind": {
-          "type": "string"
-        },
-        "content": {
-          "type": "string"
-        },
-        "uri": {
-          "type": "string"
-        },
-        "line": {
-          "type": "integer"
-        },
-        "column": {
-          "type": "integer"
         }
       }
     },
