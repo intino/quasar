@@ -7,7 +7,6 @@ import io.intino.alexandria.exceptions.NotFound;
 import io.intino.alexandria.logger.Logger;
 import io.intino.builderservice.konos.BuilderServiceBox;
 import io.intino.builderservice.konos.schemas.BuilderInfo;
-import io.intino.builderservice.konos.utils.DockerManager;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -15,7 +14,7 @@ import java.util.Optional;
 public class GetBuilderInfoAction implements io.intino.alexandria.rest.RequestErrorHandler {
 	public String registryToken;
 	public BuilderServiceBox box;
-	public io.intino.alexandria.http.spark.SparkContext context;
+	public io.intino.alexandria.http.server.AlexandriaHttpContext context;
 	public String imageURL;
 
 	public BuilderInfo execute() throws Conflict, NotFound {
@@ -27,8 +26,8 @@ public class GetBuilderInfoAction implements io.intino.alexandria.rest.RequestEr
 
 	private BuilderInfo findBuilder() throws Conflict, NotFound {
 		try {
-			DockerManager.download(imageURL, registryToken);
-			return DockerManager.builderInfo(imageURL);
+			box.containerManager().download(imageURL, registryToken);
+			return box.containerManager().builderInfo(imageURL);
 		} catch (InterruptedException | IOException e) {
 			Logger.error(e);
 			throw new NotFound(e.getMessage());

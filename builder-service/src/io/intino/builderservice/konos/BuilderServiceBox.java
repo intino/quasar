@@ -22,9 +22,9 @@ public class BuilderServiceBox extends AbstractBox {
 
 	public BuilderServiceBox(BuilderServiceConfiguration configuration) {
 		super(configuration);
-		this.builderStore = new BuilderStore(new File(configuration.home(), "builder-service/store"));
+		this.containerManager = new ContainerManager(configuration.dockerUrl(), configuration().dockerhubAuthFile());
+		this.builderStore = new BuilderStore(containerManager, new File(configuration.home(), "builder-service/store"));
 		this.workspace = new File(configuration.home(), "builder-service/workspace");
-		this.containerManager = new ContainerManager(configuration().dockerhubAuthFile());
 		this.operationHandlers = new HashMap<>();
 		this.workspace.mkdirs();
 	}

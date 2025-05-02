@@ -14,3 +14,4 @@ webpack.config.js
 res/js/monaco-client/
 */res/www
 temp2
+.idea/CesarInfo.xml

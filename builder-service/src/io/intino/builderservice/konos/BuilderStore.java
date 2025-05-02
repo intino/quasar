@@ -3,9 +3,9 @@ package io.intino.builderservice.konos;
 import com.google.gson.reflect.TypeToken;
 import io.intino.alexandria.Json;
 import io.intino.alexandria.logger.Logger;
+import io.intino.builderservice.konos.runner.ContainerManager;
 import io.intino.builderservice.konos.schemas.BuilderInfo;
 import io.intino.builderservice.konos.schemas.RegisterBuilder;
-import io.intino.builderservice.konos.utils.DockerManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,8 +19,10 @@ import java.util.Map;
 public class BuilderStore {
 	private final File indexFile;
 	private final Map<String, BuilderInfo> index;
+	private final ContainerManager dockerManager;
 
-	public BuilderStore(File directory) {
+	public BuilderStore(ContainerManager dockerManager, File directory) {
+		this.dockerManager = dockerManager;
 		directory.mkdirs();
 		this.indexFile = new File(directory, "builders.json");
 		this.index = load(indexFile);
@@ -43,7 +45,7 @@ public class BuilderStore {
 
 	public void put(RegisterBuilder info) {
 		try {
-			DockerManager.download(info.imageURL(), info.registryToken());
+			dockerManager.download(info.imageURL(), info.registryToken());
 			this.index.put(info.imageURL(), new BuilderInfo().imageURL(info.imageURL()));
 			saveIndex();
 		} catch (InterruptedException | IOException e) {
