@@ -50,7 +50,6 @@
     <orderEntry type="library" name="Intino: commons-io:commons-io:2.16.1" level="project" />
     <orderEntry type="library" name="Intino: org.apache.commons:commons-lang3:3.16.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Intino: io.intino:quassar-builder-service-accessor:1.0.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" scope="TEST" name="Intino: io.intino.alexandria:rest-accessor:3.1.7" level="project" />
     <orderEntry type="library" scope="TEST" name="Intino: org.glassfish.tyrus:tyrus-client:2.1.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Intino: org.glassfish.tyrus:tyrus-core:2.1.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Intino: org.glassfish.tyrus:tyrus-spi:2.1.5" level="project" />
@@ -129,5 +128,6 @@
     <orderEntry type="library" name="Intino: io.netty:netty-transport-classes-epoll:4.1.119.Final" level="project" />
     <orderEntry type="library" name="Intino: io.netty:netty-transport-native-kqueue:4.1.119.Final" level="project" />
     <orderEntry type="library" name="Intino: io.netty:netty-transport-classes-kqueue:4.1.119.Final" level="project" />
+    <orderEntry type="library" scope="TEST" name="Intino: io.intino.alexandria:rest-accessor:3.1.8" level="project" />
   </component>
 </module>

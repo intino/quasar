@@ -29,7 +29,7 @@ Artifact("io.intino", "1.0.0-SNAPSHOT") builder-service
 RunConfiguration local
 	Argument("port", "9002")
 	Argument("home", "./temp")
-	Argument("language-repository", "/Users/mcaballero/.m2")
+	Argument("language-repository", "/Users/mcaballero/.m2/repository")
 	Argument("dockerhub-auth-file", "./temp/configuration/dockerhub.properties")
 
 RunConfiguration dev

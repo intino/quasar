@@ -13,8 +13,8 @@ public record CheckResult(String ticket, List<Message> messages) {
 		return messages.isEmpty() || messages.stream().allMatch(m -> m.kind() != Message.Kind.ERROR);
 	}
 
-	public static CheckResult success(String ticket) {
-		return new CheckResult(ticket, emptyList());
+	public static CheckResult success(String ticket, List<Message> messages) {
+		return new CheckResult(ticket, messages);
 	}
 
 	public static CheckResult failure(String ticket, List<Message> messages) {

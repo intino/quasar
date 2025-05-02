@@ -16,7 +16,7 @@ public class Language extends SubjectWrapper {
 	public static final String Metta = "meta";
 
 	public static String id(String group, String name) {
-		if (group == null || group.equalsIgnoreCase(Language.QuassarGroup)) return name;
+		if (group == null || group.isEmpty() || group.equalsIgnoreCase(Language.QuassarGroup)) return name;
 		return group + "." + name;
 	}
 

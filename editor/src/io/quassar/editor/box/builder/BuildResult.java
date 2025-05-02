@@ -14,7 +14,7 @@ public record BuildResult(List<Message> messages, Resource zipArtifacts) {
 	}
 
 	public static BuildResult success(List<Message> messages, Resource zipArtifacts) {
-		return new BuildResult(Collections.emptyList(), zipArtifacts);
+		return new BuildResult(messages, zipArtifacts);
 	}
 
 	public static BuildResult failure(List<Message> messages) {

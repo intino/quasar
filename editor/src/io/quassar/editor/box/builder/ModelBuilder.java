@@ -83,7 +83,7 @@ public class ModelBuilder {
 			Thread.sleep(1000);
 			output = accessor.getOperationOutput(ticket);
 		}
-		return output.success() ? CheckResult.success(ticket) : CheckResult.failure(ticket, output.messages());
+		return output.success() ? CheckResult.success(ticket, output.messages()) : CheckResult.failure(ticket, output.messages());
 	}
 
 	private File taraFiles() {

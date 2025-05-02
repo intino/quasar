@@ -62,7 +62,6 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 	@Override
 	public void init() {
 		super.init();
-		idField.onEnterPress(e -> notifyChangeName());
 		idField.onChange(e -> refreshState());
 		changeId.onExecute(e -> changeName());
 		changeId.signChecker((sign, reason) -> sign.equals(idField.value()));
@@ -90,7 +89,7 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 		validIdIcon.visible(valid && !emptyId);
 		invalidIdIcon.visible(!valid && !emptyId);
 		generateLogo.readonly(emptyId);
-		changeId.readonly(!valid || (language != null && language.name().equals(idField.value())));
+		changeId.readonly(!valid);
 		if (checkIdListener != null) checkIdListener.accept(valid);
 	}
 
@@ -119,11 +118,6 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 	@NotNull
 	private File logoFile() {
 		return new File(box().archetype().tmp().root(), id() + "-logo.png");
-	}
-
-	private void notifyChangeName() {
-		if (changeIdListener == null) return;
-		changeIdListener.accept(idField.value());
 	}
 
 	private void changeName() {

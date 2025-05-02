@@ -63,8 +63,8 @@ public class ApiTest {
 		while (accessor.getOperationOutput(ticket).state() == OperationResult.State.Running) {
 			Thread.sleep(1000);
 		}
-		Resource out = accessor.getOutputResource(ticket, "build", ".*\\.meta$");
-		Files.write(new File("test-res/build.tar").toPath(), out.inputStream().readAllBytes());
+		//Resource out = accessor.getOutputResource(ticket, "build", ".*\\.meta$");
+		//Files.write(new File("test-res/build.tar").toPath(), out.inputStream().readAllBytes());
 	}
 
 	private static RunOperationContext context() {

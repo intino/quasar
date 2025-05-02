@@ -137,7 +137,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 
 	private UIFile download() {
 		File release = box().modelManager().release(model, this.release);
-		return DisplayHelper.uiFile(model.name() + "-" + release.getName(), release);
+		return DisplayHelper.uiFile(model.title() + "-" + release.getName(), release);
 	}
 
 	private void openSettingsDialog() {

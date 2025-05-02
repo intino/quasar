@@ -274,7 +274,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 	}
 
 	private void updateConsole(Command.ExecutionResult result) {
-		consoleBlock.visible(!result.success());
+		consoleBlock.visible(!result.messages().isEmpty());
 		if (!consoleBlock.isVisible()) return;
 		updateConsole(result.messages());
 	}

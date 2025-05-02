@@ -37,7 +37,7 @@ public class DisplayHelper {
 		if (!check(field, translator)) return false;
 		if (!NameHelper.validName(field.value())) { field.error("Name contains non alphanumeric characters"); return false; }
 		if (NameHelper.reservedName(field.value())) { field.error("This name is reserved and cannot be used."); return false; }
-		if (NameHelper.languageInUse(field.value(), box)) { field.error("Already exists a language with that name"); return false; }
+		//if (NameHelper.languageInUse(field.value(), box)) { field.error("Already exists a language with that name"); return false; }
 		if (NameHelper.modelInUse(field.value(), box)) { field.error("Already exists a model with that name"); return false; }
 		return true;
 	}
