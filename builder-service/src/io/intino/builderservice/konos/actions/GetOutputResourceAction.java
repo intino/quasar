@@ -23,7 +23,7 @@ public class GetOutputResourceAction implements io.intino.alexandria.rest.Reques
 	public String output;
 	public String excludeFilePattern;
 	public BuilderServiceBox box;
-	public io.intino.alexandria.http.spark.SparkContext context;
+	public io.intino.alexandria.http.server.AlexandriaHttpContext context;
 
 	public io.intino.alexandria.Resource execute() throws NotFound, InternalServerError {
 		ProjectDirectory directory = ProjectDirectory.of(box.workspace(), ticket);

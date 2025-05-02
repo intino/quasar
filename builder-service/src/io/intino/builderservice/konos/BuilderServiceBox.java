@@ -4,7 +4,6 @@ import io.intino.alexandria.logger.Logger;
 import io.intino.builderservice.konos.runner.ContainerManager;
 import io.intino.builderservice.konos.runner.OperationOutputHandler;
 import io.intino.builderservice.konos.runner.ProjectDirectory;
-import io.intino.builderservice.konos.utils.DockerManager;
 
 import java.io.File;
 import java.util.HashMap;
@@ -16,7 +15,6 @@ public class BuilderServiceBox extends AbstractBox {
 	private final ContainerManager containerManager;
 	private final File workspace;
 	private final Map<String, OperationOutputHandler> operationHandlers;
-	private DockerManager dockerManager;
 
 	public BuilderServiceBox(String[] args) {
 		this(new BuilderServiceConfiguration(args));
@@ -24,10 +22,9 @@ public class BuilderServiceBox extends AbstractBox {
 
 	public BuilderServiceBox(BuilderServiceConfiguration configuration) {
 		super(configuration);
-		dockerManager = new DockerManager(configuration.dockerUrl());
-		this.builderStore = new BuilderStore(dockerManager,new File(configuration.home(), "builder-service/store"));
+		this.containerManager = new ContainerManager(configuration.dockerUrl(), configuration().dockerhubAuthFile());
+		this.builderStore = new BuilderStore(containerManager, new File(configuration.home(), "builder-service/store"));
 		this.workspace = new File(configuration.home(), "builder-service/workspace");
-		this.containerManager = new ContainerManager(configuration().dockerhubAuthFile());
 		this.operationHandlers = new HashMap<>();
 		this.workspace.mkdirs();
 	}
@@ -40,10 +37,6 @@ public class BuilderServiceBox extends AbstractBox {
 
 	public BuilderStore builderStore() {
 		return builderStore;
-	}
-
-	public DockerManager dockerManager() {
-		return dockerManager;
 	}
 
 	public File workspace() {

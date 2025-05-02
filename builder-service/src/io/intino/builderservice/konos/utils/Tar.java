@@ -4,7 +4,7 @@ import io.intino.alexandria.logger.Logger;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
-import spark.utils.IOUtils;
+import org.apache.commons.compress.utils.IOUtils;
 
 import java.io.*;
 import java.util.ArrayList;

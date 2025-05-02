@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,7 +32,7 @@ public class BuilderRunner {
 		this.languagesRepository = languagesRepository;
 	}
 
-	public AbstractMap.SimpleEntry<String, List<File>> run(RunOperationContext params, InputStream tarSources) throws IOException {
+	public SimpleEntry<String, List<File>> run(RunOperationContext params, InputStream tarSources) throws IOException {
 		BuilderInfo info = store.get(params.imageURL());
 		String ticket = UUID.randomUUID().toString();
 		ProjectDirectory hostProject = ProjectDirectory.of(workspace.getCanonicalFile(), ticket);
@@ -44,7 +45,7 @@ public class BuilderRunner {
 				new Bind(hostProject.root().getCanonicalFile().getAbsolutePath(), new Volume(PROJECT_BIND)),
 				new Bind(languagesRepository.getAbsolutePath(), new Volume(M2_BIND)));
 		manager.start(container);
-		return new AbstractMap.SimpleEntry(ticket, srcFiles);
+		return new SimpleEntry<>(ticket, srcFiles);
 	}
 
 	private List<String> mapPaths(List<File> srcFiles, ProjectDirectory projectDir) {

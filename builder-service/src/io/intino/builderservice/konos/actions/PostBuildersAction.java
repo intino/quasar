@@ -6,7 +6,7 @@ import io.intino.alexandria.exceptions.*;
 public class PostBuildersAction implements io.intino.alexandria.rest.RequestErrorHandler {
 	public io.intino.builderservice.konos.schemas.RegisterBuilder info;
 	public BuilderServiceBox box;
-	public io.intino.alexandria.http.spark.SparkContext context;
+	public io.intino.alexandria.http.server.AlexandriaHttpContext context;
 
 	public void execute() {
 		box.builderStore().put(info);

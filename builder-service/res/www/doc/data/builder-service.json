@@ -226,73 +226,38 @@
     }
   },
   "definitions": {
-    "RegisterBuilder": {
+    "OperationResult": {
       "required": [
-        "imageURL",
-        "registryToken"
+        "state",
+        "genRef",
+        "srcRef",
+        "resRef",
+        "outRef",
+        "success",
+        "messages"
       ],
       "properties": {
-        "imageURL": {
+        "state": {
           "type": "string"
         },
-        "registryToken": {
-          "type": "string"
-        }
-      }
-    },
-    "BuilderInfo": {
-      "required": [
-        "imageURL",
-        "operations",
-        "targetLanguages",
-        "creationDate",
-        "properties"
-      ],
-      "properties": {
-        "imageURL": {
+        "genRef": {
           "type": "string"
         },
-        "operations": {
+        "srcRef": {
           "type": "string"
         },
-        "targetLanguages": {
+        "resRef": {
           "type": "string"
         },
-        "creationDate": {
+        "outRef": {
           "type": "string"
         },
-        "properties": {
-          "type": "java.util.map"
-        }
-      }
-    },
-    "Message": {
-      "required": [
-        "type",
-        "kind",
-        "content",
-        "uri",
-        "line",
-        "column"
-      ],
-      "properties": {
-        "type": {
-          "type": "string"
+        "success": {
+          "type": "boolean"
         },
-        "kind": {
-          "type": "string"
-        },
-        "content": {
-          "type": "string"
-        },
-        "uri": {
-          "type": "string"
-        },
-        "line": {
-          "type": "integer"
-        },
-        "column": {
-          "type": "integer"
+        "messages": {
+          "type": "object",
+          "$ref": "#/definitions/Message"
         }
       }
     },
@@ -330,38 +295,73 @@
         }
       }
     },
-    "OperationResult": {
+    "Message": {
       "required": [
-        "state",
-        "genRef",
-        "srcRef",
-        "resRef",
-        "outRef",
-        "success",
-        "messages"
+        "type",
+        "kind",
+        "content",
+        "uri",
+        "line",
+        "column"
       ],
       "properties": {
-        "state": {
+        "type": {
           "type": "string"
         },
-        "genRef": {
+        "kind": {
           "type": "string"
         },
-        "srcRef": {
+        "content": {
           "type": "string"
         },
-        "resRef": {
+        "uri": {
           "type": "string"
         },
-        "outRef": {
+        "line": {
+          "type": "integer"
+        },
+        "column": {
+          "type": "integer"
+        }
+      }
+    },
+    "BuilderInfo": {
+      "required": [
+        "imageURL",
+        "operations",
+        "targetLanguages",
+        "creationDate",
+        "properties"
+      ],
+      "properties": {
+        "imageURL": {
           "type": "string"
         },
-        "success": {
-          "type": "boolean"
+        "operations": {
+          "type": "string"
         },
-        "messages": {
-          "type": "object",
-          "$ref": "#/definitions/Message"
+        "targetLanguages": {
+          "type": "string"
+        },
+        "creationDate": {
+          "type": "string"
+        },
+        "properties": {
+          "type": "java.util.map"
+        }
+      }
+    },
+    "RegisterBuilder": {
+      "required": [
+        "imageURL",
+        "registryToken"
+      ],
+      "properties": {
+        "imageURL": {
+          "type": "string"
+        },
+        "registryToken": {
+          "type": "string"
         }
       }
     }

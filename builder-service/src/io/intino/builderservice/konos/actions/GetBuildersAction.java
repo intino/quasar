@@ -9,7 +9,7 @@ import java.util.List;
 
 public class GetBuildersAction implements io.intino.alexandria.rest.RequestErrorHandler {
 	public BuilderServiceBox box;
-	public io.intino.alexandria.http.spark.SparkContext context;
+	public io.intino.alexandria.http.server.AlexandriaHttpContext context;
 
 	public List<io.intino.builderservice.konos.schemas.BuilderInfo> execute() {
 		return new ArrayList<>(box.builderStore().all());

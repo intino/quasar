@@ -24,7 +24,7 @@ import static io.intino.builderservice.konos.schemas.OperationResult.State.Runni
 
 public class GetOperationOutputAction implements io.intino.alexandria.rest.RequestErrorHandler {
 	public BuilderServiceBox box;
-	public io.intino.alexandria.http.spark.SparkContext context;
+	public io.intino.alexandria.http.server.AlexandriaHttpContext context;
 	public String ticket;
 
 	public io.intino.builderservice.konos.schemas.OperationResult execute() throws NotFound {

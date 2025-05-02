@@ -21,11 +21,16 @@ import java.util.List;
 
 @Ignore
 public class ApiTest {
+	public static final String URL = "http://localhost:9000/";
 	private static File file;
 
-	//	@BeforeClass
+	@BeforeClass
 	public static void beforeClass() throws Exception {
 		file = new File("./test-res/quassar10906546769131108430.tar");
+		localQuassar();
+	}
+
+	private static void localQuassar() throws IOException {
 		BuilderServiceBox box = new BuilderServiceBox(new String[]{"home=../temp",
 				"language-repository=/Users/oroncal/.m2/",
 				"port=9000",
@@ -37,8 +42,8 @@ public class ApiTest {
 
 
 	@Test
-	public void should_register_builder() throws IOException, InternalServerError, URISyntaxException, InterruptedException, NotFound {
-		QuassarBuilderServiceAccessor accessor = new QuassarBuilderServiceAccessor(new URI("http://localhost:9002/").toURL());
+	public void should_register_builder() throws IOException, InternalServerError, URISyntaxException {
+		QuassarBuilderServiceAccessor accessor = new QuassarBuilderServiceAccessor(new URI(URL).toURL());
 		accessor.postBuilders(new RegisterBuilder().imageURL("quassar625/io.quassar.quassar-builder:1.0.0"));
 		List<BuilderInfo> builders = accessor.getBuilders();
 		for (BuilderInfo builder : builders) {
@@ -48,12 +53,12 @@ public class ApiTest {
 
 	@Test
 	public void should_run_builder_service_using_accessor() throws IOException, InternalServerError, URISyntaxException, InterruptedException, NotFound {
-		QuassarBuilderServiceAccessor accessor = new QuassarBuilderServiceAccessor(new URI("http://localhost:9000/").toURL());
-		String tiket = accessor.postRunOperation(context(), Resource.InputStreamProvider.of(file));
-		while (accessor.getOperationOutput(tiket).state() == OperationResult.State.Running) {
+		QuassarBuilderServiceAccessor accessor = new QuassarBuilderServiceAccessor(new URI(URL).toURL());
+		String ticket = accessor.postRunOperation(context(), Resource.InputStreamProvider.of(file));
+		while (accessor.getOperationOutput(ticket).state() == OperationResult.State.Running) {
 			Thread.sleep(1000);
 		}
-		Resource out = accessor.getOutputResource(tiket, "out", ".*\\.meta$");
+		Resource out = accessor.getOutputResource(ticket, "out", ".*\\.meta$");
 		Files.write(new File("test-res/out.tar").toPath(), out.inputStream().readAllBytes());
 	}
 

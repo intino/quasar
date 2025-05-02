@@ -14,7 +14,7 @@ import java.util.List;
 
 public class PostRunOperationAction implements io.intino.alexandria.rest.RequestErrorHandler {
 	public BuilderServiceBox box;
-	public io.intino.alexandria.http.spark.SparkContext context;
+	public io.intino.alexandria.http.server.AlexandriaHttpContext context;
 	public io.intino.builderservice.konos.schemas.RunOperationContext runOperationContext;
 	public io.intino.alexandria.Resource filesInTar;
 
@@ -23,7 +23,7 @@ public class PostRunOperationAction implements io.intino.alexandria.rest.Request
 			if (box.builderStore().get(runOperationContext.imageURL()) == null)
 				throw new NotFound("Builder not found");
 			if (filesInTar == null) throw new BadRequest("Required source files");
-			AbstractMap.SimpleEntry<String, List<File>> ticketWithSources = new BuilderRunner(box.builderStore(), box.containerManager(), box.workspace(), new File(box.configuration().languageRepository()))
+			var ticketWithSources = new BuilderRunner(box.builderStore(), box.containerManager(), box.workspace(), new File(box.configuration().languageRepository()))
 					.run(runOperationContext, filesInTar.inputStream());
 			box.registerOperationHandler(ticketWithSources.getKey(), ticketWithSources.getValue());
 			return ticketWithSources.getKey();
