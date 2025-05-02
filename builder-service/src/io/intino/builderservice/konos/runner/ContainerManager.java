@@ -6,6 +6,8 @@ import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.command.PullImageResultCallback;
 import com.github.dockerjava.api.model.Bind;
+import com.github.dockerjava.api.model.Container;
+import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import io.intino.alexandria.exceptions.Conflict;
 import io.intino.alexandria.logger.Logger;
@@ -75,7 +77,7 @@ public class ContainerManager {
 		try (DockerClient client = dockerClient()) {
 			CreateContainerResponse container = client.createContainerCmd(imageName)
 					.withName(containerName)
-					.withBinds(bind)
+					.withHostConfig(HostConfig.newHostConfig().withBinds(bind).withAutoRemove(true))
 					.exec();
 			containerIds.put(containerName, container.getId());
 			return container.getId();
@@ -97,6 +99,8 @@ public class ContainerManager {
 		String containerId = containerIds.get(ticket);
 		if (containerId == null) return false;
 		try (var client = dockerClient()) {
+			if (client.listContainersCmd().exec().stream().noneMatch(c -> c.getId().equalsIgnoreCase(containerId)))
+				return false;
 			InspectContainerResponse containerInfo = client.inspectContainerCmd(containerId).exec();
 			return containerInfo.getState().getRunning();
 		} catch (IOException e) {

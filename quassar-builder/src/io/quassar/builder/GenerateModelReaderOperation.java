@@ -1,6 +1,7 @@
 package io.quassar.builder;
 
 import io.intino.builder.CompilerConfiguration;
+import io.intino.itrules.formatters.StringFormatters;
 import io.intino.magritte.builder.compiler.operations.LayerGenerationOperation;
 import io.intino.tara.Language;
 import io.intino.tara.builder.LanguageLoader;
@@ -8,19 +9,23 @@ import io.intino.tara.builder.core.CompilationUnit;
 import io.intino.tara.builder.core.errorcollection.CompilationFailedException;
 import io.intino.tara.builder.core.errorcollection.TaraException;
 import io.intino.tara.builder.core.operation.model.ModelOperation;
+import io.intino.tara.builder.utils.FileSystemUtils;
 import io.intino.tara.model.Level;
 import io.intino.tara.processors.model.Model;
 import io.quassar.builder.modelreader.ModelReaderGenerator;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystemException;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import static io.intino.builder.BuildConstants.DSL_VERSION;
 import static io.intino.builder.BuildConstants.GENERATION_PACKAGE;
+import static io.intino.builder.CompilerConfiguration.LANGUAGE_PACKAGE;
 import static io.intino.tara.model.Level.M2;
+import static java.io.File.separator;
 
 public class GenerateModelReaderOperation extends ModelOperation {
 	private final CompilerConfiguration configuration;
@@ -36,6 +41,17 @@ public class GenerateModelReaderOperation extends ModelOperation {
 		new LayerGenerationOperation(unit).call(model);
 		if (isM2(model) && hasM3()) generateMetaModel();
 		new ModelReaderGenerator(unit.configuration()).generate();
+		copyLanguageAsBuildItem();
+	}
+
+	private void copyLanguageAsBuildItem() {
+		try {
+			File file = new File(configuration.outDirectory().getParentFile(), "build/language");
+			file.mkdirs();
+			FileSystemUtils.copyDir(languageDirectory().getAbsolutePath(), file.getAbsolutePath());
+		} catch (FileSystemException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void generateMetaModel() {
@@ -56,6 +72,11 @@ public class GenerateModelReaderOperation extends ModelOperation {
 
 	private static boolean isM2(Model model) {
 		return model.mograms().stream().anyMatch(m -> m.level().equals(M2));
+	}
+
+	private File languageDirectory() {
+		return new File(configuration.localRepository(), LANGUAGE_PACKAGE.replace(".", separator) + separator +
+				StringFormatters.camelCase().format(configuration.dsl().outDsl()).toString().toLowerCase() + separator + (configuration.version() == null ? "1.0.0" : configuration.version()));
 	}
 
 	private Language load(String metalanguage, String version) {

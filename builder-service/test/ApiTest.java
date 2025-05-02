@@ -1,6 +1,7 @@
 import io.intino.alexandria.Resource;
 import io.intino.alexandria.exceptions.InternalServerError;
 import io.intino.alexandria.exceptions.NotFound;
+import io.intino.alexandria.logger.Logger;
 import io.intino.builderservice.QuassarBuilderServiceAccessor;
 import io.intino.builderservice.konos.BuilderServiceBox;
 import io.intino.builderservice.schemas.BuilderInfo;
@@ -25,19 +26,23 @@ public class ApiTest {
 	private static File file;
 
 	@BeforeClass
-	public static void beforeClass() throws Exception {
+	public static void beforeClass() {
 		file = new File("./test-res/quassar10906546769131108430.tar");
 //		localQuassar();
 	}
 
-	private static void localQuassar() throws IOException {
-		BuilderServiceBox box = new BuilderServiceBox(new String[]{"home=../temp",
-				"language-repository=/Users/oroncal/.m2/",
-				"port=9000",
-				"dockerhub-auth-file=../temp/configuration/dockerhub.properties"});
-		FileUtils.deleteDirectory(box.workspace());
-		box.workspace().mkdirs();
-		box.start();
+	private static void localQuassar() {
+		try {
+			BuilderServiceBox box = new BuilderServiceBox(new String[]{"home=../temp",
+					"language-repository=/Users/oroncal/.m2/repository",
+					"port=9000",
+					"dockerhub-auth-file=../temp/configuration/dockerhub.properties"});
+			FileUtils.deleteDirectory(box.workspace());
+			box.workspace().mkdirs();
+			box.start();
+		} catch (IOException e) {
+			Logger.error(e);
+		}
 	}
 
 
@@ -58,8 +63,8 @@ public class ApiTest {
 		while (accessor.getOperationOutput(ticket).state() == OperationResult.State.Running) {
 			Thread.sleep(1000);
 		}
-		Resource out = accessor.getOutputResource(ticket, "out", ".*\\.meta$");
-		Files.write(new File("test-res/out.tar").toPath(), out.inputStream().readAllBytes());
+		Resource out = accessor.getOutputResource(ticket, "build", ".*\\.meta$");
+		Files.write(new File("test-res/build.tar").toPath(), out.inputStream().readAllBytes());
 	}
 
 	private static RunOperationContext context() {

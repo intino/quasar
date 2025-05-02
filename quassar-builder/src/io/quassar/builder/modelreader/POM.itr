@@ -4,7 +4,7 @@ rule type(pom)
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<modelVersion>4.0.0</modelVersion>
 		<groupId>$groupId</groupId>
-		<artifactId>$name~-model-reader</artifactId>
+		<artifactId>$name~-model-reader-java</artifactId>
 		<version>$version</version>
 		<properties>
 			<maven.compiler.source>21</maven.compiler.source>
