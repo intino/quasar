@@ -37,6 +37,7 @@ public class GetOperationOutputAction implements io.intino.alexandria.rest.Reque
 		if (srcFiles(directory, handler).length > 0) result.srcRef(directory.src().getName());
 		if (emptyIfNull(directory.res().listFiles()).length > 0) result.resRef(directory.res().getName());
 		if (emptyIfNull(directory.out().listFiles()).length > 0) result.outRef(directory.out().getName());
+		if (emptyIfNull(directory.build().listFiles()).length > 0) result.buildRef(directory.build().getName());
 		result.messages(map(handler.compilerMessages(), directory));
 		result.success(result.messages().stream().noneMatch(m -> m.kind().equals(Kind.ERROR)));
 		result.state(box.containerManager().isRunning(ticket) ? Running : Finished);
