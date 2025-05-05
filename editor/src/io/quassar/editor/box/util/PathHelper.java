@@ -15,6 +15,10 @@ public class PathHelper {
 		return session.browser().baseUrl();
 	}
 
+	public static String aboutUrl(UISession session) {
+		return session.browser().baseUrl() + "/about";
+	}
+
 	public static String homePath() {
 		return "/";
 	}

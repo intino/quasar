@@ -2,25 +2,19 @@ package io.quassar.editor.box.ui.displays.templates;
 
 import io.intino.alexandria.ui.services.push.User;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
-public class HeaderTemplate extends AbstractHeaderTemplate<EditorBox> {
+public class ForgeHeaderTemplate extends AbstractForgeHeaderTemplate<EditorBox> {
 	private Language language;
 	private String release;
 	private Model model;
+	private boolean appInForge;
 
-	public HeaderTemplate(EditorBox box) {
+	public ForgeHeaderTemplate(EditorBox box) {
 		super(box);
-	}
-
-	public void language(Language value) {
-		this.language = value;
-	}
-
-	public void release(String release) {
-		this.release = release;
 	}
 
 	public void model(Model value) {
@@ -40,20 +34,15 @@ public class HeaderTemplate extends AbstractHeaderTemplate<EditorBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
+		Language language = model != null ? box().languageManager().get(model) : null;
 		User loggedUser = session().user();
-		refreshLanguage();
+		logo.value(LanguageHelper.logo(language, box()));
+		homeLink.site(PathHelper.homeUrl(session()));
+		aboutLink.site(PathHelper.aboutUrl(session()));
+		projectsLink.site(PathHelper.homeUrl(session()));
+		forgeTitle.value("%s DSL forge".formatted(language != null ? language.id() : ""));
 		login.visible(loggedUser == null);
 		user.visible(loggedUser != null);
-	}
-
-	private void refreshLanguage() {
-		languageSeparator.visible(language != null);
-		languageTitleText.visible(language != null && model == null && release == null);
-		if (languageTitleText.isVisible()) languageTitleText.value(language.id());
-		languageTitleLink.visible(language != null && (model != null || release != null));
-		if (!languageTitleLink.isVisible()) return;
-		languageTitleLink.title(language.id());
-		languageTitleLink.address(path -> PathHelper.languagePath(path, language, null));
 	}
 
 }

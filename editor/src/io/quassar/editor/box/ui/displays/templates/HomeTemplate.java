@@ -15,14 +15,13 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 	private Language language;
 	private String release;
 	private Model model;
-	private boolean appInForge = false;
 
 	public HomeTemplate(EditorBox box) {
 		super(box);
 	}
 
 	public enum Page {
-		Landing, About, Language, Model, Forge;
+		Landing, About, Language, Model;
 
 		public static Page from(String key) {
 			return Arrays.stream(values()).filter(v -> v.name().equalsIgnoreCase(key)).findFirst().orElse(null);
@@ -83,13 +82,6 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 		if (languagePage.languageStamp != null) languagePage.languageStamp.openHelp(language, version);
 	}
 
-	public void openForge(String model, String release, String view) {
-		set(null, release, model);
-		appInForge = true;
-		openPage(Page.Forge);
-		if (forgePage.forgeStamp != null) forgePage.forgeStamp.open(model, release, view);
-	}
-
 	private boolean openPage(Page page) {
 		refreshHeader();
 		if (current == page) return true;
@@ -104,7 +96,6 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 		header.language(language);
 		header.release(release);
 		header.model(model);
-		header.appInForge(appInForge);
 		header.refresh();
 	}
 
@@ -113,7 +104,6 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 		if (aboutPage.isVisible()) aboutPage.hide();
 		if (languagePage.isVisible()) languagePage.hide();
 		if (modelPage.isVisible()) modelPage.hide();
-		if (forgePage.isVisible()) forgePage.hide();
 	}
 
 	private BlockConditional<?, ?> blockOf(Page page) {
@@ -121,7 +111,6 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 		if (page == Page.About) return aboutPage;
 		if (page == Page.Language) return languagePage;
 		if (page == Page.Model) return modelPage;
-		if (page == Page.Forge) return forgePage;
 		return null;
 	}
 
@@ -135,7 +124,6 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 		this.language = language;
 		this.release = release;
 		this.model = model;
-		this.appInForge = false;
 	}
 
 	private void registerUserIfNeeded() {

@@ -2,6 +2,7 @@ package io.quassar.editor.box.ui.pages;
 
 import io.intino.alexandria.ui.services.push.User;
 import io.quassar.editor.box.I18n;
+import io.quassar.editor.box.ui.displays.templates.ForgeTemplate;
 import io.quassar.editor.box.ui.displays.templates.HomeTemplate;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.Model;
@@ -34,7 +35,7 @@ public class ForgePage extends AbstractForgePage {
 		return new io.intino.alexandria.ui.Soul(session) {
 			@Override
 			public void personify() {
-				HomeTemplate component = new HomeTemplate(box);
+				ForgeTemplate component = new ForgeTemplate(box);
 				register(component);
 				component.init();
 			}

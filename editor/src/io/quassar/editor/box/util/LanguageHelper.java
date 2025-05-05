@@ -46,6 +46,7 @@ public class LanguageHelper {
 
 	public static URL logo(Language language, EditorBox box) {
 		try {
+			if (language == null) return ModelHelper.class.getResource("/images/language-logo.png");
 			File logo = box.languageManager().loadLogo(language);
 			return logo.exists() ? logo.toURI().toURL() : ModelHelper.class.getResource("/images/language-logo.png");
 		} catch (MalformedURLException e) {

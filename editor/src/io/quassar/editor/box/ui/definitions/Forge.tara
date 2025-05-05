@@ -1,10 +1,12 @@
 dsl Konos
 
+use UI
 use Languages
 use Editors
 use Theme
 
 Template forgeTemplate as Relative(height=100%, width=100%)
+	TemplateStamp(template=forgeHeaderTemplate) header
 
 	Block(layout=Vertical Flexible CenterCenter, visible=false) notFoundBlock
 		Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
@@ -19,3 +21,20 @@ Template forgeTemplate as Relative(height=100%, width=100%)
 
 		Block(layout=Vertical Flexible) languageBlock as Conditional
 			TemplateStamp(template=languageForgeTemplate) languageStamp
+
+Template(layout=Horizontal Center, format=forgeHeaderStyle) forgeHeaderTemplate
+
+	Block(layout=Horizontal Center Flexible, format=middleAirTop middleAirBottom middleAirLeft) languageView
+		Link(title="", format=logoLink, visible=false) homeLink as Action OpenSite(site=empty)
+		Image(value=empty, format=airLeft, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) logo as Absolute(height=35px)
+		Text(value="", format=h2 bold airLeft) forgeTitle
+
+	Block(layout=Horizontal EndJustified)
+		MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
+		MaterialIconButton(title="Set light mode", format=airRight, icon="Brightness7", size=Small) as SetLightMode
+		Button(title="About", format=airRight) aboutLink as Action OpenSite(site=empty)
+		Button(title="Log in", format=airRight, visible=false) login as Action
+
+		User(mode=OnlyPhoto, visible=false, format=relative veryLargeIconSize airRight smallAirTop) user
+			Selector as ListBox
+				Block as Option > Link(title="Projects", visible=false) projectsLink as Action OpenSite(site=empty)

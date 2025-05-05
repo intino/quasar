@@ -51,6 +51,7 @@ Format("minHeight:'100%'") main
 Format("background:'#efefef',padding:'1px 7px',borderTop:'1px solid #aaa'") footerFormat
 Format("padding:'10px 30px',borderTop:'1px solid #aaa'") sliderFormat
 Format("background:'black',height:'42px'") headerStyle
+Format("background:'white',borderBottom:'3px solid #aaa'", darkContent="background:'inherit',borderBottom:'3px solid black'") forgeHeaderStyle
 Format("color:'white',position:'absolute',top:0,left:0,marginLeft:'180px',marginTop:'6px',textTransform:'uppercase',fontSize:'9pt'") headerSubtitle
 Format("color:'white',background:'#272C34'") footerStyle
 Format("background:'white'", darkContent="background:'#1F1F1F'") whiteBackground
