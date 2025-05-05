@@ -76,7 +76,6 @@ public class ZipHelper {
 				File destFile = new File(destiny, entry.getName());
 				if (entry.isDirectory()) destFile.mkdirs();
 				else {
-					// If it's a file, unzip it
 					File parentDir = destFile.getParentFile();
 					if (!parentDir.exists()) parentDir.mkdirs();
 					try (FileOutputStream fos = new FileOutputStream(destFile)) {

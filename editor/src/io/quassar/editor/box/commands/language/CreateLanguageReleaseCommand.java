@@ -11,6 +11,7 @@ import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.box.commands.model.CreateModelCommand;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.ModelHelper;
+import io.quassar.editor.box.util.TarHelper;
 import io.quassar.editor.box.util.ZipHelper;
 import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
@@ -22,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -48,20 +50,20 @@ public class CreateLanguageReleaseCommand extends Command<LanguageRelease> {
 	}
 
 	private void build(Model metamodel) {
-		File destiny = null;
+		File destination = null;
 		try {
 			BuildResult result = new ModelBuilder(metamodel, new GavCoordinates(metamodel.language().groupId(), language.name(), version), box).build(author);
 			Resource resource = result.zipArtifacts();
-			destiny = box.archetype().tmp().builds(UUID.randomUUID().toString());
-			ZipHelper.extract(resource.inputStream(), destiny);
-			box.languageManager().saveGraph(language, version, graphOf(destiny));
-			box.languageManager().saveReaders(language, version, readersOf(destiny));
+			destination = box.archetype().tmp().builds(UUID.randomUUID().toString());
+			TarHelper.extract(resource.inputStream(), destination);
+			box.languageManager().saveGraph(language, version, graphOf(destination));
+			box.languageManager().saveReaders(language, version, readersOf(destination));
 		}
 		catch (IOException | InternalServerError | NotFound e) {
 			Logger.error(e);
 		}
 		finally {
-			if (destiny != null) destiny.delete();
+			if (destination != null) destination.delete();
 		}
 	}
 
