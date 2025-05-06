@@ -38,7 +38,8 @@ public class RunConfigurationRenderer {
 		writer.write(ENCODING + NL + Charset.defaultCharset().name() + NL);
 		if (params.operation().equalsIgnoreCase("check")) writer.write(EXCLUDED_PHASES + NL + "8,9" + NL);
 		writer.write(GENERATION_PACKAGE + NL + (params.generationPackage().isEmpty() ? "model" : params.generationPackage()) + NL);
-		writer.write(COMPILATION_MODE + NL + "Build" + NL);
+		if (params.operation().equalsIgnoreCase("check")) writer.write(COMPILATION_MODE + NL + "Build" + NL);
+		else writer.write(COMPILATION_MODE + NL + params.operation() + NL);
 		if (!params.projectVersion().isEmpty()) writer.write(VERSION + NL + params.projectVersion() + NL);
 		writer.write(DSL + NL + params.language() + ":" + params.languageVersion() + NL);
 		writer.write(OUT_DSL + NL + params.project() + NL);
