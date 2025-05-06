@@ -46,7 +46,7 @@ public class SubjectGenerator {
 		String[] content = line.split("\t");
 		Model metamodel = !content[2].isEmpty() ? box.modelManager().get(content[2]) : null;
 		Language language = box.languageManager().create(content[0], content[1], metamodel, Language.Level.valueOf(content[3]), content[4], content[5]);
-		box.languageManager().createRelease(language, content[6], null);
+		box.languageManager().createRelease(language, content[6]);
 	}
 
 	private void registerModels() {

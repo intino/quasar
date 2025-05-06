@@ -15,7 +15,7 @@ public class Language extends SubjectWrapper {
 	public static final String QuassarGroup = "tara.dsl";
 	public static final String Metta = "meta";
 
-	public static String id(String group, String name) {
+	public static String key(String group, String name) {
 		if (group == null || group.isEmpty() || group.equalsIgnoreCase(Language.QuassarGroup)) return name;
 		return group + "." + name;
 	}
@@ -29,7 +29,11 @@ public class Language extends SubjectWrapper {
 	}
 
 	public String id() {
-		return id(group(), name());
+		return subject.name();
+	}
+
+	public String key() {
+		return key(group(), name());
 	}
 
 	public enum Level { L1, L2, L3 }
@@ -194,12 +198,12 @@ public class Language extends SubjectWrapper {
 	public boolean equals(Object o) {
 		if (o == null || getClass() != o.getClass()) return false;
 		Language language = (Language) o;
-		return Objects.equals(id(), language.id());
+		return Objects.equals(key(), language.key());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(id());
+		return Objects.hashCode(key());
 	}
 
 	private LanguageRelease releaseOf(Subject subject) {

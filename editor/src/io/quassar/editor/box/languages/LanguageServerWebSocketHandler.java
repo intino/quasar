@@ -12,6 +12,7 @@ import org.eclipse.lsp4j.services.LanguageServer;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
@@ -74,9 +75,11 @@ public class LanguageServerWebSocketHandler implements WebSocketListener {
 			byte[] buffer = new byte[8096];
 			while ((bytesRead = serverInput.read(buffer)) != -1) {
 				String content = new String(buffer, 0, bytesRead);
-				if (content.contains("\n"))
-					content = content.substring(content.indexOf("\n"));
-				session.getRemote().sendString(content.trim());
+				content = content.replaceAll("Content-Length: [0-9+]*", "").trim();
+				for (String message : content.split("\r?\n")) {
+					if (message.isEmpty()) continue;
+					session.getRemote().sendString(message.trim());
+				}
 			}
 		} catch (Throwable e) {
 			Logger.error(e);

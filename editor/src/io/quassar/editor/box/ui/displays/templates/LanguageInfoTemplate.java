@@ -49,12 +49,12 @@ public class LanguageInfoTemplate extends AbstractLanguageInfoTemplate<EditorBox
 		metamodelLink.site(PathHelper.modelUrl(metamodel, release, session()));
 		visibilitySelector.selection(language.isPrivate() ? "privateVisibilityOption" : "publicVisibilityOption");
 		publicVisibilityBlock.visible(language.isPublic());
-		grantAccessField.value(String.join("; ", language.grantAccessList()));
+		grantAccessField.value(String.join("\n", language.grantAccessList()));
 		licenseField.value(language.license());
 	}
 
 	private List<String> grantAccessList() {
-		return Arrays.stream(grantAccessField.value().split(";")).map(String::trim).filter(s -> !s.isEmpty()).toList();
+		return Arrays.stream(grantAccessField.value().split(";?\\n")).map(String::trim).filter(s -> !s.isEmpty()).toList();
 	}
 
 	private void rename(String newName) {

@@ -74,7 +74,7 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 		super.refresh();
 		File logo = language != null ? box().languageManager().loadLogo(language) : null;
 		logoExists = logo != null && logo.exists();
-		idField.value(language != null ? language.id() : null);
+		idField.value(language != null ? language.key() : null);
 		logoField.value(logoExists ? logo : null);
 		changeId.visible(language != null);
 		generateLogo.readonly(language == null);

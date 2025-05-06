@@ -22,7 +22,7 @@ public class RenameLanguageCommand extends Command<Boolean> {
 
 	@Override
 	public Boolean execute() {
-		if (language.id().equals(newId)) return true;
+		if (language.key().equals(newId)) return true;
 		boolean renamed = renameLanguage();
 		if (renamed) updateModelsWithLanguage();
 		return renamed;
@@ -30,7 +30,7 @@ public class RenameLanguageCommand extends Command<Boolean> {
 
 	private boolean renameLanguage() {
 		try {
-			File currentFolder = box.archetype().languages().get(language.id());
+			File currentFolder = box.archetype().languages().get(language.key());
 			File newFolder = box.archetype().languages().get(newId);
 			Files.move(currentFolder.toPath(), newFolder.toPath());
 			language.group(Language.groupFrom(newId));

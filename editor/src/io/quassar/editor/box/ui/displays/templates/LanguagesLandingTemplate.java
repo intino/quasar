@@ -1,14 +1,9 @@
 package io.quassar.editor.box.ui.displays.templates;
 
-import io.intino.alexandria.exceptions.*;
 import io.intino.alexandria.ui.displays.events.AddCollectionItemEvent;
-import io.quassar.editor.box.*;
-import io.quassar.editor.box.schemas.*;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.ui.datasources.LanguagesDatasource;
-import io.quassar.editor.box.ui.displays.items.LanguageItem;
 import io.quassar.editor.box.ui.displays.items.LanguageLandingItem;
-import io.quassar.editor.box.ui.displays.templates.AbstractLanguagesLandingTemplate;
 import io.quassar.editor.box.ui.types.LanguagesTab;
 import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.LanguageHelper;
@@ -78,14 +73,14 @@ public class LanguagesLandingTemplate extends AbstractLanguagesLandingTemplate<E
 	private void refreshName(Language language, LanguageLandingItem item) {
 		item.name.visible(selectListener == null);
 		if (!item.name.isVisible()) return;
-		item.name.title(language.id());
+		item.name.title(language.key());
 		item.name.address(path -> PathHelper.languagePath(path, language));
 	}
 
 	private void refreshNameSelector(Language language, LanguageLandingItem item) {
 		item.nameSelector.visible(selectListener != null);
 		if (!item.nameSelector.isVisible()) return;
-		item.nameSelector.title(language.id());
+		item.nameSelector.title(language.key());
 		item.nameSelector.onExecute(e -> notifySelect(language));
 	}
 

@@ -41,6 +41,6 @@ public class ModelReaderTemplate extends AbstractModelReaderTemplate<EditorBox> 
 	}
 
 	private String filename() {
-		return language.name() + "-" + release + "-" + reader.getName();
+		return language.name() + "-" + reader.getName().replace(".zip", "") + "-" + release + ".zip";
 	}
 }

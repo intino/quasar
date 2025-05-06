@@ -36,7 +36,7 @@ public class PathHelper {
 	}
 
 	public static String permissionsUrl(Language language, String callbackUrl, UISession session) {
-		return session.browser().baseUrl() + "/permissions?language=" + language.id() + "&callback=" + callbackUrl;
+		return session.browser().baseUrl() + "/permissions?language=" + language.key() + "&callback=" + callbackUrl;
 	}
 
 	public static String permissionsUrl(Model model, String callbackUrl, UISession session) {
@@ -68,7 +68,7 @@ public class PathHelper {
 	}
 
 	public static String languagePath(Language language) {
-		return languagePath("/languages/:language", language.id(), null, null);
+		return languagePath("/languages/:language", language.key(), null, null);
 	}
 
 	public static String languagePath(String language) {
@@ -76,7 +76,7 @@ public class PathHelper {
 	}
 
 	public static String languagePath(String address, Language language) {
-		return languagePath(address, language.id(), null, null);
+		return languagePath(address, language.key(), null, null);
 	}
 
 	public static String languagePath(String address, String language) {
@@ -91,11 +91,11 @@ public class PathHelper {
 	}
 
 	public static String languagePath(String address, Language language, LanguageTab tab) {
-		return languagePath(address, language.id(), tab, null);
+		return languagePath(address, language.key(), tab, null);
 	}
 
 	public static String languagePath(String address, Language language, LanguageTab tab, LanguageView view) {
-		return languagePath(address, language.id(), tab, view);
+		return languagePath(address, language.key(), tab, view);
 	}
 
 	public static String modelUrl(Model model, UISession session) {
@@ -157,7 +157,7 @@ public class PathHelper {
 	}
 
 	public static String languageReleaseHelp(String address, Language language, String release) {
-		return address.replace(":language", language.id()) + "?version=" + release;
+		return address.replace(":language", language.key()) + "?version=" + release;
 	}
 
 	private static final String LanguageReleaseHelpPath = "/languages/:language/help";

@@ -1,6 +1,5 @@
 package io.quassar.editor.box.ui.displays.templates;
 
-import io.intino.alexandria.ui.displays.UserMessage;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.ui.types.LanguageTab;
@@ -98,7 +97,7 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 	}
 
 	private void refreshHome() {
-		title.value(translate(title()).formatted(language.id()));
+		title.value(translate(title()).formatted(language.key()));
 		logo.value(LanguageHelper.logo(language, box()));
 		refreshHelpVersions();
 		refreshAbout();

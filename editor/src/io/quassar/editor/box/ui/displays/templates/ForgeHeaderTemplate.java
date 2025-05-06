@@ -40,7 +40,7 @@ public class ForgeHeaderTemplate extends AbstractForgeHeaderTemplate<EditorBox> 
 		homeLink.site(PathHelper.homeUrl(session()));
 		aboutLink.site(PathHelper.aboutUrl(session()));
 		projectsLink.site(PathHelper.homeUrl(session()));
-		forgeTitle.value("%s DSL forge".formatted(language != null ? language.id() : ""));
+		forgeTitle.value("%s DSL forge".formatted(language != null ? language.key() : ""));
 		login.visible(loggedUser == null);
 		user.visible(loggedUser != null);
 	}

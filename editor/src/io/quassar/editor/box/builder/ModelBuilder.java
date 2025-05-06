@@ -31,36 +31,30 @@ public class ModelBuilder {
 	private final Model model;
 	private final GavCoordinates destination;
 	private final Language language;
+	private final File languagePath;
 	private final DocumentManager manager;
 	private final QuassarBuilderServiceAccessor accessor;
 	private final String quassarBuilder;
+
+	private static final String CheckOperation = "Check";
+	private static final String BuildOperation = "Build";
 
 	public ModelBuilder(Model model, GavCoordinates destination, EditorBox box) throws IOException {
 		this.model = model;
 		this.destination = destination;
 		this.language = box.languageManager().get(model.language());
+		this.languagePath = box.languageManager().loadDsl(model.language());
+		this.quassarBuilder = box.configuration().quassarBuilder();
 		this.manager = new FileDocumentManager(box.modelManager().workspace(model, Model.DraftRelease).root());
 		this.accessor = box.builderAccessor();
-		this.quassarBuilder = box.configuration().quassarBuilder();
 	}
 
 	public CheckResult check(String user) {
-		File taraFiles = null;
-		try {
-			taraFiles = taraFiles();
-			if (taraFiles == null)
-				return CheckResult.failure(new Message().kind(Message.Kind.ERROR).content("Model files not found"));
-			return doCheck(taraFiles);
-		} catch (Throwable t) {
-			Logger.error(t);
-			return CheckResult.failure(new Message().kind(Message.Kind.ERROR).content("Unknown error"));
-		} finally {
-			if (taraFiles != null) taraFiles.delete();
-		}
+		return run(CheckOperation);
 	}
 
 	public BuildResult build(String user) throws InternalServerError, NotFound {
-		CheckResult result = check(user);
+		CheckResult result = run(BuildOperation);
 		if (!result.success()) return BuildResult.failure(result.messages());
 		manager.commit(user);
 		manager.push();
@@ -72,12 +66,23 @@ public class ModelBuilder {
 		return output.buildRef() != null ? accessor.getOutputResource(result.ticket(), Build, null) : null;
 	}
 
-	private CheckResult doCheck(File taraFiles) throws InternalServerError, IOException, NotFound, InterruptedException, URISyntaxException {
-		return runCheck(quassarBuilder, taraFiles, "Build");
+	private CheckResult run(String operation) {
+		File taraFiles = null;
+		try {
+			taraFiles = taraFiles();
+			if (taraFiles == null)
+				return CheckResult.failure(new Message().kind(Message.Kind.ERROR).content("Model files not found"));
+			return doRun(taraFiles, operation);
+		} catch (Throwable t) {
+			Logger.error(t);
+			return CheckResult.failure(new Message().kind(Message.Kind.ERROR).content("Unknown error"));
+		} finally {
+			if (taraFiles != null) taraFiles.delete();
+		}
 	}
 
-	private CheckResult runCheck(String builder, File taraFiles, String operation) throws InternalServerError, IOException, NotFound, InterruptedException, URISyntaxException {
-		String ticket = accessor.postRunOperation(context(builder).operation(operation), Resource.InputStreamProvider.of(taraFiles));
+	private CheckResult doRun(File taraFiles, String operation) throws InternalServerError, IOException, NotFound, InterruptedException, URISyntaxException {
+		String ticket = accessor.postRunOperation(context(quassarBuilder).operation(operation), Resource.InputStreamProvider.of(taraFiles));
 		OperationResult output = accessor.getOperationOutput(ticket);
 		while (output.state() == Running) {
 			Thread.sleep(1000);
@@ -111,6 +116,7 @@ public class ModelBuilder {
 				.generationPackage("")
 				.language(Formatters.normalizeLanguageName(language.name()))
 				.languageVersion(model.language().version())
+				.languagePath(languagePath.getAbsolutePath())
 				.project(Formatters.normalizeLanguageName(destination.artifactId()))
 				.projectVersion(destination.version());
 	}

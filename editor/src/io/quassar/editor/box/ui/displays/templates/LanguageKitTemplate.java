@@ -117,7 +117,7 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 	}
 
 	private String filename(File graph) {
-		return language.name() + "-" + release + "-" + (graph != null ? graph.getName() : "graph.json");
+		return language.name() + "-" + (graph != null ? graph.getName().replace(".json", "") + "-" + release + ".json" : "graph.json");
 	}
 
 }

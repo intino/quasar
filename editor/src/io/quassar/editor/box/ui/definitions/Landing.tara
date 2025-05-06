@@ -46,7 +46,7 @@ Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, heigh
 
 				Block(layout=Vertical Flexible CenterJustified Wrap, format=bringToFront doubleAirTop)
 					Block(layout=Vertical CenterCenter, format=doubleAirBottom)
-						Text(value="3", format=stepBudge)
+						Text(value="1", format=stepBudge)
 						Text(value="Design", format=stepTitle)
 						Text(value="Model with metta, a DSL for designing other DSLs", format=stepDescription)
 					Block(layout=Vertical CenterCenter, format=doubleAirBottom doubleAirTop)
