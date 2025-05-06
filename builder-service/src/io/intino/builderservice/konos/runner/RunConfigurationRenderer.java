@@ -1,5 +1,6 @@
 package io.intino.builderservice.konos.runner;
 
+import io.intino.builder.CompilerConfiguration;
 import io.intino.builderservice.konos.schemas.RunOperationContext;
 
 import java.io.File;
@@ -35,6 +36,7 @@ public class RunConfigurationRenderer {
 		writer.write(MAKE + NL + true + NL);
 		writer.write(TEST + NL + false + NL);
 		writer.write(ENCODING + NL + Charset.defaultCharset().name() + NL);
+		if (params.operation().equalsIgnoreCase("check")) writer.write(EXCLUDED_PHASES + NL + "8,9" + NL);
 		writer.write(GENERATION_PACKAGE + NL + (params.generationPackage().isEmpty() ? "model" : params.generationPackage()) + NL);
 		writer.write(COMPILATION_MODE + NL + params.operation() + NL);
 		if (!params.projectVersion().isEmpty()) writer.write(VERSION + NL + params.projectVersion() + NL);
