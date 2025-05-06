@@ -65,6 +65,7 @@ Schema RunOperationContext
 	Attribute projectVersion as Text
 	Attribute language as Text
 	Attribute languageVersion as Text
+	Attribute languagePath as Text
 	Attribute generationPackage as Text
 
 Schema Message

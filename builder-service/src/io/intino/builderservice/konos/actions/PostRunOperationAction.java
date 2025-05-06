@@ -7,8 +7,10 @@ import io.intino.alexandria.exceptions.NotFound;
 import io.intino.alexandria.logger.Logger;
 import io.intino.builderservice.konos.BuilderServiceBox;
 import io.intino.builderservice.konos.runner.BuilderRunner;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.List;
 
@@ -23,6 +25,7 @@ public class PostRunOperationAction implements io.intino.alexandria.rest.Request
 			if (box.builderStore().get(runOperationContext.imageURL()) == null)
 				throw new NotFound("Builder not found");
 			if (filesInTar == null) throw new BadRequest("Required source files");
+			copyLanguageToRepository();
 			var ticketWithSources = new BuilderRunner(box.builderStore(), box.containerManager(), box.workspace(), new File(box.configuration().languageRepository()))
 					.run(runOperationContext, filesInTar.inputStream());
 			box.registerOperationHandler(ticketWithSources.getKey(), ticketWithSources.getValue());
@@ -31,6 +34,19 @@ public class PostRunOperationAction implements io.intino.alexandria.rest.Request
 			Logger.error(e);
 			throw new InternalServerError(e.getMessage());
 		}
+	}
+
+	private void copyLanguageToRepository() throws BadRequest, IOException {
+		File repo = new File(box.configuration().languageRepository());
+		File source = new File(runOperationContext.languagePath());
+		if (!source.exists()) throw new BadRequest("Language file does not exist");
+		repo.mkdirs();
+		File destination = new File(repo, String.join(File.separator, "tara", "dsl",
+				runOperationContext.language(),
+				runOperationContext.languageVersion(),
+				runOperationContext.language() + "-" + runOperationContext.languageVersion() + ".jar"));
+		destination.getParentFile().mkdirs();
+		FileUtils.copyFile(source, destination);
 	}
 
 	public void onMalformedRequest(Throwable e) throws AlexandriaException {

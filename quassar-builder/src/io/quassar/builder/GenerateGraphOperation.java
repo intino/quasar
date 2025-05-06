@@ -32,7 +32,8 @@ public class GenerateGraphOperation extends ModelOperation {
 		try {
 			File out = unit.configuration().outDirectory();
 			out.mkdirs();
-			Files.writeString(new File(out, "graph.json").toPath(), json);
+			File build = new File(out.getParentFile(), "build/");
+			Files.writeString(new File(build, "graph.json").toPath(), json);
 		} catch (IOException e) {
 			LOG.severe(e.getMessage());
 		}

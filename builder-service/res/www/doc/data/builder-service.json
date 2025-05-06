@@ -226,6 +226,32 @@
     }
   },
   "definitions": {
+    "BuilderInfo": {
+      "required": [
+        "imageURL",
+        "operations",
+        "targetLanguages",
+        "creationDate",
+        "properties"
+      ],
+      "properties": {
+        "imageURL": {
+          "type": "string"
+        },
+        "operations": {
+          "type": "string"
+        },
+        "targetLanguages": {
+          "type": "string"
+        },
+        "creationDate": {
+          "type": "string"
+        },
+        "properties": {
+          "type": "java.util.map"
+        }
+      }
+    },
     "Message": {
       "required": [
         "type",
@@ -253,80 +279,6 @@
         },
         "column": {
           "type": "integer"
-        }
-      }
-    },
-    "RegisterBuilder": {
-      "required": [
-        "imageURL",
-        "registryToken"
-      ],
-      "properties": {
-        "imageURL": {
-          "type": "string"
-        },
-        "registryToken": {
-          "type": "string"
-        }
-      }
-    },
-    "BuilderInfo": {
-      "required": [
-        "imageURL",
-        "operations",
-        "targetLanguages",
-        "creationDate",
-        "properties"
-      ],
-      "properties": {
-        "imageURL": {
-          "type": "string"
-        },
-        "operations": {
-          "type": "string"
-        },
-        "targetLanguages": {
-          "type": "string"
-        },
-        "creationDate": {
-          "type": "string"
-        },
-        "properties": {
-          "type": "java.util.map"
-        }
-      }
-    },
-    "RunOperationContext": {
-      "required": [
-        "imageURL",
-        "operation",
-        "project",
-        "projectVersion",
-        "language",
-        "languageVersion",
-        "generationPackage"
-      ],
-      "properties": {
-        "imageURL": {
-          "type": "string"
-        },
-        "operation": {
-          "type": "string"
-        },
-        "project": {
-          "type": "string"
-        },
-        "projectVersion": {
-          "type": "string"
-        },
-        "language": {
-          "type": "string"
-        },
-        "languageVersion": {
-          "type": "string"
-        },
-        "generationPackage": {
-          "type": "string"
         }
       }
     },
@@ -366,6 +318,58 @@
         "messages": {
           "type": "object",
           "$ref": "#/definitions/Message"
+        }
+      }
+    },
+    "RunOperationContext": {
+      "required": [
+        "imageURL",
+        "operation",
+        "project",
+        "projectVersion",
+        "language",
+        "languageVersion",
+        "languagePath",
+        "generationPackage"
+      ],
+      "properties": {
+        "imageURL": {
+          "type": "string"
+        },
+        "operation": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "projectVersion": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string"
+        },
+        "languageVersion": {
+          "type": "string"
+        },
+        "languagePath": {
+          "type": "string"
+        },
+        "generationPackage": {
+          "type": "string"
+        }
+      }
+    },
+    "RegisterBuilder": {
+      "required": [
+        "imageURL",
+        "registryToken"
+      ],
+      "properties": {
+        "imageURL": {
+          "type": "string"
+        },
+        "registryToken": {
+          "type": "string"
         }
       }
     }

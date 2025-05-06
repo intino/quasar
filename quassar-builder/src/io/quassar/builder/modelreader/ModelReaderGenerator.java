@@ -21,7 +21,7 @@ public class ModelReaderGenerator {
 		File pom = generatePom();
 		if (pom != null) {
 			new MavenExecutor().run(pom, new File(conf.moduleDirectory(), "mvn.log"));
-			File build = new File(pom.getParentFile(), "out/build/" + conf.module() + "-model-reader");
+			File build = new File(pom.getParentFile(), "out/build/" + conf.module() + "-model-reader-java");
 			FileSystemUtils.removeDir(new File(build, "maven-archiver"));
 			FileSystemUtils.removeDir(new File(build, "maven-status"));
 			FileSystemUtils.removeDir(new File(build, "generated-sources"));
