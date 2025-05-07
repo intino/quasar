@@ -27,7 +27,8 @@ public record GavCoordinates(String groupId, String artifactId, String version) 
 
 	@Override
 	public String toString() {
-		return groupId + ":" + artifactId + ":" + version;
+		String result = groupId != null && !groupId.isEmpty() ? groupId : "";
+		return result + (!result.isEmpty() ? ":": "") + artifactId + ":" + version;
 	}
 
 	@Override

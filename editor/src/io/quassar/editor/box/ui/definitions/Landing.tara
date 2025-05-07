@@ -16,7 +16,8 @@ Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, heigh
 			Block(layout=Vertical Center, format=block)
 				Text(value="The model is the product", format=blockSubtitle)
 				Text(value="Model with a DSL", format=blockTitle)
-				Text(value="Use existing DSL from our community to build your models", format=blockDescription)
+				Text(value="Use existing DSL from our community", format=blockDescription)
+				Text(value="to build your models", format=blockDescription)
 
 				Block(layout=Vertical CenterCenter, format=doubleAirTop doubleAirBottom)
 					Button(title="Start modelling", format=blockMainAction, visible=false) startModeling as Action Addressable(EditorElements.home)
@@ -55,7 +56,7 @@ Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, heigh
 						Text(value="Make your DSL available to other users", format=stepDescription)
 
 		Block(layout=Vertical, format=landingSection) as Relative(width=60%)
-			Text(value="DSLs", translate=true, format=landingSectionTitle)
+			Text(value="Explore models", translate=true, format=landingSectionTitle)
 			Block(format=landingCatalog) > TemplateStamp(template=languagesLandingTemplate) languagesCatalog
 
 		Block(layout=Vertical Center, format=landingSection) as Relative(width=60%)
@@ -65,19 +66,16 @@ Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, heigh
 
 			Block(layout=Horizontal Center, format=doubleAirTop doubleAirBottom)
 				Button(title="Explore", format=blockMainAction doubleAirLeft doubleAirRight) exploreLanguage as Action Addressable(EditorElements.language)
-				Button(title="Create DSL", format=blockMainAction doubleAirLeft doubleAirRight) createDsl as Action
-				Button(title="Create DSL", format=blockMainAction doubleAirLeft doubleAirRight, visible=false) createDslLogin as Action
-				Button(title="Examples", format=blockMainAction doubleAirLeft doubleAirRight) exploreExamples as Action Addressable(EditorElements.home)
 
 		Block(layout=Vertical Center, format=landingSection landingSectionBordered) as Relative(width=60%)
-			Text(value="'from metta to solutions'", format=blockTitle doubleAirBottom)
-			Text(value="Model your DSL with metta", format=blockSubtitle doubleAirTop)
-			Text(value="Start by modeling the structure and rules of your domain-specific language", format=blockDescription)
-			Text(value="You don't write code. You design the language as a model", format=blockDescription)
-			Text(value="Use your DSL to create domain models", format=blockSubtitle doubleAirTop)
-			Text(value="Once your DSL is ready, use it to describe real-world problems or logic in your domain", format=blockDescription)
-			Text(value="Forge software artifacts from models", format=blockSubtitle doubleAirTop)
-			Text(value="With one click, turn your models into code, configs, docs, or deployable components", format=blockDescription doubleAirBottom)
+			Text(value="From metta to solutions", format=blockTitle doubleAirBottom)
+			Text(value="Model your DSL with metta", format=blockLightSubtitle doubleAirTop)
+			Text(value="Start by modeling the structure and rules of your domain-specific language", format=blockDescription italic)
+			Text(value="You don't write code. You design the language as a model", format=blockDescription italic)
+			Text(value="Use your DSL to create domain models", format=blockLightSubtitle doubleAirTop)
+			Text(value="Once your DSL is ready, use it to describe real-world problems or logic in your domain", format=blockDescription italic)
+			Text(value="Forge software artifacts from models", format=blockLightSubtitle doubleAirTop)
+			Text(value="With one click, turn your models into code, configs, docs, or deployable components", format=blockDescription italic doubleAirBottom)
 			Image(value="/images/landing-metta.png", format=doubleAirTop doubleAirBottom) as Relative(width=60%)
 
 	Dialog(title="") modelsDialog as Relative(height=80%, width=60%)

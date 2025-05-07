@@ -35,6 +35,7 @@ public class HeaderTemplate extends AbstractHeaderTemplate<EditorBox> {
 			if (box().authService() == null) notifier.redirect(PathHelper.loginUrl(session()));
 			else notifier.redirect(session().login(session().browser().baseUrl()));
 		});
+		user.onRefresh(e -> refreshUser());
 	}
 
 	@Override
@@ -44,6 +45,10 @@ public class HeaderTemplate extends AbstractHeaderTemplate<EditorBox> {
 		refreshLanguage();
 		login.visible(loggedUser == null);
 		user.visible(loggedUser != null);
+	}
+
+	private void refreshUser() {
+		userLinksSelector.hide(myProjectsOption);
 	}
 
 	private void refreshLanguage() {

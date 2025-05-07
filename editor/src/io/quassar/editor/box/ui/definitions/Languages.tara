@@ -120,19 +120,16 @@ Template languageTemplate as Relative(height=100%, width=100%, offsetHeight=2px)
 
 Template languageForgeTemplate as Relative(height=100%, width=100%)
 	Block(layout=Horizontal Flexible) as Relative(height=100%, width=100%) Resizable
-		Block(format=doubleSpaced) as Relative(width=30%)
-			Block(layout=Vertical Flexible) > TemplateStamp(template=languageInfoTemplate) infoStamp
+		Block as Relative(width=30%)
+			Block(layout=Vertical Flexible, format=doubleSpaced) as AutoSize > TemplateStamp(template=languageInfoTemplate) infoStamp
 		Block(layout=Vertical Flexible) as Relative(width=70%)
 			Selector viewSelector as Tabs(format=tabsStyle) Addressable(EditorElements.forge)
-				Text(value="Properties") properties as Option
-				Text(value="Help") help as Option
 				Text(value="Kit") kit as Option
-				Text(value="Tools") tools as Option
+				Text(value="Help") help as Option
+				Text(value="Forge") tools as Option
 
 			Block(layout=Horizontal Flexible)
 				Block(layout=Vertical Flexible) as Relative(width=90%)
-					Block(layout=Vertical Flexible) propertiesBlock as Conditional(viewSelector.properties)
-						TemplateStamp(template=languagePropertiesTemplate) propertiesStamp
 					Block(layout=Vertical Flexible) helpBlock as Conditional(viewSelector.help)
 						TemplateStamp(template=languageHelpTemplate) helpStamp
 					Block(layout=Vertical Flexible) kitBlock as Conditional(viewSelector.kit)
@@ -140,22 +137,20 @@ Template languageForgeTemplate as Relative(height=100%, width=100%)
 					Block(layout=Vertical Flexible) toolsBlock as Conditional(viewSelector.tools)
 						TemplateStamp(template=languageToolsTemplate) toolsStamp
 				Block(format=greyBackground, visible=false) versionSelectorBlock as Relative(width=10%)
-					Text(value="Versions", translate=true, format=h5 bold middleAirTop middleAirLeft middleAirBottom)
-					Selector versionSelector as ListBox Addressable(EditorElements.forge)
+					Block as AutoSize
+						Text(value="Versions", translate=true, format=h5 bold middleAirTop middleAirLeft middleAirBottom)
+						Selector versionSelector as ListBox Addressable(EditorElements.forge)
 
 Template(layout=Vertical Flexible) languageInfoTemplate
 	Block(layout=Vertical, format=doubleAirBottom relative)
 		TemplateStamp(template=languageEditor) editorStamp
-	Block(format=doubleAirBottom)
-		Text(value="Metamodel", translate=true, format=h5 bold middleAirBottom)
-		Block(layout=Horizontal) > Link(title="") metamodelLink as OpenSite(site=empty, target=Blank)
 	Block(format=doubleAirBottom)
 		Text(value="Visibility", translate=true, format=h5 bold middleAirBottom)
 		Block(layout=Horizontal)
 			Selector visibilitySelector as ComboBox
 				Text(value="Public") publicVisibilityOption as Option
 				Text(value="Private") privateVisibilityOption as Option
-	Block(visible=false) publicVisibilityBlock
+	Block(visible=false, format=doubleAirBottom) publicVisibilityBlock
 		Block(format=doubleAirBottom doubleAirTop)
 			Text(value="Restrict access to only this email accounts", translate=true, format=h5 bold middleAirBottom)
 			Text(value="List of patterns separated by either semicolon or newline with access to this language", translate=true, format=message middleAirBottom)
@@ -163,8 +158,10 @@ Template(layout=Vertical Flexible) languageInfoTemplate
 		Block(format=doubleAirBottom doubleAirTop)
 			Text(value="Copyright and license", translate=true, format=h5 bold middleAirBottom)
 			Text licenseField as Editable Memo(height=5Rows)
+	Block(format=doubleAirBottom)
+		TemplateStamp(template=languagePropertiesTemplate) propertiesStamp
 
-Template(layout=Vertical Flexible, format=doubleSpaced) languagePropertiesTemplate
+Template(layout=Vertical Flexible) languagePropertiesTemplate
 	Block(format=doubleAirBottom)
 		Text(value="Title", translate=true, format=h5 bold middleAirBottom)
 		Text titleField as Editable
@@ -215,13 +212,14 @@ Template(layout=Vertical Flexible, format=doubleSpaced) languageKitTemplate
 			Button(title="Create version", highlight=Fill, format=doubleAirTop) createVersion as Action
 
 	Block(layout=Vertical Flexible, visible=false) versionBlock
-		Block(format=doubleAirBottom) graphBlock
-			Text(value="Graph", translate=true, format=h5 bold)
-			Link(title="download") downloadGraphLink as Download
+
+		Block(format=middleAirBottom) downloadsBlock
+			Text(value="Downloads", translate=true, format=h5 bold)
+			TemplateStamp(template=downloadTemplate) downloads as Multiple(arrangement=Horizontal, spacing=DP16, noItemsMessage="There are no downloads available")
 
 		Block(format=doubleAirBottom)
-			Text(value="Model readers", translate=true, format=h5 bold)
-			TemplateStamp(template=modelReaderTemplate) readers as Multiple(arrangement=Horizontal, spacing=DP16, noItemsMessage="There are no readers available")
+			Text(value="Metamodel", translate=true, format=h5 bold middleAirBottom)
+			Block(layout=Horizontal) > Link(title="") metamodelLink as OpenSite(site=empty, target=Blank)
 
 		Block(format=doubleAirBottom)
 			Text(value="Template", translate=true, format=h5 bold)
@@ -312,7 +310,7 @@ Template languageToolEditor
 			Text(value="Execution instructions", translate=true)
 			Text(format=airBottom) executionInstructionsField as Editable Memo(height=4Rows)
 
-Template modelReaderTemplate
+Template downloadTemplate
 	Link(title="") titleLink as Download
 
 Template languageReleaseHelp

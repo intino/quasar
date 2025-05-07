@@ -3,7 +3,6 @@ package io.quassar.editor.box.ui.displays.templates;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.ui.types.ForgeView;
 import io.quassar.editor.box.util.PathHelper;
-import io.quassar.editor.box.util.SubjectHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
@@ -34,7 +33,6 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 	public void init() {
 		super.init();
 		viewSelector.select(0);
-		propertiesBlock.onShow(e -> refreshPropertiesBlock());
 		helpBlock.onInit(e -> initHelpBlock());
 		helpBlock.onShow(e -> refreshHelpBlock());
 		kitBlock.onInit(e -> initKitBlock());
@@ -56,27 +54,20 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 
 	private void refreshView() {
 		Model model = box().modelManager().get(language.metamodel());
-		versionSelectorBlock.visible(view != null && view != ForgeView.Properties);
+		versionSelectorBlock.visible(view != null);
 		viewSelector.address(path -> PathHelper.forgePath(path, model.id(), release));
 		if (view != null) viewSelector.selection(view.name());
 		hideViews();
 		if (view == ForgeView.Help) helpBlock.show();
 		else if (view == ForgeView.Kit) kitBlock.show();
 		else if (view == ForgeView.Tools) toolsBlock.show();
-		else propertiesBlock.show();
+		else kitBlock.show();
 	}
 
 	private void hideViews() {
-		if (propertiesBlock.isVisible()) propertiesBlock.hide();
-		else if (helpBlock.isVisible()) helpBlock.hide();
+		if (helpBlock.isVisible()) helpBlock.hide();
 		else if (kitBlock.isVisible()) kitBlock.hide();
 		else if (toolsBlock.isVisible()) toolsBlock.hide();
-	}
-
-	private void refreshPropertiesBlock() {
-		propertiesStamp.language(language);
-		propertiesStamp.release(release);
-		propertiesStamp.refresh();
 	}
 
 	private void initHelpBlock() {

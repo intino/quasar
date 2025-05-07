@@ -107,12 +107,12 @@
     <orderEntry type="library" name="Intino: io.intino.amidas:shared:4.0.5" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:zif:2.0.0" level="project" />
     <orderEntry type="library" name="Intino: org.java-websocket:Java-WebSocket:1.5.3" level="project" />
-    <orderEntry type="library" name="Intino: io.intino.alexandria:ui-framework:6.3.10" level="project" />
     <orderEntry type="library" name="Intino: org.apache.tika:tika-core:3.1.0" level="project" />
     <orderEntry type="library" name="Intino: org.slf4j:slf4j-api:2.0.16" level="project" />
     <orderEntry type="library" name="Intino: org.xerial:sqlite-jdbc:3.49.1.0" level="project" />
     <orderEntry type="library" name="Intino: com.tdunning:t-digest:3.3" level="project" />
     <orderEntry type="library" name="Intino: org.yaml:snakeyaml:2.4" level="project" />
     <orderEntry type="library" name="Intino: systems.intino.datamarts:subject-store:2.0.4" level="project" />
+    <orderEntry type="library" name="Intino: io.intino.alexandria:ui-framework:6.4.6" level="project" />
   </component>
 </module>

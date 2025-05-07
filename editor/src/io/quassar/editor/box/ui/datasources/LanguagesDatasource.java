@@ -20,12 +20,10 @@ import static java.util.stream.Collectors.toList;
 public class LanguagesDatasource extends PageDatasource<Language> {
 	protected final EditorBox box;
 	protected final UISession session;
-	private final LanguagesTab tab;
 
-	public LanguagesDatasource(EditorBox box, UISession session, LanguagesTab tab) {
+	public LanguagesDatasource(EditorBox box, UISession session) {
 		this.box = box;
 		this.session = session;
-		this.tab = tab;
 	}
 
 	@Override
@@ -52,7 +50,7 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 		return session.user() != null ? session.user().username() : null;
 	}
 
-	private List<Language> load(String condition, List<Filter> filters) {
+	protected List<Language> load(String condition, List<Filter> filters) {
 		List<Language> languages = load();
 		languages = filterCondition(languages, condition);
 		return languages;

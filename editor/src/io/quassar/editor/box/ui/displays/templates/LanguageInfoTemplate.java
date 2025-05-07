@@ -3,11 +3,8 @@ package io.quassar.editor.box.ui.displays.templates;
 import io.intino.alexandria.ui.displays.events.SelectionEvent;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.LanguageCommands;
-import io.quassar.editor.box.util.ModelHelper;
-import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageProperty;
-import io.quassar.editor.model.Model;
 import io.quassar.editor.model.Visibility;
 
 import java.util.Arrays;
@@ -42,15 +39,19 @@ public class LanguageInfoTemplate extends AbstractLanguageInfoTemplate<EditorBox
 	@Override
 	public void refresh() {
 		super.refresh();
-		Model metamodel = box().modelManager().get(language.metamodel());
 		editorStamp.language(language);
 		editorStamp.refresh();
-		metamodelLink.title(ModelHelper.label(metamodel, language(), box()));
-		metamodelLink.site(PathHelper.modelUrl(metamodel, release, session()));
 		visibilitySelector.selection(language.isPrivate() ? "privateVisibilityOption" : "publicVisibilityOption");
 		publicVisibilityBlock.visible(language.isPublic());
 		grantAccessField.value(String.join("\n", language.grantAccessList()));
 		licenseField.value(language.license());
+		refreshProperties();
+	}
+
+	private void refreshProperties() {
+		propertiesStamp.language(language);
+		propertiesStamp.release(release);
+		propertiesStamp.refresh();
 	}
 
 	private List<String> grantAccessList() {

@@ -18,6 +18,7 @@ import java.util.function.Consumer;
 public class LanguagesTemplate extends AbstractLanguagesTemplate<EditorBox> {
 	private LanguagesTab tab;
 	private Consumer<Language> selectListener;
+	private LanguagesDatasource source;
 
 	public LanguagesTemplate(EditorBox box) {
 		super(box);
@@ -40,6 +41,10 @@ public class LanguagesTemplate extends AbstractLanguagesTemplate<EditorBox> {
 		this.selectListener = listener;
 	}
 
+	public void source(LanguagesDatasource source) {
+		this.source = source;
+	}
+
 	@Override
 	public void init() {
 		super.init();
@@ -55,7 +60,7 @@ public class LanguagesTemplate extends AbstractLanguagesTemplate<EditorBox> {
 	}
 
 	private void refreshLanguages() {
-		LanguagesDatasource source = new LanguagesDatasource(box(), session(), tab);
+		LanguagesDatasource source = this.source != null ? this.source : new LanguagesDatasource(box(), session());
 		languagesCatalog.source(source);
 		searchBox.visible(source.itemCount(null, Collections.emptyList()) > DisplayHelper.MinItemsCount);
 	}

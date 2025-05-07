@@ -116,6 +116,12 @@ public class ModelManager {
 		return get(name);
 	}
 
+	public void updateLanguageVersion(Model model, String version) {
+		GavCoordinates language = model.language();
+		model.language(new GavCoordinates(language.groupId(), language.artifactId(), version));
+		serverManager.remove(model, Model.DraftRelease);
+	}
+
 	public void copyWorkSpace(Model template, Model model) {
 		new WorkspaceWriter(workspace(template, Model.DraftRelease), server(template, Model.DraftRelease)).clone(model, server(model, Model.DraftRelease));
 	}

@@ -1,6 +1,5 @@
 package io.quassar.editor.box.ui.displays.templates;
 
-import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.server.UIFile;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command.ExecutionResult;
@@ -24,6 +23,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	private Consumer<Model> checkListener;
 	private Consumer<Model> cloneListener;
 	private BiConsumer<Model, ExecutionResult> deployListener;
+	private Consumer<Model> updateLanguageVersionListener;
 	private List<LanguageTool> tools;
 
 	public ModelHeaderTemplate(EditorBox box) {
@@ -54,6 +54,10 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		this.deployListener = listener;
 	}
 
+	public void onUpdateLanguageVersion(Consumer<Model> listener) {
+		this.updateLanguageVersionListener = listener;
+	}
+
 	@Override
 	public void init() {
 		super.init();
@@ -70,6 +74,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		commitModelDialog.onCommitFailure((m, v) -> deployListener.accept(m, v));
 		infoTrigger.onExecute(e -> openSettingsDialog());
 		modelSettingsDialog.onSave(e -> refresh());
+		modelSettingsDialog.onUpdateLanguageVersion(e -> notifyUpdateLanguageVersion());
 		toolsTrigger.onExecute(e -> openTools());
 	}
 
@@ -168,6 +173,11 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		toolLauncher.model(model);
 		toolLauncher.release(release);
 		toolLauncher.launch();
+	}
+
+	private void notifyUpdateLanguageVersion() {
+		updateLanguageVersionListener.accept(model);
+		refresh();
 	}
 
 }

@@ -55,8 +55,8 @@ Template(layout=Horizontal Center, format=headerStyle) headerTemplate
 		Button(title="Log in", format=airRight whiteColor, visible=false) login as Action
 
 		User(mode=OnlyPhoto, visible=false, format=relative veryLargeIconSize airRight smallAirTop) user
-			Selector as ListBox
-				Block as Option > Link(title="Projects", visible=false) home as Action Addressable(EditorElements.home)
+			Selector userLinksSelector as ListBox
+				Block(visible=false) myProjectsOption as Option > Link(title="Projects") myProjects as Action Addressable(EditorElements.home)
 
 Template(layout=Vertical Flexible) permissionsTemplate as Relative(height=100%,width=100%)
 	Block(layout=Vertical CenterCenter, format=grey) as Relative(height=100%,width=100%)

@@ -107,6 +107,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		headerStamp.onCheck(m -> check());
 		headerStamp.onClone(m -> cloneModel());
 		headerStamp.onDeploy((m, e) -> updateConsole(e));
+		headerStamp.onUpdateLanguageVersion(m -> refresh());
 	}
 
 	private void initBrowsers() {

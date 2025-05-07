@@ -42,6 +42,11 @@ public class DisplayHelper {
 		return true;
 	}
 
+	public static boolean checkLanguageInUse(TextEditable<?, ?> field, Function<String, String> translator, EditorBox box) {
+		if (NameHelper.languageInUse(field.value(), box)) { field.error("Already exists a language with that name"); return false; }
+		return true;
+	}
+
 	public static Resource emptyFile() {
 		return new Resource("empty", new ByteArrayInputStream(new byte[0]));
 	}

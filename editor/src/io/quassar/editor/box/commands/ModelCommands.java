@@ -143,6 +143,13 @@ public class ModelCommands extends Commands {
 		command.execute();
 	}
 
+	public void updateLanguageVersion(Model model, String version, String username) {
+		UpdateModelLanguageVersionCommand command = setup(new UpdateModelLanguageVersionCommand(box), username);
+		command.model = model;
+		command.version = version;
+		command.execute();
+	}
+
 	public void remove(Model model, String username) {
 		RemoveModelCommand command = setup(new RemoveModelCommand(box), username);
 		command.model = model;

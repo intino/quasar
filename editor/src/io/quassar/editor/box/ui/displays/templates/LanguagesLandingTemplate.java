@@ -55,7 +55,7 @@ public class LanguagesLandingTemplate extends AbstractLanguagesLandingTemplate<E
 	}
 
 	private void refreshLanguages() {
-		LanguagesDatasource source = new LanguagesDatasource(box(), session(), tab);
+		LanguagesDatasource source = new LanguagesDatasource(box(), session());
 		languagesLandingCatalog.source(source);
 		searchBox.visible(source.itemCount(null, Collections.emptyList()) > DisplayHelper.MinItemsCount);
 	}

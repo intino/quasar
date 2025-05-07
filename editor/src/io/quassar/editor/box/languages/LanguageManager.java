@@ -210,7 +210,7 @@ public class LanguageManager {
 		if (language.isPublic() && language.grantAccessList().isEmpty()) return true;
 		if (user == null) return false;
 		String owner = owner(language);
-		if (owner == null && language.isQuassarLanguage()) return true;
+		if ((owner == null || owner.equals(User.Quassar)) && language.isQuassarLanguage()) return true;
 		if (owner != null && owner.equals(user)) return true;
 		List<String> patternList = language.grantAccessList();
 		return patternList.stream().anyMatch(p -> matches(p, user));

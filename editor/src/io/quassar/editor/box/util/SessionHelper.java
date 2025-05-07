@@ -53,7 +53,7 @@ public class SessionHelper {
 
 	public static ForgeView forgeView(UISession session) {
 		String result = session.preference("forge-view");
-		return result != null && !result.isEmpty() ? ForgeView.from(result) : ForgeView.Properties;
+		return result != null && !result.isEmpty() ? ForgeView.from(result) : ForgeView.Kit;
 	}
 
 }

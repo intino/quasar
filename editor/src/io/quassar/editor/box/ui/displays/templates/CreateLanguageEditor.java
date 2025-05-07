@@ -41,7 +41,7 @@ public class CreateLanguageEditor extends AbstractCreateLanguageEditor<EditorBox
 	@Override
 	public void refresh() {
 		super.refresh();
-		metamodelTitle.value(ModelHelper.label(metamodel, language(), box()));
+		metamodelTitle.value("Create DSL");
 		editorStamp.focus();
 	}
 

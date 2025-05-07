@@ -9,7 +9,6 @@ import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.PathHelper;
-import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
@@ -44,25 +43,32 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 		createVersion.onExecute(e -> createVersion());
 		createTemplate.onExecute(e -> createTemplate());
 		modelsCatalog.onCreateModel(e -> createModel());
-		downloadGraphLink.onExecute(e -> downloadGraph());
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
-		graphBlock.visible(box().languageManager().loadGraph(language, release()) != null);
 		selectVersionBlock.visible(release == null);
 		versionBlock.visible(release != null && release() != null);
 		versionNotCreatedBlock.visible(release != null && release() == null);
 		if (!versionBlock.isVisible()) return;
-		refreshReaders();
+		refreshDownloads();
+		refreshMetamodel();
 		refreshTemplate();
 		refreshExamples();
 	}
 
-	private void refreshReaders() {
-		readers.clear();
-		box().languageManager().loadReaders(language, release()).forEach(r -> fill(r, readers.add()));
+	private void refreshDownloads() {
+		downloads.clear();
+		File graphFile = box().languageManager().loadGraph(language, release());
+		if (graphFile != null) fill(graphFile, downloads.add());
+		box().languageManager().loadReaders(language, release()).forEach(r -> fill(r, downloads.add()));
+	}
+
+	private void refreshMetamodel() {
+		Model metamodel = box().modelManager().get(language.metamodel());
+		metamodelLink.title(ModelHelper.label(metamodel, language(), box()));
+		metamodelLink.site(PathHelper.modelUrl(metamodel, release, session()));
 	}
 
 	private void refreshTemplate() {
@@ -83,10 +89,10 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 		modelsCatalog.refresh();
 	}
 
-	private void fill(File reader, ModelReaderTemplate display) {
+	private void fill(File file, DownloadTemplate display) {
 		display.language(language);
 		display.release(release);
-		display.reader(reader);
+		display.file(file);
 		display.refresh();
 	}
 
@@ -109,15 +115,6 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 
 	private Model createModel() {
 		return box().commands(ModelCommands.class).createExample(language, release(), username());
-	}
-
-	private UIFile downloadGraph() {
-		File graph = box().languageManager().loadGraph(language, release());
-		return DisplayHelper.uiFile(filename(graph), graph);
-	}
-
-	private String filename(File graph) {
-		return language.name() + "-" + (graph != null ? graph.getName().replace(".json", "") + "-" + release + ".json" : "graph.json");
 	}
 
 }

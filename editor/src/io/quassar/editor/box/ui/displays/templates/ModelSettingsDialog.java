@@ -9,10 +9,7 @@ import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.PermissionsHelper;
-import io.quassar.editor.model.Language;
-import io.quassar.editor.model.LanguageProperty;
-import io.quassar.editor.model.Model;
-import io.quassar.editor.model.User;
+import io.quassar.editor.model.*;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -20,6 +17,7 @@ import java.util.function.Consumer;
 public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> {
 	private Model model;
 	private Consumer<Model> saveListener;
+	private Consumer<Model> updateLanguageVersionListener;
 	private Boolean accessType = null;
 	private List<User> collaboratorList = null;
 	private String token;
@@ -34,6 +32,10 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 
 	public void onSave(Consumer<Model> listener) {
 		this.saveListener = listener;
+	}
+
+	public void onUpdateLanguageVersion(Consumer<Model> listener) {
+		this.updateLanguageVersionListener = listener;
 	}
 
 	public void open() {
@@ -63,8 +65,13 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 	}
 
 	private void refreshGeneralBlock() {
+		Language language = box().languageManager().get(model.language());
 		modelTitleField.value(ModelHelper.label(model, language(), box()));
 		modelDescriptionField.value(model.description());
+		languageName.value(model.language().languageId());
+		languageSelector.clear();
+		languageSelector.addAll(language.releases().stream().map(LanguageRelease::version).toList());
+		languageSelector.selection(model.language().version());
 		removeModel.readonly(!PermissionsHelper.canRemove(model, session(), box()));
 		accessType = model.isPrivate();
 		accessTypeField.state(model.isPrivate() ? ToggleEvent.State.On : ToggleEvent.State.Off);
@@ -95,6 +102,7 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 	private void saveModel() {
 		box().commands(ModelCommands.class).saveProperties(model, modelTitleField.value(), modelDescriptionField.value(), username());
 		saveAccessType();
+		saveLanguage();
 		saveCollaborators();
 	}
 
@@ -103,6 +111,14 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		boolean isPrivate = accessTypeField.state() == ToggleEvent.State.On;
 		if (isPrivate) box().commands(ModelCommands.class).makePrivate(model, username());
 		else box().commands(ModelCommands.class).makePublic(model, username());
+	}
+
+	private void saveLanguage() {
+		List<String> selection = languageSelector.selection();
+		String selected = !selection.isEmpty() ? selection.getFirst() : null;
+		if (model.language().version().equals(selected)) return;
+		box().commands(ModelCommands.class).updateLanguageVersion(model, selected, username());
+		updateLanguageVersionListener.accept(model);
 	}
 
 	private void saveCollaborators() {

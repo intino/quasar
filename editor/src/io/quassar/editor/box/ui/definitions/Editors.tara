@@ -35,12 +35,16 @@ Template(layout=Horizontal) modelSettingsDialog
         		Text(value="Collaborators") collaboratorsOption as Option
         	Block(layout=Vertical Center) as Relative(width=100%)
         		Block(layout=Vertical Flexible, format=doubleTopSpaced) generalBlock as Relative(width=95%) Conditional(settingsTabSelector.generalOption)
-					Block(format=doubleAirTop)
+					Block
 						Text(value="Title", translate=true, format=h5 middleAirBottom)
 						Text modelTitleField as Editable
 					Block(format=doubleAirTop)
 						Text(value="Description", translate=true, format=h5 middleAirBottom)
 						Text modelDescriptionField as Editable Memo(height=4Rows)
+					Block(format=doubleAirTop)
+						Text(value="Language", translate=true, format=h5 middleAirBottom)
+						Text(format=bold middleAirBottom) languageName
+						Selector languageSelector as ComboBox
 					Block(format=doubleAirTop)
 						Text(value="Model access", translate=true, format=h5 middleAirBottom)
 						Switch(title="Model is private") accessTypeField
@@ -72,7 +76,7 @@ Template(layout=Vertical) createLanguageEditor
 
 Template(layout=Horizontal) languageEditor as Relative(width=100%, height=100%)
 	Block(layout=Vertical Flexible, format=doubleAirRight airTop)
-		Text(value="Name", translate=true, format=h5 bold middleAirBottom)
+		Text(value="DSL", translate=true, format=h5 bold middleAirBottom)
 		Block(format=relative)
 			Text(format=dslFieldInput) idField as Editable
 			MaterialIcon(icon="Check", color="green", format=veryLargeIconSize rightIconField, visible=false) validIdIcon

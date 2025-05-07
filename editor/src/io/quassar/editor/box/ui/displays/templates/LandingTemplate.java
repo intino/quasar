@@ -2,6 +2,8 @@ package io.quassar.editor.box.ui.displays.templates;
 
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.ModelCommands;
+import io.quassar.editor.box.ui.datasources.LanguagesDatasource;
+import io.quassar.editor.box.ui.datasources.LanguagesWithReleaseDatasource;
 import io.quassar.editor.box.ui.types.LandingDialog;
 import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.util.ModelHelper;
@@ -11,6 +13,7 @@ import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
 
+import java.util.List;
 import java.util.Set;
 
 public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
@@ -42,8 +45,6 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 		startModelingLogin.onExecute(e -> gotoLogin(PathHelper.landingUrl(LandingDialog.StartModeling, session())));
 		startBuildingLogin.onExecute(e -> gotoLogin(PathHelper.homeUrl(session())));
 		startBuilding.onExecute(e -> startBuilding());
-		createDslLogin.onExecute(e -> gotoLogin(PathHelper.homeUrl(session())));
-		createDsl.onExecute(e -> startBuilding());
 	}
 
 	@Override
@@ -58,12 +59,11 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 		startModelingLogin.visible(user() == null);
 		startModeling.visible(user() != null);
 		if (startModeling.isVisible()) startModeling.address(path -> PathHelper.landingPath(path, LandingDialog.StartModeling));
-		exploreLanguage.address(path -> PathHelper.languagePath(path, Language.Metta));
-		exploreExamples.address(path -> PathHelper.landingPath(path, LandingDialog.Examples));
+		Language language = box().languageManager().get(Language.Metta);
+		List<Model> models = box().modelManager().models(Language.Metta);
+		exploreLanguage.address(path -> PathHelper.languagePath(path, language, username() == null || models.isEmpty() ? LanguageTab.Examples : LanguageTab.Models));
 		startBuildingLogin.visible(user() == null);
 		startBuilding.visible(user() != null);
-		createDslLogin.visible(user() == null);
-		createDsl.visible(user() != null);
 	}
 
 	private void refreshLanguagesCatalog() {
@@ -89,6 +89,7 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 		closing = false;
 		languagesDialog.title(dialog == LandingDialog.StartModeling ? "Select the language to start modeling with" : "Explore DSLs of our community");
 		languagesStamp.onSelect(dialog == LandingDialog.StartModeling ? this::startModeling : null);
+		languagesStamp.source(new LanguagesWithReleaseDatasource(box(), session()));
 		languagesStamp.refresh();
 	}
 
