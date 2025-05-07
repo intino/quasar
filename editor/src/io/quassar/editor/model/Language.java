@@ -13,7 +13,7 @@ public class Language extends SubjectWrapper {
 
 	public static final String FileExtension = ".tara";
 	public static final String QuassarGroup = "tara.dsl";
-	public static final String Metta = "meta";
+	public static final String Metta = "metta";
 
 	public static String key(String group, String name) {
 		if (group == null || group.isEmpty() || group.equalsIgnoreCase(Language.QuassarGroup)) return name;

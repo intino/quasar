@@ -32,13 +32,13 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 	@Override
 	public void init() {
 		super.init();
-		viewSelector.select(0);
 		helpBlock.onInit(e -> initHelpBlock());
 		helpBlock.onShow(e -> refreshHelpBlock());
 		kitBlock.onInit(e -> initKitBlock());
 		kitBlock.onShow(e -> refreshKitBlock());
 		toolsBlock.onInit(e -> initToolsBlock());
 		toolsBlock.onShow(e -> refreshToolsBlock());
+		viewSelector.select(0);
 		versionSelector.onSelect(e -> updateVersion());
 	}
 

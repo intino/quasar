@@ -48,7 +48,7 @@ Template languagesLandingTemplate as Relative(height=100%, width=100%)
 	Block(layout=Vertical Flexible) bodyBlock as Relative(width=100%) AutoSize
 		Block(layout=Vertical Flexible Center) contentBlock as Relative(width=100%)
 			List(itemClass="io.quassar.editor.model.Language", pageSize=5) languagesLandingCatalog as Navigable(position=Bottom)
-				noItemsMessage = "No DSLs"
+				noItemsMessage = "No models"
 				Mold
 					Item(height=100px) LanguageLandingItem
 						Block(layout=Horizontal Flexible, format=doubleBottomSpaced topSpaced bottomBordered)

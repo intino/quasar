@@ -20,14 +20,10 @@ import java.util.stream.Stream;
 public class DirUtils {
 
 	public static void copyDir(String dir, File destiny) {
-		try {
-			URL resourceUrl = DirUtils.class.getClassLoader().getResource(dir);
-			if (resourceUrl == null) throw new FileNotFoundException("Resource " + dir + " not found.");
-			if (resourceUrl.getProtocol().equals("jar")) copyDirFromJarFile(dir, resourceUrl, destiny);
-			else copyDirFromResources(dir, resourceUrl, destiny);
-		} catch (FileNotFoundException e) {
-			Logger.error(e);
-		}
+		URL resourceUrl = DirUtils.class.getClassLoader().getResource(dir);
+		if (resourceUrl == null) return;
+		if (resourceUrl.getProtocol().equals("jar")) copyDirFromJarFile(dir, resourceUrl, destiny);
+		else copyDirFromResources(dir, resourceUrl, destiny);
 	}
 
 	public static void copyDirFromJarFile(String dir, URL resourceUrl, File destiny) {

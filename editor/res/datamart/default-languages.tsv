@@ -1,3 +1,2 @@
 group	name	metamodel	level	title	description	release
-tara.dsl	meta		L3	Meta	No description	2.0.0
-tara.dsl	garaxia	0000000001	L3	A DSL for defining and governing data quality in software systems	Whether you are validating input, monitoring integrity across systems, or enforcing organizational standards, Garaxia helps you formalize how data should behave - and what to do when it doesn't	1.0.0
+tara.dsl	metta		L3	Metta	No description	2.0.0

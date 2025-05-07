@@ -252,6 +252,20 @@
         }
       }
     },
+    "RegisterBuilder": {
+      "required": [
+        "imageURL",
+        "registryToken"
+      ],
+      "properties": {
+        "imageURL": {
+          "type": "string"
+        },
+        "registryToken": {
+          "type": "string"
+        }
+      }
+    },
     "Message": {
       "required": [
         "type",
@@ -279,45 +293,6 @@
         },
         "column": {
           "type": "integer"
-        }
-      }
-    },
-    "OperationResult": {
-      "required": [
-        "state",
-        "genRef",
-        "srcRef",
-        "resRef",
-        "outRef",
-        "buildRef",
-        "success",
-        "messages"
-      ],
-      "properties": {
-        "state": {
-          "type": "string"
-        },
-        "genRef": {
-          "type": "string"
-        },
-        "srcRef": {
-          "type": "string"
-        },
-        "resRef": {
-          "type": "string"
-        },
-        "outRef": {
-          "type": "string"
-        },
-        "buildRef": {
-          "type": "string"
-        },
-        "success": {
-          "type": "boolean"
-        },
-        "messages": {
-          "type": "object",
-          "$ref": "#/definitions/Message"
         }
       }
     },
@@ -359,17 +334,42 @@
         }
       }
     },
-    "RegisterBuilder": {
+    "OperationResult": {
       "required": [
-        "imageURL",
-        "registryToken"
+        "state",
+        "genRef",
+        "srcRef",
+        "resRef",
+        "outRef",
+        "buildRef",
+        "success",
+        "messages"
       ],
       "properties": {
-        "imageURL": {
+        "state": {
           "type": "string"
         },
-        "registryToken": {
+        "genRef": {
           "type": "string"
+        },
+        "srcRef": {
+          "type": "string"
+        },
+        "resRef": {
+          "type": "string"
+        },
+        "outRef": {
+          "type": "string"
+        },
+        "buildRef": {
+          "type": "string"
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "messages": {
+          "type": "object",
+          "$ref": "#/definitions/Message"
         }
       }
     }

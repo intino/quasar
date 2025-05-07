@@ -1,2 +1,1 @@
 id	name	language	title	description
-0000000001	garaxia	tara.dsl:meta:2.0.0	GARAXIA: A DSL for defining and governing data quality in software systems	Whether you are validating input, monitoring integrity across systems, or enforcing organizational standards, Garaxia helps you formalize how data should behave - and what to do when it doesn't
