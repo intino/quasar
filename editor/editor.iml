@@ -78,7 +78,6 @@
     <orderEntry type="library" name="Intino: io.intino.alexandria:logger:2.1.0" level="project" />
     <orderEntry type="library" name="Intino: io.intino.tara:language:2.0.0" level="project" />
     <orderEntry type="library" name="Intino: org.antlr:antlr4-runtime:4.13.1" level="project" />
-    <orderEntry type="library" name="Intino: tara.dsl:meta:2.0.0" level="project" />
     <orderEntry type="library" name="Intino: org.eclipse.jgit:org.eclipse.jgit:7.0.0.202409031743-r" level="project" />
     <orderEntry type="library" name="Intino: com.googlecode.javaewah:JavaEWAH:1.2.3" level="project" />
     <orderEntry type="library" name="Intino: org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:6.8.0.202311291450-r" level="project" />
@@ -114,5 +113,6 @@
     <orderEntry type="library" name="Intino: org.yaml:snakeyaml:2.4" level="project" />
     <orderEntry type="library" name="Intino: systems.intino.datamarts:subject-store:2.0.4" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:ui-framework:6.4.6" level="project" />
+    <orderEntry type="library" name="Intino: tara.dsl:metta:2.0.0" level="project" />
   </component>
 </module>
