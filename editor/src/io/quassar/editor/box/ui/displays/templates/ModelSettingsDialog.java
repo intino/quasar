@@ -66,6 +66,7 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 
 	private void refreshGeneralBlock() {
 		Language language = box().languageManager().get(model.language());
+		modelTitleField.readonly(!PermissionsHelper.canEditTitle(model, box()));
 		modelTitleField.value(ModelHelper.label(model, language(), box()));
 		modelDescriptionField.value(model.description());
 		languageName.value(model.language().languageId());

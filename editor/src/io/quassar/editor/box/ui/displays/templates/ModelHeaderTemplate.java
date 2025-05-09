@@ -86,8 +86,8 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		Project project = box().projectManager().find(model);
 		Language language = box().languageManager().get(model);
 		projectModelSelector.readonly(project == null);
-		title.readonly(model.isTemplate());
 		title.title(ModelHelper.label(model, language(), box()));
+		title.readonly(!PermissionsHelper.canEditTitle(model, box()));
 		refreshReleaseSelector();
 		checkTrigger.visible(release == null || release.equals(translate(Model.DraftRelease)));
 		checkTrigger.readonly(!PermissionsHelper.canCheck(model, release, session(), box()));
@@ -105,11 +105,12 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		cloneTrigger.readonly(!PermissionsHelper.canClone(model, release, session(), box()));
 		languageLogo.visible(language != null);
 		if (languageLogo.isVisible()) languageLogo.value(LanguageHelper.logo(language, box()));
-		languageHelpTrigger.visible(language != null);
-		if (languageHelpTrigger.isVisible()) {
-			languageHelpTrigger.title(LanguageHelper.title(model.language()));
-			languageHelpTrigger.site(PathHelper.languageReleaseHelp(language, model.language().version()));
-		}
+		helpTrigger.visible(language != null);
+		languageTrigger.visible(language != null);
+		if (language == null) return;
+		helpTrigger.site(PathHelper.languageReleaseHelp(language, model.language().version()));
+		languageTrigger.title(LanguageHelper.title(model.language()));
+		languageTrigger.site(PathHelper.languageUrl(language, session()));
 	}
 
 	private void refreshReleaseSelector() {

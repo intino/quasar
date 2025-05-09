@@ -2,6 +2,7 @@ package io.quassar.editor.box.ui.displays.templates;
 
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.ui.types.ForgeView;
+import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
@@ -32,6 +33,8 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 	@Override
 	public void init() {
 		super.init();
+		infoBlock.onInit(e -> initInfoBlock());
+		infoBlock.onShow(e -> refreshInfoBlock());
 		helpBlock.onInit(e -> initHelpBlock());
 		helpBlock.onShow(e -> refreshHelpBlock());
 		kitBlock.onInit(e -> initKitBlock());
@@ -45,29 +48,37 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 	@Override
 	public void refresh() {
 		super.refresh();
-		infoStamp.language(language);
-		infoStamp.release(release);
-		infoStamp.refresh();
-		refreshView();
+		refreshProperties();
 		refreshVersions();
+		refreshView();
 	}
 
 	private void refreshView() {
 		Model model = box().modelManager().get(language.metamodel());
-		versionSelectorBlock.visible(view != null);
 		viewSelector.address(path -> PathHelper.forgePath(path, model.id(), release));
 		if (view != null) viewSelector.selection(view.name());
 		hideViews();
-		if (view == ForgeView.Help) helpBlock.show();
+		if (view == ForgeView.Info) infoBlock.show();
+		else if (view == ForgeView.Help) helpBlock.show();
 		else if (view == ForgeView.Kit) kitBlock.show();
 		else if (view == ForgeView.Tools) toolsBlock.show();
 		else kitBlock.show();
 	}
 
 	private void hideViews() {
-		if (helpBlock.isVisible()) helpBlock.hide();
+		if (infoBlock.isVisible()) infoBlock.hide();
+		else if (helpBlock.isVisible()) helpBlock.hide();
 		else if (kitBlock.isVisible()) kitBlock.hide();
 		else if (toolsBlock.isVisible()) toolsBlock.hide();
+	}
+
+	private void initInfoBlock() {
+	}
+
+	private void refreshInfoBlock() {
+		infoStamp.language(language);
+		infoStamp.release(release);
+		infoStamp.refresh();
 	}
 
 	private void initHelpBlock() {
@@ -98,6 +109,11 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 		toolsStamp.language(language);
 		toolsStamp.release(release);
 		toolsStamp.refresh();
+	}
+
+	private void refreshProperties() {
+		logo.value(LanguageHelper.logo(language, box()));
+		languageName.value(language.name().toLowerCase());
 	}
 
 	private void refreshVersions() {

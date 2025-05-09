@@ -35,7 +35,7 @@ public class LanguageHelper {
 	}
 
 	public static String title(GavCoordinates release) {
-		return release.artifactId() + " " + release.version();
+		return release.artifactId().toLowerCase() + " " + release.version();
 	}
 
 	public static Model model(Language language, EditorBox box) {

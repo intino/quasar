@@ -9,9 +9,9 @@ Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
 	Block(layout=Horizontal Center Flexible, visible=false) contentBlock
 		Block(layout=Horizontal Flexible)
 			AvatarIconButton(title="", size=Small, format=airRight, visible=false) projectModelSelector as Action
-			Link(title="", format=modelViewTitle) title as Action
+			Link(title="", format=modelViewTitle upperCase) title as Action
 			Block(layout=Horizontal Center, visible=false, format=doubleAirRight) titleEditorBlock as Absolute(width=360px)
-				Text(translate=true, format=modelViewTitle airRight) titleEditor as Editable
+				Text(translate=true, format=modelViewTitle airRight, mode=Uppercase) titleEditor as Editable
 				Link(title="Cancel", format=airRight) closeTitleEditor as Action
 				Link(title="Save") saveTitleEditor as Action
 			Block(layout=Horizontal Center, format=doubleAirLeft)
@@ -23,16 +23,18 @@ Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
 				Button(title="download", format=airRight, visible=false) downloadTrigger as Download
 				Button(title="info", format=airRight, visible=false) infoTrigger as Action Readonly
 				Button(title="clone", format=airRight, visible=false) cloneTrigger as Action Affirmed("Cloning the model will create a copy and open it. Do you want to proceed?")
+				Button(title="help", format=airRight, visible=false) helpTrigger as OpenSite(site=empty, target=Blank)
 
 		Block(layout=Horizontal Center EndJustified)
 			Image(format=middleAirRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) languageLogo as Absolute(height=25px)
-			Button(title="", format=airRight) languageHelpTrigger as OpenSite(site=empty, target=Blank)
+			Button(title="", format=airRight lowerCase) languageTrigger as OpenSite(site=empty, target=Blank)
 
 	TemplateStamp(template=commitModelDialog) commitModelDialog
 	TemplateStamp(template=modelSettingsDialog) modelSettingsDialog
 	TemplateStamp(template=languageToolLauncher) toolLauncher
 
 Template modelsTemplate as Relative(height=100%, width=100%)
+	Link(title="") modelTrigger as OpenSite(site=empty, target=Blank)
 
 	Block(layout=Horizontal Center, format=middleAirBottom)
 		Button(title="New", size=Small, highlight=Outline, visible=false) addModelTrigger as Action
@@ -44,7 +46,8 @@ Template modelsTemplate as Relative(height=100%, width=100%)
 			Mold
 				Item(height = 50px) modelItem
 					Block(layout=Vertical Flexible, format=doubleBottomSpaced topSpaced bottomBordered)
-						Link(title="", format=relative bringToFront h5) label as Action Addressable(EditorElements.model)
+						Link(title="", format=relative bringToFront h5 upperCase, visible=false) label as Action Addressable(EditorElements.model)
+						Link(title="", format=relative bringToFront h5 upperCase, visible=false) siteLabel as Action OpenSite(site=empty, target=Blank)
 						Text description
 						Text owner as Labeled("Owner")
 						Text version as Labeled("Language version")

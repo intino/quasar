@@ -6,7 +6,6 @@ use Editors
 use Theme
 
 Template forgeTemplate as Relative(height=100%, width=100%)
-	TemplateStamp(template=forgeHeaderTemplate) header
 
 	Block(layout=Vertical Flexible CenterCenter, visible=false) notFoundBlock
 		Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)

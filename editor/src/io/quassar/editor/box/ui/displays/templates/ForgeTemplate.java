@@ -35,7 +35,6 @@ public class ForgeTemplate extends AbstractForgeTemplate<EditorBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
-		refreshHeader();
 		notFoundBlock.visible(model == null);
 		contentBlock.visible(model != null);
 		if (model == null) return;
@@ -43,11 +42,6 @@ public class ForgeTemplate extends AbstractForgeTemplate<EditorBox> {
 		hideBlocks();
 		if (language == null) createLanguageBlock.show();
 		else languageBlock.show();
-	}
-
-	private void refreshHeader() {
-		header.model(model);
-		header.refresh();
 	}
 
 	private void hideBlocks() {

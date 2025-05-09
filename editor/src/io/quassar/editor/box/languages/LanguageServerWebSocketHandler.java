@@ -33,7 +33,7 @@ public class LanguageServerWebSocketHandler implements WebSocketListener {
 	public void onWebSocketConnect(Session session) {
 		try {
 			synchronized (monitor) {
-				session.setIdleTimeout(Duration.ofHours(1));
+				session.setIdleTimeout(Duration.ofDays(1));
 				session.setMaxTextMessageSize(MessageSize);
 				PipedInputStream clientInput = new PipedInputStream(MessageSize);
 				clientOutput = new PipedOutputStream(clientInput);

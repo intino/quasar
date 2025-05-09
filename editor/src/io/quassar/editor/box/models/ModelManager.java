@@ -94,7 +94,7 @@ public class ModelManager {
 	public Model create(String id, String name, String title, String description, GavCoordinates language, Model.Usage usage, String owner) {
 		Model model = new Model(subjectStore.create(SubjectHelper.modelPath(id)));
 		model.name(name);
-		model.title(title);
+		model.title(title.toUpperCase());
 		model.description(description);
 		model.language(language);
 		model.owner(owner);

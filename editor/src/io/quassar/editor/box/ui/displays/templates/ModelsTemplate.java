@@ -22,6 +22,7 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 	private LanguageRelease release;
 	private LanguageTab tab;
 	private Function<Boolean, Model> createModelListener;
+	private Mode mode = Mode.Normal;
 
 	public ModelsTemplate(EditorBox box) {
 		super(box);
@@ -37,6 +38,11 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 
 	public void tab(LanguageTab tab) {
 		this.tab = tab;
+	}
+
+	public enum Mode { Normal, Forge }
+	public void mode(Mode mode) {
+		this.mode = mode;
 	}
 
 	public void onCreateModel(Function<Boolean, Model> listener) {
@@ -65,8 +71,16 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 	}
 
 	private void refresh(Model model, ModelItem display) {
-		display.label.title(ModelHelper.label(model, language(), box()));
-		display.label.address(path -> PathHelper.modelPath(path, model));
+		display.label.visible(mode == Mode.Normal);
+		if (display.label.isVisible()) {
+			display.label.title(ModelHelper.label(model, language(), box()));
+			display.label.address(path -> PathHelper.modelPath(path, model));
+		}
+		display.siteLabel.visible(mode == Mode.Forge);
+		if (display.siteLabel.isVisible()) {
+			display.siteLabel.title(ModelHelper.label(model, language(), box()));
+			display.siteLabel.site(PathHelper.modelUrl(model, session()));
+		}
 		display.description.value(model.description() != null && !model.description().equals(translate("(no description)")) ? model.description() : null);
 		display.owner.visible(true);
 		if (display.owner.isVisible()) display.owner.value(model.owner());
@@ -78,7 +92,11 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 	private void notifyCreateModel() {
 		if (createModelListener == null) return;
 		Model model = createModelListener.apply(true);
-		notifier.dispatch(PathHelper.startingModelPath(model));
+		if (mode == Mode.Normal) notifier.dispatch(PathHelper.startingModelPath(model));
+		else {
+			modelTrigger.site(PathHelper.modelUrl(model, session()));
+			modelTrigger.launch();
+		}
 	}
 
 }

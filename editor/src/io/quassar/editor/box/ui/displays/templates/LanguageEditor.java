@@ -62,6 +62,7 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 	@Override
 	public void init() {
 		super.init();
+		idField.onEnterPress(e -> changeName());
 		idField.onChange(e -> refreshState());
 		changeId.onExecute(e -> changeName());
 		changeId.signChecker((sign, reason) -> sign.equals(idField.value()));

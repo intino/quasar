@@ -301,6 +301,8 @@ Format("margin:'0',borderRight:'1px solid #ddd'") leftTabPanel
 Format("borderRadius:'10px',border:'0',height:'100%'") panelDrawer
 Format("fontSize:'20pt'") dslFieldInput
 Format("position:'absolute',bottom:'0',zIndex:'1'") languageEditorLogoStyle
+Format("border:'1px solid #ccc',borderRadius:'5px',marginBottom:'5px'") forgeLogoStyle
+Format("background:'#dee2e9'", darkContent="background:'#212938'") forgePanelBackground
 
 Format("padding:'15px 40px'") largeButton
 Format("position:'absolute',bottom:'0',left:'0',marginLeft:'6px',marginBottom:'7px'") userToolbar
@@ -368,6 +370,7 @@ Format("zIndex:'1'") bringToFront
 Format("position:'relative'") item
 Format("minWidth:'365px'") userItem
 Format("textTransform:'uppercase'") upperCase
+Format("textTransform:'lowercase'") lowerCase
 Format("fontStyle:'italic',color:'#777'") message
 Format("paddingBottom:'5px'") setupStepHeader
 Format("fontSize:'13pt',fontWeight:'bold'") setupStepTitle

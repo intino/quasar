@@ -35,7 +35,7 @@ public class ForgePage extends AbstractForgePage {
 		return new io.intino.alexandria.ui.Soul(session) {
 			@Override
 			public void personify() {
-				ForgeTemplate component = new ForgeTemplate(box);
+				HomeTemplate component = new HomeTemplate(box);
 				register(component);
 				component.init();
 			}

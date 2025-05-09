@@ -14,7 +14,7 @@ public class SaveModelTitleCommand extends Command<Boolean> {
 
 	@Override
 	public Boolean execute() {
-		model.title(title);
+		model.title(title.toUpperCase());
 		return true;
 	}
 

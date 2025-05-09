@@ -4,6 +4,7 @@ import io.intino.alexandria.ui.Soul;
 import io.quassar.editor.box.ui.displays.templates.ForgeTemplate;
 import io.quassar.editor.box.ui.displays.templates.HomeTemplate;
 import io.quassar.editor.box.ui.types.*;
+import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.SessionHelper;
 
 public class RouteDispatcher extends AbstractRouteDispatcher {
@@ -49,7 +50,7 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	@Override
 	public void dispatchForge(Soul soul, String model, String release, String view) {
 		SessionHelper.register(soul.session(), ForgeView.from(view));
-		soul.currentLayer(ForgeTemplate.class).open(model, release, view);
+		soul.currentLayer(HomeTemplate.class).open(model, release, view);
 	}
 
 	@Override

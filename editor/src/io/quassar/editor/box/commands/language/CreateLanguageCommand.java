@@ -22,6 +22,7 @@ public class CreateLanguageCommand extends Command<Language> {
 	@Override
 	public Language execute() {
 		Language language = box.languageManager().create(Language.groupFrom(id), Language.nameFrom(id), metamodel, level, "", "");
+		metamodel.title(Language.nameFrom(id).toUpperCase());
 		box.languageManager().saveLogo(language, logo(language));
 		return language;
 	}

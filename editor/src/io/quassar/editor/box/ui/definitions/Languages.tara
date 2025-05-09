@@ -35,8 +35,8 @@ Template languagesTemplate as Relative(height=100%, width=100%)
 						Block(layout=Horizontal Flexible, format=doubleBottomSpaced topSpaced bottomBordered)
 							Block(layout=Vertical Center) as Absolute(width=100px) > Image(colorInvertedWithDarkMode=true) logo as Absolute(width=60px)
 							Block(layout=Vertical Flexible)
-								Link(title="", format=h4 upperCase, visible=false) name as Action Addressable(EditorElements.language)
-								Link(title="", format=h4 upperCase, visible=false) nameSelector as Action
+								Link(title="", format=h4 lowerCase, visible=false) name as Action Addressable(EditorElements.language)
+								Link(title="", format=h4 lowerCase, visible=false) nameSelector as Action
 								Text(format=h6 bold) title
 								Text description
 
@@ -54,8 +54,8 @@ Template languagesLandingTemplate as Relative(height=100%, width=100%)
 						Block(layout=Horizontal Flexible, format=doubleBottomSpaced topSpaced bottomBordered)
 							Block(layout=Vertical Center) as Absolute(width=100px) > Image(colorInvertedWithDarkMode=true) logo as Absolute(width=60px)
 							Block(layout=Vertical Flexible)
-								Link(title="", format=h4 upperCase, visible=false) name as Action Addressable(EditorElements.language)
-								Link(title="", format=h4 upperCase, visible=false) nameSelector as Action
+								Link(title="", format=h4 lowerCase, visible=false) name as Action Addressable(EditorElements.language)
+								Link(title="", format=h4 lowerCase, visible=false) nameSelector as Action
 								Text(format=h6 bold) title
 								Text description
 
@@ -119,27 +119,30 @@ Template languageTemplate as Relative(height=100%, width=100%, offsetHeight=2px)
 								TemplateStamp(template=languageReleaseHelp) helps as Multiple(noItemsMessage="No help available")
 
 Template languageForgeTemplate as Relative(height=100%, width=100%)
-	Block(layout=Horizontal Flexible) as Relative(height=100%, width=100%) Resizable
-		Block as Relative(width=30%)
-			Block(layout=Vertical Flexible, format=doubleSpaced) as AutoSize > TemplateStamp(template=languageInfoTemplate) infoStamp
-		Block(layout=Vertical Flexible) as Relative(width=70%)
+	Block(layout=Horizontal Flexible) as Relative(height=100%, width=100%) Resizable(minSize=15%)
+		Block(format=forgePanelBackground) as Relative(width=15%)
+			Block(layout=Vertical Flexible, format=doubleSpaced) as AutoSize Relative(height=100%)
+				Block(format=doubleAirBottom)
+					Image(format=forgeLogoStyle) logo as Absolute(width=200px)
+					Text(format=h4) languageName
+					Link(title="properties") as Action
+				Text(value="Releases", translate=true, format=h5 bold doubleAirTop middleAirLeft middleAirBottom)
+				Selector(format=fullHeight) versionSelector as ListBox Addressable(EditorElements.forge)
+		Block(layout=Vertical Flexible) as Relative(width=85%)
 			Selector viewSelector as Tabs(format=tabsStyle) Addressable(EditorElements.forge)
 				Text(value="Kit") kit as Option
 				Text(value="Help") help as Option
 				Text(value="Forge") tools as Option
-
 			Block(layout=Horizontal Flexible)
-				Block(layout=Vertical Flexible) as Relative(width=90%)
+				Block(layout=Vertical Flexible)
+					Block(layout=Vertical Flexible) infoBlock as Conditional(viewSelector.help)
+						TemplateStamp(template=languageInfoTemplate) infoStamp
 					Block(layout=Vertical Flexible) helpBlock as Conditional(viewSelector.help)
 						TemplateStamp(template=languageHelpTemplate) helpStamp
 					Block(layout=Vertical Flexible) kitBlock as Conditional(viewSelector.kit)
 						TemplateStamp(template=languageKitTemplate) kitStamp
 					Block(layout=Vertical Flexible) toolsBlock as Conditional(viewSelector.tools)
 						TemplateStamp(template=languageToolsTemplate) toolsStamp
-				Block(format=greyBackground, visible=false) versionSelectorBlock as Relative(width=10%)
-					Block as AutoSize
-						Text(value="Versions", translate=true, format=h5 bold middleAirTop middleAirLeft middleAirBottom)
-						Selector versionSelector as ListBox Addressable(EditorElements.forge)
 
 Template(layout=Vertical Flexible) languageInfoTemplate
 	Block(layout=Vertical, format=doubleAirBottom relative)

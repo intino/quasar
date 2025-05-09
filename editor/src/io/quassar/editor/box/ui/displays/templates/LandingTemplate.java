@@ -60,7 +60,7 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 		startModeling.visible(user() != null);
 		if (startModeling.isVisible()) startModeling.address(path -> PathHelper.landingPath(path, LandingDialog.StartModeling));
 		Language language = box().languageManager().get(Language.Metta);
-		List<Model> models = box().modelManager().models(Language.Metta);
+		List<Model> models = box().modelManager().models(language);
 		exploreLanguage.address(path -> PathHelper.languagePath(path, language, username() == null || models.isEmpty() ? LanguageTab.Examples : LanguageTab.Models));
 		startBuildingLogin.visible(user() == null);
 		startBuilding.visible(user() != null);

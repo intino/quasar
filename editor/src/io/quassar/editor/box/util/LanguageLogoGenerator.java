@@ -90,7 +90,7 @@ public class LanguageLogoGenerator {
 	}
 
 	public Font load(String name) {
-		try (InputStream is = getClass().getClassLoader().getResourceAsStream("/generators/dsl-icon-generator/" + name + ".ttf")) {
+		try (InputStream is = getClass().getClassLoader().getResourceAsStream("generators/dsl-icon-generator/" + name + ".ttf")) {
 			assert is != null;
 			Font font = Font.createFont(Font.TRUETYPE_FONT, is);
 			return font.deriveFont((float) 80);

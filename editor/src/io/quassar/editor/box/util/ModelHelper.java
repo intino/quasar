@@ -15,7 +15,7 @@ public class ModelHelper {
 
 	public static String label(Model model, String language, EditorBox box) {
 		String result = model.title() != null && !model.title().isEmpty() ? model.title() : model.name();
-		return model.isTemplate() ? box.translatorService().translate("%s TEMPLATE", language).formatted(result) : result;
+		return model.isTemplate() ? box.translatorService().translate("%s template", language).formatted(result).toUpperCase() : result;
 	}
 
 	public static String proposeName() {

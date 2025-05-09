@@ -15,7 +15,7 @@ public class SaveModelPropertiesCommand extends Command<Boolean> {
 
 	@Override
 	public Boolean execute() {
-		model.title(title);
+		model.title(title.toUpperCase());
 		model.description(description);
 		return true;
 	}

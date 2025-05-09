@@ -136,12 +136,20 @@ public class PathHelper {
 		return modelPath(address, model, release, view, file, position);
 	}
 
+	public static String modelUrl(String model, String release, String view, String file, String position, UISession session) {
+		return modelPath(session.browser().baseUrl() + "/models/:model", model, release, view, file, position);
+	}
+
 	public static String modelPath(String address, Model model, String release, ModelView view, String file, FilePosition position) {
-		String result = address.replace(":model", model.id());
+		return modelPath(address, model.id(), release, view != null ? view.name() : null, file, position != null ? position.line() + "-" + position.column() : null);
+	}
+
+	public static String modelPath(String address, String model, String release, String view, String file, String position) {
+		String result = address.replace(":model", model);
 		result += release != null ? "?release=" + release : "";
-		result += view != null ? ((result.contains("?") ? "&" : "?") + "view=" + view.name()) : "";
+		result += view != null ? ((result.contains("?") ? "&" : "?") + "view=" + view) : "";
 		result += file != null ? ((result.contains("?") ? "&" : "?") + "file=" + file) : "";
-		result += position != null ? ((result.contains("?") ? "&" : "?") + "pos=" +position.line() + "-" + position.column()) : "";
+		result += position != null ? ((result.contains("?") ? "&" : "?") + "pos=" + position) : "";
 		return result;
 	}
 

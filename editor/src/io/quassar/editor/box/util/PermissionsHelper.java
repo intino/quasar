@@ -103,4 +103,8 @@ public class PermissionsHelper {
 		if (!canEdit(language, session, box)) return false;
 		return LanguageHelper.model(language, box) != null;
 	}
+
+	public static boolean canEditTitle(Model model, EditorBox box) {
+		return !model.isTemplate() && box.languageManager().getWithMetamodel(model) == null;
+	}
 }

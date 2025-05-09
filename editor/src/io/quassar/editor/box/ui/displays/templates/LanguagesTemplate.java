@@ -78,14 +78,14 @@ public class LanguagesTemplate extends AbstractLanguagesTemplate<EditorBox> {
 	private void refreshName(Language language, LanguageItem item) {
 		item.name.visible(selectListener == null);
 		if (!item.name.isVisible()) return;
-		item.name.title(language.key());
+		item.name.title(language.key().toLowerCase());
 		item.name.address(path -> PathHelper.languagePath(path, language));
 	}
 
 	private void refreshNameSelector(Language language, LanguageItem item) {
 		item.nameSelector.visible(selectListener != null);
 		if (!item.nameSelector.isVisible()) return;
-		item.nameSelector.title(language.key());
+		item.nameSelector.title(language.key().toLowerCase());
 		item.nameSelector.onExecute(e -> notifySelect(language));
 	}
 

@@ -36,8 +36,8 @@ Template(layout=Horizontal) modelSettingsDialog
         	Block(layout=Vertical Center) as Relative(width=100%)
         		Block(layout=Vertical Flexible, format=doubleTopSpaced) generalBlock as Relative(width=95%) Conditional(settingsTabSelector.generalOption)
 					Block
-						Text(value="Title", translate=true, format=h5 middleAirBottom)
-						Text modelTitleField as Editable
+						Text(value="Name", translate=true, format=h5 middleAirBottom)
+						Text(mode=Uppercase) modelTitleField as Editable
 					Block(format=doubleAirTop)
 						Text(value="Description", translate=true, format=h5 middleAirBottom)
 						Text modelDescriptionField as Editable Memo(height=4Rows)
@@ -78,7 +78,7 @@ Template(layout=Horizontal) languageEditor as Relative(width=100%, height=100%)
 	Block(layout=Vertical Flexible, format=doubleAirRight airTop)
 		Text(value="DSL", translate=true, format=h5 bold middleAirBottom)
 		Block(format=relative)
-			Text(format=dslFieldInput) idField as Editable
+			Text(format=dslFieldInput, mode=Lowercase) idField as Editable
 			MaterialIcon(icon="Check", color="green", format=veryLargeIconSize rightIconField, visible=false) validIdIcon
 			MaterialIcon(icon="Clear", color="red", format=veryLargeIconSize rightIconField, visible=false) invalidIdIcon
 		Link(title="Change", visible=false) changeId as Action Readonly Signed(signText="The language name is about to be changed. This operation will affect all generated models. To confirm, please re-enter the new language name.", mode=SimplePassword)

@@ -84,6 +84,7 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 
 	private void refreshExamples() {
 		modelsCatalog.language(language);
+		modelsCatalog.mode(ModelsTemplate.Mode.Forge);
 		modelsCatalog.release(release());
 		modelsCatalog.tab(LanguageTab.Examples);
 		modelsCatalog.refresh();
@@ -114,7 +115,9 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 	}
 
 	private Model createModel() {
-		return box().commands(ModelCommands.class).createExample(language, release(), username());
+		Model result = box().commands(ModelCommands.class).createExample(language, release(), username());
+		refreshExamples();
+		return result;
 	}
 
 }
