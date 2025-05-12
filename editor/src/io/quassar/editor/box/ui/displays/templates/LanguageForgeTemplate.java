@@ -33,8 +33,9 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 	@Override
 	public void init() {
 		super.init();
-		infoBlock.onInit(e -> initInfoBlock());
-		infoBlock.onShow(e -> refreshInfoBlock());
+		infoLink.onExecute(e -> showInfoBlock());
+		infoDialog.onOpen(e -> refreshInfoDialog());
+		infoDialog.onClose(e -> refreshProperties());
 		helpBlock.onInit(e -> initHelpBlock());
 		helpBlock.onShow(e -> refreshHelpBlock());
 		kitBlock.onInit(e -> initKitBlock());
@@ -50,7 +51,12 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 		super.refresh();
 		refreshProperties();
 		refreshVersions();
+		refreshFooter();
 		refreshView();
+	}
+
+	private void showInfoBlock() {
+		infoDialog.open();
 	}
 
 	private void refreshView() {
@@ -58,24 +64,19 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 		viewSelector.address(path -> PathHelper.forgePath(path, model.id(), release));
 		if (view != null) viewSelector.selection(view.name());
 		hideViews();
-		if (view == ForgeView.Info) infoBlock.show();
-		else if (view == ForgeView.Help) helpBlock.show();
+		if (view == ForgeView.Help) helpBlock.show();
 		else if (view == ForgeView.Kit) kitBlock.show();
 		else if (view == ForgeView.Tools) toolsBlock.show();
 		else kitBlock.show();
 	}
 
 	private void hideViews() {
-		if (infoBlock.isVisible()) infoBlock.hide();
-		else if (helpBlock.isVisible()) helpBlock.hide();
+		if (helpBlock.isVisible()) helpBlock.hide();
 		else if (kitBlock.isVisible()) kitBlock.hide();
 		else if (toolsBlock.isVisible()) toolsBlock.hide();
 	}
 
-	private void initInfoBlock() {
-	}
-
-	private void refreshInfoBlock() {
+	private void refreshInfoDialog() {
 		infoStamp.language(language);
 		infoStamp.release(release);
 		infoStamp.refresh();
@@ -123,6 +124,15 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 		versionSelector.clear();
 		versionSelector.addAll(releases);
 		if (release != null) versionSelector.selection(release);
+	}
+
+	private void refreshFooter() {
+		Language parentLanguage = box().languageManager().get(language.parent());
+		parentLanguageBlock.visible(parentLanguage != null);
+		if (parentLanguage == null) return;
+		parentLanguageImage.value(LanguageHelper.logo(parentLanguage, box()));
+		parentLanguageTitle.value("%s forge".formatted(parentLanguage.name()));
+		parentLanguageLink.address(path -> PathHelper.languagePath(language));
 	}
 
 	private void updateVersion() {

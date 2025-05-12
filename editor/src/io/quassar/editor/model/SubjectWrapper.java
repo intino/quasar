@@ -43,7 +43,7 @@ public class SubjectWrapper {
 	}
 
 	protected void putList(String name, List<String> values) {
-		cache.remove(name);
+		listCache.remove(name);
 		Subject.Updating updating = subject.index();
 		updating.del(name);
 		values.forEach(v -> updating.put(name, v));
