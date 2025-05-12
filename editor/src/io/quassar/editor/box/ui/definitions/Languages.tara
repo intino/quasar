@@ -153,7 +153,7 @@ Template languageForgeTemplate as Relative(height=100%, width=100%)
 			TemplateStamp(template=languageInfoTemplate) infoStamp
 		Divider
         Block(layout=Horizontal EndJustified)
-            Button(title="Close", size=Small, format=airRight) as CloseDialog(infoDialog)
+            Button(title="Close", size=Small, format=airRight, highlight=Fill) as CloseDialog(infoDialog)
 
 Template(layout=Vertical Flexible) languageInfoTemplate
 	Selector viewSelector as Tabs(format=tabsStyle)
