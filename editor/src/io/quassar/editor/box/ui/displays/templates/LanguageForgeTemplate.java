@@ -119,7 +119,7 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 
 	private void refreshVersions() {
 		Model metamodel = box().modelManager().get(language.metamodel());
-		List<String> releases = box().modelManager().releases(metamodel);
+		List<String> releases = box().modelManager().releases(metamodel).reversed();
 		versionSelector.address(path -> PathHelper.forgeReleasePath(path, metamodel.id(), viewSelector.selection().getFirst()));
 		versionSelector.clear();
 		versionSelector.addAll(releases);

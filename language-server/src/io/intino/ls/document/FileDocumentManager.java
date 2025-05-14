@@ -63,9 +63,10 @@ public class FileDocumentManager implements DocumentManager {
 	@Override
 	public void move(URI oldUri, URI newUri) {
 		try {
-			List<TextDocumentItem> textDocumentItems = documents().values().stream().filter(d -> d.getUri().startsWith(oldUri.getPath() + "/")).toList();
+			File file = fileOf(oldUri);
+			List<TextDocumentItem> textDocumentItems = documents().values().stream().filter(d -> d.getUri().startsWith(oldUri.getPath() + "/") || d.getUri().equals(oldUri.getPath())).toList();
 			textDocumentItems.forEach(d -> move(d, oldUri, newUri));
-			if (fileOf(oldUri).isDirectory()) Files.delete(fileOf(oldUri).toPath());
+			if (file.isDirectory()) Files.delete(file.toPath());
 		} catch (IOException e) {
 			Logger.error(e);
 		}
