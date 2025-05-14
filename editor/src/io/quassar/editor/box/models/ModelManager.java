@@ -42,7 +42,7 @@ public class ModelManager {
 
 	public List<Model> models(Language language, String owner) {
 		Map<String, Subject> ownerSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("language-group", language.group()).with("language-name", language.name()).with("owner", owner).with("visibility", Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
-		Map<String, Subject> contributorSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("language-group", language.group()).with("language-name", language.name()).with("contributor", owner).with("visibility", Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> contributorSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("language-group", language.group()).with("language-name", language.name()).with("collaborator", owner).with("visibility", Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
 		Map<String, Subject> quassarSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("language-group", language.group()).with("language-name", language.name()).with("owner", User.Quassar).with("visibility", Visibility.Public.name()).with("usage", Model.Usage.EndUser.name()).collect());
 		ownerSubjects.putAll(contributorSubjects);
 		ownerSubjects.putAll(quassarSubjects);
@@ -60,7 +60,7 @@ public class ModelManager {
 
 	public List<Model> models(String owner) {
 		Map<String, Subject> ownerSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("owner", owner).with("visibility", Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
-		Map<String, Subject> contributorSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("contributor", owner).with("visibility", Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> contributorSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("collaborator", owner).with("visibility", Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
 		Map<String, Subject> quassarSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("owner", User.Quassar).with("visibility", Visibility.Public.name()).with("usage", Model.Usage.EndUser.name()).collect());
 		ownerSubjects.putAll(contributorSubjects);
 		ownerSubjects.putAll(quassarSubjects);

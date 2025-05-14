@@ -214,6 +214,7 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 
 	private String nameOf(File file) {
 		if (file == null) return null;
+		if (!file.name().contains(".")) return file.name();
 		return file.name().substring(0, file.name().lastIndexOf("."));
 	}
 

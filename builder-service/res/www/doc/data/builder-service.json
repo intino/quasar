@@ -226,76 +226,6 @@
     }
   },
   "definitions": {
-    "BuilderInfo": {
-      "required": [
-        "imageURL",
-        "operations",
-        "targetLanguages",
-        "creationDate",
-        "properties"
-      ],
-      "properties": {
-        "imageURL": {
-          "type": "string"
-        },
-        "operations": {
-          "type": "string"
-        },
-        "targetLanguages": {
-          "type": "string"
-        },
-        "creationDate": {
-          "type": "string"
-        },
-        "properties": {
-          "type": "java.util.map"
-        }
-      }
-    },
-    "RegisterBuilder": {
-      "required": [
-        "imageURL",
-        "registryToken"
-      ],
-      "properties": {
-        "imageURL": {
-          "type": "string"
-        },
-        "registryToken": {
-          "type": "string"
-        }
-      }
-    },
-    "Message": {
-      "required": [
-        "type",
-        "kind",
-        "content",
-        "uri",
-        "line",
-        "column"
-      ],
-      "properties": {
-        "type": {
-          "type": "string"
-        },
-        "kind": {
-          "type": "string"
-        },
-        "content": {
-          "type": "string"
-        },
-        "uri": {
-          "type": "string"
-        },
-        "line": {
-          "type": "integer"
-        },
-        "column": {
-          "type": "integer"
-        }
-      }
-    },
     "RunOperationContext": {
       "required": [
         "imageURL",
@@ -330,6 +260,76 @@
           "type": "string"
         },
         "generationPackage": {
+          "type": "string"
+        }
+      }
+    },
+    "BuilderInfo": {
+      "required": [
+        "imageURL",
+        "operations",
+        "targetLanguages",
+        "creationDate",
+        "properties"
+      ],
+      "properties": {
+        "imageURL": {
+          "type": "string"
+        },
+        "operations": {
+          "type": "string"
+        },
+        "targetLanguages": {
+          "type": "string"
+        },
+        "creationDate": {
+          "type": "string"
+        },
+        "properties": {
+          "type": "java.util.map"
+        }
+      }
+    },
+    "Message": {
+      "required": [
+        "type",
+        "kind",
+        "content",
+        "uri",
+        "line",
+        "column"
+      ],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "uri": {
+          "type": "string"
+        },
+        "line": {
+          "type": "integer"
+        },
+        "column": {
+          "type": "integer"
+        }
+      }
+    },
+    "RegisterBuilder": {
+      "required": [
+        "imageURL",
+        "registryToken"
+      ],
+      "properties": {
+        "imageURL": {
+          "type": "string"
+        },
+        "registryToken": {
           "type": "string"
         }
       }

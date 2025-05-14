@@ -19,12 +19,10 @@ import java.util.stream.Collectors;
 
 public class FileDocumentManager implements DocumentManager {
 	private final Object lock = new Object();
-	private final Map<URI, TextDocumentItem> documents;
 	private final File root;
 
 	public FileDocumentManager(File root) throws IOException {
 		this.root = root;
-		this.documents = loadDocuments(root);
 	}
 
 	public URI root() {
@@ -33,7 +31,7 @@ public class FileDocumentManager implements DocumentManager {
 
 	@Override
 	public List<URI> all() {
-		return documents.keySet().stream().toList();
+		return documents().keySet().stream().toList();
 	}
 
 	@Override
@@ -46,7 +44,6 @@ public class FileDocumentManager implements DocumentManager {
 		synchronized (lock) {
 			try {
 				File file = fileOf(uri);
-				documents.put(uri, new TextDocumentItem(uri.toString(), language, (int) Instant.now().toEpochMilli(), content));
 				file.getParentFile().mkdirs();
 				Files.writeString(file.toPath(), content);
 			} catch (IOException e) {
@@ -58,18 +55,28 @@ public class FileDocumentManager implements DocumentManager {
 	@Override
 	public InputStream getDocumentText(URI uri) {
 		synchronized (lock) {
-			TextDocumentItem document = documents.get(uri);
+			TextDocumentItem document = documents().get(uri);
 			return document != null ? new ByteArrayInputStream(document.getText().getBytes()) : null;
 		}
 	}
 
 	@Override
 	public void move(URI oldUri, URI newUri) {
-		TextDocumentItem textDocumentItem = documents.get(oldUri);
-		if (textDocumentItem != null) try {
-			documents.put(newUri, textDocumentItem);
-			Files.move(fileOf(oldUri).toPath(), fileOf(newUri).toPath());
-			documents.remove(oldUri);
+		try {
+			List<TextDocumentItem> textDocumentItems = documents().values().stream().filter(d -> d.getUri().startsWith(oldUri.getPath() + "/")).toList();
+			textDocumentItems.forEach(d -> move(d, oldUri, newUri));
+			if (fileOf(oldUri).isDirectory()) Files.delete(fileOf(oldUri).toPath());
+		} catch (IOException e) {
+			Logger.error(e);
+		}
+	}
+
+	private void move(TextDocumentItem item, URI oldUri, URI newUri) {
+		if (item != null) try {
+			URI uri = URI.create(item.getUri().replace(oldUri.getPath(), newUri.getPath()));
+			File file = fileOf(uri);
+			if (file.getParentFile() != null && !file.getParentFile().exists()) file.getParentFile().mkdirs();
+			Files.move(fileOf(URI.create(item.getUri())).toPath(), file.toPath());
 		} catch (IOException e) {
 			Logger.error(e);
 		}
@@ -77,7 +84,6 @@ public class FileDocumentManager implements DocumentManager {
 
 	@Override
 	public void remove(URI uri) {
-		documents.remove(uri);
 		File file = fileOf(uri);
 		if (file.isFile()) file.delete();
 		else removeDirectory(file);
@@ -102,6 +108,10 @@ public class FileDocumentManager implements DocumentManager {
 
 	private File fileOf(URI uri) {
 		return new File(root, uri.getPath());
+	}
+
+	private Map<URI, TextDocumentItem> documents() {
+		return loadDocuments(root);
 	}
 
 	private Map<URI, TextDocumentItem> loadDocuments(File projectRoot) {
