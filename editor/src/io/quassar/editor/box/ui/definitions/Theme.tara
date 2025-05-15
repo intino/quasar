@@ -241,7 +241,7 @@ Format("fontSize:'11px',padding:'0 10px',margin:'0 0 12px 15px'") legendAll
 Format("minWidth:'450px'") histogramStyle
 Format("height:'auto'") autoHeight
 Format("borderRadius:'10px'") rounded
-Format("borderBottom:'2px solid #bdbdbd',background:'#efefef',padding:'5px 10px',minHeight:'50px'", darkContent="borderBottom:'2px solid black',background:'#333'") subHeaderStyle
+Format("borderBottom:'2px solid #bdbdbd',background:'#efefef',padding:'0 10px',minHeight:'40px'", darkContent="borderBottom:'2px solid black',background:'#333'") subHeaderStyle
 Format("fontSize:'14pt'") languageViewTitle
 Format("fontSize:'14pt',fontWeight:'bold',color:'black'", darkContent="color:'white'") modelViewTitle
 Format("height:'25px',width:'120px'") minSelectorWidth
