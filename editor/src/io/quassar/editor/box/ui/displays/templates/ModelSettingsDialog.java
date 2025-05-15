@@ -71,7 +71,7 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		modelDescriptionField.value(model.description());
 		languageName.value(model.language().languageId());
 		languageSelector.clear();
-		languageSelector.addAll(language.releases().stream().map(LanguageRelease::version).toList());
+		languageSelector.addAll(language.releases().stream().map(LanguageRelease::version).toList().reversed());
 		languageSelector.selection(model.language().version());
 		removeModel.readonly(!PermissionsHelper.canRemove(model, session(), box()));
 		accessType = model.isPrivate();
