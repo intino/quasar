@@ -1,0 +1,8 @@
+dsl konos
+
+Service(title = "Quassar Artifactory API") quassar-artifactory-api as REST(host = "{host}", basePath = "/artifactory/releases", port = "{port}")
+
+	Resource("*") artifactoryFile
+    	Get(description = "Downloads model file")
+    		Response as File
+    		Exception(Forbidden)

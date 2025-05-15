@@ -2,7 +2,6 @@ package io.quassar.editor.box.ui.displays.templates;
 
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.ModelCommands;
-import io.quassar.editor.box.ui.datasources.LanguagesDatasource;
 import io.quassar.editor.box.ui.datasources.LanguagesWithReleaseDatasource;
 import io.quassar.editor.box.ui.types.LandingDialog;
 import io.quassar.editor.box.ui.types.LanguageTab;
@@ -80,7 +79,7 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 	private void refreshModelsDialog() {
 		closing = false;
 		modelsDialog.title("Example Metta models");
-		modelsStamp.language(box().languageManager().get(Language.key(Language.QuassarGroup, Language.Metta)));
+		modelsStamp.language(box().languageManager().get(Language.key(Language.TaraDslGroup, Language.Metta)));
 		modelsStamp.tab(LanguageTab.Examples);
 		modelsStamp.refresh();
 	}
@@ -101,7 +100,7 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 	}
 
 	private void startBuilding() {
-		startModeling(box().languageManager().get(Language.key(Language.QuassarGroup, Language.Metta)));
+		startModeling(box().languageManager().get(Language.key(Language.TaraDslGroup, Language.Metta)));
 	}
 
 	private void notifyClose() {

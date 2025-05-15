@@ -264,6 +264,45 @@
         }
       }
     },
+    "OperationResult": {
+      "required": [
+        "state",
+        "genRef",
+        "srcRef",
+        "resRef",
+        "outRef",
+        "buildRef",
+        "success",
+        "messages"
+      ],
+      "properties": {
+        "state": {
+          "type": "string"
+        },
+        "genRef": {
+          "type": "string"
+        },
+        "srcRef": {
+          "type": "string"
+        },
+        "resRef": {
+          "type": "string"
+        },
+        "outRef": {
+          "type": "string"
+        },
+        "buildRef": {
+          "type": "string"
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "messages": {
+          "type": "object",
+          "$ref": "#/definitions/Message"
+        }
+      }
+    },
     "BuilderInfo": {
       "required": [
         "imageURL",
@@ -331,45 +370,6 @@
         },
         "registryToken": {
           "type": "string"
-        }
-      }
-    },
-    "OperationResult": {
-      "required": [
-        "state",
-        "genRef",
-        "srcRef",
-        "resRef",
-        "outRef",
-        "buildRef",
-        "success",
-        "messages"
-      ],
-      "properties": {
-        "state": {
-          "type": "string"
-        },
-        "genRef": {
-          "type": "string"
-        },
-        "srcRef": {
-          "type": "string"
-        },
-        "resRef": {
-          "type": "string"
-        },
-        "outRef": {
-          "type": "string"
-        },
-        "buildRef": {
-          "type": "string"
-        },
-        "success": {
-          "type": "boolean"
-        },
-        "messages": {
-          "type": "object",
-          "$ref": "#/definitions/Message"
         }
       }
     }

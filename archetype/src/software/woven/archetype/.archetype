@@ -28,6 +28,7 @@ TARGETS:{ime editor}
     - releaseGraph(dsl, version) in "{dsl}/releases/{version}/graph.json"
     - releaseReaders(dsl, version) in "{dsl}/releases/{version}/readers"
     - releaseReader(dsl, version, name) in "{dsl}/releases/{version}/readers/{name}"
+    - releaseReaderManifest(dsl, version, name) in "{dsl}/releases/{version}/readers/{name}/pom.xml"
 
 + projects in "projects"
 

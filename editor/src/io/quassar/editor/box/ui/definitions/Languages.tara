@@ -242,6 +242,10 @@ Template(layout=Vertical Flexible, format=doubleSpaced) languageKitTemplate
 			Text(value="Downloads", translate=true, format=h5 bold)
 			TemplateStamp(template=downloadTemplate) downloads as Multiple(arrangement=Horizontal, spacing=DP16, noItemsMessage="There are no downloads available")
 
+		Block(format=middleAirBottom) dependencyBlock
+			Text(value="Maven dependencies", translate=true, format=h5 bold)
+			TemplateStamp(template=dependencyTemplate) dependencies as Multiple(arrangement=Horizontal, spacing=DP16, noItemsMessage="There are no dependencies available")
+
 		Block(format=doubleAirBottom)
 			Text(value="Template", translate=true, format=h5 bold)
 			Block(visible=false) templateDefined
@@ -333,6 +337,9 @@ Template languageToolEditor
 
 Template downloadTemplate
 	Link(title="") titleLink as Download
+
+Template dependencyTemplate
+	Link(title="") titleLink as CopyToClipboard
 
 Template languageReleaseHelp
 	Link(title="") titleLink as OpenSite(site=empty, target=Blank)

@@ -52,23 +52,35 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 		versionBlock.visible(release != null && release() != null);
 		versionNotCreatedBlock.visible(release != null && release() == null);
 		if (!versionBlock.isVisible()) return;
-		refreshDownloads();
 		refreshMetamodel();
+		refreshDownloads();
+		refreshMavenDependencies();
 		refreshTemplate();
 		refreshExamples();
-	}
-
-	private void refreshDownloads() {
-		downloads.clear();
-		File graphFile = box().languageManager().loadGraph(language, release());
-		if (graphFile != null) fill(graphFile, downloads.add());
-		box().languageManager().loadReaders(language, release()).forEach(r -> fill(r, downloads.add()));
 	}
 
 	private void refreshMetamodel() {
 		Model metamodel = box().modelManager().get(language.metamodel());
 		metamodelLink.title(ModelHelper.label(metamodel, language(), box()));
 		metamodelLink.site(PathHelper.modelUrl(metamodel, release, session()));
+	}
+
+	private void refreshDownloads() {
+		downloads.clear();
+		File graphFile = box().languageManager().loadGraph(language, release());
+		if (graphFile != null) fill(graphFile, downloads.add());
+		File dslFile = box().languageManager().loadDsl(language, release());
+		if (dslFile != null) fill(dslFile, downloads.add());
+		box().languageManager().loadReaders(language, release()).forEach(r -> fill(r, downloads.add()));
+	}
+
+	private void refreshMavenDependencies() {
+		dependencies.clear();
+		File graphFile = box().languageManager().loadGraph(language, release());
+		if (graphFile != null) fill(graphFile, dependencies.add());
+		File dslFile = box().languageManager().loadDsl(language, release());
+		if (dslFile != null) fill(dslFile, dependencies.add());
+		box().languageManager().loadReaders(language, release()).forEach(r -> fill(r, dependencies.add()));
 	}
 
 	private void refreshTemplate() {
@@ -91,6 +103,13 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 	}
 
 	private void fill(File file, DownloadTemplate display) {
+		display.language(language);
+		display.release(release);
+		display.file(file);
+		display.refresh();
+	}
+
+	private void fill(File file, DependencyTemplate display) {
 		display.language(language);
 		display.release(release);
 		display.file(file);

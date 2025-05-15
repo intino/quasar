@@ -91,7 +91,7 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		if (!check()) return;
 		dialog.close();
 		saveModel();
-		saveLanguageProperties();
+		//saveLanguageProperties();
 		saveListener.accept(model);
 	}
 
