@@ -11,6 +11,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	private Model model;
 	private String release;
 	private ModelView selectedView;
+	private ModelContainer modelContainer;
 	private io.quassar.editor.box.models.File selectedFile;
 	private FilePosition selectedPosition;
 	private boolean showHelp = false;
@@ -39,7 +40,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		this.model = box().modelManager().get(model);
 		this.release = release != null ? release : Model.DraftRelease;
 		this.selectedView = view != null ? ModelView.from(view) : SessionHelper.modelView(session());
-		ModelContainer modelContainer = this.model != null ? box().modelManager().modelContainer(this.model, this.release) : null;
+		this.modelContainer = this.model != null ? box().modelManager().modelContainer(this.model, this.release) : null;
 		this.selectedFile = file != null && modelContainer != null ? modelContainer.file(file) : null;
 		this.selectedPosition = position != null ? FilePosition.from(position) : null;
 		this.showHelp = showHelp;

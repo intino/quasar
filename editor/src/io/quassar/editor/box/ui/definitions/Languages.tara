@@ -127,8 +127,10 @@ Template languageForgeTemplate as Relative(height=100%, width=100%)
 						Image(format=forgeLogoStyle) logo as Absolute(width=200px)
 						Text(format=h4) languageName
 						Link(title="properties") infoLink as Action
-					Text(value="Releases", translate=true, format=h5 bold doubleAirTop middleAirLeft middleAirBottom)
-					Selector(format=fullHeight) versionSelector as ListBox Addressable(EditorElements.forge)
+					Block(layout=Horizontal Center, format=doubleAirTop middleAirLeft middleAirBottom)
+						Block(layout=Vertical Flexible) > Text(value="Releases", translate=true, format=h5 bold)
+						Block(layout=Horizontal EndJustified) > MaterialIconButton(title="refresh", icon="Refresh", size=Small) refreshVersions as Action
+					Block(format=airBottom) as AutoSize > Selector(format=fullHeight) versionSelector as ListBox Addressable(EditorElements.forge)
 				Block(layout=Vertical EndJustified, visible=false) parentLanguageBlock
 					Block(format=relative)
 						Link(title="", format=fullSpaceLink) parentLanguageLink as Action Addressable(EditorElements.language)

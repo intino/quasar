@@ -28,7 +28,7 @@ Template(layout=Horizontal) commitModelDialog
 
 Template(layout=Horizontal) modelSettingsDialog
 
-	Dialog(title="Info") dialog as Relative(width=50%, height=70%)
+	Dialog(title="Info") dialog as Absolute(width=700px, height=800px)
         Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
         	Selector settingsTabSelector as Tabs(format=tabsStyle)
         		Text(value="General") generalOption as Option
@@ -42,7 +42,7 @@ Template(layout=Horizontal) modelSettingsDialog
 						Text(value="Description", translate=true, format=h5 middleAirBottom)
 						Text modelDescriptionField as Editable Memo(height=4Rows)
 					Block(format=doubleAirTop)
-						Text(value="Language", translate=true, format=h5 middleAirBottom)
+						Text(value="Language version", translate=true, format=h5 middleAirBottom)
 						Text(format=bold middleAirBottom) languageName
 						Selector languageSelector as ComboBox
 					Block(format=doubleAirTop)

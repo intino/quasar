@@ -206,7 +206,9 @@ public class ModelManager {
 	}
 
 	public ModelContainer modelContainer(Model model, String release) {
-		return new ModelContainer(workspace(model, release), server(model, release));
+		LanguageServer server = server(model, release);
+		if (server == null) return null;
+		return new ModelContainer(workspace(model, release), server);
 	}
 
 	public InputStream content(Model model, String release, String uri) {

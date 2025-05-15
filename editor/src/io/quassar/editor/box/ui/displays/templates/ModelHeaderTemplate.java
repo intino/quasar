@@ -58,6 +58,10 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		this.updateLanguageVersionListener = listener;
 	}
 
+	public void openInfo() {
+		openSettingsDialog();
+	}
+
 	@Override
 	public void init() {
 		super.init();

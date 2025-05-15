@@ -40,6 +40,10 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 		this.release = value;
 	}
 
+	public boolean sameReleaseAndFile(String newRelease, String newUri) {
+		return release != null && release.equals(newRelease) && uri != null && uri.equals(newUri);
+	}
+
 	public void file(String name, String uri, String extension, String language, FilePosition position) {
 		this.reloadRequired = this.uri == null || !this.uri.equals(uri);
 		this.name = name;

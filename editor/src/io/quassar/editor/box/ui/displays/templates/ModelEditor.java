@@ -19,7 +19,6 @@ import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
-import org.apache.commons.collections4.sequence.DeleteCommand;
 
 import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
@@ -82,19 +81,21 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		helpDialog.onClose(e -> notifier.dispatch(PathHelper.modelPath(model, release)));
 		helpDialog.onOpen(e -> refreshHelpDialog());
 		console.onClose(e -> consoleBlock.hide());
+		infoTrigger.onExecute(e -> headerStamp.openInfo());
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
 		refreshHeader();
+		languageNotLoadedBlock.visible(modelContainer == null);
 		refreshContent();
 		if (showHelp) helpDialog.open();
 	}
 
 	private void refreshContent() {
 		tabSelector.address(path -> PathHelper.modelViewPath(path, model, release));
-		contentBlock.visible(model != null);
+		contentBlock.visible(model != null && modelContainer != null);
 		if (!contentBlock.isVisible()) return;
 		if (selectedFile != null) tabSelector.select(selectedFile.isResource() ? "resources" : "model");
 		else if (selectedView != null) tabSelector.select(selectedView.name().toLowerCase());
@@ -107,7 +108,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		headerStamp.onCheck(m -> check());
 		headerStamp.onClone(m -> cloneModel());
 		headerStamp.onDeploy((m, e) -> updateConsole(e));
-		headerStamp.onUpdateLanguageVersion(m -> refresh());
+		headerStamp.onUpdateLanguageVersion(m -> reload());
 	}
 
 	private void initBrowsers() {
@@ -149,7 +150,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		createFileEditor();
 	}
 
-	private void createFileEditor() {
+	private IntinoDslEditor createFileEditor() {
 		IntinoDslEditor editor = new IntinoDslEditor(box());
 		intinoDslEditor.clear();
 		intinoDslEditor.display(editor);
@@ -161,6 +162,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		});
 		editor.onSaveFile(this::saveFile);
 		editor.onBuild(e -> check());
+		return editor;
 	}
 
 	private void initFileModifiedDialog() {
@@ -216,8 +218,8 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 
 	private void refreshEditableFileBlock() {
 		if (!editableFileBlock.isVisible()) return;
-		createFileEditor();
 		IntinoDslEditor display = intinoDslEditor.display();
+		if (display == null || !display.sameReleaseAndFile(release, selectedFile.uri())) display = createFileEditor();
 		display.model(model);
 		display.release(release);
 		display.file(selectedFile.name(), selectedFile.uri(), selectedFile.extension(), selectedFile.language(), selectedPosition);

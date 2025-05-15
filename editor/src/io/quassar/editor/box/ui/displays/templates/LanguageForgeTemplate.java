@@ -44,6 +44,7 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 		toolsBlock.onShow(e -> refreshToolsBlock());
 		viewSelector.select(0);
 		versionSelector.onSelect(e -> updateVersion());
+		refreshVersions.onExecute(e -> refreshVersions());
 	}
 
 	@Override
