@@ -2,9 +2,13 @@ package io.quassar.editor.box.ui.displays;
 
 import io.intino.alexandria.logger.Logger;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.models.File;
 import io.quassar.editor.box.schemas.IntinoDslEditorFile;
+import io.quassar.editor.box.schemas.IntinoDslEditorFileContent;
 import io.quassar.editor.box.schemas.IntinoDslEditorFilePosition;
 import io.quassar.editor.box.schemas.IntinoDslEditorSetup;
+import io.quassar.editor.box.ui.types.ModelView;
+import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.Model;
@@ -13,19 +17,22 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 	private Model model;
 	private String release;
-	private String name;
-	private String uri;
-	private String extension;
-	private String language;
+	private ModelView view;
+	private List<File> files = new ArrayList<>();
+	private File selectedFile;
 	private FilePosition position;
 	private Consumer<Boolean> fileModifiedListener;
-	private Consumer<String> saveFileListener;
+	private Consumer<IntinoDslEditorFileContent> saveFileListener;
 	private Consumer<Boolean> buildListener;
+	private Function<String, File> selectedFileListener;
 	private boolean reloadRequired;
 
 	public IntinoDslEditor(EditorBox box) {
@@ -40,16 +47,21 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 		this.release = value;
 	}
 
-	public boolean sameReleaseAndFile(String newRelease, String newUri) {
-		return release != null && release.equals(newRelease) && uri != null && uri.equals(newUri);
+	public void view(ModelView value) {
+		this.view = value;
 	}
 
-	public void file(String name, String uri, String extension, String language, FilePosition position) {
-		this.reloadRequired = this.uri == null || !this.uri.equals(uri);
-		this.name = name;
-		this.uri = uri;
-		this.extension = extension;
-		this.language = language;
+	public boolean sameReleaseAndFile(String newRelease, String newUri) {
+		return release != null && release.equals(newRelease) && selectedFile != null && selectedFile.uri().equals(newUri);
+	}
+
+	public void files(List<File> files) {
+		this.files = files;
+	}
+
+	public void file(File file, FilePosition position) {
+		this.reloadRequired = this.selectedFile == null || !this.selectedFile.uri().equals(file.uri());
+		this.selectedFile = file;
 		this.position = position;
 	}
 
@@ -57,12 +69,16 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 		this.fileModifiedListener = listener;
 	}
 
-	public void onSaveFile(Consumer<String> listener) {
+	public void onSaveFile(Consumer<IntinoDslEditorFileContent> listener) {
 		this.saveFileListener = listener;
 	}
 
 	public void onBuild(Consumer<Boolean> listener) {
 		this.buildListener = listener;
+	}
+
+	public void onSelectFile(Function<String, File> listener) {
+		this.selectedFileListener = listener;
 	}
 
 	public void fireSavingProcess() {
@@ -74,13 +90,17 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 		fileModifiedListener.accept(true);
 	}
 
-	public void fileContent(String content) {
+	public void fileContent(IntinoDslEditorFileContent content) {
 		if (saveFileListener == null) return;
 		saveFileListener.accept(content);
 	}
 
 	public void executeCommand(String name) {
 		if (name.equalsIgnoreCase("build")) buildListener.accept(true);
+	}
+
+	public void fileSelected(String uri) {
+		selectedFile = selectedFileListener.apply(uri);
 	}
 
 	@Override
@@ -93,7 +113,7 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 
 	private void reload() {
 		notifier.setup(info());
-		notifier.refresh(file());
+		notifier.refresh(files.stream().map(this::fileOf).toList());
 	}
 
 	private void refreshPosition() {
@@ -102,11 +122,12 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 	}
 
 	private IntinoDslEditorSetup info() {
-		return new IntinoDslEditorSetup().dslName(model.language().artifactId()).modelName(model.name()).modelRelease(release).readonly(!PermissionsHelper.canEdit(model, release, session()));
+		return new IntinoDslEditorSetup().dslName(model.language().artifactId()).modelName(model.name()).modelRelease(release).readonly(!PermissionsHelper.canEdit(model, release, session())).fileAddress(PathHelper.modelPath(model, release, view, ":file"));
 	}
 
-	private IntinoDslEditorFile file() {
-		return new IntinoDslEditorFile().name(name).uri(uri).extension(extension).content(content()).language(language).position(positionOf(position));
+	private IntinoDslEditorFile fileOf(File file) {
+		boolean active = this.selectedFile != null && this.selectedFile.uri().equals(file.uri());
+		return new IntinoDslEditorFile().active(active).name(file.name()).uri(file.uri()).extension(file.extension()).content(content(file)).language(file.language()).position(positionOf(position));
 	}
 
 	private IntinoDslEditorFilePosition positionOf(FilePosition position) {
@@ -114,9 +135,9 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 		return new IntinoDslEditorFilePosition().line(position.line()).column(position.column());
 	}
 
-	private String content() {
+	private String content(File file) {
 		try {
-			InputStream content = box().modelManager().content(model, release, uri);
+			InputStream content = box().modelManager().content(model, release, file.uri());
 			return content != null ? IOUtils.toString(content, StandardCharsets.UTF_8) : "";
 		} catch (IOException e) {
 			Logger.error(e);

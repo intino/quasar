@@ -31,8 +31,8 @@ public class GetArtifactoryFileAction implements io.intino.alexandria.rest.Reque
 		boolean isJar = extension.equals(".jar");
 		boolean isManifest = extension.equals(".pom");
 
-		if (file.equals("graph")) return isJar ? new Resource(box.languageManager().loadGraph(language, language.release(version))) : null;
-		if (file.equals("dsl")) return isJar ? new Resource(box.languageManager().loadDsl(language, language.release(version))) : null;
+		if (file.equals("graph")) return isJar ? new Resource(box.languageManager().loadGraph(language, language.release(version))) : new Resource("pom.xml", new byte[0]);
+		if (file.equals("dsl")) return isJar ? new Resource(box.languageManager().loadDsl(language, language.release(version))) : new Resource("pom.xml", new byte[0]);
 
 		if (isManifest) return new Resource(box.languageManager().loadReaderManifest(language, language.release(version), file));
 		return new Resource(box.languageManager().loadReader(language, language.release(version), file));

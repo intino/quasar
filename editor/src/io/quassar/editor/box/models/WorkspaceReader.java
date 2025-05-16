@@ -4,7 +4,6 @@ import io.quassar.editor.box.models.readers.ModelReader;
 import io.quassar.editor.box.models.readers.ResourcesReader;
 import org.eclipse.lsp4j.services.LanguageServer;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;

@@ -103,7 +103,6 @@ public class IntinoDocumentService implements TextDocumentService {
 
 	@Override
 	public void didClose(DidCloseTextDocumentParams params) {
-		System.out.println("Document closed: " + normalize(params.getTextDocument().getUri()));
 	}
 
 	@Override

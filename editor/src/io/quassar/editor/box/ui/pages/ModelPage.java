@@ -17,6 +17,7 @@ public class ModelPage extends AbstractModelPage {
 	public String view;
 	public String file;
 	public String pos;
+	public String nav;
 
 	@Override
 	public boolean hasPermissions() {

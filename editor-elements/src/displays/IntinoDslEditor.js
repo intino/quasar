@@ -8,6 +8,7 @@ import { withSnackbar } from 'notistack';
 import Theme from "app-elements/gen/Theme";
 import { BarLoader } from "react-spinners";
 import 'alexandria-ui-elements/res/styles/layout.css';
+import history from "alexandria-ui-elements/src/util/History";
 
 const styles = theme => ({});
 
@@ -19,7 +20,7 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
 		this.requester = new IntinoDslEditorRequester(this);
 		this.loading = React.createRef();
 		this.state = {
-		    info: { dslName: "meta", modelName: "meta", modelRelease: "Draft" },
+		    info: { dslName: "meta", modelName: "meta", modelRelease: "Draft", fileAddress: "" },
 		    file: { name: "default.tara", uri: "default.tara", content: "", language: "tara" }
 		};
 	};
@@ -38,7 +39,7 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
 	    const theme = Theme.get();
 	    const backgroundColor = theme.isDark() ? "#1F1F1F" : "white";
 	    window.intinoDslEditorParameters = this.getParameters.bind(this);
-	    window.intinoDslEditorSetup = this.handleSetup.bind(this);
+	    window.intinoDslEditorInit = this.handleInit.bind(this);
 	    window.intinoExecuteCommand = this.handleExecuteCommand.bind(this);
         return (
             <div style={{position:'relative',height:"calc(100% - 20px)",width:"100%"}}>
@@ -66,31 +67,70 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
 	    return {
             darkMode: theme.isDark(),
             webSocketUrl: Application.configuration.baseUrl.replace("http", "ws") + "/dsl/tara?dsl=" + this.state.info.dslName + "&model=" + this.state.info.modelName + "&model-release=" + this.state.info.modelRelease,
-            file: this.state.file,
+            language: this.state.selectedFile.language,
             readonly: this.state.info.readonly,
         }
     };
 
-    handleSetup = (editor, monaco) => {
-        this.editor = editor;
-        const theme = Theme.get();
-        const handleChange = this.handleChange.bind(this);
-        const CtrlCmd = 2048;
-        const KeyS = 49;
-        const KeyF = 70;
-        const KeyF9 = 120;
+    handleInit = (monaco, container) => {
+        this.createEditor(monaco, container);
+        this.registerModel(this.state.selectedFile, monaco);
+        if (this.state.selectedFile != null) this.updatePosition(this.state.selectedFile.position);
+    };
+
+    createEditor = (monaco, container) => {
+        const CtrlCmd = 2048; const KeyS = 49;
+        const refreshFooter = this.refreshFooter.bind(this);
+        monaco.editor.registerEditorOpener(this.editorOpenerListener(monaco));
+        monaco.languages.register({id:"tara", extensions: ['.tara'], aliases: ["TARA", "tara"]});
+        this.editor = monaco.editor.create(container, {
+            automaticLayout: true,
+            wordBasedSuggestions: 'off',
+            theme: "vs-dark",
+            readOnly: this.state.info.readonly,
+            domReadOnly: this.state.info.readonly
+        });
+        this.editor.addCommand(CtrlCmd | KeyS, this.handleSave.bind(this));
+        this.editor.onDidChangeCursorPosition(e => refreshFooter(e));
+        this.setupTheme(monaco);
+    };
+
+    editorOpenerListener = (monaco) => {
         const self = this;
-        editor.getModel().onDidChangeContent(event => handleChange(editor.getValue()));
-        editor.getModel().updateOptions({ insertSpaces: false, tabSize: 4 });
-        editor.addCommand(CtrlCmd | KeyS, this.handleSave.bind(this));
-        editor.onDidChangeCursorPosition(e => self.refreshFooter(e));
-        this.updatePosition(editor, this.state.file.position);
+        return {
+            openCodeEditor: (editor, file) => {
+                monaco.editor.getModels().forEach(m => m.dispose());
+                this.registerModel(self.state.files[file.path.substring(1)], monaco);
+                self.notifyFileChange(file.path.substring(1));
+                self.state.selectedFile = self.state.files[file.path.substring(1)];
+            }
+        };
+    }
+
+    notifyFileChange = (uri) => {
+        history.stopListening();
+        history.push(this.state.info.fileAddress.replace(/:file/, uri), {});
+        history.continueListening();
+        this.requester.fileSelected(uri);
+    };
+
+    setupTheme = (monaco) => {
+        const theme = Theme.get();
         const loading = this.loading;
         loading.current.style.display = "block";
         window.setTimeout(() => {
             monaco.editor.setTheme(theme.isDark() ? "Default Dark Modern" : "Default Light Modern");
             window.setTimeout(() => loading.current.style.display = "none", 80);
         }, 80);
+    };
+
+    registerModel = (file, monaco) => {
+        const handleChange = this.handleChange.bind(this);
+        const model = monaco.editor.createModel(file.content, file.language.toLowerCase(), monaco.Uri.parse(file.uri));
+        model.onDidChangeContent(event => handleChange(file, this.editor.getValue()));
+        model.updateOptions({ insertSpaces: false, tabSize: 4 });
+        this.editor.setModel(model);
+        window.setTimeout(e => this.editor.focus(), 10);
     };
 
     refreshFooter = (event) => {
@@ -101,38 +141,48 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
     };
 
     handleSave = (value) => {
-        this.requester.fileContent(this.state.file.content);
+        this.requester.fileContent({file: this.state.selectedFile.uri, content: this.state.selectedFile.content});
     };
 
     handleExecuteCommand = (command) => {
         this.requester.executeCommand(command);
     };
 
-    handleChange = (content) => {
-        this.state.file.content = content;
+    handleChange = (file, content) => {
+        this.state.selectedFile.content = content;
         this.requester.fileModified();
     };
 
+    handleGotoToken = (uri, position, token) => {
+        this.requester.gotoToken({ fromFile: uri, fromPosition: position, token: token });
+    };
+
     receiveContent = () => {
-        this.requester.fileContent(this.state.file.content);
+        this.requester.fileContent({file: this.state.selectedFile.uri, content: this.state.selectedFile.content});
     };
 
     setup = (info) => {
         this.setState({info});
     };
 
-    refresh = (file) => {
-        this.setState({file});
+    refresh = (files) => {
+        let selectedFile = null;
+        let fileMap = {};
+        for (var i=0; i<files.length; i++) {
+            fileMap[files[i].uri] = files[i];
+            if (files[i].active) selectedFile = files[i];
+        }
+        this.setState({files: fileMap, selectedFile: selectedFile});
     };
 
     refreshPosition = (position) => {
-        this.updatePosition(this.editor, position);
+        this.updatePosition(position);
     };
 
-    updatePosition = (editor, position) => {
+    updatePosition = (position) => {
         if (position == null) return;
-        editor.setPosition({lineNumber: position.line, column: position.column != -1 ? position.column : 1});
-        editor.revealLine(position.line);
+        this.editor.setPosition({lineNumber: position.line, column: position.column != -1 ? position.column : 1});
+        this.editor.revealLine(position.line);
     };
 
 }

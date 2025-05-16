@@ -4,7 +4,6 @@ import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.util.ArtifactoryHelper;
 import io.quassar.editor.box.util.SubjectHelper;
-import io.quassar.editor.box.util.ZipHelper;
 import io.quassar.editor.model.*;
 import org.apache.commons.io.FileUtils;
 import systems.intino.datamarts.subjectstore.SubjectStore;
@@ -13,11 +12,12 @@ import systems.intino.datamarts.subjectstore.model.Subject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Instant;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 public class LanguageManager {
 	private final Archetype archetype;
@@ -127,33 +127,24 @@ public class LanguageManager {
 
 	public File loadReader(Language language, LanguageRelease release, String name) {
 		if (release == null) return null;
-		File file = archetype.languages().releaseReader(language.key(), release.version(), name);
-		File[] files = file.exists() ? file.listFiles() : new File[0];
-		if (files == null || files.length == 0) {
-			File zipFile = archetype.languages().releaseReader(language.key(), release.version(), name + ".zip");
-			if (!zipFile.exists()) return null;
-			ZipHelper.extract(zipFile, file);
-		}
-		files = file.listFiles();
-		if (files == null) return null;
-		return Arrays.stream(files).filter(f -> f.getName().endsWith(release.version() + ".jar")).findFirst().orElse(null);
+		File result = archetype.languages().releaseReaderJar(language.key(), release.version(), name);
+		if (!result.exists()) ArtifactoryHelper.prepareReaderDependency(language, release, name, archetype.languages());
+		return result.exists() ? result : null;
 	}
 
 	public File loadReaderManifest(Language language, LanguageRelease release, String name) {
 		File manifest = archetype.languages().releaseReaderManifest(language.key(), release.version(), name);
-		if (!manifest.exists()) createManifest(language, release, name);
+		if (!manifest.exists()) ArtifactoryHelper.prepareReaderDependency(language, release, name, archetype.languages());
 		return manifest.exists() ? manifest : null;
 	}
 
 	public List<File> loadReaders(Language language, LanguageRelease release) {
 		if (release == null) return null;
-		File[] files = archetype.languages().releaseReaders(language.key(), release.version()).listFiles();
-		if (files == null) return Collections.emptyList();
-		return Arrays.stream(files).filter(f -> f.isFile() && !f.getName().startsWith(".")).toList();
+		return archetype.languages().releaseReaders(language.key(), release.version());
 	}
 
 	public void saveReaders(Language language, String release, List<File> readers) {
-		copy(readers, archetype.languages().releaseReaders(language.key(), release));
+		copy(readers, archetype.languages().releaseReadersDir(language.key(), release));
 	}
 
 	public String loadHelp(Language language, String version) {
@@ -284,35 +275,6 @@ public class LanguageManager {
 		File file = archetype.languages().releaseDsl(language, release);
 		if (!file.exists()) return null;
 		return file;
-	}
-
-	private void createManifest(Language language, LanguageRelease release, String name) {
-		File reader = loadReader(language, release, name);
-		if (!reader.exists()) return;
-		File directory = new File(reader.getAbsolutePath().replace(".jar", ""));
-		if (!directory.exists()) ZipHelper.extract(reader, directory);
-		File manifestDestination = archetype.languages().releaseReaderManifest(language.key(), release.version(), name);
-		try (Stream<Path> paths = Files.walk(directory.toPath())) {
-			File manifest = paths.map(Path::toFile).filter(p -> p.getName().equals("pom.xml")).findFirst().orElse(null);
-			if (manifest == null) return;
-			Files.writeString(manifestDestination.toPath(), manifestOf(manifest, ArtifactoryHelper.dependencyGroup(language), ArtifactoryHelper.dependencyName(archetype.languages().releaseReader(language.key(), release.version(), name)), release.version()));
-			Files.writeString(manifest.toPath(), manifestOf(manifest, ArtifactoryHelper.dependencyGroup(language), ArtifactoryHelper.dependencyName(archetype.languages().releaseReader(language.key(), release.version(), name)), release.version()));
-			reader.delete();
-			ZipHelper.zip(directory.toPath(), reader.toPath());
-		} catch (Exception e) {
-			Logger.error(e);
-		} finally {
-			try { FileUtils.deleteDirectory(directory); } catch (IOException ignored) {}
-		}
-	}
-
-	private String manifestOf(File file, String groupId, String artifactId, String version) throws IOException {
-		if (file == null) return null;
-		String content = Files.readString(file.toPath());
-		content = content.replaceFirst("<groupId>.*?</groupId>", "<groupId>" + groupId + "</groupId>");
-		content = content.replaceFirst("<artifactId>.*?</artifactId>", "<artifactId>" + artifactId + "</artifactId>");
-		content = content.replaceFirst("<version>.*?</version>", "<version>" + version + "</version>");
-		return content;
 	}
 
 }

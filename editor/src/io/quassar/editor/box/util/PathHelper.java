@@ -123,8 +123,16 @@ public class PathHelper {
 		return modelPath(ModelPath, model, release, null, null, null);
 	}
 
+	public static String modelPath(Model model, String release, ModelView view, String file) {
+		return modelPath(ModelPath, model, release, view, file, null);
+	}
+
 	public static String modelPath(Model model, String release, File file) {
 		return modelPath(ModelPath, model, release, null, file != null ? file.uri() : null, null);
+	}
+
+	public static String modelPath(Model model, String release, File file, FilePosition position) {
+		return modelPath(ModelPath, model, release, null, file != null ? file.uri() : null, position);
 	}
 
 	public static String modelPath(String address, Model model) {

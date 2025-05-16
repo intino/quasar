@@ -32,7 +32,8 @@ public class DependencyTemplate extends AbstractDependencyTemplate<EditorBox> {
 	public void refresh() {
 		super.refresh();
 		String extension = FilenameUtils.getExtension(file.getName());
-		titleLink.title(file.getName().replace("." + extension, ""));
+		title.value(translate("Reader for %s").formatted(file.getName().replace("." + extension, "")));
+		textField.value("<pre style='margin:0'>" + dependency().replace("<", "&lt;").replace("\t", "<span style='margin-right:10px'>&nbsp;</span>") + "</pre>");
 		titleLink.text(dependency());
 	}
 

@@ -55,6 +55,11 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 		this.file = value;
 	}
 
+	public void selection(String uri) {
+		file = modelContainer.file(uri);
+		fileBrowser.<IntinoFileBrowser>display().select(IntinoFileBrowserHelper.itemOf(file));
+	}
+
 	public void onOpen(Consumer<IntinoFileBrowserItem> listener) {
 		this.openListener = listener;
 	}
@@ -95,7 +100,7 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 		browser.itemAddress(PathHelper.modelPath(model, release) + "&file=:file");
 		browser.items(IntinoFileBrowserHelper.fileBrowserItems(modelContainer.modelFiles()), true, true);
 		browser.operations(operations());
-		browser.select(file != null ? IntinoFileBrowserHelper.itemOf(file) : null);
+		browser.selection(file != null ? IntinoFileBrowserHelper.itemOf(file) : null);
 		browser.refresh();
 		addFileField.readonly(!PermissionsHelper.canEdit(model, release, session()));
 		addFileField.allowedTypesByName(List.of(FileEditable.Type.Text.name(), FileEditable.Type.Zip.name(), Language.FileExtension));

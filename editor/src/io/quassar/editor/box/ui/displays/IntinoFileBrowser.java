@@ -68,8 +68,13 @@ public class IntinoFileBrowser extends AbstractIntinoFileBrowser<EditorBox> {
 		openListener.accept(items.stream().filter(i -> i.uri().equals(item)).findFirst().orElse(null));
 	}
 
+	public void selection(IntinoFileBrowserItem item) {
+		this.selectedItem = item;
+	}
+
 	public void select(IntinoFileBrowserItem item) {
 		this.selectedItem = item;
+		notifier.select(selectedItem);
 	}
 
 	public void executeOperation(IntinoFileBrowserOperationInfo info) {

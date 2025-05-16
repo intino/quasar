@@ -22,9 +22,6 @@ import { CloseAction, ErrorAction } from 'vscode-languageclient';
 import { useWorkerFactory } from 'monaco-editor-wrapper/workerFactory';
 
 export const configureMonacoWorkers = () => {
-    const parameters = window.parent.intinoDslEditorParameters();
-    const file = parameters.file;
-
     useWorkerFactory({
         ignoreMapping: true,
         workerLoaders: {
@@ -45,44 +42,14 @@ export const runClient = async () => {
     });
 
     const parameters = window.parent.intinoDslEditorParameters();
-    const file = parameters.file;
-
-    if (file.language.toLowerCase() === "tara") {
-        monaco.languages.register({
-            id: file.language.toLowerCase(),
-            extensions: ['.' + file.extension],
-            aliases: [file.language.toUpperCase(), file.language],
-        });
-    }
-
-    const editor = monaco.editor.create(document.getElementById('monaco-editor-root'), {
-        automaticLayout: true,
-        wordBasedSuggestions: 'off',
-        theme: "vs-dark",
-        readOnly: parameters.readonly,
-        domReadOnly: parameters.readonly
-    });
-
-    const model = monaco.editor.createModel(file.content, file.language.toLowerCase(), monaco.Uri.parse(file.uri));
-    editor.setModel(model);
-
-    window.parent.intinoDslEditorSetup(editor, monaco);
+    window.parent.intinoDslEditorInit(monaco, document.getElementById('monaco-editor-root'));
     initWebSocketAndStartClient(parameters.webSocketUrl);
     handleEvents();
-//    window.setTimeout(() => {
-//        monaco.languages.register({
-//          id: "markdown",
-//          extensions: [".md", ".markdown", ".mdown", ".mkdn", ".mkd", ".mdwn", ".mdtxt", ".mdtext"],
-//          aliases: ["Markdown", "markdown"]
-//        });
-//        monaco.languages.setMonarchTokensProvider("markdown", MarkdownLanguage);
-//        monaco.languages.setLanguageConfiguration("markdown", MarkdownConf);
-//    }, 400);
 };
 /** parameterized version , support all languageId */
 export const initWebSocketAndStartClient = (url) => {
     const parameters = window.parent.intinoDslEditorParameters();
-    if (parameters.file.language != "tara") return;
+    if (parameters.language != "tara") return;
     const webSocket = new WebSocket(url);
     webSocket.onopen = () => {
         const socket = toSocket(webSocket);
@@ -96,10 +63,10 @@ export const initWebSocketAndStartClient = (url) => {
 };
 export const createLanguageClient = (transports) => {
     return new MonacoLanguageClient({
-        name: window.parent.intinoDslEditorParameters().file.language + ' client',
+        name: window.parent.intinoDslEditorParameters().language + ' client',
         clientOptions: {
             // use a language id as a document selector
-            documentSelector: [window.parent.intinoDslEditorParameters().file.language],
+            documentSelector: [window.parent.intinoDslEditorParameters().language],
             // disable the default error handler
             errorHandler: {
                 error: () => ({ action: ErrorAction.Continue }),

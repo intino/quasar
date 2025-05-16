@@ -29,7 +29,7 @@ Template languagesTemplate as Relative(height=100%, width=100%)
 	Block(layout=Vertical Flexible) bodyBlock as Relative(width=100%) AutoSize
 		Block(layout=Vertical Flexible Center) contentBlock as Relative(width=100%)
 			List(itemClass="io.quassar.editor.model.Language", pageSize=20) languagesCatalog
-				noItemsMessage = "No DSLs"
+				noItemsMessage = ""
 				Mold
 					Item(height=100px) languageItem
 						Block(layout=Horizontal Flexible, format=doubleBottomSpaced topSpaced bottomBordered)
@@ -48,7 +48,7 @@ Template languagesLandingTemplate as Relative(height=100%, width=100%)
 	Block(layout=Vertical Flexible) bodyBlock as Relative(width=100%) AutoSize
 		Block(layout=Vertical Flexible Center) contentBlock as Relative(width=100%)
 			List(itemClass="io.quassar.editor.model.Language", pageSize=5) languagesLandingCatalog as Navigable(position=Bottom)
-				noItemsMessage = "No models"
+				noItemsMessage = ""
 				Mold
 					Item(height=100px) LanguageLandingItem
 						Block(layout=Horizontal Flexible, format=doubleBottomSpaced topSpaced bottomBordered)
@@ -238,18 +238,18 @@ Template(layout=Vertical Flexible, format=doubleSpaced) languageKitTemplate
 			Text(value="Metamodel", translate=true, format=h5 bold middleAirBottom)
 			Block(layout=Horizontal) > Link(title="") metamodelLink as OpenSite(site=empty, target=Blank)
 
-		Block(format=middleAirBottom) downloadsBlock
+		Block(format=middleAirBottom, visible=false) downloadsBlock
 			Text(value="Downloads", translate=true, format=h5 bold)
 			TemplateStamp(template=downloadTemplate) downloads as Multiple(arrangement=Horizontal, spacing=DP16, noItemsMessage="There are no downloads available")
 
 		Block(format=middleAirBottom) dependencyBlock
-			Text(value="Maven dependencies", translate=true, format=h5 bold)
-			TemplateStamp(template=dependencyTemplate) dependencies as Multiple(arrangement=Horizontal, spacing=DP16, noItemsMessage="There are no dependencies available")
+			Text(value="Model readers", translate=true, format=h5 bold)
+			TemplateStamp(template=dependencyTemplate) dependencies as Multiple(arrangement=Horizontal, spacing=DP16, noItemsMessage="There are no readers available")
 
 		Block(format=doubleAirBottom)
 			Text(value="Template", translate=true, format=h5 bold)
 			Block(visible=false) templateDefined
-				Link(title="") templateLink as OpenSite(site=empty, target=Blank)
+				Block(layout=Horizontal) > Link(title="") templateLink as OpenSite(site=empty, target=Blank)
 				Date templateCreateDate as Labeled("Created at")
 			Block(layout=Horizontal, visible=false) templateNotDefined
 				Button(title="Create", highlight=Outline) createTemplate as Action
@@ -338,8 +338,10 @@ Template languageToolEditor
 Template downloadTemplate
 	Link(title="") titleLink as Download
 
-Template dependencyTemplate
-	Link(title="") titleLink as CopyToClipboard
+Template(format=airTop) dependencyTemplate as Absolute(width=400px)
+	Text title
+	Text textField as Code(Html)
+	Link(title="Copy", format=middleAirTop) titleLink as CopyToClipboard
 
 Template languageReleaseHelp
 	Link(title="") titleLink as OpenSite(site=empty, target=Blank)

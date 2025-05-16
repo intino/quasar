@@ -2,6 +2,8 @@ package io.quassar.editor.box.models;
 
 import io.quassar.editor.box.models.readers.ModelReader;
 import io.quassar.editor.box.models.readers.ResourcesReader;
+import io.quassar.editor.model.FilePosition;
+import io.quassar.editor.model.TokenLocation;
 import org.eclipse.lsp4j.services.LanguageServer;
 
 import java.util.List;

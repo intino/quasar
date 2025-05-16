@@ -10,6 +10,7 @@ import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.models.File;
 import io.quassar.editor.box.models.ModelContainer;
+import io.quassar.editor.box.schemas.IntinoDslEditorFileContent;
 import io.quassar.editor.box.schemas.IntinoFileBrowserItem;
 import io.quassar.editor.box.ui.displays.IntinoDslEditor;
 import io.quassar.editor.box.ui.types.ModelView;
@@ -19,6 +20,7 @@ import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
+import io.quassar.editor.model.TokenLocation;
 
 import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
@@ -26,6 +28,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 
 public class ModelEditor extends AbstractModelEditor<EditorBox> {
@@ -154,15 +157,22 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		IntinoDslEditor editor = new IntinoDslEditor(box());
 		intinoDslEditor.clear();
 		intinoDslEditor.display(editor);
+		editor.files(editorFiles());
 		editor.onFileModified(e -> {
 			if (selectedFileIsModified) return;
 			selectedFileIsModified = true;
 			fileSavedMessage.visible(false);
 			refreshFileEditorToolbar();
 		});
+		editor.onSelectFile(this::refreshBrowserSelection);
 		editor.onSaveFile(this::saveFile);
 		editor.onBuild(e -> check());
 		return editor;
+	}
+
+	private List<File> editorFiles() {
+		if (modelContainer == null) return Collections.emptyList();
+		return selectedView == null || selectedView == ModelView.Model ? modelContainer.modelFiles() : List.of(selectedFile);
 	}
 
 	private void initFileModifiedDialog() {
@@ -188,8 +198,8 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		if (resourcesBrowserBlock.isVisible()) refreshResourcesBrowserBlock();
 	}
 
-	private void saveFile(String content) {
-		box().commands(ModelCommands.class).save(model, selectedFile, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)), username());
+	private void saveFile(IntinoDslEditorFileContent content) {
+		box().commands(ModelCommands.class).save(model, modelContainer.file(content.file()), new ByteArrayInputStream(content.content().getBytes(StandardCharsets.UTF_8)), username());
 		fileSavedMessage.visible(true);
 		DelayerUtil.execute(this, e -> fileSavedMessage.visible(false), 2000);
 		selectedFileIsModified = false;
@@ -222,7 +232,8 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		if (display == null || !display.sameReleaseAndFile(release, selectedFile.uri())) display = createFileEditor();
 		display.model(model);
 		display.release(release);
-		display.file(selectedFile.name(), selectedFile.uri(), selectedFile.extension(), selectedFile.language(), selectedPosition);
+		display.view(selectedView);
+		display.file(selectedFile, selectedPosition);
 		display.refresh();
 	}
 
@@ -335,6 +346,16 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		String selected = !event.selection().isEmpty() ? (String) event.selection().getFirst() : null;
 		if (selected == null || selected.equalsIgnoreCase("model")) modelBrowserBlock.show();
 		else resourcesBrowserBlock.show();
+	}
+
+	private File refreshBrowserSelection(String uri) {
+		selectedFile = modelContainer.file(uri);
+		boolean isDirectory = selectedFile != null && selectedFile.isDirectory();
+		boolean textFile = selectedFile != null && !isDirectory && box().modelManager().isTextFile(model, release, selectedFile);
+		filename.value(textFile ? withoutExtensionIfModelFile(selectedFile.name()) : "");
+		if (selectedView == null || selectedView == ModelView.Model) modelBrowserStamp.selection(uri);
+		else resourcesBrowserStamp.selection(uri);
+		return selectedFile;
 	}
 
 }

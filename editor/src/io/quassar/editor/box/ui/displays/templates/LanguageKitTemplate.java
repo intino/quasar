@@ -66,20 +66,16 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 	}
 
 	private void refreshDownloads() {
-		downloads.clear();
 		File graphFile = box().languageManager().loadGraph(language, release());
-		if (graphFile != null) fill(graphFile, downloads.add());
-		File dslFile = box().languageManager().loadDsl(language, release());
-		if (dslFile != null) fill(dslFile, downloads.add());
-		box().languageManager().loadReaders(language, release()).forEach(r -> fill(r, downloads.add()));
+		downloadsBlock.visible(graphFile != null);
+		if (!downloadsBlock.isVisible()) return;
+		downloads.clear();
+		fill(graphFile, downloads.add());
+		//box().languageManager().loadReaders(language, release()).forEach(r -> fill(r, downloads.add()));
 	}
 
 	private void refreshMavenDependencies() {
 		dependencies.clear();
-		File graphFile = box().languageManager().loadGraph(language, release());
-		if (graphFile != null) fill(graphFile, dependencies.add());
-		File dslFile = box().languageManager().loadDsl(language, release());
-		if (dslFile != null) fill(dslFile, dependencies.add());
 		box().languageManager().loadReaders(language, release()).forEach(r -> fill(r, dependencies.add()));
 	}
 

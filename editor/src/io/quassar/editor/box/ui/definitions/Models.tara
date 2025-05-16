@@ -42,7 +42,7 @@ Template modelsTemplate as Relative(height=100%, width=100%)
 
 	Block(layout=Vertical Flexible) body
 		List(itemClass="io.quassar.editor.model.Model") modelList
-			noItemsMessage = "No models"
+			noItemsMessage = ""
 			Mold
 				Item(height = 50px) modelItem
 					Block(layout=Vertical Flexible, format=doubleBottomSpaced topSpaced bottomBordered)
@@ -236,17 +236,19 @@ Schema intinoFileBrowserOperationShortcut
 
 Display intinoDslEditor
 	Notification setup as Object(intinoDslEditorSetup)
-	Notification refresh as Object(intinoDslEditorFile)
+	Notification refresh as Object(intinoDslEditorFile) List
 	Notification refreshPosition as Object(intinoDslEditorFilePosition)
 	Notification receiveContent
 	Request fileModified
-	Request fileContent as Text
+	Request fileContent as Object(intinoDslEditorFileContent)
 	Request executeCommand as Text
+	Request fileSelected as Text
 
 Schema intinoDslEditorSetup
 	Attribute dslName as Text
 	Attribute modelName as Text
 	Attribute modelRelease as Text
+	Attribute fileAddress as Text
 	Attribute readonly as Bool
 
 Schema intinoDslEditorFile
@@ -256,7 +258,12 @@ Schema intinoDslEditorFile
 	Attribute content as Text
 	Attribute language as Text
 	Attribute extension as Text
+	Attribute active as Bool
 	Attribute position as Object(intinoDslEditorFilePosition)
+
+Schema intinoDslEditorFileContent
+	Attribute file as Text
+	Attribute content as Text
 
 Schema intinoDslEditorFilePosition
 	Attribute line as Integer

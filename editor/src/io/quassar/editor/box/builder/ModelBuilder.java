@@ -114,10 +114,12 @@ public class ModelBuilder {
 		return new RunOperationContext()
 				.imageURL(builder)
 				.generationPackage("")
-				.language(Formatters.normalizeLanguageName(language.name()))
+				.languageGroup(language.group())
+				.languageName(Formatters.normalizeLanguageName(language.name()))
 				.languageVersion(model.language().version())
 				.languagePath(languagePath.getAbsolutePath())
-				.project(Formatters.normalizeLanguageName(destination.artifactId()))
+				.projectGroup(destination.groupId())
+				.projectName(Formatters.normalizeLanguageName(destination.artifactId()))
 				.projectVersion(destination.version());
 	}
 

@@ -19,7 +19,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -55,6 +54,11 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 
 	public void file(io.quassar.editor.box.models.File value) {
 		this.file = value;
+	}
+
+	public void selection(String uri) {
+		file = modelContainer.file(uri);
+		fileBrowser.<IntinoFileBrowser>display().select(IntinoFileBrowserHelper.itemOf(file));
 	}
 
 	public void onOpen(Consumer<IntinoFileBrowserItem> listener) {
@@ -104,7 +108,7 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 		browser.rootItem(io.quassar.editor.box.models.File.ResourcesDirectory);
 		browser.items(IntinoFileBrowserHelper.fileBrowserItems(modelContainer.resourceFiles()), false, true);
 		browser.operations(operations());
-		browser.select(file != null ? IntinoFileBrowserHelper.itemOf(file) : null);
+		browser.selection(file != null ? IntinoFileBrowserHelper.itemOf(file) : null);
 		browser.refresh();
 		addFileField.readonly(!PermissionsHelper.canEdit(model, release, session()));
 	}

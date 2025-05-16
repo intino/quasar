@@ -7,12 +7,15 @@ import io.quassar.editor.box.models.FileReader;
 import io.quassar.editor.box.models.Workspace;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.WorkspaceHelper;
+import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.TokenLocation;
 import org.eclipse.lsp4j.SymbolInformation;
 import org.eclipse.lsp4j.WorkspaceSymbol;
 import org.eclipse.lsp4j.WorkspaceSymbolParams;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.LanguageServer;
+import org.scribe.model.Token;
 
 import java.io.InputStream;
 import java.net.URI;

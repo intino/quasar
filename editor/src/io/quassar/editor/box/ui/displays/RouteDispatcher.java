@@ -7,6 +7,8 @@ import io.quassar.editor.box.ui.types.*;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.SessionHelper;
 
+import java.time.Instant;
+
 public class RouteDispatcher extends AbstractRouteDispatcher {
 
 	@Override
@@ -39,7 +41,7 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	@Override
 	public void dispatchModel(Soul soul, String model, String release, String view, String file, String position) {
 		SessionHelper.register(soul.session(), ModelView.from(view));
-		soul.currentLayer(HomeTemplate.class).openModel(model, release, view, file, position);
+		soul.currentLayer(HomeTemplate.class).openModel(model, release, view, clean(file), position);
 	}
 
 	@Override
@@ -63,6 +65,10 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 
 	@Override
 	public void dispatchPermissions(Soul soul, String username, String language, String model, String callback) {
+	}
+
+	private String clean(String file) {
+		return file != null && file.endsWith("|") ? file.substring(0, file.length()-1) : file;
 	}
 
 }

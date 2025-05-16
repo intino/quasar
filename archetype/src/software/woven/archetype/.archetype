@@ -26,9 +26,12 @@ TARGETS:{ime editor}
     - releaseDsl(dsl, version) in "{dsl}/releases/{version}/dsl.jar"
     - releaseHelp(dsl, version) in "{dsl}/releases/{version}/help.html"
     - releaseGraph(dsl, version) in "{dsl}/releases/{version}/graph.json"
-    - releaseReaders(dsl, version) in "{dsl}/releases/{version}/readers"
-    - releaseReader(dsl, version, name) in "{dsl}/releases/{version}/readers/{name}"
-    - releaseReaderManifest(dsl, version, name) in "{dsl}/releases/{version}/readers/{name}/pom.xml"
+    - releaseReaders(dsl, version) in "{dsl}/releases/{version}/readers" with ".zip"
+    - releaseReadersDir(dsl, version) in "{dsl}/releases/{version}/readers"
+    - releaseReaderDir(dsl, version, name) in "{dsl}/releases/{version}/readers/{name}"
+    - releaseReaderFile(dsl, version, name) in "{dsl}/releases/{version}/readers/{name}.zip"
+    - releaseReaderJar(dsl, version, name) in "{dsl}/releases/{version}/readers/{name}.jar"
+    - releaseReaderManifest(dsl, version, name) in "{dsl}/releases/{version}/readers/{name}.xml"
 
 + projects in "projects"
 
