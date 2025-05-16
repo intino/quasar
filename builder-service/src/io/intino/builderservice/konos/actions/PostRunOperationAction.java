@@ -44,7 +44,7 @@ public class PostRunOperationAction implements io.intino.alexandria.rest.Request
 				runOperationContext.languageVersion(),
 				runOperationContext.languageName() + "-" + runOperationContext.languageVersion() + ".jar"));
 		destination.getParentFile().mkdirs();
-		FileUtils.copyFile(source, destination);
+		if (!source.equals(destination)) FileUtils.copyFile(source, destination);
 	}
 
 	public void onMalformedRequest(Throwable e) throws AlexandriaException {

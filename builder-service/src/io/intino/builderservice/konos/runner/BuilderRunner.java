@@ -20,7 +20,7 @@ import java.util.UUID;
 import static io.intino.builderservice.konos.runner.ProjectDirectory.PROJECT_BIND;
 
 public class BuilderRunner {
-	public static final String REPOSITORY = "/root/.m2/repository";
+	public static final String REPOSITORY_BIND = "/app/.m2/repository";
 	private final BuilderStore store;
 	private final ContainerManager manager;
 	private final File workspace;
@@ -40,11 +40,11 @@ public class BuilderRunner {
 		List<File> srcFiles = moveFiles(tarSources, hostProject.root());
 		List<String> srcPaths = mapPaths(srcFiles, hostProject);
 		ProjectDirectory containerProject = new ProjectDirectory(new File(PROJECT_BIND));
-		RunConfigurationRenderer renderer = new RunConfigurationRenderer(params, containerProject, srcPaths, new File(REPOSITORY));
+		RunConfigurationRenderer renderer = new RunConfigurationRenderer(params, containerProject, srcPaths, new File(REPOSITORY_BIND));
 		Files.writeString(hostProject.argsFile().toPath().toAbsolutePath(), renderer.build());
 		String container = manager.createContainer(info.imageURL(), ticket,
 				new Bind(hostProject.root().getCanonicalFile().getAbsolutePath(), new Volume(PROJECT_BIND), AccessMode.rw, SELContext.single),
-				new Bind(languagesRepository.getAbsolutePath(), new Volume(REPOSITORY), AccessMode.rw, SELContext.single));
+				new Bind(languagesRepository.getAbsolutePath(), new Volume(REPOSITORY_BIND), AccessMode.rw, SELContext.single));
 		manager.start(container);
 		return new SimpleEntry<>(ticket, srcFiles);
 	}

@@ -81,10 +81,9 @@ public class ContainerManager {
 					.exec();
 			containerIds.put(containerName, container.getId());
 			return container.getId();
-		} catch (RuntimeException e) {
+		} catch (Exception e) {
 			throw new IOException(e.getMessage() + ". Is docker started?");
 		}
-
 	}
 
 	public void start(String container) {

@@ -18,6 +18,6 @@ rule type(modelreader)
 		}
 
     	public static $outDsl+firstUpperCase~Graph load(List<File> $outDsl~Files) {
-    		return $outDsl+firstUpperCase~Graph.load(new StashBuilder($outDsl~Files, "$outDsl~", "$version", "accessor", System.out).build());
+    		return $outDsl+firstUpperCase~Graph.load(new StashBuilder($outDsl~Files, "$outDslCoors", "accessor", System.out).build());
     	}
     }

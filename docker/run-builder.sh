@@ -1,2 +1,2 @@
 #!/bin/bash
-java -jar /root/app/builder.jar /root/project/tara_args.txt > /root/project/output.log 2>&1
+java -jar /app/builder.jar /project/tara_args.txt > /project/output.log 2>&1

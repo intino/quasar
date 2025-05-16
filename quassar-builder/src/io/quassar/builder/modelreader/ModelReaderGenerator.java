@@ -20,8 +20,8 @@ public class ModelReaderGenerator {
 		generateModelAccessorClass();
 		File pom = generatePom();
 		if (pom != null) {
-			new MavenExecutor().run(pom, new File(conf.moduleDirectory(), "mvn.log"));
-			File build = new File(pom.getParentFile(), "out/build/" + conf.module() + "-model-reader-java");
+			new MavenExecutor().run(pom, conf.localRepository(), new File(conf.moduleDirectory(), "mvn.log"));
+			File build = new File(pom.getParentFile(), "out/build/" + conf.module() + "-reader-java");
 			FileSystemUtils.removeDir(new File(build, "maven-archiver"));
 			FileSystemUtils.removeDir(new File(build, "maven-status"));
 			FileSystemUtils.removeDir(new File(build, "generated-sources"));
@@ -32,6 +32,7 @@ public class ModelReaderGenerator {
 		try {
 			FrameBuilder builder = new FrameBuilder().add("modelreader")
 					.add("outdsl", conf.dsl().outDsl())
+					.add("outdslCoors", conf.groupId() + ":" + conf.dsl().outDsl() + ":" + conf.version())
 					.add("version", conf.version())
 					.add("package", conf.generationPackage());
 			String content = new Engine(new ModelReaderTemplate()).render(builder.toFrame());

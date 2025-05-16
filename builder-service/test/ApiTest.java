@@ -22,13 +22,13 @@ import java.util.List;
 
 @Ignore
 public class ApiTest {
-	public static final String URL = "http://localhost:9002/";
+	public static final String URL = "http://localhost:9000/";
 	private static File file;
 
 	@BeforeClass
 	public static void beforeClass() {
 		file = new File("./test-res/quassar10906546769131108430.tar");
-//		localQuassar();
+		localQuassar();
 	}
 
 	private static void localQuassar() {
@@ -57,7 +57,7 @@ public class ApiTest {
 	}
 
 	@Test
-	public void should_run_builder_service_using_accessor() throws IOException, InternalServerError, URISyntaxException, InterruptedException, NotFound {
+	public void should_run_builder_service_using_accessor() throws IOException, InternalServerError, URISyntaxException, InterruptedException {
 		QuassarBuilderServiceAccessor accessor = new QuassarBuilderServiceAccessor(new URI(URL).toURL());
 		String ticket = accessor.postRunOperation(context(), Resource.InputStreamProvider.of(file));
 		while (accessor.getOperationOutput(ticket).state() == OperationResult.State.Running) {
@@ -70,9 +70,12 @@ public class ApiTest {
 	private static RunOperationContext context() {
 		return new RunOperationContext()
 				.operation("Build")
-				.language("Meta")
+				.languageGroup("tara.dsl")
+				.languageName("metta")
+				.languagePath("/Users/oroncal/.m2/repository/tara/dsl/metta/2.0.0/metta-2.0.0.jar")
 				.languageVersion("2.0.0")
-				.project("konos")
+				.projectGroup("io.intino.alexandria")
+				.projectName("konos")
 				.projectVersion("13.0.1")
 				.generationPackage("model")
 				.imageURL("quassar625/io.quassar.quassar-builder:1.0.0");

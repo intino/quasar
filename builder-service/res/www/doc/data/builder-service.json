@@ -226,6 +226,108 @@
     }
   },
   "definitions": {
+    "BuilderInfo": {
+      "required": [
+        "imageURL",
+        "operations",
+        "targetLanguages",
+        "creationDate",
+        "properties"
+      ],
+      "properties": {
+        "imageURL": {
+          "type": "string"
+        },
+        "operations": {
+          "type": "string"
+        },
+        "targetLanguages": {
+          "type": "string"
+        },
+        "creationDate": {
+          "type": "string"
+        },
+        "properties": {
+          "type": "java.util.map"
+        }
+      }
+    },
+    "Message": {
+      "required": [
+        "type",
+        "kind",
+        "content",
+        "uri",
+        "line",
+        "column"
+      ],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "uri": {
+          "type": "string"
+        },
+        "line": {
+          "type": "integer"
+        },
+        "column": {
+          "type": "integer"
+        }
+      }
+    },
+    "RunOperationContext": {
+      "required": [
+        "imageURL",
+        "operation",
+        "projectGroup",
+        "projectName",
+        "projectVersion",
+        "languageGroup",
+        "languageName",
+        "languageVersion",
+        "languagePath",
+        "generationPackage"
+      ],
+      "properties": {
+        "imageURL": {
+          "type": "string"
+        },
+        "operation": {
+          "type": "string"
+        },
+        "projectGroup": {
+          "type": "string"
+        },
+        "projectName": {
+          "type": "string"
+        },
+        "projectVersion": {
+          "type": "string"
+        },
+        "languageGroup": {
+          "type": "string"
+        },
+        "languageName": {
+          "type": "string"
+        },
+        "languageVersion": {
+          "type": "string"
+        },
+        "languagePath": {
+          "type": "string"
+        },
+        "generationPackage": {
+          "type": "string"
+        }
+      }
+    },
     "RegisterBuilder": {
       "required": [
         "imageURL",
@@ -276,108 +378,6 @@
         "messages": {
           "type": "object",
           "$ref": "#/definitions/Message"
-        }
-      }
-    },
-    "BuilderInfo": {
-      "required": [
-        "imageURL",
-        "operations",
-        "targetLanguages",
-        "creationDate",
-        "properties"
-      ],
-      "properties": {
-        "imageURL": {
-          "type": "string"
-        },
-        "operations": {
-          "type": "string"
-        },
-        "targetLanguages": {
-          "type": "string"
-        },
-        "creationDate": {
-          "type": "string"
-        },
-        "properties": {
-          "type": "java.util.map"
-        }
-      }
-    },
-    "RunOperationContext": {
-      "required": [
-        "imageURL",
-        "operation",
-        "projectGroup",
-        "projectName",
-        "projectVersion",
-        "languageGroup",
-        "languageName",
-        "languageVersion",
-        "languagePath",
-        "generationPackage"
-      ],
-      "properties": {
-        "imageURL": {
-          "type": "string"
-        },
-        "operation": {
-          "type": "string"
-        },
-        "projectGroup": {
-          "type": "string"
-        },
-        "projectName": {
-          "type": "string"
-        },
-        "projectVersion": {
-          "type": "string"
-        },
-        "languageGroup": {
-          "type": "string"
-        },
-        "languageName": {
-          "type": "string"
-        },
-        "languageVersion": {
-          "type": "string"
-        },
-        "languagePath": {
-          "type": "string"
-        },
-        "generationPackage": {
-          "type": "string"
-        }
-      }
-    },
-    "Message": {
-      "required": [
-        "type",
-        "kind",
-        "content",
-        "uri",
-        "line",
-        "column"
-      ],
-      "properties": {
-        "type": {
-          "type": "string"
-        },
-        "kind": {
-          "type": "string"
-        },
-        "content": {
-          "type": "string"
-        },
-        "uri": {
-          "type": "string"
-        },
-        "line": {
-          "type": "integer"
-        },
-        "column": {
-          "type": "integer"
         }
       }
     }

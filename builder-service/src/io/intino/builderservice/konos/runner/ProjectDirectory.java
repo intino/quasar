@@ -14,7 +14,7 @@ public record ProjectDirectory(File root) {
 		}
 	}
 
-	public static final String PROJECT_BIND = "/root/project";
+	public static final String PROJECT_BIND = "/project";
 
 	public static ProjectDirectory of(File root, String name) {
 		return new ProjectDirectory(new File(root, name));

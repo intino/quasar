@@ -16,9 +16,10 @@ RUN tar -xzf /tmp/maven.tar.gz -C ${MAVEN_HOME} --strip-components=1 && \
     rm -f /tmp/maven.tar.gz && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-COPY out/build/quassar-builder/builder.jar /root/app/
-COPY out/build/quassar-builder/dependency /root/app/dependency
-COPY docker/run-builder.sh /root/app/
-WORKDIR /root/app
-RUN chmod +x /root/app/run-builder.sh
-ENTRYPOINT ["/root/app/run-builder.sh"]
+COPY out/build/quassar-builder/builder.jar /app/
+COPY out/build/quassar-builder/dependency /app/dependency
+COPY docker/run-builder.sh /app/run-builder.sh
+RUN chmod a+rx /app/run-builder.sh
+WORKDIR /app
+RUN chmod a+rx /app/run-builder.sh
+ENTRYPOINT ["/app/run-builder.sh"]

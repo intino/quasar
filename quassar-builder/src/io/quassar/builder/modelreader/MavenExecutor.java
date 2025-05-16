@@ -9,11 +9,12 @@ import java.util.List;
 
 public class MavenExecutor {
 
-	public void run(File pom, File log) {
+	public void run(File pom, File localRepository, File log) {
 		try {
 			String mvnCommand = "mvn";
 			List<String> command = new ArrayList<>();
 			command.add(mvnCommand);
+			command.add("-Dmaven.repo.local=" + localRepository.getAbsolutePath());
 			command.add("package");
 			ProcessBuilder processBuilder = new ProcessBuilder(command);
 			processBuilder.directory(pom.getParentFile());
@@ -29,6 +30,7 @@ public class MavenExecutor {
 				writer.println("mvn finished with exit code: " + exitCode);
 			}
 		} catch (Exception ignored) {
+			ignored.printStackTrace();
 		}
 	}
 }
