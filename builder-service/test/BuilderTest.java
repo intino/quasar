@@ -60,9 +60,11 @@ public class BuilderTest {
 		action.filesInTar = new Resource(new File(TEST_RES + "sources.tar"));
 		action.runOperationContext = new RunOperationContext()
 				.operation("Build")
-				.language("Meta")
+				.languageGroup("tara.dsl")
+				.languageName("Meta")
 				.languageVersion("2.0.0")
-				.project("konos")
+				.projectGroup("io.intino")
+				.projectName("konos")
 				.projectVersion("13.0.1")
 				.generationPackage("model")
 				.imageURL("quassar625/io.quassar.quassar-builder:1.0.0");

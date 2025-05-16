@@ -6,16 +6,13 @@ import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.command.InspectImageResponse;
 import com.github.dockerjava.api.command.PullImageResultCallback;
 import com.github.dockerjava.api.model.Bind;
-import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import io.intino.alexandria.exceptions.Conflict;
 import io.intino.alexandria.logger.Logger;
 import io.intino.builderservice.konos.schemas.BuilderInfo;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,11 +22,13 @@ public class ContainerManager {
 	private final Properties properties;
 	private final Map<String, String> containerIds = new HashMap<>();
 	private final String url;
+	private final String hostUser;
 
 	public ContainerManager(String url, File hubAuth) {
 		this.url = url;
 		properties = new Properties();
 		load(hubAuth);
+		hostUser = hostUser();
 	}
 
 	public void download(String imageURL) throws InterruptedException, IOException {
@@ -77,6 +76,7 @@ public class ContainerManager {
 		try (DockerClient client = dockerClient()) {
 			CreateContainerResponse container = client.createContainerCmd(imageName)
 					.withName(containerName)
+					.withUser(hostUser)
 					.withHostConfig(HostConfig.newHostConfig().withBinds(bind).withAutoRemove(true))
 					.exec();
 			containerIds.put(containerName, container.getId());
@@ -114,5 +114,18 @@ public class ContainerManager {
 		} catch (IOException e) {
 			Logger.error(e);
 		}
+	}
+
+	private String hostUser() {
+		try {
+			Process uidProcess = new ProcessBuilder("id", "-u").start();
+			Process gidProcess = new ProcessBuilder("id", "-g").start();
+			BufferedReader uidReader = new BufferedReader(new InputStreamReader(uidProcess.getInputStream()));
+			BufferedReader gidReader = new BufferedReader(new InputStreamReader(gidProcess.getInputStream()));
+			return uidReader.readLine().trim() + ":" + gidReader.readLine().trim();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
 	}
 }

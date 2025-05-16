@@ -23,11 +23,11 @@ import java.util.jar.Manifest;
 
 import static io.intino.builder.BuildConstants.DSL_VERSION;
 import static io.intino.builder.BuildConstants.GENERATION_PACKAGE;
-import static io.intino.builder.CompilerConfiguration.LANGUAGE_PACKAGE;
 import static io.intino.tara.model.Level.M2;
 import static java.io.File.separator;
 
 public class GenerateModelReaderOperation extends ModelOperation {
+	public static final String TARA_DSL = "tara.dsl";
 	private final CompilerConfiguration configuration;
 
 	public GenerateModelReaderOperation(CompilationUnit unit) {
@@ -57,9 +57,9 @@ public class GenerateModelReaderOperation extends ModelOperation {
 	private void generateMetaModel() {
 		String version = metalanguageVersion(unit.language().metaLanguage(), configuration.localRepository());
 		if (version == null) return;
-		Language metalanguage = load(unit.language().metaLanguage(), version);
+		Language metalanguage = load(TARA_DSL, unit.language().metaLanguage(), version);
 		if (metalanguage == null) return;
-		File languageFile = LanguageLoader.getLanguagePath(metalanguage.languageName(), configuration.dsl().version(), configuration.localRepository().getAbsolutePath());
+		File languageFile = LanguageLoader.getLanguagePath(TARA_DSL, metalanguage.languageName(), configuration.dsl().version(), configuration.localRepository().getAbsolutePath());
 		String generationPackage = metalanguageGenerationPackage(metalanguage.languageName(), languageFile);
 		if (generationPackage == null) return;
 		this.unit.configuration().generationPackage(generationPackage);
@@ -67,7 +67,7 @@ public class GenerateModelReaderOperation extends ModelOperation {
 	}
 
 	private boolean hasM3() {
-		return !unit.language().languageName().equalsIgnoreCase("Meta");
+		return !unit.language().languageName().equalsIgnoreCase("Metta");
 	}
 
 	private static boolean isM2(Model model) {
@@ -75,16 +75,16 @@ public class GenerateModelReaderOperation extends ModelOperation {
 	}
 
 	private File languageDirectory() {
-		return new File(configuration.localRepository(), LANGUAGE_PACKAGE.replace(".", separator) + separator +
+		return new File(configuration.localRepository(), configuration.groupId().replace(".", separator) + separator +
 				StringFormatters.camelCase().format(configuration.dsl().outDsl()).toString().toLowerCase() + separator + (configuration.version() == null ? "1.0.0" : configuration.version()));
 	}
 
-	private Language load(String metalanguage, String version) {
+	private Language load(String groupId, String artifactId, String version) {
 		try {
 			var localRepo = this.configuration.localRepository().getAbsolutePath();
 
 			if (version == null) return null;
-			return LanguageLoader.load(metalanguage, version, localRepo);
+			return LanguageLoader.load(groupId, artifactId, version, localRepo);
 		} catch (TaraException e) {
 			return null;
 		}

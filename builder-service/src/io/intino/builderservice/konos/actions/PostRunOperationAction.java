@@ -11,8 +11,6 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.AbstractMap;
-import java.util.List;
 
 public class PostRunOperationAction implements io.intino.alexandria.rest.RequestErrorHandler {
 	public BuilderServiceBox box;
@@ -41,10 +39,10 @@ public class PostRunOperationAction implements io.intino.alexandria.rest.Request
 		File source = new File(runOperationContext.languagePath());
 		if (!source.exists()) throw new BadRequest("Language file does not exist");
 		repo.mkdirs();
-		File destination = new File(repo, String.join(File.separator, "tara", "dsl",
-				runOperationContext.language(),
+		File destination = new File(repo, String.join(File.separator, runOperationContext.languageGroup().replace(".", File.separator),
+				runOperationContext.languageName(),
 				runOperationContext.languageVersion(),
-				runOperationContext.language() + "-" + runOperationContext.languageVersion() + ".jar"));
+				runOperationContext.languageName() + "-" + runOperationContext.languageVersion() + ".jar"));
 		destination.getParentFile().mkdirs();
 		FileUtils.copyFile(source, destination);
 	}

@@ -226,40 +226,16 @@
     }
   },
   "definitions": {
-    "RunOperationContext": {
+    "RegisterBuilder": {
       "required": [
         "imageURL",
-        "operation",
-        "project",
-        "projectVersion",
-        "language",
-        "languageVersion",
-        "languagePath",
-        "generationPackage"
+        "registryToken"
       ],
       "properties": {
         "imageURL": {
           "type": "string"
         },
-        "operation": {
-          "type": "string"
-        },
-        "project": {
-          "type": "string"
-        },
-        "projectVersion": {
-          "type": "string"
-        },
-        "language": {
-          "type": "string"
-        },
-        "languageVersion": {
-          "type": "string"
-        },
-        "languagePath": {
-          "type": "string"
-        },
-        "generationPackage": {
+        "registryToken": {
           "type": "string"
         }
       }
@@ -329,6 +305,52 @@
         }
       }
     },
+    "RunOperationContext": {
+      "required": [
+        "imageURL",
+        "operation",
+        "projectGroup",
+        "projectName",
+        "projectVersion",
+        "languageGroup",
+        "languageName",
+        "languageVersion",
+        "languagePath",
+        "generationPackage"
+      ],
+      "properties": {
+        "imageURL": {
+          "type": "string"
+        },
+        "operation": {
+          "type": "string"
+        },
+        "projectGroup": {
+          "type": "string"
+        },
+        "projectName": {
+          "type": "string"
+        },
+        "projectVersion": {
+          "type": "string"
+        },
+        "languageGroup": {
+          "type": "string"
+        },
+        "languageName": {
+          "type": "string"
+        },
+        "languageVersion": {
+          "type": "string"
+        },
+        "languagePath": {
+          "type": "string"
+        },
+        "generationPackage": {
+          "type": "string"
+        }
+      }
+    },
     "Message": {
       "required": [
         "type",
@@ -356,20 +378,6 @@
         },
         "column": {
           "type": "integer"
-        }
-      }
-    },
-    "RegisterBuilder": {
-      "required": [
-        "imageURL",
-        "registryToken"
-      ],
-      "properties": {
-        "imageURL": {
-          "type": "string"
-        },
-        "registryToken": {
-          "type": "string"
         }
       }
     }

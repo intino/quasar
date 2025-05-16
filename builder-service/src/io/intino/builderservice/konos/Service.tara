@@ -61,9 +61,11 @@ Schema BuilderInfo
 Schema RunOperationContext
 	Attribute imageURL as Text
 	Attribute operation as Text
-	Attribute project as Text
+	Attribute projectGroup as Text
+	Attribute projectName as Text
 	Attribute projectVersion as Text
-	Attribute language as Text
+	Attribute languageGroup as Text
+	Attribute languageName as Text
 	Attribute languageVersion as Text
 	Attribute languagePath as Text
 	Attribute generationPackage as Text

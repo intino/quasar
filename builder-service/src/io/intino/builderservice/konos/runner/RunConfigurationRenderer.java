@@ -1,6 +1,5 @@
 package io.intino.builderservice.konos.runner;
 
-import io.intino.builder.CompilerConfiguration;
 import io.intino.builderservice.konos.schemas.RunOperationContext;
 
 import java.io.File;
@@ -29,9 +28,10 @@ public class RunConfigurationRenderer {
 		writer.write(SRC_FILE + NL);
 		srcFiles.stream().map(file -> file + "#" + true + NL).forEach(writer::write);
 		writer.write(NL);
-		writer.write(PROJECT + NL + params.project() + NL);
-		writer.write(MODULE + NL + params.project() + NL);
-		writer.write(ARTIFACT_ID + NL + params.project() + NL);
+		writer.write(PROJECT + NL + params.projectName() + NL);
+		writer.write(MODULE + NL + params.projectName() + NL);
+		writer.write(ARTIFACT_ID + NL + params.projectName() + NL);
+		writer.write(GROUP_ID + NL + params.projectGroup() + NL);
 		writePaths(writer);
 		writer.write(MAKE + NL + true + NL);
 		writer.write(TEST + NL + false + NL);
@@ -41,8 +41,8 @@ public class RunConfigurationRenderer {
 		if (params.operation().equalsIgnoreCase("check")) writer.write(COMPILATION_MODE + NL + "Build" + NL);
 		else writer.write(COMPILATION_MODE + NL + params.operation() + NL);
 		if (!params.projectVersion().isEmpty()) writer.write(VERSION + NL + params.projectVersion() + NL);
-		writer.write(DSL + NL + params.language() + ":" + params.languageVersion() + NL);
-		writer.write(OUT_DSL + NL + params.project() + NL);
+		writer.write(DSL + NL + String.join(":", params.languageGroup(), params.languageName(), params.languageVersion()) + NL);
+		writer.write(OUT_DSL + NL + params.projectName() + NL);
 		return writer.toString();
 	}
 
