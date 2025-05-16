@@ -23,6 +23,7 @@ import io.quassar.editor.model.Utilities;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.lsp4j.services.LanguageServer;
+import org.jetbrains.annotations.NotNull;
 import systems.intino.datamarts.subjectstore.SubjectStore;
 
 import java.io.File;
@@ -69,7 +70,7 @@ public class EditorBox extends AbstractBox {
 
 	public void beforeStart() {
 		boolean exists = archetype.index().exists();
-		subjectStore = new SubjectStore("jdbc:sqlite:" + archetype.index());
+		subjectStore = createSubjectStore();
 		utilities = new Utilities(archetype.configuration().editor().utilities());
 		commandsFactory = new CommandsFactory(this);
 		languageLoader = new LanguageLoader(new LocalLanguageArtifactory(archetype, this::modelWithLanguage));
@@ -81,6 +82,14 @@ public class EditorBox extends AbstractBox {
 		builderAccessor = new QuassarBuilderServiceAccessor(url(configuration.builderServiceUrl()));
 		setupServiceBuilder();
 		if (!exists) new SubjectGenerator(this).generate();
+	}
+
+	private SubjectStore createSubjectStore() {
+		try {
+			return new SubjectStore(archetype.index());
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
 	private Model modelWithLanguage(String id) {
@@ -96,7 +105,11 @@ public class EditorBox extends AbstractBox {
 	}
 
 	public void beforeStop() {
-		subjectStore.close();
+		try {
+			subjectStore.seal();
+		} catch (IOException e) {
+			Logger.error(e);
+		}
 	}
 
 	public void afterStop() {

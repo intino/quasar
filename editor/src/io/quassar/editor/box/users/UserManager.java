@@ -31,7 +31,7 @@ public class UserManager {
 
 	public User get(String key) {
 		Subject subject = subjectStore.open(SubjectHelper.userPath(key));
-		if (subject == null || subject.isNull()) subject = subjectStore.subjects().type(SubjectHelper.UserType).with("name", key).collect().stream().findFirst().orElse(null);
+		if (subject == null || subject.isNull()) subject = subjectStore.subjects().type(SubjectHelper.UserType).where("name").equals(key).collect().stream().findFirst().orElse(null);
 		return get(subject);
 	}
 

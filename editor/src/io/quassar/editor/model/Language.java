@@ -44,7 +44,7 @@ public class Language extends SubjectWrapper {
 	}
 
 	public String group() {
-		return get("group");
+		return getOrEmpty("group");
 	}
 
 	public void group(String group) {
@@ -52,11 +52,12 @@ public class Language extends SubjectWrapper {
 	}
 
 	public boolean isQuassarLanguage() {
-		return group().equals(Language.TaraDslGroup);
+		String group = group();
+		return group != null && group.equals(Language.TaraDslGroup);
 	}
 
 	public String name() {
-		return get("name");
+		return getOrEmpty("name");
 	}
 
 	public void name(String value) {
@@ -80,7 +81,7 @@ public class Language extends SubjectWrapper {
 	}
 
 	public GavCoordinates parent() {
-		return new GavCoordinates(get("parent-group"), get("parent-name"), get("parent-version"));
+		return new GavCoordinates(getOrEmpty("parent-group"), getOrEmpty("parent-name"), getOrEmpty("parent-version"));
 	}
 
 	public void parent(GavCoordinates value) {

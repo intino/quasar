@@ -24,6 +24,10 @@ public class SubjectWrapper {
 		return result;
 	}
 
+	protected String getOrEmpty(String name) {
+		return get(name) != null ? get(name) : "";
+	}
+
 	protected String get(String name) {
 		if (cache.containsKey(name)) return cache.get(name);
 		List<String> terms = SubjectHelper.terms(subject, name);
@@ -34,20 +38,19 @@ public class SubjectWrapper {
 	protected void set(String name, String value) {
 		cache.remove(name);
 		if (value == null) return;
-		subject.index().set(name, value).terminate();
+		subject.update().set(name, value);
 	}
 
 	protected void put(String name, String value) {
 		cache.remove(name);
-		subject.index().put(name, value).terminate();
+		subject.update().put(name, value);
 	}
 
 	protected void putList(String name, List<String> values) {
 		listCache.remove(name);
-		Subject.Updating updating = subject.index();
+		Subject.Updating updating = subject.update();
 		updating.del(name);
 		values.forEach(v -> updating.put(name, v));
-		updating.terminate();
 	}
 
 }

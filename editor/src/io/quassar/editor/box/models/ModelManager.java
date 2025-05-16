@@ -13,6 +13,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.tika.Tika;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.lsp4j.services.LanguageServer;
+import systems.intino.datamarts.subjectstore.SubjectQuery;
 import systems.intino.datamarts.subjectstore.SubjectStore;
 import systems.intino.datamarts.subjectstore.model.Subject;
 
@@ -41,27 +42,27 @@ public class ModelManager {
 	}
 
 	public List<Model> models(Language language, String owner) {
-		Map<String, Subject> ownerSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("language-group", language.group()).with("language-name", language.name()).with("owner", owner).with("visibility", Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
-		Map<String, Subject> contributorSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("language-group", language.group()).with("language-name", language.name()).with("collaborator", owner).with("visibility", Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
-		Map<String, Subject> quassarSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("language-group", language.group()).with("language-name", language.name()).with("owner", User.Quassar).with("visibility", Visibility.Public.name()).with("usage", Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> ownerSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType), "language-group", language.group()).where("language-name").equals(language.name()).where("owner").equals(owner).where("visibility").equals(Visibility.Private.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> contributorSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType),"language-group", language.group()).where("language-name").equals(language.name()).where("collaborator").equals(owner).where("visibility").equals(Visibility.Private.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> quassarSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType), "language-group", language.group()).where("language-name").equals(language.name()).where("owner").equals(User.Quassar).where("visibility").equals(Visibility.Public.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
 		ownerSubjects.putAll(contributorSubjects);
 		ownerSubjects.putAll(quassarSubjects);
 		return ownerSubjects.values().stream().map(this::get).toList();
 	}
 
 	public List<Model> models(Language language) {
-		Map<String, Subject> ownerSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("language-group", language.group()).with("language-name", language.name()).collect());
-		Map<String, Subject> contributorSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("language-group", language.group()).with("language-name", language.name()).collect());
-		Map<String, Subject> quassarSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("language-group", language.group()).with("language-name", language.name()).collect());
+		Map<String, Subject> ownerSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType),"language-group", language.group()).where("language-name").equals(language.name()).collect());
+		Map<String, Subject> contributorSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType),"language-group", language.group()).where("language-name").equals(language.name()).collect());
+		Map<String, Subject> quassarSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType),"language-group", language.group()).where("language-name").equals(language.name()).collect());
 		ownerSubjects.putAll(contributorSubjects);
 		ownerSubjects.putAll(quassarSubjects);
 		return ownerSubjects.values().stream().map(this::get).toList();
 	}
 
 	public List<Model> models(String owner) {
-		Map<String, Subject> ownerSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("owner", owner).with("visibility", Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
-		Map<String, Subject> contributorSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("collaborator", owner).with("visibility", Visibility.Private.name()).with("usage", Model.Usage.EndUser.name()).collect());
-		Map<String, Subject> quassarSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).with("owner", User.Quassar).with("visibility", Visibility.Public.name()).with("usage", Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> ownerSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).where("owner").equals(owner).where("visibility").equals(Visibility.Private.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> contributorSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).where("collaborator").equals(owner).where("visibility").equals(Visibility.Private.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> quassarSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).where("owner").equals(User.Quassar).where("visibility").equals(Visibility.Public.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
 		ownerSubjects.putAll(contributorSubjects);
 		ownerSubjects.putAll(quassarSubjects);
 		return ownerSubjects.values().stream().map(this::get).toList();
@@ -78,7 +79,7 @@ public class ModelManager {
 
 	public Model get(String key) {
 		Subject subject = subjectStore.open(SubjectHelper.modelPath(key));
-		if (subject == null || subject.isNull()) subject = subjectStore.subjects().type(SubjectHelper.ModelType).with("name", key).collect().stream().findFirst().orElse(null);
+		if (subject == null || subject.isNull()) subject = subjectStore.subjects().type(SubjectHelper.ModelType).where("name").equals(key).collect().stream().findFirst().orElse(null);
 		return subject != null && !subject.isNull() ? new Model(subject) : null;
 	}
 
@@ -247,6 +248,11 @@ public class ModelManager {
 
 	private Model get(Subject subject) {
 		return new Model(subject);
+	}
+
+	private SubjectQuery with(SubjectQuery query, String name, String value) {
+		if (value.isEmpty()) return query;
+		return query.where(name).equals(value);
 	}
 
 }

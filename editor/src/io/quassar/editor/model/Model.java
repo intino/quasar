@@ -18,7 +18,7 @@ public class Model extends SubjectWrapper {
 	}
 
 	public String name() {
-		return get("name");
+		return getOrEmpty("name");
 	}
 
 	public void name(String value) {

@@ -1,5 +1,6 @@
 package io.quassar.editor.box.util;
 
+import io.quassar.archetype.Archetype;
 import io.quassar.editor.model.Language;
 import org.apache.commons.io.FilenameUtils;
 
@@ -12,6 +13,9 @@ public class ArtifactoryHelper {
 	private static final String DependencyTemplate = "<dependency>\n\t<groupId>%s</groupId>\n\t<artifactId>%s</artifactId>\n\t<version>%s</version>\n</dependency>";
 	private static final String ReadersDirectory = "/readers/";
 	private static final String ReaderSuffix = "-reader";
+
+	public static void buildReaderDependency(Language language, String version, Archetype archetype) {
+	}
 
 	public static String dependency(Language language, String version, File dependency) {
 		return DependencyTemplate.formatted(dependencyGroup(language), dependencyName(dependency), version);
