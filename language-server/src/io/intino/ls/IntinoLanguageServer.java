@@ -23,13 +23,14 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 
 public class IntinoLanguageServer implements LanguageServer, LanguageClientAware {
 	public HashMap<Object, Object> expectedRequests = new HashMap<>();
+	private final DiagnosticService diagnosticService;
 	private final IntinoDocumentService documentService;
 	private final IntinoWorkspaceService workspaceService;
 	private AtomicReference<LanguageClient> client = new AtomicReference<>(null);
 
 	public IntinoLanguageServer(Language language, DocumentManager documentManager) {
 		Map<URI, ModelUnit> models = new HashMap<>();
-		DiagnosticService diagnosticService = new DiagnosticService(documentManager, language, models);
+		this.diagnosticService = new DiagnosticService(documentManager, language, models);
 		this.documentService = new IntinoDocumentService(language, documentManager, diagnosticService, models, client);
 		this.workspaceService = new IntinoWorkspaceService(language, documentManager, diagnosticService);
 	}
@@ -67,6 +68,10 @@ public class IntinoLanguageServer implements LanguageServer, LanguageClientAware
 	private static SemanticTokensWithRegistrationOptions semanticTokensWithRegistrationOptions() {
 		SemanticTokensLegend legend = new SemanticTokensLegend(tokenTypes, tokenModifiers);
 		return new SemanticTokensWithRegistrationOptions(legend, true);
+	}
+
+	public DiagnosticService getDiagnosticService() {
+		return diagnosticService;
 	}
 
 	@Override

@@ -12,6 +12,7 @@ import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.*;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> {
@@ -66,6 +67,7 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 
 	private void refreshGeneralBlock() {
 		Language language = box().languageManager().get(model.language());
+		boolean canRemove = PermissionsHelper.canRemove(model, session(), box());
 		modelTitleField.readonly(!PermissionsHelper.canEditTitle(model, box()));
 		modelTitleField.value(ModelHelper.label(model, language(), box()));
 		modelDescriptionField.value(model.description());
@@ -73,7 +75,8 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		languageSelector.clear();
 		languageSelector.addAll(language.releases().stream().map(LanguageRelease::version).toList().reversed());
 		languageSelector.selection(model.language().version());
-		removeModel.readonly(!PermissionsHelper.canRemove(model, session(), box()));
+		removeModel.readonly(!canRemove);
+		removeModel.formats(Set.of("airRight", "whiteColor", canRemove ? "redBackground" : "greyHardBackground"));
 		accessType = model.isPrivate();
 		accessTypeField.state(model.isPrivate() ? ToggleEvent.State.On : ToggleEvent.State.Off);
 	}
@@ -129,9 +132,10 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 
 	private void removeModel() {
 		notifyUser(translate("Removing model..."), UserMessage.Type.Loading);
+		String language = model.language().artifactId();
 		box().commands(ModelCommands.class).remove(model, username());
 		hideUserNotification();
-		notifier.dispatch(PathHelper.languagePath(model.language().artifactId()));
+		notifier.dispatch(PathHelper.languagePath(language));
 	}
 
 	private void saveLanguageProperties() {

@@ -2,6 +2,7 @@ package io.quassar.editor.box.util;
 
 import io.intino.alexandria.ui.services.push.UISession;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
@@ -31,7 +32,7 @@ public class PermissionsHelper {
 
 	public static boolean canRemove(Model model, UISession session, EditorBox box) {
 		if (!hasPermissions(model, session)) return false;
-		if (box.languageManager().exists(model)) return false;
+		if (!box.languageManager().exists(model)) return false;
 		return !ModelHelper.isMetamodel(model, box);
 	}
 

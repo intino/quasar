@@ -51,7 +51,7 @@ Template(layout=Horizontal) modelSettingsDialog
 					Block(format=doubleAirTop)
 						Text(value="Remove model", translate=true, format=h5)
 						Text(value="Removed models cannot be restored!", format=greyColor airBottom, translate=true)
-						Block(layout=Horizontal) > Button(title="Remove model...", format=airRight redBackground whiteColor, highlight=Fill) removeModel as Action Readonly Affirmed("Are you sure to remove model?")
+						Block(layout=Horizontal) > Button(title="Remove model...", highlight=Fill) removeModel as Action Readonly Affirmed("Are you sure to remove model?")
 
         		Block(layout=Vertical Flexible, format=doubleTopSpaced) collaboratorsBlock as Relative(width=95%) Conditional(settingsTabSelector.collaboratorsOption)
 					Text(value="Users that will have access", translate=true, format=h5 middleAirBottom)

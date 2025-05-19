@@ -23,8 +23,7 @@ public class ModelHelper {
 	}
 
 	public static boolean isMetamodel(Model model, EditorBox box) {
-		Language language = box.languageManager().get(model);
-		return language != null && (language.level() == Language.Level.L2 || language.level() == Language.Level.L3);
+		return box.languageManager().getWithMetamodel(model) != null;
 	}
 
 	private static final String VersionPatternMask = "%s.%s.%s";

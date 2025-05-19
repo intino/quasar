@@ -2,7 +2,6 @@ package io.quassar.editor.box.languages;
 
 import io.intino.alexandria.logger.Logger;
 import io.intino.tara.Language;
-import io.quassar.editor.box.util.StringHelper;
 import io.quassar.editor.model.GavCoordinates;
 
 import java.io.File;

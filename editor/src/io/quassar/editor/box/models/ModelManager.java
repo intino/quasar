@@ -2,6 +2,7 @@ package io.quassar.editor.box.models;
 
 import io.intino.alexandria.Json;
 import io.intino.alexandria.logger.Logger;
+import io.intino.ls.IntinoLanguageServer;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.languages.LanguageServerManager;
 import io.quassar.editor.box.util.ArchetypeHelper;
@@ -12,6 +13,7 @@ import io.quassar.editor.model.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.tika.Tika;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.services.LanguageServer;
 import systems.intino.datamarts.subjectstore.SubjectQuery;
 import systems.intino.datamarts.subjectstore.SubjectStore;
@@ -130,6 +132,7 @@ public class ModelManager {
 	public boolean isWorkspaceEmpty(Model model, String release) {
 		File workspace = workspace(model, release).root();
 		File[] files = workspace.exists() ? workspace.listFiles() : null;
+		// TODO OR consultar diagnostic service para ver los archivos que no tienen mograms
 		return files == null || files.length == 0;
 	}
 
@@ -216,9 +219,9 @@ public class ModelManager {
 		return new WorkspaceReader(workspace(model, release), server(model, release)).content(uri);
 	}
 
-	private LanguageServer server(Model model, String release) {
+	private IntinoLanguageServer server(Model model, String release) {
 		try {
-			return serverManager.get(model, release);
+			return (IntinoLanguageServer) serverManager.get(model, release);
 		} catch (IOException | GitAPIException | URISyntaxException e) {
 			Logger.error(e);
 			return null;
