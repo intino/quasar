@@ -1,7 +1,0 @@
-Id	Description	Level	Operations	Owner	Public	Models count	Create date
-meta:2.0.0	for creating modeling languages	L3(null)	[{name:"build",type:"Build",url":"url"},{name:"publish",type:"Build",url":"url"}]	Intino	true	358	2024-09-12T09:54:54.241345Z
-tafat:2.0.0	for creating simulation languages	L2(meta:2.0.0)	[{name:"build",type:"Build",url":"url"},{name:"publish",type:"Build",url":"url"}]	Intino	true	293	2024-09-12T09:54:54.241345Z
-flogo:1.0.0-SNAPSHOT	for creating neural networks	L2(meta:2.0.0)	[{name:"build",type:"Build",url":"url"},{name:"publish",type:"Build",url":"url"}]	Intino	true	9223	2024-09-12T09:54:54.241839Z
-citylogic:1.0.0-SNAPSHOT	for creating simulation models of cities	L1(tafat:2.0.0)	[{name:"build",type:"Build",url":"url"},{name:"publish",type:"Build",url":"url"}]	Monentia SL	true	727	2024-09-12T09:54:54.241642Z
-amidas:12.2.4	for modeling federations	L2(meta:2.0.0)	[{name:"build",type:"Build",url":"url"},{name:"publish",type:"Build",url":"url"}]	Intino	true	1920	2024-09-12T09:54:54.241710Z
-amidascommunity:1.0.0	for creating simple federations	L1(amidas:12.2.4)	[{name:"build",type:"Build",url":"url"},{name:"publish",type:"Build",url":"url"}]	mcaballero	true	490	2024-09-12T13:43:33.331284Z
