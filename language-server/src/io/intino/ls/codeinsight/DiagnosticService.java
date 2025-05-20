@@ -82,20 +82,20 @@ public class DiagnosticService {
 
 	private static Diagnostic diagnosticOf(SyntaxException e) {
 		Range range = new Range(new Position(e.getLine() - 1, e.getStartColumn()), new Position(e.getEndLine() - 1, e.getEndColumn()));
-		return new Diagnostic(range, e.getOriginalMessage().substring(e.getMessage().indexOf("@") - 1), DiagnosticSeverity.Error, e.getUri().getPath());
+		return new Diagnostic(range, e.getOriginalMessage().substring(0, e.getMessage().indexOf("@") - 1), DiagnosticSeverity.Error, e.getUri().getPath());
 	}
 
 	private static Diagnostic diagnosticOf(DependencyException e) {
 		Element.TextRange textRange = e.getElement().textRange();
 		Range range = new Range(new Position(textRange.startLine() - 1, textRange.startColumn()), new Position(textRange.endLine() - 1, textRange.endColumn()));
-		return new Diagnostic(range, e.getMessage().substring(e.getMessage().indexOf("@") - 1), DiagnosticSeverity.Error, e.getElement().source().getPath());
+		return new Diagnostic(range, e.getMessage().substring(0, e.getMessage().indexOf("@") - 1), DiagnosticSeverity.Error, e.getElement().source().getPath());
 	}
 
 	private static Diagnostic diagnosticOf(SemanticException e) {
 		Element.TextRange textRange = e.origin()[0].textRange();
 		Range range = new Range(new Position(textRange.startLine() - 1, textRange.startColumn()), new Position(textRange.endLine() - 1, textRange.endColumn()));
 		DiagnosticSeverity level = e.level() == SemanticIssue.Level.ERROR ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning;
-		return new Diagnostic(range, e.getMessage().substring(e.getMessage().indexOf("@") - 1), level, e.getIssue().origin()[0].source().getPath());
+		return new Diagnostic(range, e.getMessage().substring(0, e.getMessage().indexOf("@") - 1), level, e.getIssue().origin()[0].source().getPath());
 	}
 
 
