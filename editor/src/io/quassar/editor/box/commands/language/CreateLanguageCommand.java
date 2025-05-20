@@ -28,7 +28,7 @@ public class CreateLanguageCommand extends Command<Language> {
 	}
 
 	private File logo(Language language) {
-		 if (logo != null) return logo;
+		if (logo != null) return logo;
 		File file = new File(box.archetype().tmp().root(), UUID.randomUUID().toString());
 		LanguageHelper.generateLogo(language.name(), file);
 		return file;

@@ -21,7 +21,7 @@ const styles = theme => ({
         width: "300px",
         height: "145px",
         overflow: "auto",
-        backgroundColor: "white",
+        backgroundColor: theme.isDark() ? "black" : "white",
     },
     operation: {
         cursor: 'pointer',

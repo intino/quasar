@@ -9,11 +9,7 @@ Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
 	Block(layout=Horizontal Center Flexible, visible=false) contentBlock
 		Block(layout=Horizontal Flexible)
 			AvatarIconButton(title="", size=Small, format=airRight, visible=false) projectModelSelector as Action
-			Link(title="", format=modelViewTitle upperCase) title as Action
-			Block(layout=Horizontal Center, visible=false, format=doubleAirRight) titleEditorBlock as Absolute(width=360px)
-				Text(translate=true, format=modelViewTitle airRight, mode=Uppercase) titleEditor as Editable
-				Link(title="Cancel", format=airRight) closeTitleEditor as Action
-				Link(title="Save") saveTitleEditor as Action
+			TemplateStamp(template=modelTitleViewer) titleViewer
 			Block(layout=Horizontal Center, format=doubleAirLeft)
 				SplitButton(title="draft", format=airRight minSelectorWidth, options="draft", defaultOption = "draft", visible=false) releaseSelector as Action
 				Button(title="check", size=Small) checkTrigger as Action > Shortcut(key="F9", metaKeys=Control)
@@ -32,6 +28,7 @@ Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
 	TemplateStamp(template=commitModelDialog) commitModelDialog
 	TemplateStamp(template=modelSettingsDialog) modelSettingsDialog
 	TemplateStamp(template=languageToolLauncher) toolLauncher
+	TemplateStamp(template=modelTitleDialog) modelTitleDialog
 
 Template modelsTemplate as Relative(height=100%, width=100%)
 	Link(title="") modelTrigger as OpenSite(site=empty, target=Blank)

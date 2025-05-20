@@ -24,7 +24,7 @@ public class CreateModelReleaseCommand extends Command<ExecutionResult> {
 		CheckModelCommand command = new CheckModelCommand(box);
 		command.author = author;
 		command.model = model;
-		command.release = version;
+		command.release = Model.DraftRelease;
 		return command.execute();
 	}
 

@@ -65,10 +65,6 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	@Override
 	public void init() {
 		super.init();
-		title.onExecute(e -> openTitleEditor());
-		titleEditor.onEnterPress(e -> saveTitle());
-		closeTitleEditor.onExecute(e -> closeTitleEditor());
-		saveTitleEditor.onExecute(e -> saveTitle());
 		releaseSelector.onExecute(e -> openRelease(e.option()));
 		checkTrigger.onExecute(e -> check());
 		commitTrigger.onExecute(e -> commit());
@@ -76,6 +72,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		downloadTrigger.onExecute(e -> download());
 		commitModelDialog.onCommit((m, v) -> openRelease(v));
 		commitModelDialog.onCommitFailure((m, v) -> deployListener.accept(m, v));
+		commitModelDialog.onCreateRelease((m, v) -> deployListener.accept(m, v));
 		infoTrigger.onExecute(e -> openSettingsDialog());
 		modelSettingsDialog.onSave(e -> refresh());
 		modelSettingsDialog.onUpdateLanguageVersion(e -> notifyUpdateLanguageVersion());
@@ -90,8 +87,8 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		Project project = box().projectManager().find(model);
 		Language language = box().languageManager().get(model);
 		projectModelSelector.readonly(project == null);
-		title.title(ModelHelper.label(model, language(), box()));
-		title.readonly(!PermissionsHelper.canEditTitle(model, box()));
+		titleViewer.model(model);
+		titleViewer.refresh();
 		refreshReleaseSelector();
 		checkTrigger.visible(release == null || release.equals(translate(Model.DraftRelease)));
 		checkTrigger.readonly(!PermissionsHelper.canCheck(model, release, session(), box()));
@@ -153,25 +150,6 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	private void openSettingsDialog() {
 		modelSettingsDialog.model(model);
 		modelSettingsDialog.open();
-	}
-
-	private void openTitleEditor() {
-		title.visible(false);
-		titleEditor.value(title.title());
-		titleEditorBlock.visible(true);
-		titleEditor.focus();
-	}
-
-	private void closeTitleEditor() {
-		title.visible(true);
-		titleEditorBlock.visible(false);
-	}
-
-	private void saveTitle() {
-		String value = titleEditor.value();
-		box().commands(ModelCommands.class).save(model, value, username());
-		closeTitleEditor();
-		title.title(value);
 	}
 
 	private void openTools() {

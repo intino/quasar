@@ -5,7 +5,6 @@ Artifact(groupId = "io.quassar", version = "1.0.0-SNAPSHOT") editor
 	Archetype("io.quassar", "editor-archetype", "1.0.0-SNAPSHOT")
 
 	Imports
-		Compile("tara.dsl", "metta", "2.0.0")
 		Compile("io.intino.alexandria", "core-framework", "2.2.2")
 		Compile("io.intino.alexandria", "logger4j", "1.1.0")
 		Compile("io.intino.alexandria", "scheduler-framework", "1.2.0")

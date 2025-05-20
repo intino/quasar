@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 public class ArtifactoryHelper {
 
 	private static final String DependencyTemplate = "<dependency>\n\t<groupId>%s</groupId>\n\t<artifactId>%s</artifactId>\n\t<version>%s</version>\n</dependency>";
+	private static final String RepositoryTemplate = "<repository>\n\t<id>Quassar</id>\n\t<url>%s</url>\n</repository>";
 	private static final String ReadersDirectory = "/readers/";
 	private static final String ReaderSuffix = "-reader";
 
@@ -97,6 +98,10 @@ public class ArtifactoryHelper {
 
 	public static String dependency(Language language, String version, File dependency) {
 		return DependencyTemplate.formatted(dependencyGroup(language), dependencyName(dependency), version);
+	}
+
+	public static String repository(String url) {
+		return RepositoryTemplate.formatted(url);
 	}
 
 	public static String groupId(String path) {

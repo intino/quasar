@@ -81,6 +81,7 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
     createEditor = (monaco, container) => {
         const CtrlCmd = 2048; const KeyS = 49;
         const refreshFooter = this.refreshFooter.bind(this);
+        const theme = Theme.get();
         monaco.editor.registerEditorOpener(this.editorOpenerListener(monaco));
         monaco.languages.register({id:"tara", extensions: ['.tara'], aliases: ["TARA", "tara"]});
         this.editor = monaco.editor.create(container, {
@@ -120,8 +121,8 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
         loading.current.style.display = "block";
         window.setTimeout(() => {
             monaco.editor.setTheme(theme.isDark() ? "Default Dark Modern" : "Default Light Modern");
-            window.setTimeout(() => loading.current.style.display = "none", 80);
-        }, 80);
+            window.setTimeout(() => loading.current.style.display = "none", 1000);
+        }, 200);
     };
 
     registerModel = (file, monaco) => {

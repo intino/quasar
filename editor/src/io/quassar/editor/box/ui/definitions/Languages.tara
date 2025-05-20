@@ -340,8 +340,13 @@ Template downloadTemplate
 
 Template(format=airTop) dependencyTemplate as Absolute(width=400px)
 	Text title
-	Text textField as Code(Html)
-	Link(title="Copy", format=middleAirTop) titleLink as CopyToClipboard
+	Block(layout=Horizontal)
+		Block(format=doubleAirRight)
+			Text(format=dependencyStyle) contentField as Code(Html)
+			Link(title="Copy", format=middleAirTop) contentLink as CopyToClipboard
+		Block
+			Text(format=dependencyStyle) repositoryField as Code(Html)
+			Link(title="Copy", format=middleAirTop) repositoryLink as CopyToClipboard
 
 Template languageReleaseHelp
 	Link(title="") titleLink as OpenSite(site=empty, target=Blank)

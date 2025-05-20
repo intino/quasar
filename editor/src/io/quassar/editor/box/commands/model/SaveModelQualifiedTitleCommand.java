@@ -4,17 +4,18 @@ import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.model.Model;
 
-public class SaveModelTitleCommand extends Command<Boolean> {
+public class SaveModelQualifiedTitleCommand extends Command<Boolean> {
 	public Model model;
-	public String title;
+	public String project;
+	public String module;
 
-	public SaveModelTitleCommand(EditorBox box) {
+	public SaveModelQualifiedTitleCommand(EditorBox box) {
 		super(box);
 	}
 
 	@Override
 	public Boolean execute() {
-		model.title(title.toUpperCase());
+		model.qualifiedTitle(project.toUpperCase(), module.toUpperCase());
 		return true;
 	}
 

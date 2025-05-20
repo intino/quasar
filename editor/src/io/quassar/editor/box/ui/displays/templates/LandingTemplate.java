@@ -79,7 +79,7 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 	private void refreshModelsDialog() {
 		closing = false;
 		modelsDialog.title("Example Metta models");
-		modelsStamp.language(box().languageManager().get(Language.key(Language.TaraDslGroup, Language.Metta)));
+		modelsStamp.language(box().languageManager().get(Language.key(Language.QuassarGroup, Language.Metta)));
 		modelsStamp.tab(LanguageTab.Examples);
 		modelsStamp.refresh();
 	}
@@ -100,7 +100,7 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 	}
 
 	private void startBuilding() {
-		startModeling(box().languageManager().get(Language.key(Language.TaraDslGroup, Language.Metta)));
+		startModeling(box().languageManager().get(Language.key(Language.QuassarGroup, Language.Metta)));
 	}
 
 	private void notifyClose() {

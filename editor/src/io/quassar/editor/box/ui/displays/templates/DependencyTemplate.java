@@ -33,12 +33,18 @@ public class DependencyTemplate extends AbstractDependencyTemplate<EditorBox> {
 		super.refresh();
 		String extension = FilenameUtils.getExtension(file.getName());
 		title.value(translate("Reader for %s").formatted(file.getName().replace("." + extension, "")));
-		textField.value("<pre style='margin:0'>" + dependency().replace("<", "&lt;").replace("\t", "<span style='margin-right:10px'>&nbsp;</span>") + "</pre>");
-		titleLink.text(dependency());
+		contentField.value("<pre style='margin:0'>" + dependency().replace("<", "&lt;").replace("\t", "<span style='margin-right:10px'>&nbsp;</span>") + "</pre>");
+		contentLink.text(dependency());
+		repositoryField.value("<pre style='margin:0'>" + repository().replace("<", "&lt;").replace("\t", "<span style='margin-right:10px'>&nbsp;</span>") + "</pre>");
+		repositoryLink.text(dependency());
 	}
 
 	private String dependency() {
 		return ArtifactoryHelper.dependency(language, release, file);
+	}
+
+	private String repository() {
+		return ArtifactoryHelper.repository(box().configuration().url());
 	}
 
 }

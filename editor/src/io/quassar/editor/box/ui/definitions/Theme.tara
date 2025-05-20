@@ -243,7 +243,8 @@ Format("height:'auto'") autoHeight
 Format("borderRadius:'10px'") rounded
 Format("borderBottom:'2px solid #bdbdbd',background:'#efefef',padding:'0 10px',minHeight:'40px'", darkContent="borderBottom:'2px solid black',background:'#333'") subHeaderStyle
 Format("fontSize:'14pt'") languageViewTitle
-Format("fontSize:'14pt',fontWeight:'bold',color:'black'", darkContent="color:'white'") modelViewTitle
+Format("fontSize:'14pt',fontWeight:'bold'") modelViewTitle
+Format("fontSize:'14pt',fontWeight:'bold',color:'black'", darkContent="color:'white'") modelViewTitleSeparator
 Format("height:'25px',width:'120px'") minSelectorWidth
 //Format("border:'1px solid #bdbdbd',borderBottom:'0'") languagesStyle
 //Format("border:'1px solid #b16401',borderBottom:'0'") modelsStyle
@@ -284,7 +285,7 @@ Format("minWidth:'400px',maxWidth:'600px'") cardStyle
 Format("background:'#efefef',padding:'10px 30px',borderTop:'1px solid #aaa'") temporalFormat
 Format("width:'100px',height:'100px',background:'white',border:'1px solid #ddd'") stageStyle
 Format("position:'absolute',marginLeft:'60px',bottom:'0',marginBottom:'10px'") footerDateNavigator
-Format("minWidth:'300px',minHeight:'100px'") popoverStyle
+Format("minWidth:'300px',minHeight:'100px',maxHeight:'75vh',overflow:'auto',padding:'10px'") popoverStyle
 Format("height:'95px',zIndex:'1'") searchHeaderRow
 Format("position:'absolute',top:'0',marginTop:'5px',width:'100%'") searchHeaderBox
 Format("position:'absolute',right:'0',top:'0',marginRight:'15px',marginTop:'14px'") searchHeaderToolbar
@@ -319,6 +320,7 @@ Format("background:'white',padding:'10px 0 0 10px',borderRadius:'10px 10px 0 0',
 Format("background:'white',padding:'10px',borderRadius:'10px 10px 0 0'", darkContent="background:'#1F1F1F'") leftPanelStyle
 Format("position:'absolute',right:'0',top:'0',marginRight:'5px',marginTop:'5px'") closeIcon
 Format("position:'relative',marginTop:'5px',minHeight:'400px',overflow:'auto',background:'white'", darkContent="background:'#1F1F1F'") consoleStyle
+Format("height:'95px'") dependencyStyle
 
 // Cards
 Format("color:'black',fontSize:'40pt',textShadow:'2px 2px 2px #fff',marginTop:'30px'") cardTitle

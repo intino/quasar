@@ -9,6 +9,7 @@ import io.quassar.editor.model.User;
 import java.io.InputStream;
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class Command<T> {
@@ -33,6 +34,7 @@ public abstract class Command<T> {
 	}
 
 	protected ExecutionResult resultOf(OperationResult result) {
+		if (result.message() == null) return ExecutionResult.check(Collections.emptyList());
 		return ExecutionResult.check(List.of(new Message().kind(result.success() ? Message.Kind.INFO : Message.Kind.ERROR).content(result.message())));
 	}
 

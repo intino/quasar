@@ -15,6 +15,7 @@ public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
 	private Model model;
 	private BiConsumer<Model, String> commitListener;
 	private BiConsumer<Model, ExecutionResult> commitFailureListener;
+	private BiConsumer<Model, ExecutionResult> createReleaseListener;
 
 	public CommitModelDialog(EditorBox box) {
 		super(box);
@@ -30,6 +31,10 @@ public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
 
 	public void onCommitFailure(BiConsumer<Model, ExecutionResult> listener) {
 		this.commitFailureListener = listener;
+	}
+
+	public void onCreateRelease(BiConsumer<Model, ExecutionResult> listener) {
+		this.createReleaseListener = listener;
 	}
 
 	public void open() {
@@ -71,7 +76,10 @@ public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
 		notifyUser(translate("Committing..."), UserMessage.Type.Loading);
 		ExecutionResult result = box().commands(ModelCommands.class).createRelease(model, version(), username());
 		if (!result.success()) commitFailureListener.accept(model, result);
-		hideUserNotification();
+		else {
+			createReleaseListener.accept(model, result);
+			hideUserNotification();
+		}
 		return result;
 	}
 

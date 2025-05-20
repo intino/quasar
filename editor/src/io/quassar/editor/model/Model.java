@@ -13,6 +13,10 @@ public class Model extends SubjectWrapper {
 		super(subject);
 	}
 
+	public static String qualifiedTitleFor(String project, String module) {
+		return project + (module != null && !module.isEmpty() ? ": " + module : "");
+	}
+
 	public String id() {
 		return subject.name();
 	}
@@ -31,6 +35,29 @@ public class Model extends SubjectWrapper {
 
 	public void title(String value) {
 		set("title", value);
+		set("qualified-title", "");
+	}
+
+	public boolean isTitleQualified() {
+		return !qualifiedTitle().isEmpty();
+	}
+
+	public String qualifiedTitle() {
+		return getOrEmpty("qualified-title");
+	}
+
+	public String project() {
+		return getOrEmpty("project");
+	}
+
+	public String module() {
+		return getOrEmpty("module");
+	}
+
+	public void qualifiedTitle(String project, String module) {
+		set("qualified-title", qualifiedTitleFor(project, module));
+		set("project", project);
+		set("module", module);
 	}
 
 	public String description() {

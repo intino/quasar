@@ -18,6 +18,7 @@ import io.quassar.editor.box.languages.artifactories.LocalLanguageArtifactory;
 import io.quassar.editor.box.models.ModelManager;
 import io.quassar.editor.box.projects.ProjectManager;
 import io.quassar.editor.box.users.UserManager;
+import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 import io.quassar.editor.model.Utilities;
 import org.eclipse.jetty.websocket.api.Session;
@@ -93,7 +94,7 @@ public class EditorBox extends AbstractBox {
 	}
 
 	private Model modelWithLanguage(String id) {
-		String metamodel = languageManager.get(id).metamodel();
+		String metamodel = languageManager.get(Language.nameFrom(id)).metamodel();
 		return metamodel != null ? modelManager.get(metamodel) : null;
 	}
 

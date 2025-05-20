@@ -47,7 +47,7 @@ public class LanguageManager {
 	}
 
 	public Language create(String group, String name, Model metamodel, Language.Level level, String title, String description) {
-		Language language = new Language(subjectStore.create(SubjectHelper.languagePath(group, name)));
+		Language language = new Language(subjectStore.create(SubjectHelper.languagePath(name)));
 		language.group(group);
 		language.name(name.toLowerCase());
 		language.level(level);
@@ -193,7 +193,7 @@ public class LanguageManager {
 	}
 
 	public Language get(GavCoordinates gav) {
-		return get(gav.languageId());
+		return get(gav.artifactId());
 	}
 
 	public Language get(String key) {

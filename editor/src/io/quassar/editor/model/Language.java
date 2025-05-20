@@ -12,12 +12,12 @@ import java.util.stream.Stream;
 public class Language extends SubjectWrapper {
 
 	public static final String FileExtension = ".tara";
-	public static final String TaraDslGroup = "tara.dsl";
-	public static final String QuassarGroup = "quassar";
+	public static final String FoundationalGroup = "tara.dsl";
+	public static final String QuassarGroup = "io.quassar";
 	public static final String Metta = "metta";
 
 	public static String key(String group, String name) {
-		if (group == null || group.isEmpty() || group.equalsIgnoreCase(Language.TaraDslGroup)) return name;
+		if (group == null || group.isEmpty() || group.equalsIgnoreCase(Language.QuassarGroup) || group.equalsIgnoreCase(Language.FoundationalGroup)) return name;
 		return group + "." + name;
 	}
 
@@ -26,7 +26,7 @@ public class Language extends SubjectWrapper {
 	}
 
 	public static String nameFrom(String id) {
-		return id.contains(".") ? id.substring(id.indexOf(".")+1) : id;
+		return id.contains(".") ? id.substring(id.lastIndexOf(".")+1) : id;
 	}
 
 	public String id() {
@@ -53,7 +53,7 @@ public class Language extends SubjectWrapper {
 
 	public boolean isQuassarLanguage() {
 		String group = group();
-		return group != null && group.equals(Language.TaraDslGroup);
+		return group != null && group.equals(Language.QuassarGroup);
 	}
 
 	public String name() {

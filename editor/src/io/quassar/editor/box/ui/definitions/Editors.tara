@@ -5,6 +5,73 @@ use Users
 use UI
 use Theme
 
+Template(layout=Horizontal) modelTitleViewer
+
+	Block simpleTitleBlock as Conditional
+		Link(title="", format=modelViewTitle upperCase) title as Action
+
+	Block(layout=Horizontal Center) qualifiedTitleBlock as Conditional
+		Link(title="", format=modelViewTitle upperCase airRight) project as OpenPopover(projectBlock)
+		Text(value=":", format=modelViewTitleSeparator upperCase airRight)
+		Link(title="", format=modelViewTitle upperCase) module as OpenPopover(moduleBlock)
+		MaterialIconButton(title="Edit name", icon="Edit", size=Small, format=airLeft) editTitleTrigger as Action
+
+	Block(format=popoverStyle) projectBlock as Popover
+		TemplateStamp(template=projectViewer) projectViewer
+
+	Block(format=popoverStyle) moduleBlock as Popover
+		Text(format=h5 middleAirBottom) moduleBlockTitle
+		TemplateStamp(template=projectModuleViewer) moduleViewer
+
+	TemplateStamp(template=modelTitleDialog) titleDialog
+
+Template projectViewer
+	TemplateStamp(template=projectModuleViewer) modules as Multiple(noItemsMessage="no modules")
+
+Template(format=airBottom) projectModuleViewer
+	Text(format=h5 middleAirBottom, visible=false) moduleName
+	Block(format=doubleAirLeft) > TemplateStamp(template=projectModuleEntryViewer) entries as Multiple(noItemsMessage="no models")
+
+Template(layout=Vertical, format=smallAirBottom) projectModuleEntryViewer
+	Link(title="", format=h6, visible=false) titleLink as Action
+	Text(format=h6 bold, visible=false) titleText
+
+Template(layout=Horizontal) modelTitleDialog
+
+	Dialog(title="Edit name") dialog as Absolute(height=600px, width=700px)
+        Block(layout=Vertical) as Relative(height=100%, offsetHeight=40px)
+			Selector typeSelector as RadioBox
+				Text(value="Simple name") simpleOption as Option
+				Text(value="Qualified name") qualifiedOption as Option
+
+			Block(format=doubleAirTop)
+				Block simpleTitleBlock as Conditional(typeSelector.simpleOption)
+					Text(mode=Uppercase) titleField as Editable
+
+				Block qualifiedTitleBlock as Conditional(typeSelector.qualifiedOption)
+					Text(format=airBottom) qualifiedTitleField as Editable(placeholder="Fill project and module") Readonly
+					Block(layout=Horizontal Center)
+						Block(format=middleAirRight) as Relative(width=50%, offsetWidth=5px)
+							Text(value="Project")
+							Selector projectSelector as ComboBox(placeholder="Select project")
+							Link(title="Add project", format=smallAirTop) addProjectLink as Action
+						Block(format=middleAirLeft) as Relative(width=50%, offsetWidth=5px)
+							Text(value="Module")
+							Selector moduleSelector as ComboBox(placeholder="Select module")
+							Link(title="Add module", format=smallAirTop) addModuleLink as Action
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(dialog)
+            Button(title="Save", size=Small, highlight=Fill) save as Action
+
+    Dialog(title="Add") addDialog as Absolute(width=300px, height=170px)
+        Block(layout=Vertical) as Relative(height=100%, offsetHeight=40px)
+    		Text(mode=Uppercase) addField as Editable
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(dialog)
+            Button(title="Add", size=Small, highlight=Fill) add as Action
+
 Template(layout=Horizontal) commitModelDialog
 
 	Dialog(title="Commit model") dialog as Absolute(height=300px, width=500px)

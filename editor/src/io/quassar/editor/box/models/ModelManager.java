@@ -3,6 +3,7 @@ package io.quassar.editor.box.models;
 import io.intino.alexandria.Json;
 import io.intino.alexandria.logger.Logger;
 import io.intino.ls.IntinoLanguageServer;
+import io.intino.ls.codeinsight.DiagnosticService;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.languages.LanguageServerManager;
 import io.quassar.editor.box.util.ArchetypeHelper;
@@ -29,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static java.util.Collections.emptyList;
 
 public class ModelManager {
 	private final SubjectStore subjectStore;
@@ -75,6 +78,22 @@ public class ModelManager {
 		return language.releases().stream().map(LanguageRelease::examples).flatMap(Collection::stream).distinct().map(this::get).toList();
 	}
 
+	public List<Model> models(String project, String module, String owner) {
+		List<Subject> result = subjectStore.subjects().type(SubjectHelper.ModelType).where("owner").equals(owner).where("project").equals(project).where("module").equals(module).collect();
+		return result.stream().map(this::get).toList();
+	}
+
+	public List<String> projects(String owner) {
+		List<Subject> result = subjectStore.subjects().type(SubjectHelper.ModelType).where("owner").equals(owner).collect();
+		return result.stream().map(s -> s.get("project")).filter(r -> r != null && !r.isEmpty()).distinct().toList();
+	}
+
+	public List<String> modules(String project, String owner) {
+		if (project == null) return emptyList();
+		List<Subject> result = subjectStore.subjects().type(SubjectHelper.ModelType).where("owner").equals(owner).where("project").equals(project).collect();
+		return result.stream().map(s -> s.get("module")).filter(r -> r != null && !r.isEmpty()).distinct().toList();
+	}
+
 	public boolean exists(String key) {
 		return get(key) != null;
 	}
@@ -119,6 +138,10 @@ public class ModelManager {
 		return get(name);
 	}
 
+	public List<Diagnostic> check(Model model, String release) {
+		return server(model, release).getDiagnosticService().analyzeWorkspace();
+	}
+
 	public void updateLanguageVersion(Model model, String version) {
 		GavCoordinates language = model.language();
 		model.language(new GavCoordinates(language.groupId(), language.artifactId(), version));
@@ -132,8 +155,14 @@ public class ModelManager {
 	public boolean isWorkspaceEmpty(Model model, String release) {
 		File workspace = workspace(model, release).root();
 		File[] files = workspace.exists() ? workspace.listFiles() : null;
-		// TODO OR consultar diagnostic service para ver los archivos que no tienen mograms
 		return files == null || files.length == 0;
+	}
+
+	public boolean hasWorkspaceMograms(Model model, String release) {
+		IntinoLanguageServer server = server(model, release);
+		if (server == null) return false;
+		DiagnosticService.Statistics statistics = server.getDiagnosticService().statistics();
+		return statistics.mogramsPerUnit().values().stream().mapToLong(v -> v).sum() > 0;
 	}
 
 	public Workspace workspace(Model model, String release) {

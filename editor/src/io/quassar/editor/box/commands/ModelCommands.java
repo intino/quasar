@@ -93,10 +93,18 @@ public class ModelCommands extends Commands {
 		command.execute();
 	}
 
-	public void save(Model model, String title, String username) {
-		SaveModelTitleCommand command = setup(new SaveModelTitleCommand(box), username);
+	public void saveSimpleTitle(Model model, String title, String username) {
+		SaveModelSimpleTitleCommand command = setup(new SaveModelSimpleTitleCommand(box), username);
 		command.model = model;
 		command.title = title;
+		command.execute();
+	}
+
+	public void saveQualifiedTitle(Model model, String project, String module, String username) {
+		SaveModelQualifiedTitleCommand command = setup(new SaveModelQualifiedTitleCommand(box), username);
+		command.model = model;
+		command.project = project;
+		command.module = module;
 		command.execute();
 	}
 

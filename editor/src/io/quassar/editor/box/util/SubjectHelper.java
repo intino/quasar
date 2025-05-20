@@ -24,20 +24,16 @@ public class SubjectHelper {
 	public static final String ModelReleasePath = "%s.model/%s.release";
 	public static final String UserPath = "%s.user";
 
-	public static String languagePath(String group, String name) {
-		return LanguagePath.formatted(Language.key(group, name));
-	}
-
-	public static String languagePath(String id) {
-		return LanguagePath.formatted(id);
+	public static String languagePath(String name) {
+		return LanguagePath.formatted(name);
 	}
 
 	public static String pathOf(Language language) {
-		return LanguagePath.formatted(language.key());
+		return LanguagePath.formatted(language.name());
 	}
 
 	public static String pathOf(Language language, LanguageRelease release) {
-		return LanguageReleasePath.formatted(language.key(), release.version());
+		return LanguageReleasePath.formatted(language.name(), release.version());
 	}
 
 	public static String pathOf(Language language, LanguageRelease release, LanguageTool tool) {
@@ -45,15 +41,15 @@ public class SubjectHelper {
 	}
 
 	public static String pathOf(Language language, LanguageRelease release, String tool) {
-		return LanguageReleaseToolPath.formatted(language.key(), release.version(), tool);
+		return LanguageReleaseToolPath.formatted(language.name(), release.version(), tool);
 	}
 
 	public static String pathOf(Language language, LanguageRelease release, LanguageTool tool, String parameter) {
-		return LanguageToolParameterPath.formatted(language.key(), release.version(), tool.name(), parameter);
+		return LanguageToolParameterPath.formatted(language.name(), release.version(), tool.name(), parameter);
 	}
 
 	public static String pathOf(Language language, String version) {
-		return LanguageReleasePath.formatted(language.key(), version);
+		return LanguageReleasePath.formatted(language.name(), version);
 	}
 
 	public static String modelPath(String id) {
