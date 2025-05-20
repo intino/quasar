@@ -14,7 +14,7 @@ import org.eclipse.lsp4j.launch.LSPLauncher;
 import org.eclipse.lsp4j.services.LanguageClient;
 import org.eclipse.lsp4j.services.LanguageServer;
 import org.junit.*;
-import tara.dsl.Meta;
+import tara.dsl.Metta;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +54,7 @@ public class LauncherTest {
 		File workspace = new File("./workspace");
 		inClient.connect(outServer);
 		outClient.connect(inServer);
-		server = new IntinoLanguageServer(new Meta(), new FileDocumentManager(workspace));
+		server = new IntinoLanguageServer(new Metta(), new FileDocumentManager(workspace));
 		serverLauncher = LSPLauncher.createServerLauncher(server, inServer, outServer);
 		serverListening = serverLauncher.startListening();
 

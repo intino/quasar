@@ -17,7 +17,7 @@ import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
-import tara.dsl.Meta;
+import tara.dsl.Metta;
 
 import java.io.File;
 import java.net.URI;
@@ -82,24 +82,24 @@ public class DiagnosticService {
 
 	private static Diagnostic diagnosticOf(SyntaxException e) {
 		Range range = new Range(new Position(e.getLine() - 1, e.getStartColumn()), new Position(e.getEndLine() - 1, e.getEndColumn()));
-		return new Diagnostic(range, e.getMessage(), DiagnosticSeverity.Error, e.getUri().getPath());
+		return new Diagnostic(range, e.getOriginalMessage().substring(e.getMessage().indexOf("@") - 1), DiagnosticSeverity.Error, e.getUri().getPath());
 	}
 
 	private static Diagnostic diagnosticOf(DependencyException e) {
 		Element.TextRange textRange = e.getElement().textRange();
 		Range range = new Range(new Position(textRange.startLine() - 1, textRange.startColumn()), new Position(textRange.endLine() - 1, textRange.endColumn()));
-		return new Diagnostic(range, e.getMessage(), DiagnosticSeverity.Error, e.getElement().source().getPath());
+		return new Diagnostic(range, e.getMessage().substring(e.getMessage().indexOf("@") - 1), DiagnosticSeverity.Error, e.getElement().source().getPath());
 	}
 
 	private static Diagnostic diagnosticOf(SemanticException e) {
 		Element.TextRange textRange = e.origin()[0].textRange();
 		Range range = new Range(new Position(textRange.startLine() - 1, textRange.startColumn()), new Position(textRange.endLine() - 1, textRange.endColumn()));
 		DiagnosticSeverity level = e.level() == SemanticIssue.Level.ERROR ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning;
-		return new Diagnostic(range, e.getMessage(), level, e.getIssue().origin()[0].source().getPath());
+		return new Diagnostic(range, e.getMessage().substring(e.getMessage().indexOf("@") - 1), level, e.getIssue().origin()[0].source().getPath());
 	}
 
 
 	private static DependencyResolver dependencyResolver(Model model) {
-		return new DependencyResolver(model, new Meta(), "io.intino.test", new File("temp/src/io/intino/test/model/rules"), new File(Language.class.getProtectionDomain().getCodeSource().getLocation().getFile()), new File("temp"));
+		return new DependencyResolver(model, new Metta(), "io.intino.test", new File("temp/src/io/intino/test/model/rules"), new File(Language.class.getProtectionDomain().getCodeSource().getLocation().getFile()), new File("temp"));
 	}
 }
