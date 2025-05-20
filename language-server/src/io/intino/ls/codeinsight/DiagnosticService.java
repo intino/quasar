@@ -95,7 +95,7 @@ public class DiagnosticService {
 		Element.TextRange textRange = e.origin()[0].textRange();
 		Range range = new Range(new Position(textRange.startLine() - 1, textRange.startColumn()), new Position(textRange.endLine() - 1, textRange.endColumn()));
 		DiagnosticSeverity level = e.level() == SemanticIssue.Level.ERROR ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning;
-		return new Diagnostic(range, e.getMessage().substring(0, e.getMessage().indexOf("@") - 1), level, e.getIssue().origin()[0].source().getPath());
+		return new Diagnostic(range, e.getMessage(), level, e.getIssue().origin()[0].source().getPath());
 	}
 
 
