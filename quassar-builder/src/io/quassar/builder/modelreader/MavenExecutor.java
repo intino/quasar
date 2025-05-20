@@ -15,7 +15,7 @@ public class MavenExecutor {
 			List<String> command = new ArrayList<>();
 			command.add(mvnCommand);
 			command.add("-Dmaven.repo.local=" + localRepository.getAbsolutePath());
-			command.add("package");
+			command.add("install");
 			ProcessBuilder processBuilder = new ProcessBuilder(command);
 			processBuilder.directory(pom.getParentFile());
 			processBuilder.redirectErrorStream(true);

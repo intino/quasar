@@ -4,13 +4,37 @@ rule type(modelreader)
     import $package.$outDsl+firstUpperCase~Graph;
     import io.intino.magritte.builder.StashBuilder;
 
-    import java.io.File;
-    import java.util.List;
+	import java.io.*;
+    import java.nio.file.*;
+    import java.util.*;
+    import java.util.stream.*;
+    import java.util.zip.*;
 
     public class ModelReader {
-    	//TODO posiblidad de zipfile
-    	public static $outDsl+firstUpperCase~Graph loadFromZip(File $outDsl~File) {
-    		return load(List.of($outDsl~File));
+    	public static $outDsl+firstUpperCase~Graph loadFromZip(File $outDsl~File) throws IOException {
+			Path tempDir = Files.createTempDirectory("zip_extract_");
+			try (ZipInputStream zis = new ZipInputStream(Files.newInputStream($outDsl~File.toPath()))) {
+				ZipEntry entry;
+				while ((entry = zis.getNextEntry()) != null) {
+					Path newPath = resolveZipEntry(tempDir, entry);
+					if (entry.isDirectory()) Files.createDirectories(newPath);
+					else {
+						Files.createDirectories(newPath.getParent());
+						try (OutputStream os = Files.newOutputStream(newPath)) {
+							zis.transferTo(os);
+						}
+					}
+					zis.closeEntry();
+				}
+			}
+			try (Stream<Path> files = Files.walk(tempDir)) {
+				return load(files
+							.filter(Files::isRegularFile)
+							.filter(path -> path.getFileName().toString().endsWith(".tara"))
+							.filter(path -> !path.getFileName().toString().startsWith("."))
+							.map(Path::toFile)
+							.toList());
+			}
     	}
 
     	public static $outDsl+firstUpperCase~Graph load(File... $outDsl~File) {
@@ -20,4 +44,10 @@ rule type(modelreader)
     	public static $outDsl+firstUpperCase~Graph load(List<File> $outDsl~Files) {
     		return $outDsl+firstUpperCase~Graph.load(new StashBuilder($outDsl~Files, "$outDslCoors", "accessor", System.out).build());
     	}
+
+		private static Path resolveZipEntry(Path targetDir, ZipEntry zipEntry) throws IOException {
+			Path resolvedPath = targetDir.resolve(zipEntry.getName()).normalize();
+			if (!resolvedPath.startsWith(targetDir)) throw new IOException("Invalid Entry: " + zipEntry.getName());
+			return resolvedPath;
+		}
     }

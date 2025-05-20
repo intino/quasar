@@ -60,6 +60,12 @@ rule type(pom)
 
 		<dependencies>
 			<dependency>
+				<groupId>$groupId</groupId>
+				<artifactId>$name</artifactId>
+				<version>$version</version>
+				<scope>compile</scope>
+			</dependency>
+			<dependency>
 				<groupId>io.intino.magritte</groupId>
 				<artifactId>builder</artifactId>
 				<version>8.0.0</version>

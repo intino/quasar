@@ -46,7 +46,7 @@ public class GenerateModelReaderOperation extends ModelOperation {
 
 	private void copyLanguageAsBuildItem() {
 		try {
-			File file = new File(configuration.outDirectory().getParentFile(), "build/language");
+			File file = new File(configuration.outDirectory().getParentFile().getParentFile(), "build/language");
 			file.mkdirs();
 			FileSystemUtils.copyDir(languageDirectory().getAbsolutePath(), file.getAbsolutePath());
 		} catch (FileSystemException e) {

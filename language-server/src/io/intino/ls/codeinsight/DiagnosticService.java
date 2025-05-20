@@ -37,6 +37,13 @@ public class DiagnosticService {
 		this.models = models;
 	}
 
+	public record Statistics(Map<String, Integer> mogramsPerUnit) {
+	}
+
+	public Statistics statistics() {
+		return new Statistics(models.values().stream().collect(Collectors.toMap(m -> m.model().name(), m -> m.syntaxErrors().isEmpty() ? m.model().mograms().size() : 0)));
+	}
+
 	public List<Diagnostic> analyzeWorkspace() {
 		ModelUnit model = merge(new ArrayList<>(models.values()));
 		analyzeWorkspace(model);

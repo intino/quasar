@@ -17,7 +17,7 @@ public class ModelReaderGenerator {
 	}
 
 	public void generate() {
-		generateModelAccessorClass();
+		generateModelReaderClass();
 		File pom = generatePom();
 		if (pom != null) {
 			new MavenExecutor().run(pom, conf.localRepository(), new File(conf.moduleDirectory(), "mvn.log"));
@@ -28,7 +28,7 @@ public class ModelReaderGenerator {
 		}
 	}
 
-	private void generateModelAccessorClass() {
+	private void generateModelReaderClass() {
 		try {
 			FrameBuilder builder = new FrameBuilder().add("modelreader")
 					.add("outdsl", conf.dsl().outDsl())
