@@ -36,7 +36,7 @@ public class DependencyTemplate extends AbstractDependencyTemplate<EditorBox> {
 		contentField.value("<pre style='margin:0'>" + dependency().replace("<", "&lt;").replace("\t", "<span style='margin-right:10px'>&nbsp;</span>") + "</pre>");
 		contentLink.text(dependency());
 		repositoryField.value("<pre style='margin:0'>" + repository().replace("<", "&lt;").replace("\t", "<span style='margin-right:10px'>&nbsp;</span>") + "</pre>");
-		repositoryLink.text(dependency());
+		repositoryLink.text(repository());
 	}
 
 	private String dependency() {

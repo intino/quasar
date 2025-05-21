@@ -32,6 +32,7 @@ Artifact(groupId = "io.quassar", version = "1.0.0-SNAPSHOT") editor
 			Snapshot("https://artifactory.intino.io/artifactory/snapshot-libraries")
 
 	Deployment(server = deploy-quassar-dev, runConfiguration = dev)
+	Deployment(server = vps-quassar-exp, runConfiguration = pro)
 
 	Parameter("port")
 	Parameter("url")
@@ -65,4 +66,15 @@ RunConfiguration dev
 	Argument("language-repository", "/home/intino/.m2")
 	Argument("builder-service-url", "http://localhost:9002")
 
+RunConfiguration pro
+	Argument("port", "8080")
+	Argument("url", "https://quassar.io")
+	Argument("home", "/home/intino")
+	Argument("title", "Quassar")
+	Argument("federation-url", "https://www.monentia.es/login")
+	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
+	Argument("language-repository", "/home/intino/.m2")
+	Argument("builder-service-url", "http://localhost:9002")
+
 Server(type=Dev) deploy-quassar-dev
+Server(type=Pro) vps-quassar-exp

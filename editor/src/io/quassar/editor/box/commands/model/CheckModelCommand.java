@@ -21,8 +21,9 @@ public class CheckModelCommand extends Command<ExecutionResult> {
 
 	@Override
 	public ExecutionResult execute() {
-		if (!box.modelManager().hasWorkspaceMograms(model, release)) return noMogramsResult();
-		return resultOf(box.modelManager().check(model, release));
+		ExecutionResult result = resultOf(box.modelManager().check(model, release));
+		if (result.success() && !box.modelManager().hasWorkspaceMograms(model, release)) return noMogramsResult();
+		return result;
 	}
 
 	private ExecutionResult resultOf(List<Diagnostic> diagnosticList) {
