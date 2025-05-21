@@ -93,6 +93,11 @@ public class ModelsDatasource extends PageDatasource<Model> {
 		String[] conditions = condition.toLowerCase().split(" ");
 		return models.stream().filter(m ->
 				DatasourceHelper.matches(m.name(), conditions) ||
+				DatasourceHelper.matches(m.title(), conditions) ||
+				DatasourceHelper.matches(m.qualifiedTitle(), conditions) ||
+				DatasourceHelper.matches(m.description(), conditions) ||
+				DatasourceHelper.matches(m.project(), conditions) ||
+				DatasourceHelper.matches(m.module(), conditions) ||
 				DatasourceHelper.matches(m.owner(), conditions) ||
 				DatasourceHelper.matches(m.language().toString(), conditions)
 		).collect(toList());

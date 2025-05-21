@@ -110,7 +110,7 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 			logoExists = value != null;
 			if (value != null) Files.write(tmpFile.toPath(), value.bytes());
 			if (changeLogoListener != null) changeLogoListener.accept(value != null ? logo() : null);
-			logoField.value(value != null ? box().languageManager().loadLogo(language) : null);
+			logoField.value(value != null ? (language != null ? box().languageManager().loadLogo(language) : tmpFile) : null);
 		} catch (IOException e) {
 			Logger.error(e);
 		}

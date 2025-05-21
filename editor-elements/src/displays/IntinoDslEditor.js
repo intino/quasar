@@ -119,8 +119,12 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
         const theme = Theme.get();
         const loading = this.loading;
         loading.current.style.display = "block";
+        if (!theme.isDark()) {
+            loading.current.style.display = "none";
+            return;
+        }
         window.setTimeout(() => {
-            monaco.editor.setTheme(theme.isDark() ? "Default Dark Modern" : "Default Light Modern");
+            monaco.editor.setTheme("Default Dark Modern");
             window.setTimeout(() => loading.current.style.display = "none", 1000);
         }, 200);
     };
