@@ -20,7 +20,6 @@ import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
-import io.quassar.editor.model.TokenLocation;
 
 import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
@@ -69,6 +68,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 	@Override
 	public void didMount() {
 		super.didMount();
+		if (model == null) return;
 		createFileEditor();
 		refresh();
 	}
