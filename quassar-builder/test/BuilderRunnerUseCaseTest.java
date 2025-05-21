@@ -31,6 +31,12 @@ public class BuilderRunnerUseCaseTest {
 
 	@Test
 	@Ignore
+	public void should_run_quassar_builder_with_picota_m2() {
+		QuassarcRunner.main(new String[]{"/Users/oroncal/workspace/infrastructure/quassar/temp/builder-service/workspace/picota1/tara_args.txt"});
+	}
+
+	@Test
+	@Ignore
 	public void should_run_quassar_builder_with_m2_2() {
 		QuassarcRunner.main(new String[]{"test-res/visora-m2.txt"});
 	}

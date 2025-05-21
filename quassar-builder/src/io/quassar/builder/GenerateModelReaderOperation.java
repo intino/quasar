@@ -6,6 +6,7 @@ import io.intino.magritte.builder.compiler.operations.LayerGenerationOperation;
 import io.intino.tara.Language;
 import io.intino.tara.builder.LanguageLoader;
 import io.intino.tara.builder.core.CompilationUnit;
+import io.intino.tara.builder.core.Phases;
 import io.intino.tara.builder.core.errorcollection.CompilationFailedException;
 import io.intino.tara.builder.core.errorcollection.TaraException;
 import io.intino.tara.builder.core.operation.model.ModelOperation;
@@ -40,13 +41,15 @@ public class GenerateModelReaderOperation extends ModelOperation {
 		if (model.mograms().isEmpty() || model.mograms().stream().allMatch(m -> m.level() == Level.M1)) return;
 		new LayerGenerationOperation(unit).call(model);
 		if (isM2(model) && hasM3()) generateMetaModel();
-		new ModelReaderGenerator(unit.configuration()).generate();
+		boolean generate = new ModelReaderGenerator(unit.configuration()).generate();
+		if (!generate)
+			throw new CompilationFailedException(Phases.CODE_GENERATION, unit, new Exception("Impossible to generate model readers. Internal error"));
 		copyLanguageAsBuildItem();
 	}
 
 	private void copyLanguageAsBuildItem() {
 		try {
-			File file = new File(configuration.outDirectory().getParentFile().getParentFile(), "build/language");
+			File file = new File(configuration.outDirectory().getParentFile().getParentFile(), "out/build/language");
 			file.mkdirs();
 			FileSystemUtils.copyDir(languageDirectory().getAbsolutePath(), file.getAbsolutePath());
 		} catch (FileSystemException e) {

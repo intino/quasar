@@ -20,6 +20,7 @@ public class PostRunOperationAction implements io.intino.alexandria.rest.Request
 
 	public String execute() throws InternalServerError {
 		try {
+			if ( !new File(runOperationContext.languagePath()).exists()) throw new BadRequest("Language path does not exist");
 			if (box.builderStore().get(runOperationContext.imageURL()) == null)
 				throw new NotFound("Builder not found");
 			if (filesInTar == null) throw new BadRequest("Required source files");

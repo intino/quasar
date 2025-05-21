@@ -5,7 +5,7 @@ Artifact("io.quassar", "1.0.0") quassar-builder
 		Compile("io.quassar", "builder-sdk", "1.0.0")
 		Compile("io.intino.magritte", "builder", "8.0.0")
 		Compile("io.intino.itrules", "engine", "2.0.2")
-		Test("junit", "junit", "4.13")
+		Test("junit", "junit", "4.13.2")
 	Package(mode = ModulesAndLibrariesLinkedByManifest) as Runnable(mainClass = "io.quassar.builder.QuassarcRunner")
 		finalName = "builder"
 RunConfiguration local

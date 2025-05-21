@@ -24,11 +24,12 @@ public class BuilderTest {
 	public static final String TEMP = "../temp";
 	public static final String TEST_RES = "test-res/";
 	private BuilderServiceBox box;
+	private String langRepository = System.getProperty("user.home") + "/.m2/";
 
 	@Before
 	public void setUp() throws IOException {
 		box = new BuilderServiceBox(new String[]{"home=" + TEMP,
-				"language-repository=" + System.getProperty("user.home") + "/.m2/",
+				"language-repository=" + langRepository,
 				"port=9000",
 				"dockerhub-auth-file=" + TEMP + "/configuration/dockerhub.properties"});
 		FileUtils.deleteDirectory(box.workspace());
@@ -57,12 +58,13 @@ public class BuilderTest {
 	public void should_run_build() throws InternalServerError, InterruptedException, NotFound, IOException {
 		var action = new PostRunOperationAction();
 		action.box = box;
-		action.filesInTar = new Resource(new File(TEST_RES + "sources.tar"));
+		action.filesInTar = new Resource(new File(TEST_RES + "picota.tar"));
 		action.runOperationContext = new RunOperationContext()
 				.operation("Build")
 				.languageGroup("tara.dsl")
-				.languageName("Meta")
+				.languageName("metta")
 				.languageVersion("2.0.0")
+				.languagePath(langRepository  + "repository/tara/dsl/metta/2.0.0/metta-2.0.0.jar")
 				.projectGroup("io.intino")
 				.projectName("konos")
 				.projectVersion("13.0.1")

@@ -9,7 +9,7 @@ import java.util.List;
 
 public class MavenExecutor {
 
-	public void run(File pom, File localRepository, File log) {
+	public boolean run(File pom, File localRepository, File log) {
 		try {
 			String mvnCommand = "mvn";
 			List<String> command = new ArrayList<>();
@@ -29,8 +29,10 @@ public class MavenExecutor {
 				int exitCode = process.waitFor();
 				writer.println("mvn finished with exit code: " + exitCode);
 			}
+			return process.exitValue() == 0;
 		} catch (Exception ignored) {
 			ignored.printStackTrace();
 		}
+		return false;
 	}
 }
