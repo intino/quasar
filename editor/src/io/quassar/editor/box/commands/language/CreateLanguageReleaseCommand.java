@@ -50,7 +50,7 @@ public class CreateLanguageReleaseCommand extends Command<LanguageRelease> {
 	private void build(Model metamodel) {
 		File destination = null;
 		try {
-			BuildResult result = new ModelBuilder(metamodel, new GavCoordinates(metamodel.language().groupId(), language.name(), version), box).build(author);
+			BuildResult result = new ModelBuilder(metamodel, new GavCoordinates(language.group(), language.name(), version), box).build(author);
 			Resource resource = result.zipArtifacts();
 			destination = box.archetype().tmp().builds(UUID.randomUUID().toString());
 			TarHelper.extract(resource.inputStream(), destination);

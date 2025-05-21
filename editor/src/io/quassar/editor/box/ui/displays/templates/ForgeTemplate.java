@@ -4,6 +4,7 @@ import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.ui.types.ForgeView;
 import io.quassar.editor.box.ui.types.LanguageView;
 import io.quassar.editor.box.util.DisplayHelper;
+import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.box.util.SessionHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
@@ -35,8 +36,8 @@ public class ForgeTemplate extends AbstractForgeTemplate<EditorBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
-		notFoundBlock.visible(model == null);
-		contentBlock.visible(model != null);
+		notFoundBlock.visible(!PermissionsHelper.hasPermissions(model, session()));
+		contentBlock.visible(PermissionsHelper.hasPermissions(model, session()));
 		if (model == null) return;
 		Language language = box().languageManager().getWithMetamodel(model);
 		hideBlocks();

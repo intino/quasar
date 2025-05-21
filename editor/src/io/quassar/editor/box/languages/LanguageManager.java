@@ -103,7 +103,7 @@ public class LanguageManager {
 	}
 
 	public void saveDsl(Language language, String release, File dsl) {
-		copy(dsl, archetype.languages().releaseDsl(language.key(), release));
+		copy(dsl, archetype.languages().releaseDslJar(language.key(), release));
 	}
 
 	public File loadDsl(GavCoordinates coordinates) {
@@ -112,6 +112,12 @@ public class LanguageManager {
 
 	public File loadDsl(Language language, LanguageRelease release) {
 		return loadDsl(language.key(), release.version());
+	}
+
+	public File loadDslManifest(Language language, LanguageRelease release) {
+		File manifest = archetype.languages().releaseDslManifest(language.key(), release.version());
+		if (!manifest.exists()) ArtifactoryHelper.prepareDsl(language, release, archetype.languages());
+		return manifest.exists() ? manifest : null;
 	}
 
 	public File loadGraph(Language language, LanguageRelease release) {
@@ -272,7 +278,7 @@ public class LanguageManager {
 
 	private File loadDsl(String language, String release) {
 		if (release == null) return null;
-		File file = archetype.languages().releaseDsl(language, release);
+		File file = archetype.languages().releaseDslJar(language, release);
 		if (!file.exists()) return null;
 		return file;
 	}

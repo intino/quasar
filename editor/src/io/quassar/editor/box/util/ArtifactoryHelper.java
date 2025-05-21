@@ -2,6 +2,7 @@ package io.quassar.editor.box.util;
 
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
+import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
 import org.apache.commons.io.FileUtils;
@@ -14,7 +15,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ArtifactoryHelper {
@@ -22,7 +22,24 @@ public class ArtifactoryHelper {
 	private static final String DependencyTemplate = "<dependency>\n\t<groupId>%s</groupId>\n\t<artifactId>%s</artifactId>\n\t<version>%s</version>\n</dependency>";
 	private static final String RepositoryTemplate = "<repository>\n\t<id>Quassar</id>\n\t<url>%s/releases</url>\n</repository>";
 	private static final String ReadersDirectory = "/readers/";
-	private static final String ReaderSuffix = "-reader";
+	private static final String ReaderPrefix = "reader-";
+
+	public static void prepareDsl(Language language, LanguageRelease release, Archetype.Languages archetype) {
+		try {
+			File jarFile = archetype.releaseDslJar(language.key(), release.version());
+			if (jarFile == null || !jarFile.exists()) return;
+			File destination = extractJar(jarFile);
+			File manifest = locateManifest(destination);
+			if (manifest == null) {
+				removeDirectory(destination);
+				return;
+			}
+			Files.copy(manifest.toPath(), archetype.releaseDslManifest(language.key(), release.version()).toPath());
+			removeDirectory(destination);
+		} catch (IOException e) {
+			Logger.error(e);
+		}
+	}
 
 	public static void prepareReaderDependency(Language language, LanguageRelease release, String name, Archetype.Languages archetype) {
 		File file = archetype.releaseReaderFile(language.key(), release.version(), name);
@@ -30,8 +47,8 @@ public class ArtifactoryHelper {
 		File tempDir = extractReaderToDirectory(language, release, name, archetype, file);
 		File jarFile = locateJarFileInReader(release, tempDir);
 		if (jarFile == null) return;
-		File destination = extractJar(jarFile, language, release, name, archetype);
-		modifyManifestAndCopy(destination, language, release, name, archetype);
+		File destination = extractJar(jarFile);
+		modifyReaderManifestAndCopy(destination, language, release, name, archetype);
 		removeDirectory(tempDir);
 	}
 
@@ -58,13 +75,13 @@ public class ArtifactoryHelper {
 		return tempDir;
 	}
 
-	private static File extractJar(File jarFile, Language language, LanguageRelease release, String name, Archetype.Languages archetype) {
+	private static File extractJar(File jarFile) {
 		File destination = new File(jarFile.getAbsolutePath().replace(".jar", ""));
 		ZipHelper.extract(jarFile, destination);
 		return destination;
 	}
 
-	private static void modifyManifestAndCopy(File jarDir, Language language, LanguageRelease release, String name, Archetype.Languages archetype) {
+	private static void modifyReaderManifestAndCopy(File jarDir, Language language, LanguageRelease release, String name, Archetype.Languages archetype) {
 		try {
 			File manifest = locateManifest(jarDir);
 			if (manifest == null) return;
@@ -104,28 +121,24 @@ public class ArtifactoryHelper {
 		return RepositoryTemplate.formatted(url);
 	}
 
-	public static String groupId(String path) {
-		String[] pathInfo = path.split("/");
-		if (pathInfo.length < 4) return null;
-		return Arrays.stream(pathInfo, 0, pathInfo.length - 4).collect(Collectors.joining("."));
+	public static GavCoordinates parse(String path) {
+		String[] parts = path.split("/");
+		if (parts.length < 4) return null;
+
+		String version = parts[parts.length - 2];
+		String artifactId = parts[parts.length - 3];
+		StringBuilder groupIdBuilder = new StringBuilder();
+
+		for (int i = 0; i < parts.length - 3; i++) {
+			if (i > 0) groupIdBuilder.append(".");
+			groupIdBuilder.append(parts[i]);
+		}
+
+		return new GavCoordinates(groupIdBuilder.toString(), artifactId, version);
 	}
 
-	public static String artifactId(String path) {
-		String[] pathInfo = path.split("/");
-		if (pathInfo.length < 4) return null;
-		return pathInfo[pathInfo.length-4];
-	}
-
-	public static String version(String path) {
-		String[] pathInfo = path.split("/");
-		if (pathInfo.length < 4) return null;
-		return pathInfo[pathInfo.length-2];
-	}
-
-	public static String file(String path) {
-		String[] pathInfo = path.split("/");
-		if (pathInfo.length < 4) return null;
-		return pathInfo[pathInfo.length-3].replace(ReaderSuffix, "");
+	public static String readerNameFrom(String artifactId) {
+		return artifactId.replace(ReaderPrefix, "");
 	}
 
 	public static String dependencyGroup(Language language) {
@@ -134,12 +147,13 @@ public class ArtifactoryHelper {
 
 	public static String dependencyName(File dependency) {
 		String extension = FilenameUtils.getExtension(dependency.getName());
-		String suffix = dependency.getAbsolutePath().contains(ReadersDirectory) ? ReaderSuffix : "";
-		return dependency.getName().replace("." + extension, "") + suffix;
+		String prefix = dependency.getAbsolutePath().contains(ReadersDirectory) ? ReaderPrefix : "";
+		return prefix + dependency.getName().replace("." + extension, "");
 	}
 
 	private static void removeDirectory(File destination) {
 		try {
+			if (!destination.exists()) return;
 			FileUtils.deleteDirectory(destination);
 		} catch (IOException e) {
 			Logger.error(e);

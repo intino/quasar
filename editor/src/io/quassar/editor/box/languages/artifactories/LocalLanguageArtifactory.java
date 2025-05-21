@@ -26,7 +26,7 @@ public class LocalLanguageArtifactory implements LanguageArtifactory {
 
 	@Override
 	public File retrieve(GavCoordinates gav) {
-		return archetype.languages().releaseDsl(gav.languageId(), gav.version());
+		return archetype.languages().releaseDslJar(gav.languageId(), gav.version());
 	}
 
 	public String mainClass(GavCoordinates gav) {

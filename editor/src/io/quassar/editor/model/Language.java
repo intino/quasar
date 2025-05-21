@@ -44,7 +44,8 @@ public class Language extends SubjectWrapper {
 	}
 
 	public String group() {
-		return getOrEmpty("group");
+		String group = getOrEmpty("group");
+		return !group.isEmpty() ? group : Language.QuassarGroup;
 	}
 
 	public void group(String group) {
