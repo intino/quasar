@@ -3,6 +3,7 @@ package io.quassar.editor.box.ui.displays.templates;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.box.ui.types.ModelView;
+import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.box.util.SessionHelper;
 import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.Model;
@@ -50,12 +51,12 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
-		notFoundBlock.visible(model == null);
+		notFoundBlock.visible(!PermissionsHelper.hasPermissions(model, session()));
 		refreshContent();
 	}
 
 	private void refreshContent() {
-		contentBlock.visible(model != null);
+		contentBlock.visible(PermissionsHelper.hasPermissions(model, session()));
 		if (!contentBlock.isVisible()) return;
 		modelEditor.model(model, release);
 		modelEditor.view(selectedView);

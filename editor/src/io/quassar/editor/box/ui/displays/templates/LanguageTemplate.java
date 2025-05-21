@@ -4,10 +4,7 @@ import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.ui.types.LanguageView;
-import io.quassar.editor.box.util.DisplayHelper;
-import io.quassar.editor.box.util.LanguageHelper;
-import io.quassar.editor.box.util.ModelHelper;
-import io.quassar.editor.box.util.SessionHelper;
+import io.quassar.editor.box.util.*;
 import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
@@ -52,12 +49,17 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
-		notFoundBlock.visible(language == null);
+		notFoundBlock.visible(!PermissionsHelper.hasPermissions(language, session(), box()));
 		refreshHeader();
 		refreshBlocks();
 	}
 
 	private void refreshBlocks() {
+		if (!PermissionsHelper.hasPermissions(language, session(), box())) {
+			mainBlock.hide();
+			helpBlock.hide();
+			return;
+		}
 		if (release != null) {
 			mainBlock.hide();
 			helpBlock.show();
@@ -88,7 +90,7 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 	}
 
 	private void refreshHeader() {
-		headerStamp.visible(release == null);
+		headerStamp.visible(release == null && PermissionsHelper.hasPermissions(language, session(), box()));
 		if (!headerStamp.isVisible()) return;
 		headerStamp.language(language);
 		headerStamp.tab(tab);

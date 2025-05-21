@@ -1,9 +1,6 @@
 package io.quassar.editor.box.ui.pages;
 
-import io.intino.alexandria.exceptions.*;
-import java.time.*;
-import java.util.*;
-import io.quassar.editor.box.ui.displays.templates.*;
+import io.quassar.editor.box.ui.displays.templates.HomeTemplate;
 
 public class AboutPage extends AbstractAboutPage {
 

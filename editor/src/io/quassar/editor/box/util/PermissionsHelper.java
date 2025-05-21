@@ -2,11 +2,9 @@ package io.quassar.editor.box.util;
 
 import io.intino.alexandria.ui.services.push.UISession;
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
-import tara.dsl.Meta;
 
 public class PermissionsHelper {
 
@@ -18,16 +16,22 @@ public class PermissionsHelper {
 		return model.collaborators().contains(username);
 	}
 
-	private static boolean hasPermissions(Model model, UISession session) {
+	public static boolean hasPermissions(Model model, UISession session) {
+		if (model == null) return false;
+		if (model.isPublic()) return true;
 		String username = session.user() != null ? session.user().username() : null;
 		if (model.owner() != null && model.owner().equals(username)) return true;
 		return model.collaborators().stream().anyMatch(c -> c.equals(username));
 	}
 
-	private static boolean hasPermissions(Language language, UISession session, EditorBox box) {
+	public static boolean hasPermissions(Language language, UISession session, EditorBox box) {
+		if (language == null) return false;
+		if (language.isPublic()) return true;
+		if (language.isFoundational()) return true;
 		String username = session.user() != null ? session.user().username() : null;
 		String owner = box.languageManager().owner(language);
-		return owner != null && owner.equals(username);
+		if (owner != null && owner.equals(username)) return true;
+		return language.grantAccessList().stream().anyMatch(a -> a.equals(owner));
 	}
 
 	public static boolean canRemove(Model model, UISession session, EditorBox box) {
@@ -37,7 +41,7 @@ public class PermissionsHelper {
 	}
 
 	public static boolean canEdit(Language language, UISession session, EditorBox box) {
-		if (language.isQuassarLanguage()) return false;
+		if (language.isFoundational()) return false;
 		return hasPermissions(language, session, box);
 	}
 

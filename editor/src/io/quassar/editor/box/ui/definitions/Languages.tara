@@ -62,17 +62,13 @@ Template languagesLandingTemplate as Relative(height=100%, width=100%)
 Template languageTemplate as Relative(height=100%, width=100%, offsetHeight=2px)
 	TemplateStamp(template=languageHeaderTemplate, visible=false) headerStamp
 
-	Block(layout=Vertical Flexible CenterCenter, visible=false) openingBlock
-		Spinner(mode=Ring, color="secondary")
-		Text(value="" , translate=true, format=h3 airTop) openingMessage
-
 	Block(layout=Vertical Flexible, format=whiteBackground) bodyBlock as Relative(width=100%)
 
 		Block(layout=Vertical Flexible CenterCenter, visible=false) notFoundBlock
-			Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
-				Block(layout=Vertical CenterCenter)
-					Image(value="/images/logo-expanded.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=340px, height=80px)
-					Text(value="Language not found", format=h4 airTop textCentered, translate=true) message
+			Block(layout=Vertical Flexible, spacing=DP16, format=messageBlock) as Relative(height=100%, width=100%)
+				Block(layout=Vertical)
+					Text(value="Language not found", format=h2 airTop textCentered, translate=true) message
+					Block(layout=Horizontal) > Button(title="home", format=airTop, highlight=Outline) as Action Addressable(EditorElements.home)
 
 		Block(layout=Vertical Flexible, format=whiteBackground) helpBlock as Relative(width=100%) AutoSize Conditional
 			Block(layout=Vertical Flexible Center) as Relative(width=80%)

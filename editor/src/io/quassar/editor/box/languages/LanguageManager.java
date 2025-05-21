@@ -35,7 +35,7 @@ public class LanguageManager {
 	}
 
 	public List<Language> quassarLanguages() {
-		return languages().stream().filter(Language::isQuassarLanguage).toList();
+		return languages().stream().filter(Language::isFoundational).toList();
 	}
 
 	public List<Language> privateLanguages(String owner) {
@@ -218,7 +218,7 @@ public class LanguageManager {
 		if (language.isPublic() && language.grantAccessList().isEmpty()) return true;
 		if (user == null) return false;
 		String owner = owner(language);
-		if ((owner == null || owner.equals(User.Quassar)) && language.isQuassarLanguage()) return true;
+		if ((owner == null || owner.equals(User.Quassar)) && language.isFoundational()) return true;
 		if (owner != null && owner.equals(user)) return true;
 		List<String> patternList = language.grantAccessList();
 		return patternList.stream().anyMatch(p -> matches(p, user));

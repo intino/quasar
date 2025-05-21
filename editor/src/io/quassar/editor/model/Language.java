@@ -51,9 +51,9 @@ public class Language extends SubjectWrapper {
 		set("group", group);
 	}
 
-	public boolean isQuassarLanguage() {
+	public boolean isFoundational() {
 		String group = group();
-		return group != null && group.equals(Language.QuassarGroup);
+		return group != null && group.equals(Language.FoundationalGroup);
 	}
 
 	public String name() {

@@ -374,6 +374,7 @@ Format("position:'relative'") item
 Format("minWidth:'365px'") userItem
 Format("textTransform:'uppercase'") upperCase
 Format("textTransform:'lowercase'") lowerCase
+Format("marginLeft:'60px',marginTop:'10px'") messageBlock
 Format("fontStyle:'italic',color:'#777'") message
 Format("paddingBottom:'5px'") setupStepHeader
 Format("fontSize:'13pt',fontWeight:'bold'") setupStepTitle

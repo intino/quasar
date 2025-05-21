@@ -58,7 +58,7 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 
 	public void openModel(String model, String release, String view, String file, String position) {
 		Model modelInstance = box().modelManager().get(model);
-		Language language = box().languageManager().get(modelInstance);
+		Language language = modelInstance != null ? box().languageManager().get(modelInstance) : null;
 		set(language, release, modelInstance);
 		openPage(Page.Model);
 		if (modelPage.modelStamp != null) modelPage.modelStamp.open(model, release, view, file, position);

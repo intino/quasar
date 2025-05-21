@@ -39,13 +39,13 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	}
 
 	@Override
-	public void dispatchModel(Soul soul, String model, String release, String view, String file, String position) {
+	public void dispatchModel(Soul soul, String language, String model, String release, String view, String file, String position) {
 		SessionHelper.register(soul.session(), ModelView.from(view));
 		soul.currentLayer(HomeTemplate.class).openModel(model, release, view, clean(file), position);
 	}
 
 	@Override
-	public void dispatchStartingModel(Soul soul, String model) {
+	public void dispatchStartingModel(Soul soul, String language, String model) {
 		soul.currentLayer(HomeTemplate.class).openStartingModel(model);
 	}
 
@@ -57,14 +57,6 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 
 	@Override
 	public void dispatchLogin(Soul soul) {
-	}
-
-	@Override
-	public void dispatchNotFound(Soul soul, String type) {
-	}
-
-	@Override
-	public void dispatchPermissions(Soul soul, String username, String language, String model, String callback) {
 	}
 
 	private String clean(String file) {

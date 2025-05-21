@@ -60,19 +60,19 @@ public class PathHelper {
 	}
 
 	public static String languageUrl(Language language, UISession session) {
-		return session.browser().baseUrl() + "/languages/" + language.name();
+		return session.browser().baseUrl() + "/models/" + language.name();
 	}
 
 	public static String languageUrl(String language, UISession session) {
-		return session.browser().baseUrl() + "/languages/" + language;
+		return session.browser().baseUrl() + "/models/" + language;
 	}
 
 	public static String languagePath(Language language) {
-		return languagePath("/languages/:language", language.key(), null, null);
+		return languagePath("/models/:language", language.key(), null, null);
 	}
 
 	public static String languagePath(String language) {
-		return languagePath("/languages/:language", language, null, null);
+		return languagePath("/models/:language", language, null, null);
 	}
 
 	public static String languagePath(String address, Language language) {
@@ -106,7 +106,7 @@ public class PathHelper {
 		return session.browser().baseUrl() + "/models/" + model.id() + (release != null ? "?release=" + release : "");
 	}
 
-	private static final String ModelPath = "/models/:model";
+	private static final String ModelPath = "/models/:language/:model";
 	public static String modelPath(Model model) {
 		return modelPath(ModelPath, model, null, null, null, null);
 	}
@@ -144,16 +144,16 @@ public class PathHelper {
 		return modelPath(address, model, release, view, file, position);
 	}
 
-	public static String modelUrl(String model, String release, String view, String file, String position, UISession session) {
-		return modelPath(session.browser().baseUrl() + "/models/:model", model, release, view, file, position);
+	public static String modelUrl(String language, String model, String release, String view, String file, String position, UISession session) {
+		return modelPath(session.browser().baseUrl() + "/models/:language/:model", language, model, release, view, file, position);
 	}
 
 	public static String modelPath(String address, Model model, String release, ModelView view, String file, FilePosition position) {
-		return modelPath(address, model.id(), release, view != null ? view.name() : null, file, position != null ? position.line() + "-" + position.column() : null);
+		return modelPath(address, model.language().artifactId(), model.id(), release, view != null ? view.name() : null, file, position != null ? position.line() + "-" + position.column() : null);
 	}
 
-	public static String modelPath(String address, String model, String release, String view, String file, String position) {
-		String result = address.replace(":model", model);
+	public static String modelPath(String address, String language, String model, String release, String view, String file, String position) {
+		String result = address.replace(":language", language).replace(":model", model);
 		result += release != null ? "?release=" + release : "";
 		result += view != null ? ((result.contains("?") ? "&" : "?") + "view=" + view) : "";
 		result += file != null ? ((result.contains("?") ? "&" : "?") + "file=" + file) : "";
@@ -162,7 +162,7 @@ public class PathHelper {
 	}
 
 	public static String modelViewPath(String address, Model model, String release) {
-		String result = address.replace(":model", model.id());
+		String result = address.replace(":language", model.language().artifactId()).replace(":model", model.id());
 		result += release != null ? "?release=" + release : "";
 		result += (result.contains("?") ? "&" : "?") + "view=:view";
 		return result;
@@ -176,7 +176,7 @@ public class PathHelper {
 		return address.replace(":language", language.key()) + "?version=" + release;
 	}
 
-	private static final String LanguageReleaseHelpPath = "/languages/:language/help";
+	private static final String LanguageReleaseHelpPath = "/models/:language/help";
 	public static String languageReleaseHelp(Language language, LanguageRelease release) {
 		return languageReleaseHelp(LanguageReleaseHelpPath, language, release);
 	}

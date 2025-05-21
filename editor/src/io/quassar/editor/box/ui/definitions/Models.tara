@@ -52,15 +52,11 @@ Template modelsTemplate as Relative(height=100%, width=100%)
 
 Template modelTemplate as Relative(height=100%, width=100%)
 
-	Block(layout=Vertical Flexible CenterCenter, visible=false) openingModelBlock
-		Spinner(mode=Ring, color="secondary")
-		Text(value="" , translate=true, format=h3 airTop) openingModelMessage
-
 	Block(layout=Vertical Flexible CenterCenter, visible=false) notFoundBlock
-		Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
-			Block(layout=Vertical CenterCenter)
-				Image(value="/images/logo-expanded.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=340px, height=80px)
-				Text(value="Model not found", format=h4 airTop textCentered, translate=true) message
+		Block(layout=Vertical Flexible, spacing=DP16, format=messageBlock) as Relative(height=100%, width=100%)
+			Block(layout=Vertical)
+				Text(value="Model not found", format=h2 airTop textCentered, translate=true) message
+				Block(layout=Horizontal) > Button(title="home", format=airTop, highlight=Outline) as Action Addressable(EditorElements.home)
 
 	Block(layout=Vertical Flexible) contentBlock as Relative(height=100%, width=100%)
 		TemplateStamp(template=modelEditor) modelEditor
@@ -69,12 +65,11 @@ Template modelEditor as Relative(height=100%, width=100%)
 	TemplateStamp(template=modelHeaderTemplate) headerStamp
 
 	Block(layout=Vertical Flexible CenterCenter, visible=false) languageNotLoadedBlock
-		Block(layout=Vertical Flexible CenterJustified, spacing=DP16, format=relative) as Relative(height=100%)
-			Block(layout=Vertical CenterCenter)
-				Image(value="/images/logo-expanded.png", format=airRight, mobileReduceFactor=75%) as Absolute(width=340px, height=80px)
-				Text(value="Could not load language", format=h4 airTop textCentered, translate=true)v
-				Text(value="Click the info button to use a different language version", format=textCentered greyColor, translate=true)
-				Button(title="info", format=airTop, highlight=Outline) infoTrigger as Action
+		Block(layout=Vertical Flexible, spacing=DP16, format=messageBlock) as Relative(height=100%, width=100%)
+			Block(layout=Vertical)
+				Text(value="Internal error", format=h2 airTop textCentered, translate=true)v
+				Text(value="Could not load model. Click the info button to use a different language version", format=textCentered greyColor, translate=true)
+				Block(layout=Horizontal) > Button(title="info", format=airTop, highlight=Outline) infoTrigger as Action
 
 	Block(layout=Horizontal Flexible, visible=false) contentBlock as Resizable
 
