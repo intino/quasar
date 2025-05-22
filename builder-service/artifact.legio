@@ -3,7 +3,6 @@ dsl Legio
 Artifact("io.intino", "1.0.0") builder-service
 	Dsl("Konos", "13.3.5")
 	Imports
-		Test("junit", "junit", "4.13.2")
 		Compile("io.intino", "builder-interface", "2.2.2")
 		Compile("io.intino.alexandria", "core-framework", "2.2.2")
 		Compile("io.intino.alexandria", "logger4j", "1.1.0")
@@ -12,6 +11,7 @@ Artifact("io.intino", "1.0.0") builder-service
 		Compile("io.intino.itrules", "engine", "2.0.2")
 		Compile("com.github.docker-java", "docker-java", "3.5.0")
 		Compile("org.apache.commons", "commons-compress", "1.27.1")
+		Test("junit", "junit", "4.13.2")
 		Test("io.intino", "quassar-builder-service-accessor", "1.0.0-SNAPSHOT")
 	Package(mode = ModulesAndLibrariesLinkedByManifest) as Runnable(mainClass = "io.intino.builderservice.konos.Main")
     Distribution
