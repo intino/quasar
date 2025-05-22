@@ -75,7 +75,9 @@ public class DiagnosticService {
 
 	private void analyzeWorkspace(ModelUnit context) {
 		try {
-			dependencyResolver(context.model()).resolve();
+			DependencyResolver dependencyResolver = dependencyResolver(context.model());
+			dependencyResolver.resolve();
+			for (DependencyException e : dependencyResolver.rulesNotLoaded()) context.dependencyErrors().add(e);
 			new SemanticAnalyzer(context.model(), language).analyze();
 		} catch (DependencyException e) {
 			context.dependencyErrors().add(e);
