@@ -276,8 +276,8 @@ public class LanguageManager {
 
 	private void copyExecution(Language language, LanguageRelease release, LanguageExecution execution) {
 		LanguageExecution result = createExecution(language, release, execution.type());
-		result.remoteConfiguration(execution.remoteConfiguration());
-		Arrays.stream(LanguageExecution.LocalLanguage.values()).forEach(l -> result.localConfiguration(l, execution.localConfiguration(l)));
+		result.content(execution.content(LanguageExecution.Type.Local));
+		result.content(execution.content(LanguageExecution.Type.Remote));
 	}
 
 }

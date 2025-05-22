@@ -179,11 +179,8 @@ Template(layout=Horizontal) languageExecutionLauncher
 	Dialog(title="Forge instructions") localDialog as Absolute(width=800px, height=600px)
         Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
 			Text(value="You need to follow this instructions to execute this model in your local environment", format=middleAirBottom)
-
-			Block(format=relative airTop)
-				Text execution as Editable Memo(height=20Rows) Readonly
-				Selector(size=Small, format=localLanguageSelectorStyle) localLanguageSelector as ToggleBox
-			Block(layout=Horizontal) > Button(title="Copy instructions", format=middleAirTop, highlight=Outline) copy as CopyToClipboard
+			Text(format=airTop) execution as Editable Memo(height=20Rows) Readonly
+			Block(layout=Horizontal) > Button(title="Copy instructions", format=middleAirTop, highlight=None) copy as CopyToClipboard
 
 		Divider
         Block(layout=Horizontal EndJustified)

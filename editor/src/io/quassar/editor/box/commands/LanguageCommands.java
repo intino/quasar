@@ -78,27 +78,11 @@ public class LanguageCommands extends Commands {
 		return command.execute();
 	}
 
-	public void saveExecution(Language language, String release, LanguageExecution.Type type, String username) {
+	public void saveExecution(Language language, String release, LanguageExecution.Type type, String content, String username) {
 		SaveLanguageReleaseExecutionCommand command = setup(new SaveLanguageReleaseExecutionCommand(box), username);
 		command.language = language;
 		command.release = release;
 		command.type = type;
-		command.execute();
-	}
-
-	public void saveRemoteExecution(Language language, String release, String content, String username) {
-		SaveLanguageReleaseRemoteExecutionCommand command = setup(new SaveLanguageReleaseRemoteExecutionCommand(box), username);
-		command.language = language;
-		command.release = release;
-		command.content = content;
-		command.execute();
-	}
-
-	public void saveLocalExecution(Language language, String release, LanguageExecution.LocalLanguage localLanguage, String content, String username) {
-		SaveLanguageReleaseLocalExecutionCommand command = setup(new SaveLanguageReleaseLocalExecutionCommand(box), username);
-		command.language = language;
-		command.release = release;
-		command.localLanguage = localLanguage;
 		command.content = content;
 		command.execute();
 	}

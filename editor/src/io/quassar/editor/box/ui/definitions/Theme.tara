@@ -307,7 +307,6 @@ Format("position:'absolute',bottom:'0',zIndex:'1'") languageEditorLogoStyle
 Format("border:'1px solid #ccc',borderRadius:'5px',marginBottom:'5px'") forgeLogoStyle
 Format("background:'#dee2e9'", darkContent="background:'#212938'") forgePanelBackground
 Format("color:'#294575',fontSize:'22pt',marginLeft:'11px',marginTop:'-8px'", darkContent="color:'#8c95a3'") metaForgeCredits
-Format("position:'absolute',right:'0',top:'0',marginRight:'5px',marginTop:'5px'") localLanguageSelectorStyle
 
 Format("padding:'15px 40px'") largeButton
 Format("position:'absolute',bottom:'0',left:'0',marginLeft:'6px',marginBottom:'7px'") userToolbar

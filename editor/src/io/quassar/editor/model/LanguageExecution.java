@@ -17,21 +17,23 @@ public class LanguageExecution extends SubjectWrapper {
 		set("type", value.name());
 	}
 
-	public String remoteConfiguration() {
-		return getOrEmpty("remote").replace("###n", "\n");
+	public void content(String content) {
+		switch (type()) {
+			case Local: { set("local", content.replace("\n", "###n")); break; }
+			case Remote: { set("remote", content.replace("\n", "###n")); break; }
+		}
 	}
 
-	public void remoteConfiguration(String content) {
-		set("remote", content.replace("\n", "###n"));
+	public String content(Type type) {
+		return switch (type) {
+			case Local -> getOrEmpty("local").replace("###n", "\n");
+			case Remote -> getOrEmpty("remote").replace("###n", "\n");
+			default -> "";
+		};
 	}
 
-	public enum LocalLanguage { Docker, Python, Maven, Custom }
-	public String localConfiguration(LocalLanguage language) {
-		return getOrEmpty("local-" + language.name()).replace("###n", "\n");
-	}
-
-	public void localConfiguration(LocalLanguage language, String content) {
-		set("local-" + language.name(), content.replace("\n", "###n"));
+	public String content() {
+		return content(type());
 	}
 
 }

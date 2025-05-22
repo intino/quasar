@@ -1,17 +1,22 @@
 package io.quassar.editor.box.ui.displays.templates;
 
+import io.intino.alexandria.logger.Logger;
 import io.intino.alexandria.ui.displays.UserMessage;
-import io.intino.alexandria.ui.displays.events.SelectionEvent;
-import io.intino.alexandria.ui.displays.events.actionable.ToggleEvent;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command.CommandResult;
 import io.quassar.editor.box.commands.LanguageCommands;
 import io.quassar.editor.box.util.Formatters;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageExecution;
-import io.quassar.editor.model.LanguageExecution.LocalLanguage;
+import io.quassar.editor.model.LanguageExecution.Type;
 import io.quassar.editor.model.LanguageRelease;
+import org.apache.commons.io.IOUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -19,7 +24,6 @@ public class LanguageExecutionTemplate extends AbstractLanguageExecutionTemplate
 	private Language language;
 	private String release;
 	private Consumer<CommandResult> createVersionListener;
-	private LocalLanguage selectedLocalLanguage;
 
 	public LanguageExecutionTemplate(EditorBox box) {
 		super(box);
@@ -57,7 +61,7 @@ public class LanguageExecutionTemplate extends AbstractLanguageExecutionTemplate
 		versionNotCreatedBlock.visible(release != null && languageRelease == null);
 		if (languageRelease == null) return;
 		LanguageExecution execution = execution();
-		if (execution == null) execution = box().commands(LanguageCommands.class).createExecution(language, release, LanguageExecution.Type.None, username());
+		if (execution == null) execution = box().commands(LanguageCommands.class).createExecution(language, release, Type.None, username());
 		executionSelector.select(execution.type().name().toLowerCase() + "Option");
 	}
 
@@ -70,34 +74,49 @@ public class LanguageExecutionTemplate extends AbstractLanguageExecutionTemplate
 	}
 
 	private void saveType() {
-		LanguageExecution.Type selected = selectedExecution();
-		box().commands(LanguageCommands.class).saveExecution(language, release, selected, username());
+		Type selected = selectedExecution();
+		LanguageExecution execution = execution();
+		box().commands(LanguageCommands.class).saveExecution(language, release, selected, execution != null ? execution.content(selected) : "", username());
 	}
 
-	private LanguageExecution.Type selectedExecution() {
+	private Type selectedExecution() {
 		List<String> selection = executionSelector.selection();
-		if (selection.isEmpty()) return LanguageExecution.Type.None;
+		if (selection.isEmpty()) return Type.None;
 		String selected = selection.getFirst();
-		return LanguageExecution.Type.valueOf(Formatters.firstUpperCase(selected).replace("Option", ""));
+		return Type.valueOf(Formatters.firstUpperCase(selected).replace("Option", ""));
 	}
 
 	private void initLocalEnvironmentBlock() {
 		localField.onChange(e -> saveLocalConfiguration(e.value()));
-		localLanguageSelector.onSelect(this::updateLocalLanguage);
-		selectedLocalLanguage = LocalLanguage.Docker;
+		insertTemplate.onExecute(e -> insertTemplate());
 	}
 
+	private void insertTemplate() {
+		String selectedLanguage = !templateSelector.selection().isEmpty() ? templateSelector.selection().getFirst() : null;
+		if (selectedLanguage == null) return;
+		localField.value(templateContent(selectedLanguage));
+		saveLocalConfiguration(localField.value());
+		localField.focus();
+	}
+
+	private String templateContent(String language) {
+		try {
+			InputStream stream = LanguageExecutionTemplate.class.getResourceAsStream("/templates/execution/%s.tpl".formatted(language));
+			if (stream == null) return "";
+			return IOUtils.toString(stream, StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			Logger.error(e);
+			return "";
+		}
+	}
+
+	private static final List<String> Languages = List.of("Docker", "Maven", "Python", "Custom");
 	private void refreshLocalEnvironmentBlock() {
 		LanguageExecution execution = execution();
-		localLanguageSelector.selection(Formatters.firstLowerCase(selectedLocalLanguage.name()) + "Option");
-		localField.value(execution != null ? execution.localConfiguration(selectedLocalLanguage) : null);
-	}
-
-	private void updateLocalLanguage(SelectionEvent event) {
-		List<String> selection = event.selection();
-		this.selectedLocalLanguage = !selection.isEmpty() ? LocalLanguage.valueOf(Formatters.firstUpperCase(selection.getFirst()).replace("Option", "")) : LocalLanguage.Docker;
-		localField.focus();
-		refreshLocalEnvironmentBlock();
+		localField.value(execution != null ? execution.content(Type.Local) : null);
+		templateSelector.clear();
+		templateSelector.addAll(Languages);
+		templateSelector.selection(Languages.getFirst());
 	}
 
 	private void initRemoteEnvironmentBlock() {
@@ -106,16 +125,16 @@ public class LanguageExecutionTemplate extends AbstractLanguageExecutionTemplate
 
 	private void refreshRemoteEnvironmentBlock() {
 		LanguageExecution execution = execution();
-		remoteField.value(execution != null ? execution.remoteConfiguration() : null);
+		remoteField.value(execution != null ? execution.content(Type.Remote) : null);
 	}
 
 	private void saveRemoteConfiguration(String content) {
-		box().commands(LanguageCommands.class).saveRemoteExecution(language, release, content, username());
+		box().commands(LanguageCommands.class).saveExecution(language, release, Type.Remote, content, username());
 		remoteField.error(errorMessage(content));
 	}
 
 	private void saveLocalConfiguration(String content) {
-		box().commands(LanguageCommands.class).saveLocalExecution(language, release, selectedLocalLanguage, content, username());
+		box().commands(LanguageCommands.class).saveExecution(language, release, Type.Local, content, username());
 		localField.error(errorMessage(content));
 	}
 

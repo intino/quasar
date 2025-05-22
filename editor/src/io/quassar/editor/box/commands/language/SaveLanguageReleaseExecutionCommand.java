@@ -10,6 +10,7 @@ public class SaveLanguageReleaseExecutionCommand extends Command<Boolean> {
 	public Language language;
 	public String release;
 	public LanguageExecution.Type type;
+	public String content;
 
 	public SaveLanguageReleaseExecutionCommand(EditorBox box) {
 		super(box);
@@ -18,8 +19,10 @@ public class SaveLanguageReleaseExecutionCommand extends Command<Boolean> {
 	@Override
 	public Boolean execute() {
 		LanguageRelease release = language.release(this.release);
-		if (release.execution() == null) box.languageManager().createExecution(language, release, type);
-		else release.execution().type(type);
+		LanguageExecution execution = release.execution();
+		if (execution == null) execution = box.languageManager().createExecution(language, release, type);
+		execution.type(type);
+		execution.content(content);
 		return true;
 	}
 

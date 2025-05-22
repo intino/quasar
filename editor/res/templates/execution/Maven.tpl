@@ -1,0 +1,9 @@
+<plugin>
+  <groupId>com.my-tool/groupId>
+  <artifactId>my-plugin</artifactId>
+  <version>1.0</version>
+  <configuration>
+    <model>[model]</model>
+    <release>[release]</release>
+  </configuration>
+</plugin>

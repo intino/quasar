@@ -276,19 +276,17 @@ Template(layout=Vertical Flexible, format=doubleSpaced) languageExecutionTemplat
 			Text(value="Remote execution", format=h5 bold doubleAirBottom)
 			Text(value="Enter the URL of the web service that accepts your dsl models", translate=true, format=bold)
 			Text(value="Enter a valid URL that includes [model] and [release] placeholders. These will be replaced at runtime", translate=true, format=italic)
-			Text(format=airTop) remoteField as Editable(placeholder="https://your-application.com/run?model=[model]&release=[release]")
+			Text(format=airTop whiteBackground) remoteField as Editable(placeholder="https://your-application.com/run?model=[model]&release=[release]")
 
 		Block(format=doubleSpaced airTop greyLightBackground) localEnvironmentBlock as Conditional(executionSelector.localOption) Relative(width=80%)
 			Text(value="Local execution", format=h5 bold doubleAirBottom)
 			Text(value="Enter the command template used to run your tool locally", translate=true, format=bold)
 			Text(value="Use the placeholders [model] and [release]. They will be replaced at runtime", translate=true, format=italic)
-			Block(format=airTop relative)
-				Text localField as Editable Memo(height=20Rows)
-				Selector(selected="docker", size=Small, format=localLanguageSelectorStyle) localLanguageSelector as ToggleBox
-					Text(value="docker") dockerOption as Option
-					Text(value="python") pythonOption as Option
-					Text(value="maven") mavenOption as Option
-					Text(value="custom") customOption as Option
+			Text(format=airTop whiteBackground) localField as Editable Memo(height=20Rows)
+			Block(layout=Horizontal Center, format=middleAirTop)
+				Text(value="Available templates:", format=airRight)
+				Block(format=airRight) as Absolute(width=300px) > Selector templateSelector as ComboBox(view=TextView, placeholder="Select template")
+				Button(title="Insert", highlight=None) insertTemplate as Action
 
 Template downloadTemplate
 	Link(title="") titleLink as Download
