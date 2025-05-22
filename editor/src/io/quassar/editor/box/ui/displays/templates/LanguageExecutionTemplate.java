@@ -12,11 +12,9 @@ import io.quassar.editor.model.LanguageExecution.Type;
 import io.quassar.editor.model.LanguageRelease;
 import org.apache.commons.io.IOUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -88,6 +86,7 @@ public class LanguageExecutionTemplate extends AbstractLanguageExecutionTemplate
 
 	private void initLocalEnvironmentBlock() {
 		localField.onChange(e -> saveLocalConfiguration(e.value()));
+		installationField.onChange(e -> saveInstallationUrl(e.value()));
 		insertTemplate.onExecute(e -> insertTemplate());
 	}
 
@@ -114,6 +113,7 @@ public class LanguageExecutionTemplate extends AbstractLanguageExecutionTemplate
 	private void refreshLocalEnvironmentBlock() {
 		LanguageExecution execution = execution();
 		localField.value(execution != null ? execution.content(Type.Local) : null);
+		installationField.value(execution != null ? execution.installationUrl() : null);
 		templateSelector.clear();
 		templateSelector.addAll(Languages);
 		templateSelector.selection(Languages.getFirst());
@@ -136,6 +136,10 @@ public class LanguageExecutionTemplate extends AbstractLanguageExecutionTemplate
 	private void saveLocalConfiguration(String content) {
 		box().commands(LanguageCommands.class).saveExecution(language, release, Type.Local, content, username());
 		localField.error(errorMessage(content));
+	}
+
+	private void saveInstallationUrl(String url) {
+		box().commands(LanguageCommands.class).saveExecutionProperties(language, release, url, username());
 	}
 
 	private LanguageExecution execution() {

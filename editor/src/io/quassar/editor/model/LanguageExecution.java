@@ -17,6 +17,10 @@ public class LanguageExecution extends SubjectWrapper {
 		set("type", value.name());
 	}
 
+	public String content() {
+		return content(type());
+	}
+
 	public void content(String content) {
 		switch (type()) {
 			case Local: { set("local", content.replace("\n", "###n")); break; }
@@ -32,8 +36,12 @@ public class LanguageExecution extends SubjectWrapper {
 		};
 	}
 
-	public String content() {
-		return content(type());
+	public String installationUrl() {
+		return getOrEmpty("installation-url");
+	}
+
+	public void installationUrl(String content) {
+		set("installation-url", content);
 	}
 
 }

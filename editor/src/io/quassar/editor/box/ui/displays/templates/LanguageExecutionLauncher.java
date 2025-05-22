@@ -63,6 +63,8 @@ public class LanguageExecutionLauncher extends AbstractLanguageExecutionLauncher
 		String content = withParams(execution().content());
 		execution.value(content);
 		copy.text(content);
+		openInstallationNotes.visible(!execution().installationUrl().isEmpty());
+		openInstallationNotes.site(execution().installationUrl());
 	}
 
 	private LanguageExecution execution() {

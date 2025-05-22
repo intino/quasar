@@ -32,7 +32,7 @@ Artifact(groupId = "io.quassar", version = "1.0.0") editor
 			Snapshot("https://artifactory.intino.io/artifactory/snapshot-libraries")
 
 	Deployment(server = deploy-quassar-dev, runConfiguration = dev)
-	Deployment(server = vps-quassar-exp, runConfiguration = pro)
+	Deployment(server = vps-d07c88a9-vps-ovh-net, runConfiguration = pro)
 
 	Parameter("port")
 	Parameter("url")
@@ -77,4 +77,4 @@ RunConfiguration pro
 	Argument("builder-service-url", "http://localhost:9002")
 
 Server(type=Dev) deploy-quassar-dev
-Server(type=Pro) vps-quassar-exp
+Server(type=Pro) vps-d07c88a9-vps-ovh-net

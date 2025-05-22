@@ -1,3 +1,4 @@
+<!-- Include in your POM file -->
 <plugin>
   <groupId>com.my-tool/groupId>
   <artifactId>my-plugin</artifactId>

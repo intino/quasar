@@ -56,7 +56,7 @@ Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, heigh
 						Text(value="Make your DSL available to other users", format=stepDescription)
 
 		Block(layout=Vertical, format=landingSection) as Relative(width=60%)
-			Text(value="Explore models", translate=true, format=landingSectionTitle)
+			Text(value="Select DSL", translate=true, format=landingSectionTitle)
 			Block(format=landingCatalog) > TemplateStamp(template=languagesLandingTemplate) languagesCatalog
 
 		Block(layout=Vertical Center, format=landingSection) as Relative(width=60%)

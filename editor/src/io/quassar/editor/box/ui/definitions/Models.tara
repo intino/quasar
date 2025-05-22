@@ -48,7 +48,7 @@ Template modelsTemplate as Relative(height=100%, width=100%)
 						Link(title="", format=relative bringToFront h5 upperCase, visible=false) siteLabel as Action OpenSite(site=empty, target=Blank)
 						Text description
 						Text owner as Labeled("Owner")
-						Text version as Labeled("Language version")
+						Text version as Labeled("DSL version")
 						Date createDate as Labeled("Create date")
 
 Template modelTemplate as Relative(height=100%, width=100%)
@@ -57,7 +57,7 @@ Template modelTemplate as Relative(height=100%, width=100%)
 		Block(layout=Vertical Flexible, spacing=DP16, format=messageBlock) as Relative(height=100%, width=60%)
 			Block(layout=Vertical)
 				Text(value="Not found", format=h2 airTop textCentered greyHardColor, translate=true)
-				Text(value="Sorry, we can't find the model you are looking for", format=h5 textCentered greyColor, translate=true)
+				Text(value="Sorry, we can't find the model you are visiting", format=h5 textCentered greyColor, translate=true)
 				Block(layout=Horizontal) > Button(title="home", format=airTop, highlight=Outline) as Action Addressable(EditorElements.home)
 
 	Block(layout=Vertical Flexible) contentBlock as Relative(height=100%, width=100%)
@@ -70,7 +70,7 @@ Template modelEditor as Relative(height=100%, width=100%)
 		Block(layout=Vertical Flexible, spacing=DP16, format=messageBlock) as Relative(height=100%, width=100%)
 			Block(layout=Vertical)
 				Text(value="Internal error", format=h2 airTop textCentered, translate=true)v
-				Text(value="Could not load model. Click the info button to use a different language version", format=textCentered greyColor, translate=true)
+				Text(value="Could not load model. Click the info button to use a different DSL version", format=textCentered greyColor, translate=true)
 				Block(layout=Horizontal) > Button(title="info", format=airTop, highlight=Outline) infoTrigger as Action
 
 	Block(layout=Horizontal Flexible, visible=false) contentBlock as Resizable
@@ -121,7 +121,7 @@ Template modelEditor as Relative(height=100%, width=100%)
 				Button(title="Don't save", size=Small, format=airRight) continueWithoutSavingFile as Action
 				Button(title="Save", size=Small, highlight=Fill) continueSavingFile as Action
 
-	Dialog(title="Language help") helpDialog as Relative(width=60%, height=80%)
+	Dialog(title="DSL help") helpDialog as Relative(width=60%, height=80%)
         Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
         	HtmlViewer(format=fullHeight) helpStamp
 		Divider

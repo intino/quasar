@@ -86,7 +86,7 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 
 	private void refreshLanguagesDialog() {
 		closing = false;
-		languagesDialog.title(dialog == LandingDialog.StartModeling ? "Select the language to start modeling with" : "Explore DSLs of our community");
+		languagesDialog.title(dialog == LandingDialog.StartModeling ? "Select the DSL to start modeling with" : "Explore DSLs of our community");
 		languagesStamp.onSelect(dialog == LandingDialog.StartModeling ? this::startModeling : null);
 		languagesStamp.source(new LanguagesWithReleaseDatasource(box(), session()));
 		languagesStamp.refresh();

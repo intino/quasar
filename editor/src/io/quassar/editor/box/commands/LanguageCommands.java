@@ -87,4 +87,12 @@ public class LanguageCommands extends Commands {
 		command.execute();
 	}
 
+	public void saveExecutionProperties(Language language, String release, String installationUrl, String username) {
+		SaveLanguageReleaseExecutionPropertiesCommand command = setup(new SaveLanguageReleaseExecutionPropertiesCommand(box), username);
+		command.language = language;
+		command.release = release;
+		command.installationUrl = installationUrl;
+		command.execute();
+	}
+
 }

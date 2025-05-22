@@ -129,7 +129,7 @@ Template(layout=Horizontal) modelSettingsDialog
 						Text(value="Description", translate=true, format=h5 middleAirBottom)
 						Text modelDescriptionField as Editable Memo(height=4Rows)
 					Block(format=doubleAirTop)
-						Text(value="Language version", translate=true, format=h5 middleAirBottom)
+						Text(value="DSL version", translate=true, format=h5 middleAirBottom)
 						Text(format=bold middleAirBottom) languageName
 						Selector languageSelector as ComboBox
 					Block(format=doubleAirTop)
@@ -168,7 +168,7 @@ Template(layout=Horizontal) languageEditor as Relative(width=100%, height=100%)
 			Text(format=dslFieldInput, mode=Lowercase) idField as Editable
 			MaterialIcon(icon="Check", color="green", format=veryLargeIconSize rightIconField, visible=false) validIdIcon
 			MaterialIcon(icon="Clear", color="red", format=veryLargeIconSize rightIconField, visible=false) invalidIdIcon
-		Link(title="Change", visible=false) changeId as Action Readonly Signed(signText="The language name is about to be changed. This operation will affect all generated models. To confirm, please re-enter the new language name.", mode=SimplePassword)
+		Link(title="Change", visible=false) changeId as Action Readonly Signed(signText="The DSL name is about to be changed. This operation will affect all generated models. To confirm, please re-enter the new DSL name.", mode=SimplePassword)
 	Block(format=doubleAirLeft relative) as Absolute(width=170px)
 		Image logoField as Editable Absolute(height=150px, width=150px)
 		Link(title="Generate", format=languageEditorLogoStyle) generateLogo as Action Readonly
@@ -176,11 +176,12 @@ Template(layout=Horizontal) languageEditor as Relative(width=100%, height=100%)
 Template(layout=Horizontal) languageExecutionLauncher
 	Link(title="") siteLauncher as OpenSite(site=empty, target=Blank)
 
-	Dialog(title="Forge instructions") localDialog as Absolute(width=800px, height=600px)
+	Dialog(title="Execution instructions") localDialog as Absolute(width=800px, height=600px)
         Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
-			Text(value="You need to follow this instructions to execute this model in your local environment", format=middleAirBottom)
+			Text(value="To run this model locally, make sure your environment is set up correctly. Below you’ll find installation notes. Once everything is ready, you can copy and run the command shown to execute the model.", format=middleAirBottom)
 			Text(format=airTop) execution as Editable Memo(height=20Rows) Readonly
-			Block(layout=Horizontal) > Button(title="Copy instructions", format=middleAirTop, highlight=None) copy as CopyToClipboard
+			Block(layout=Horizontal) > Link(title="Copy", format=middleAirTop upperCase) copy as CopyToClipboard
+			Block(layout=Horizontal) > Link(title="Installation notes", format=middleAirTop upperCase, visible=false) openInstallationNotes as OpenSite(site=empty, target=Blank)
 
 		Divider
         Block(layout=Horizontal EndJustified)
