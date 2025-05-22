@@ -1,6 +1,7 @@
 package io.quassar.editor.box.commands;
 
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.commands.Command.CommandResult;
 import io.quassar.editor.box.commands.language.*;
 import io.quassar.editor.model.*;
 
@@ -23,7 +24,7 @@ public class LanguageCommands extends Commands {
 		return command.execute();
 	}
 
-	public LanguageRelease createRelease(Language language, String version, String username) {
+	public CommandResult createRelease(Language language, String version, String username) {
 		CreateLanguageReleaseCommand command = setup(new CreateLanguageReleaseCommand(box), username);
 		command.language = language;
 		command.version = version;

@@ -1,18 +1,18 @@
 dsl konos
 
-Service(title = "Quassar API") quassar-api as REST(host = "{host}", basePath = "/", port = "{port}")
+Service(title = "Quassar API") quassar-api as REST(host = "{host}", basePath = "/downloads", port = "{port}")
 
-	Resource("/models/:model/download") downloadModel
+	Resource("/:model/:release") downloadModel
     	Get(description = "Downloads model release")
     		Parameter(in=path) model as Text
-    		Parameter(in=query) release as Text
+    		Parameter(in=path) release as Text
     		Response as File
     		Exception(Forbidden)
 
-	Resource("/models/:model/download/file") downloadModelFile
+	Resource("/:model/:release/:file") downloadModelFile
     	Get(description = "Downloads model file")
     		Parameter(in=path) model as Text
-    		Parameter(in=query) release as Text
-    		Parameter(in=query) file as Text
+    		Parameter(in=path) release as Text
+    		Parameter(in=path) file as Text
     		Response as File
     		Exception(Forbidden)

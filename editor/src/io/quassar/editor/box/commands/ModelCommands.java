@@ -171,14 +171,14 @@ public class ModelCommands extends Commands {
 		command.execute();
 	}
 
-	public Command.ExecutionResult check(Model model, String username) {
+	public Command.CommandResult check(Model model, String username) {
 		CheckModelCommand command = setup(new CheckModelCommand(box), username);
 		command.model = model;
 		command.release = Model.DraftRelease;
 		return command.execute();
 	}
 
-	public Command.ExecutionResult createRelease(Model model, String version, String username) {
+	public Command.CommandResult createRelease(Model model, String version, String username) {
 		CreateModelReleaseCommand command = setup(new CreateModelReleaseCommand(box), username);
 		command.model = model;
 		command.version = version;

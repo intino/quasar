@@ -1,6 +1,9 @@
 package io.quassar.editor.box.ui.displays.templates;
 
+import io.intino.alexandria.ui.displays.UserMessage;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.commands.Command;
+import io.quassar.editor.box.commands.Command.CommandResult;
 import io.quassar.editor.box.ui.types.ForgeView;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.PathHelper;
@@ -84,7 +87,7 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 	}
 
 	private void initHelpBlock() {
-		helpStamp.onCreateVersion(e -> refresh());
+		helpStamp.onCreateVersion(this::versionCreated);
 	}
 
 	private void refreshHelpBlock() {
@@ -94,7 +97,7 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 	}
 
 	private void initKitBlock() {
-		kitStamp.onCreateVersion(e -> refresh());
+		kitStamp.onCreateVersion(this::versionCreated);
 	}
 
 	private void refreshKitBlock() {
@@ -104,7 +107,7 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 	}
 
 	private void initToolsBlock() {
-		toolsStamp.onCreateVersion(e -> refresh());
+		toolsStamp.onCreateVersion(this::versionCreated);
 	}
 
 	private void refreshToolsBlock() {
@@ -140,6 +143,11 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 		List<String> selection = versionSelector.selection();
 		release = !selection.isEmpty() ? selection.getFirst() : null;
 		refreshView();
+	}
+
+	private void versionCreated(CommandResult result) {
+		if (!result.success()) notifyUser(translate("Could not create version"), UserMessage.Type.Error);
+		refresh();
 	}
 
 }

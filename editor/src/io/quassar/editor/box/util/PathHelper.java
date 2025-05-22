@@ -23,8 +23,12 @@ public class PathHelper {
 		return "/";
 	}
 
-	public static String fileUrl(Model model, String release, File file, UISession session, EditorBox box) {
-		return session.browser().baseUrl() + "/models/%s/download/file".formatted(model.id()) + "?release=%s&file=%s".formatted(release, file.uri());
+	public static String downloadModelUrl(Model model, String release, UISession session) {
+		return session.browser().baseUrl() + "/downloads/%s/%s".formatted(model.id(), release);
+	}
+
+	public static String downloadModelFileUrl(Model model, String release, File file, UISession session) {
+		return session.browser().baseUrl() + "/downloads/%s/%s/%s".formatted(model.id(), release, file.uri());
 	}
 
 	public static String landingUrl(LandingDialog dialog, UISession session) {

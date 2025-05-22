@@ -2,11 +2,11 @@ package io.quassar.editor.box.commands;
 
 import io.intino.builderservice.schemas.Message;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.builder.BuildResult;
 import io.quassar.editor.box.builder.CheckResult;
 import io.quassar.editor.model.OperationResult;
 import io.quassar.editor.model.User;
 
-import java.io.InputStream;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Collections;
@@ -33,21 +33,35 @@ public abstract class Command<T> {
 		return this.author != null ? this.author : User.Anonymous;
 	}
 
-	protected ExecutionResult resultOf(OperationResult result) {
-		if (result.message() == null) return ExecutionResult.check(Collections.emptyList());
-		return ExecutionResult.check(List.of(new Message().kind(result.success() ? Message.Kind.INFO : Message.Kind.ERROR).content(result.message())));
+	protected CommandResult resultOf(OperationResult result) {
+		if (result.message() == null) return CommandResult.check(Collections.emptyList());
+		return CommandResult.check(List.of(new Message().kind(result.success() ? Message.Kind.INFO : Message.Kind.ERROR).content(result.message())));
 	}
 
-	public interface ExecutionResult {
+	protected CommandResult resultOf(BuildResult result) {
+		return new CommandResult() {
+			@Override
+			public boolean success() {
+				return result.success();
+			}
+
+			@Override
+			public List<Message> messages() {
+				return result.messages();
+			}
+		};
+	}
+
+	public interface CommandResult {
 		boolean success();
 		List<Message> messages();
 
-		static ExecutionResult check(CheckResult result) {
+		static CommandResult check(CheckResult result) {
 			return check(result.messages());
 		}
 
-		static ExecutionResult check(List<Message> messages) {
-			return new ExecutionResult() {
+		static CommandResult check(List<Message> messages) {
+			return new CommandResult() {
 				@Override
 				public boolean success() {
 					return messages.stream().noneMatch(m -> m.kind() == Message.Kind.ERROR);

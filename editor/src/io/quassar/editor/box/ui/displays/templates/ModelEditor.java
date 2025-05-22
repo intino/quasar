@@ -239,7 +239,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 
 	private void refreshNonEditableFileBlock() {
 		if (!nonEditableFileBlock.isVisible()) return;
-		fileField.value(new io.intino.alexandria.ui.File().filename(selectedFile.uri()).mimeType(MimeTypes.contentTypeOf(selectedFile.extension())).value(urlOf(PathHelper.fileUrl(model, release, selectedFile, session(), box()))));
+		fileField.value(new io.intino.alexandria.ui.File().filename(selectedFile.uri()).mimeType(MimeTypes.contentTypeOf(selectedFile.extension())).value(urlOf(PathHelper.downloadModelFileUrl(model, release, selectedFile, session()))));
 	}
 
 	private String withoutExtensionIfModelFile(String name) {
@@ -287,7 +287,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		//saveFile.readonly(selectedFile == null || !selectedFileIsModified);
 	}
 
-	private void updateConsole(Command.ExecutionResult result) {
+	private void updateConsole(Command.CommandResult result) {
 		consoleBlock.visible(!result.messages().isEmpty());
 		if (!consoleBlock.isVisible()) return;
 		updateConsole(result.messages());
@@ -313,7 +313,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 
 	private void check() {
 		notifyUser(translate("Checking model..."), UserMessage.Type.Loading);
-		Command.ExecutionResult result = box().commands(ModelCommands.class).check(model, username());
+		Command.CommandResult result = box().commands(ModelCommands.class).check(model, username());
 		updateConsole(result);
 		if (result.success()) notifyUser("Model checked successfully", UserMessage.Type.Success);
 		else hideUserNotification();

@@ -3,7 +3,7 @@ package io.quassar.editor.box.ui.displays.templates;
 import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.displays.events.SelectionEvent;
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.box.commands.Command.ExecutionResult;
+import io.quassar.editor.box.commands.Command.CommandResult;
 import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.ui.types.VersionType;
 import io.quassar.editor.box.util.ModelHelper;
@@ -14,8 +14,8 @@ import java.util.function.BiConsumer;
 public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
 	private Model model;
 	private BiConsumer<Model, String> commitListener;
-	private BiConsumer<Model, ExecutionResult> commitFailureListener;
-	private BiConsumer<Model, ExecutionResult> createReleaseListener;
+	private BiConsumer<Model, CommandResult> commitFailureListener;
+	private BiConsumer<Model, CommandResult> createReleaseListener;
 
 	public CommitModelDialog(EditorBox box) {
 		super(box);
@@ -29,11 +29,11 @@ public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
 		this.commitListener = listener;
 	}
 
-	public void onCommitFailure(BiConsumer<Model, ExecutionResult> listener) {
+	public void onCommitFailure(BiConsumer<Model, CommandResult> listener) {
 		this.commitFailureListener = listener;
 	}
 
-	public void onCreateRelease(BiConsumer<Model, ExecutionResult> listener) {
+	public void onCreateRelease(BiConsumer<Model, CommandResult> listener) {
 		this.createReleaseListener = listener;
 	}
 
@@ -72,9 +72,9 @@ public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
 		commitListener.accept(model, version());
 	}
 
-	private ExecutionResult createRelease() {
+	private CommandResult createRelease() {
 		notifyUser(translate("Committing..."), UserMessage.Type.Loading);
-		ExecutionResult result = box().commands(ModelCommands.class).createRelease(model, version(), username());
+		CommandResult result = box().commands(ModelCommands.class).createRelease(model, version(), username());
 		if (!result.success()) commitFailureListener.accept(model, result);
 		else {
 			createReleaseListener.accept(model, result);

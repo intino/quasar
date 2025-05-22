@@ -1,16 +1,13 @@
 package io.quassar.editor.box.ui.displays.templates;
 
-import io.intino.alexandria.ui.server.UIFile;
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.box.commands.Command.ExecutionResult;
-import io.quassar.editor.box.commands.ModelCommands;
+import io.quassar.editor.box.commands.Command.CommandResult;
 import io.quassar.editor.box.util.*;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageTool;
 import io.quassar.editor.model.Model;
 import io.quassar.editor.model.Project;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -22,7 +19,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	private io.quassar.editor.box.models.File file;
 	private Consumer<Model> checkListener;
 	private Consumer<Model> cloneListener;
-	private BiConsumer<Model, ExecutionResult> deployListener;
+	private BiConsumer<Model, CommandResult> deployListener;
 	private Consumer<Model> updateLanguageVersionListener;
 	private List<LanguageTool> tools;
 
@@ -50,7 +47,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		this.cloneListener = listener;
 	}
 
-	public void onDeploy(BiConsumer<Model, ExecutionResult> listener) {
+	public void onDeploy(BiConsumer<Model, CommandResult> listener) {
 		this.deployListener = listener;
 	}
 
@@ -69,7 +66,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		checkTrigger.onExecute(e -> check());
 		commitTrigger.onExecute(e -> commit());
 		cloneTrigger.onExecute(e -> cloneModel());
-		downloadTrigger.onExecute(e -> download());
+		downloadTrigger.onExecute(e -> openDownloadDialog());
 		commitModelDialog.onCommit((m, v) -> openRelease(v));
 		commitModelDialog.onCommitFailure((m, v) -> deployListener.accept(m, v));
 		commitModelDialog.onCreateRelease((m, v) -> deployListener.accept(m, v));
@@ -142,9 +139,10 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		cloneListener.accept(model);
 	}
 
-	private UIFile download() {
-		File release = box().modelManager().release(model, this.release);
-		return DisplayHelper.uiFile(ModelHelper.label(model, language(), box()) + "-" + release.getName(), release);
+	private void openDownloadDialog() {
+		downloadModelDialog.model(model);
+		downloadModelDialog.release(release);
+		downloadModelDialog.open();
 	}
 
 	private void openSettingsDialog() {

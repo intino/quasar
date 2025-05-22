@@ -24,6 +24,7 @@ Format("fontSize:'13pt'") largeFontSize
 Format("fontSize:'16pt'") veryLargeFontSize
 Format("fontWeight:'bold'") bold
 Format("color:'#888'") greyColor
+Format("color:'#555'") greyHardColor
 Format("color:'white'") whiteColor
 Format("color:'#F44335'") redColor
 Format("background:'#F44335'") redBackground
@@ -374,7 +375,7 @@ Format("position:'relative'") item
 Format("minWidth:'365px'") userItem
 Format("textTransform:'uppercase'") upperCase
 Format("textTransform:'lowercase'") lowerCase
-Format("marginLeft:'60px',marginTop:'10px'") messageBlock
+Format("marginLeft:'60px',marginTop:'50px'") messageBlock
 Format("fontStyle:'italic',color:'#777'") message
 Format("paddingBottom:'5px'") setupStepHeader
 Format("fontSize:'13pt',fontWeight:'bold'") setupStepTitle

@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 
 import io.quassar.editor.box.util.ArchetypeHelper;
 import io.quassar.editor.box.util.DisplayHelper;
+import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.ZipHelper;
 import io.quassar.editor.model.Model;
 
@@ -27,7 +28,7 @@ public class GetDownloadModelAction extends QuassarAction {
 
 		try {
 			File workspace = box.archetype().models().workspace(ArchetypeHelper.relativeModelPath(model), model);
-			File result = new File(box.archetype().tmp().root(), "%s-%s.zip".formatted(model, release));
+			File result = new File(box.archetype().tmp().root(), "%s-%s.zip".formatted(ModelHelper.label(quassarModel, "en", box), release));
 			ZipHelper.zip(workspace.toPath(), result.toPath());
 			return new Resource(result.getName(), new FileInputStream(result));
 		} catch (Exception e) {

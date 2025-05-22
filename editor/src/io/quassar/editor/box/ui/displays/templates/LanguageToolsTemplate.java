@@ -2,6 +2,8 @@ package io.quassar.editor.box.ui.displays.templates;
 
 import io.intino.alexandria.ui.displays.UserMessage;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.commands.Command;
+import io.quassar.editor.box.commands.Command.CommandResult;
 import io.quassar.editor.box.commands.LanguageCommands;
 import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.model.Language;
@@ -16,7 +18,7 @@ import java.util.function.Consumer;
 public class LanguageToolsTemplate extends AbstractLanguageToolsTemplate<EditorBox> {
 	private Language language;
 	private String release;
-	private Consumer<LanguageRelease> createVersionListener;
+	private Consumer<CommandResult> createVersionListener;
 
 	public LanguageToolsTemplate(EditorBox box) {
 		super(box);
@@ -30,7 +32,7 @@ public class LanguageToolsTemplate extends AbstractLanguageToolsTemplate<EditorB
 		this.release = release;
 	}
 
-	public void onCreateVersion(Consumer<LanguageRelease> listener) {
+	public void onCreateVersion(Consumer<CommandResult> listener) {
 		this.createVersionListener = listener;
 	}
 

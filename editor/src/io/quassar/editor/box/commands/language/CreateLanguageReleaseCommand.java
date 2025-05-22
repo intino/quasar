@@ -4,10 +4,12 @@ import io.intino.alexandria.Resource;
 import io.intino.alexandria.exceptions.InternalServerError;
 import io.intino.alexandria.exceptions.NotFound;
 import io.intino.alexandria.logger.Logger;
+import io.intino.builderservice.schemas.Message;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.builder.BuildResult;
 import io.quassar.editor.box.builder.ModelBuilder;
 import io.quassar.editor.box.commands.Command;
+import io.quassar.editor.box.commands.Command.CommandResult;
 import io.quassar.editor.box.commands.model.CreateModelCommand;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.TarHelper;
@@ -29,7 +31,7 @@ import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 
-public class CreateLanguageReleaseCommand extends Command<LanguageRelease> {
+public class CreateLanguageReleaseCommand extends Command<CommandResult> {
 	public Language language;
 	public String version;
 
@@ -38,28 +40,32 @@ public class CreateLanguageReleaseCommand extends Command<LanguageRelease> {
 	}
 
 	@Override
-	public LanguageRelease execute() {
-		build(box.modelManager().get(language.metamodel()));
+	public CommandResult execute() {
+		BuildResult result = build(box.modelManager().get(language.metamodel()));
+		if (!result.success()) return resultOf(result);
 		LanguageRelease release = box.languageManager().createRelease(language, version);
 		createDefaultHelp(language, release);
 		Model template = createTemplateModel(language, release);
 		release.template(template.id());
-		return release;
+		return resultOf(result);
 	}
 
-	private void build(Model metamodel) {
+	private BuildResult build(Model metamodel) {
 		File destination = null;
 		try {
 			BuildResult result = new ModelBuilder(metamodel, new GavCoordinates(language.group(), language.name(), version), box).build(author);
+			if (!result.success()) return result;
 			Resource resource = result.zipArtifacts();
 			destination = box.archetype().tmp().builds(UUID.randomUUID().toString());
 			TarHelper.extract(resource.inputStream(), destination);
 			box.languageManager().saveDsl(language, version, dslOf(destination));
 			box.languageManager().saveGraph(language, version, graphOf(destination));
 			box.languageManager().saveReaders(language, version, readersOf(destination));
+			return result;
 		}
 		catch (Exception | InternalServerError | NotFound e) {
 			Logger.error(e);
+			return BuildResult.failure(List.of(new Message().content(e.getMessage()).kind(Message.Kind.ERROR)));
 		} finally {
 			if (destination != null) destination.delete();
 		}

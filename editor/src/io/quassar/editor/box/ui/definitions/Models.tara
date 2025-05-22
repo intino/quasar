@@ -16,7 +16,7 @@ Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
 				Button(title="commit", format=airRight, visible=false) commitTrigger as Action
 				Button(title="forge", format=airRight, visible=false) forgeTrigger as OpenSite(site=empty, target=Blank)
 				Button(title="forge", format=airRight, visible=false) toolsTrigger as Action
-				Button(title="download", format=airRight, visible=false) downloadTrigger as Download
+				Button(title="download", format=airRight, visible=false) downloadTrigger as Action
 				Button(title="info", format=airRight, visible=false) infoTrigger as Action Readonly
 				Button(title="clone", format=airRight, visible=false) cloneTrigger as Action Affirmed("Cloning the model will create a copy and open it. Do you want to proceed?")
 				Button(title="help", format=airRight, visible=false) helpTrigger as OpenSite(site=empty, target=Blank)
@@ -29,6 +29,7 @@ Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
 	TemplateStamp(template=modelSettingsDialog) modelSettingsDialog
 	TemplateStamp(template=languageToolLauncher) toolLauncher
 	TemplateStamp(template=modelTitleDialog) modelTitleDialog
+	TemplateStamp(template=downloadModelDialog) downloadModelDialog
 
 Template modelsTemplate as Relative(height=100%, width=100%)
 	Link(title="") modelTrigger as OpenSite(site=empty, target=Blank)
@@ -53,9 +54,10 @@ Template modelsTemplate as Relative(height=100%, width=100%)
 Template modelTemplate as Relative(height=100%, width=100%)
 
 	Block(layout=Vertical Flexible CenterCenter, visible=false) notFoundBlock
-		Block(layout=Vertical Flexible, spacing=DP16, format=messageBlock) as Relative(height=100%, width=100%)
+		Block(layout=Vertical Flexible, spacing=DP16, format=messageBlock) as Relative(height=100%, width=60%)
 			Block(layout=Vertical)
-				Text(value="Model not found", format=h2 airTop textCentered, translate=true) message
+				Text(value="Not found", format=h2 airTop textCentered greyHardColor, translate=true)
+				Text(value="Sorry, we can't find the model you are looking for", format=h5 textCentered greyColor, translate=true)
 				Block(layout=Horizontal) > Button(title="home", format=airTop, highlight=Outline) as Action Addressable(EditorElements.home)
 
 	Block(layout=Vertical Flexible) contentBlock as Relative(height=100%, width=100%)
