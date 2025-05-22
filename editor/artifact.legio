@@ -20,7 +20,7 @@ Artifact(groupId = "io.quassar", version = "1.0.0") editor
 		Compile("systems.intino.datamarts", "subject-store", "2.0.8")
 		Compile("org.xerial", "sqlite-jdbc", "3.49.1.0")
 
-		Web("io.quassar", "editor-elements", "1.0.0-SNAPSHOT")
+		Web("io.quassar", "editor-elements", "1.0.0")
 
 		Test("junit", "junit", "4.13")
 
