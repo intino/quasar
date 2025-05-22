@@ -38,7 +38,7 @@ public class Parser {
 
 	public CommonTokenStream tokens() throws SyntaxException {
 		try (InputStream content = source.content()) {
-			TaraLexer lexer = new TaraLexer(fromString(new String(content.readAllBytes()), source.charset().name()));
+			TaraLexer lexer = new TaraLexer(fromString(new String(content.readAllBytes(), source.charset()), source.uri().getPath()));
 			lexer.reset();
 			return new CommonTokenStream(lexer);
 		} catch (IOException e) {

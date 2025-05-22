@@ -86,7 +86,7 @@ public class DiagnosticService {
 
 	private static Diagnostic diagnosticOf(SyntaxException e) {
 		Range range = new Range(new Position(e.getLine() - 1, e.getStartColumn()), new Position(e.getEndLine() - 1, e.getEndColumn()));
-		return new Diagnostic(range, e.getMessage().substring(0, e.getMessage().indexOf("@") - 1), DiagnosticSeverity.Error, e.getUri().getPath());
+		return new Diagnostic(range, e.getOriginalMessage(), DiagnosticSeverity.Error, e.getUri().getPath());
 	}
 
 	private static Diagnostic diagnosticOf(DependencyException e) {
