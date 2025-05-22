@@ -85,7 +85,7 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 	private void refreshState() {
 		boolean sameName = language == null || Language.nameFrom(idField.value()).equals(language.name());
 		boolean valid = sameName && DisplayHelper.checkLanguageId(idField, this::translate, box()) && (language != null || DisplayHelper.checkLanguageInUse(idField, this::translate, box()));
-		if (!sameName) idField.error(translate("Language can't change its language name part (%s) once created").formatted(language.name()));
+		if (!sameName) idField.error(translate("DSL can't change its name part (%s) once created").formatted(language.name()));
 		boolean emptyId = idField.value() == null || idField.value().isEmpty();
 		validIdIcon.visible(valid && !emptyId);
 		invalidIdIcon.visible(!valid && !emptyId);
