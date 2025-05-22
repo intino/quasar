@@ -99,8 +99,7 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 	}
 
 	private boolean check() {
-		if (!DisplayHelper.check(modelTitleField, this::translate)) return false;
-		return DisplayHelper.check(modelDescriptionField, this::translate);
+		return DisplayHelper.check(modelTitleField, this::translate);
 	}
 
 	private void saveModel() {
