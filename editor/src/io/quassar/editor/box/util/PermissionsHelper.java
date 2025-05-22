@@ -100,7 +100,7 @@ public class PermissionsHelper {
 		return hasPermissions(model, session) && release != null && !release.equals(Model.DraftRelease);
 	}
 
-	public static boolean canOpenTools(Model model, Language language, String release, UISession session) {
+	public static boolean canLaunchExecution(Model model, Language language, String release, UISession session) {
 		return hasPermissions(model, session) && release != null && !release.equals(Model.DraftRelease);
 	}
 

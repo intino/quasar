@@ -40,16 +40,13 @@ public class LanguageRelease extends SubjectWrapper {
 		put("example", example);
 	}
 
-	public List<LanguageTool> tools() {
-		List<Subject> result = subject.children().type(SubjectHelper.LanguageReleaseTool).collect();
-		return result.stream().map(this::toolOf).toList();
+	public LanguageExecution execution() {
+		Stream<Subject> result = subject.children().collect().stream().filter(s -> s.is(SubjectHelper.LanguageExecutionType));
+		return result.findFirst().map(this::executionOf).orElse(null);
 	}
 
-	public LanguageTool tool(String name) {
-		return tools().stream().filter(r -> r.name().equals(name)).findFirst().orElse(null);
+	private LanguageExecution executionOf(Subject subject) {
+		return new LanguageExecution(subject);
 	}
 
-	private LanguageTool toolOf(Subject subject) {
-		return new LanguageTool(subject);
-	}
 }

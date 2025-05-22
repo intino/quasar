@@ -15,7 +15,7 @@ Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
 				Button(title="check", size=Small) checkTrigger as Action > Shortcut(key="F9", metaKeys=Control)
 				Button(title="commit", format=airRight, visible=false) commitTrigger as Action
 				Button(title="forge", format=airRight, visible=false) forgeTrigger as OpenSite(site=empty, target=Blank)
-				Button(title="forge", format=airRight, visible=false) toolsTrigger as Action
+				Button(title="forge", format=airRight, visible=false) executionTrigger as Action
 				Button(title="download", format=airRight, visible=false) downloadTrigger as Action
 				Button(title="info", format=airRight, visible=false) infoTrigger as Action Readonly
 				Button(title="clone", format=airRight, visible=false) cloneTrigger as Action Affirmed("Cloning the model will create a copy and open it. Do you want to proceed?")
@@ -27,7 +27,7 @@ Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
 
 	TemplateStamp(template=commitModelDialog) commitModelDialog
 	TemplateStamp(template=modelSettingsDialog) modelSettingsDialog
-	TemplateStamp(template=languageToolLauncher) toolLauncher
+	TemplateStamp(template=languageExecutionLauncher) executionLauncher
 	TemplateStamp(template=modelTitleDialog) modelTitleDialog
 	TemplateStamp(template=downloadModelDialog) downloadModelDialog
 

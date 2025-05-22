@@ -2,7 +2,6 @@ package io.quassar.editor.box.ui.displays.templates;
 
 import io.intino.alexandria.ui.displays.UserMessage;
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.box.commands.Command.CommandResult;
 import io.quassar.editor.box.ui.types.ForgeView;
 import io.quassar.editor.box.util.LanguageHelper;
@@ -43,8 +42,8 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 		helpBlock.onShow(e -> refreshHelpBlock());
 		kitBlock.onInit(e -> initKitBlock());
 		kitBlock.onShow(e -> refreshKitBlock());
-		toolsBlock.onInit(e -> initToolsBlock());
-		toolsBlock.onShow(e -> refreshToolsBlock());
+		executionBlock.onInit(e -> initExecutionBlock());
+		executionBlock.onShow(e -> refreshExecutionBlock());
 		viewSelector.select(0);
 		versionSelector.onSelect(e -> updateVersion());
 		refreshVersions.onExecute(e -> refreshVersions());
@@ -70,14 +69,14 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 		hideViews();
 		if (view == ForgeView.Help) helpBlock.show();
 		else if (view == ForgeView.Kit) kitBlock.show();
-		else if (view == ForgeView.Tools) toolsBlock.show();
+		else if (view == ForgeView.Execution) executionBlock.show();
 		else kitBlock.show();
 	}
 
 	private void hideViews() {
 		if (helpBlock.isVisible()) helpBlock.hide();
 		else if (kitBlock.isVisible()) kitBlock.hide();
-		else if (toolsBlock.isVisible()) toolsBlock.hide();
+		else if (executionBlock.isVisible()) executionBlock.hide();
 	}
 
 	private void refreshInfoDialog() {
@@ -106,14 +105,14 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 		kitStamp.refresh();
 	}
 
-	private void initToolsBlock() {
-		toolsStamp.onCreateVersion(this::versionCreated);
+	private void initExecutionBlock() {
+		executionStamp.onCreateVersion(this::versionCreated);
 	}
 
-	private void refreshToolsBlock() {
-		toolsStamp.language(language);
-		toolsStamp.release(release);
-		toolsStamp.refresh();
+	private void refreshExecutionBlock() {
+		executionStamp.language(language);
+		executionStamp.release(release);
+		executionStamp.refresh();
 	}
 
 	private void refreshProperties() {

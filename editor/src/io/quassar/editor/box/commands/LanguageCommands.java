@@ -7,7 +7,6 @@ import io.quassar.editor.model.*;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 public class LanguageCommands extends Commands {
 
@@ -71,21 +70,37 @@ public class LanguageCommands extends Commands {
 		return command.execute();
 	}
 
-	public void addTool(Language language, String release, String name, LanguageTool.Type type, Map<String, String> parameters, String username) {
-		AddLanguageReleaseToolCommand command = setup(new AddLanguageReleaseToolCommand(box), username);
+	public LanguageExecution createExecution(Language language, String release, LanguageExecution.Type type, String username) {
+		CreateLanguageReleaseExecutionCommand command = setup(new CreateLanguageReleaseExecutionCommand(box), username);
 		command.language = language;
 		command.release = release;
-		command.name = name;
 		command.type = type;
-		command.parameters = parameters;
+		return command.execute();
+	}
+
+	public void saveExecution(Language language, String release, LanguageExecution.Type type, String username) {
+		SaveLanguageReleaseExecutionCommand command = setup(new SaveLanguageReleaseExecutionCommand(box), username);
+		command.language = language;
+		command.release = release;
+		command.type = type;
 		command.execute();
 	}
 
-	public void removeTool(Language language, String release, LanguageTool tool, String username) {
-		RemoveLanguageReleaseToolCommand command = setup(new RemoveLanguageReleaseToolCommand(box), username);
+	public void saveRemoteExecution(Language language, String release, String content, String username) {
+		SaveLanguageReleaseRemoteExecutionCommand command = setup(new SaveLanguageReleaseRemoteExecutionCommand(box), username);
 		command.language = language;
 		command.release = release;
-		command.tool = tool;
+		command.content = content;
 		command.execute();
 	}
+
+	public void saveLocalExecution(Language language, String release, LanguageExecution.LocalLanguage localLanguage, String content, String username) {
+		SaveLanguageReleaseLocalExecutionCommand command = setup(new SaveLanguageReleaseLocalExecutionCommand(box), username);
+		command.language = language;
+		command.release = release;
+		command.localLanguage = localLanguage;
+		command.content = content;
+		command.execute();
+	}
+
 }

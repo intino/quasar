@@ -13,9 +13,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -61,27 +61,18 @@ public class LanguageManager {
 	}
 
 	public LanguageRelease createRelease(Language language, String version) {
+		LanguageExecution lastExecution = language.lastRelease() != null ? language.lastRelease().execution() : null;
 		LanguageRelease release = new LanguageRelease(subjectStore.create(SubjectHelper.pathOf(language, version)));
 		release.version(version);
+		if (lastExecution != null) copyExecution(language, release, lastExecution);
+		else createExecution(language, release, LanguageExecution.Type.None);
 		return release;
 	}
 
-	public LanguageTool createReleaseTool(Language language, LanguageRelease release, String name, LanguageTool.Type type, Map<String, String> parameters) {
-		LanguageTool tool = new LanguageTool(subjectStore.create(SubjectHelper.pathOf(language, release, name)));
-		tool.type(type);
-		parameters.forEach((key, value) -> createReleaseToolParameter(language, release, tool, key, value));
-		return tool;
-	}
-
-	private void createReleaseToolParameter(Language language, LanguageRelease release, LanguageTool tool, String key, String value) {
-		LanguageTool.Parameter parameter = new LanguageTool.Parameter(subjectStore.create(SubjectHelper.pathOf(language, release, tool, key)));
-		parameter.value(value);
-	}
-
-	public boolean removeReleaseTool(Language language, LanguageRelease release, LanguageTool tool) {
-		Subject subject = subjectStore.create(SubjectHelper.pathOf(language, release, tool));
-		subject.drop();
-		return true;
+	public LanguageExecution createExecution(Language language, LanguageRelease release, LanguageExecution.Type type) {
+		LanguageExecution result = new LanguageExecution(subjectStore.create(SubjectHelper.executionPathOf(language, release)));
+		result.type(type);
+		return result;
 	}
 
 	public File loadLogo(Language language) {
@@ -281,6 +272,12 @@ public class LanguageManager {
 		File file = archetype.languages().releaseDslJar(language, release);
 		if (!file.exists()) return null;
 		return file;
+	}
+
+	private void copyExecution(Language language, LanguageRelease release, LanguageExecution execution) {
+		LanguageExecution result = createExecution(language, release, execution.type());
+		result.remoteConfiguration(execution.remoteConfiguration());
+		Arrays.stream(LanguageExecution.LocalLanguage.values()).forEach(l -> result.localConfiguration(l, execution.localConfiguration(l)));
 	}
 
 }

@@ -10,16 +10,13 @@ import java.util.stream.Collectors;
 public class SubjectHelper {
 	public static final String LanguageType = "language";
 	public static final String LanguageReleaseType = "release";
-	public static final String LanguageReleaseTool = "tool";
-	public static final String LanguageToolParameter = "parameter";
+	public static final String LanguageExecutionType = "execution";
 	public static final String ModelType = "model";
-	public static final String ModelReleaseType = "release";
 	public static final String UserType = "user";
 
 	public static final String LanguagePath = "%s.language";
 	public static final String LanguageReleasePath = "%s.language/%s.release";
-	public static final String LanguageReleaseToolPath = "%s.language/%s.release/%s.tool";
-	public static final String LanguageToolParameterPath = "%s.language/%s.release/%s.tool/%s.parameter";
+	public static final String LanguageExecutionPath = "%s.language/%s.release/0001.execution";
 	public static final String ModelPath = "%s.model";
 	public static final String ModelReleasePath = "%s.model/%s.release";
 	public static final String UserPath = "%s.user";
@@ -36,16 +33,8 @@ public class SubjectHelper {
 		return LanguageReleasePath.formatted(language.name(), release.version());
 	}
 
-	public static String pathOf(Language language, LanguageRelease release, LanguageTool tool) {
-		return pathOf(language, release, tool.name());
-	}
-
-	public static String pathOf(Language language, LanguageRelease release, String tool) {
-		return LanguageReleaseToolPath.formatted(language.name(), release.version(), tool);
-	}
-
-	public static String pathOf(Language language, LanguageRelease release, LanguageTool tool, String parameter) {
-		return LanguageToolParameterPath.formatted(language.name(), release.version(), tool.name(), parameter);
+	public static String executionPathOf(Language language, LanguageRelease release) {
+		return LanguageExecutionPath.formatted(language.name(), release.version());
 	}
 
 	public static String pathOf(Language language, String version) {

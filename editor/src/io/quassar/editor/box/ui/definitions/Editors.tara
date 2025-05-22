@@ -173,43 +173,18 @@ Template(layout=Horizontal) languageEditor as Relative(width=100%, height=100%)
 		Image logoField as Editable Absolute(height=150px, width=150px)
 		Link(title="Generate", format=languageEditorLogoStyle) generateLogo as Action Readonly
 
-Template(layout=Horizontal) languageToolLauncher
-	Link(title="") openForgeSite as OpenSite(site=empty, target=Blank)
+Template(layout=Horizontal) languageExecutionLauncher
+	Link(title="") siteLauncher as OpenSite(site=empty, target=Blank)
 
-	Dialog(title="Select tool") dialog
+	Dialog(title="Forge instructions") localDialog as Absolute(width=800px, height=600px)
         Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
-			Text(value="Select a tool for this model", format=middleAirBottom)
-			Selector toolSelector as ListBox
+			Text(value="You need to follow this instructions to execute this model in your local environment", format=middleAirBottom)
+
+			Block(format=relative airTop)
+				Text execution as Editable Memo(height=20Rows) Readonly
+				Selector(size=Small, format=localLanguageSelectorStyle) localLanguageSelector as ToggleBox
+			Block(layout=Horizontal) > Button(title="Copy instructions", format=middleAirTop, highlight=Outline) copy as CopyToClipboard
+
 		Divider
         Block(layout=Horizontal EndJustified)
-        	Button(title="Close", size=Small) as CloseDialog(dialog)
-
-	Dialog(title="Forge") dockerDialog
-        Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
-			Text(value="With this model you need to follow this steps", format=middleAirBottom)
-
-			Block(layout=Horizontal, format=airBottom)
-				Block(layout=Vertical Flexible) > Text(format=airRight) pull as Code(Html)
-				Block(layout=Horizontal EndJustified) > MaterialIconButton(title="Copy", icon="FileCopy", size=Small) copyPull as CopyToClipboard
-
-			Block(layout=Horizontal, format=airBottom)
-				Block(layout=Vertical Flexible) > Text(format=airRight) run as Code(Html)
-				Block(layout=Horizontal EndJustified) > MaterialIconButton(title="Copy", icon="FileCopy", size=Small) copyRun as CopyToClipboard
-		Divider
-        Block(layout=Horizontal EndJustified)
-        	Button(title="Close", size=Small) as CloseDialog(dockerDialog)
-
-	Dialog(title="Forge") manualDialog
-        Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
-			Text(value="With this model you need to follow this steps", format=middleAirBottom)
-
-			Block(format=airBottom)
-				Text(value="Install instructions")
-				Text install as Code(Html)
-
-			Block(format=airBottom)
-				Text(value="Execution instructions")
-				Text execution as Code(Html)
-		Divider
-        Block(layout=Horizontal EndJustified)
-        	Button(title="Close", size=Small) as CloseDialog(manualDialog)
+        	Button(title="Close", size=Small) as CloseDialog(localDialog)

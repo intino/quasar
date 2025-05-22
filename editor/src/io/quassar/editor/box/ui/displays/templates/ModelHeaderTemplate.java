@@ -2,9 +2,11 @@ package io.quassar.editor.box.ui.displays.templates;
 
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command.CommandResult;
-import io.quassar.editor.box.util.*;
+import io.quassar.editor.box.util.LanguageHelper;
+import io.quassar.editor.box.util.ModelHelper;
+import io.quassar.editor.box.util.PathHelper;
+import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.Language;
-import io.quassar.editor.model.LanguageTool;
 import io.quassar.editor.model.Model;
 import io.quassar.editor.model.Project;
 
@@ -21,7 +23,6 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	private Consumer<Model> cloneListener;
 	private BiConsumer<Model, CommandResult> deployListener;
 	private Consumer<Model> updateLanguageVersionListener;
-	private List<LanguageTool> tools;
 
 	public ModelHeaderTemplate(EditorBox box) {
 		super(box);
@@ -73,7 +74,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		infoTrigger.onExecute(e -> openSettingsDialog());
 		modelSettingsDialog.onSave(e -> refresh());
 		modelSettingsDialog.onUpdateLanguageVersion(e -> notifyUpdateLanguageVersion());
-		toolsTrigger.onExecute(e -> openTools());
+		executionTrigger.onExecute(e -> openExecutionLauncher());
 	}
 
 	@Override
@@ -96,8 +97,8 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		forgeTrigger.visible(!model.isTemplate() && release != null && !release.equals(Model.DraftRelease) && model.language().artifactId().equals(Language.Metta));
 		forgeTrigger.readonly(!PermissionsHelper.canForge(model, language, release, session()));
 		if (forgeTrigger.isVisible()) forgeTrigger.site(PathHelper.forgeUrl(model, release, session()));
-		toolsTrigger.visible(!model.isTemplate() && release != null && !release.equals(Model.DraftRelease) && !model.language().artifactId().equals(Language.Metta));
-		toolsTrigger.readonly(!PermissionsHelper.canOpenTools(model, language, release, session()));
+		executionTrigger.visible(!model.isTemplate() && release != null && !release.equals(Model.DraftRelease) && !model.language().artifactId().equals(Language.Metta));
+		executionTrigger.readonly(!PermissionsHelper.canLaunchExecution(model, language, release, session()));
 		downloadTrigger.visible(ModelHelper.validReleaseName(release, this::translate));
 		cloneTrigger.visible(!model.isTemplate());
 		cloneTrigger.readonly(!PermissionsHelper.canClone(model, release, session(), box()));
@@ -150,10 +151,10 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		modelSettingsDialog.open();
 	}
 
-	private void openTools() {
-		toolLauncher.model(model);
-		toolLauncher.release(release);
-		toolLauncher.launch();
+	private void openExecutionLauncher() {
+		executionLauncher.model(model);
+		executionLauncher.release(release);
+		executionLauncher.launch();
 	}
 
 	private void notifyUpdateLanguageVersion() {
