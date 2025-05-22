@@ -1,6 +1,6 @@
 dsl Legio
 
-Artifact("io.intino", "1.0.0-SNAPSHOT") builder-service
+Artifact("io.intino", "1.0.0") builder-service
 	Dsl("Konos", "13.3.5")
 	Imports
 		Test("junit", "junit", "4.13.2")
@@ -20,6 +20,7 @@ Artifact("io.intino", "1.0.0-SNAPSHOT") builder-service
 			Snapshot("https://artifactory.intino.io/artifactory/snapshot-libraries")
 
 	Deployment(server = deploy-quassar-dev, runConfiguration = dev)
+	Deployment(server = vps-d07c88a9, runConfiguration = pro)
 	Parameter("language-repository")
 	Parameter("port")
 	Parameter("home")
@@ -39,4 +40,13 @@ RunConfiguration dev
 	Argument("docker-url", "tcp://127.0.0.1:2375")
 	Argument("dockerhub-auth-file", "/home/intino/configuration/dockerhub.properties")
 
+RunConfiguration pro
+	Argument("port", "9002")
+	Argument("home", "/home/intino")
+	Argument("language-repository", "/home/intino/.m2/repository")
+	Argument("docker-url", "tcp://127.0.0.1:2375")
+	Argument("dockerhub-auth-file", "/home/intino/configuration/dockerhub.properties")
+
+
 Server(type=Dev) deploy-quassar-dev
+Server(type=Pro) vps-d07c88a9
