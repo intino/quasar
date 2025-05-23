@@ -218,8 +218,13 @@ Template(layout=Horizontal Flexible) languageHelpTemplate
 			Text(value="This version of the DSL has not been defined yet. To define its help, you must first create the version.", format=h5 textCentered)
 			Button(title="Create version", highlight=Fill, format=doubleAirTop) createVersion as Action
 
-	Block(layout=Vertical Flexible, visible=false) versionBlock
-		Text(format=fullHeight fullWidth) helpField as Editable Code(Html)
+	Block(layout=Vertical Flexible, visible=false) versionBlock as Relative(height=100%, width=100%)
+		DisplayStamp(display=helpEditor, format=fullHeight) helpEditor
+		//Text(format=fullHeight fullWidth) helpField as Editable Code(Html)
+
+Display helpEditor
+	Notification refresh as Text
+	Request update as Text
 
 Template(layout=Vertical Flexible, format=doubleSpaced) languageKitTemplate
 	Block(layout=Vertical Flexible, visible=false) selectVersionBlock

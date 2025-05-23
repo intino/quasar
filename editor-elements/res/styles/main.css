@@ -10,3 +10,11 @@
 .MuiInput-formControl textarea, .MuiInput-formControl input {
     margin-left: 5px !important;
 }
+
+.rsw-editor {
+    height: 100%;
+}
+
+.rsw-toolbar {
+    font-size: 13pt;
+}
