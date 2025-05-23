@@ -88,7 +88,7 @@ public class LoginTemplate extends AbstractLoginTemplate<EditorBox> {
 	}
 
 	private void login(String username) {
-		login(new io.intino.alexandria.ui.services.push.User().username(username).fullName(username));
+		login(new io.intino.alexandria.ui.services.push.User().username(username).fullName(username).email(username));
 	}
 
 	private void login(io.intino.alexandria.ui.services.push.User userInfo) {

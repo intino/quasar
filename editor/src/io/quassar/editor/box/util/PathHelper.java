@@ -127,6 +127,10 @@ public class PathHelper {
 		return modelPath(ModelPath, model, release, null, null, null);
 	}
 
+	public static String modelPath(Model model, String release, ModelView view) {
+		return modelPath(ModelPath, model, release, view, null, null);
+	}
+
 	public static String modelPath(Model model, String release, ModelView view, String file) {
 		return modelPath(ModelPath, model, release, view, file, null);
 	}

@@ -21,6 +21,7 @@ import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
+import javax.swing.text.View;
 import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -130,9 +131,11 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 	private void refreshModelBrowserBlock() {
 		modelBrowserStamp.model(model);
 		modelBrowserStamp.release(release);
+		modelBrowserStamp.view(selectedView);
 		modelBrowserStamp.modelContainer(modelContainer);
 		modelBrowserStamp.file(selectedFile);
 		modelBrowserStamp.refresh();
+		if (intinoDslEditor.display() != null) ((IntinoDslEditor)intinoDslEditor.display()).files(editorFiles());
 	}
 
 	private void initResourcesBrowserBlock() {
@@ -144,9 +147,11 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 	private void refreshResourcesBrowserBlock() {
 		resourcesBrowserStamp.model(model);
 		resourcesBrowserStamp.release(release);
+		resourcesBrowserStamp.view(selectedView);
 		resourcesBrowserStamp.modelContainer(modelContainer);
 		resourcesBrowserStamp.file(selectedFile);
 		resourcesBrowserStamp.refresh();
+		if (intinoDslEditor.display() != null) ((IntinoDslEditor)intinoDslEditor.display()).files(editorFiles());
 	}
 
 	private void initFileEditor() {
@@ -172,7 +177,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 
 	private List<File> editorFiles() {
 		if (modelContainer == null) return Collections.emptyList();
-		return selectedView == null || selectedView == ModelView.Model ? modelContainer.modelFiles() : List.of(selectedFile);
+		return selectedView == null || selectedView == ModelView.Model ? modelContainer.modelFiles() : (selectedFile != null ? List.of(selectedFile) : Collections.emptyList());
 	}
 
 	private void initFileModifiedDialog() {
@@ -229,12 +234,16 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 	private void refreshEditableFileBlock() {
 		if (!editableFileBlock.isVisible()) return;
 		IntinoDslEditor display = intinoDslEditor.display();
-		if (display == null || !display.sameReleaseAndFile(release, selectedFile.uri())) display = createFileEditor();
-		display.model(model);
-		display.release(release);
-		display.view(selectedView);
-		display.file(selectedFile, selectedPosition);
-		display.refresh();
+//		if (display == null || !display.sameReleaseAndFile(release, selectedFile.uri())) display = createFileEditor();
+		if (display == null) display = createFileEditor();
+		if (!display.initialized()) {
+			display.model(model);
+			display.release(release);
+			display.view(selectedView);
+			display.file(selectedFile, selectedPosition);
+			display.refresh();
+		}
+		else display.openFile(selectedFile, selectedPosition);
 	}
 
 	private void refreshNonEditableFileBlock() {
@@ -279,6 +288,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 
 	private void reload() {
 		modelContainer = box().modelManager().modelContainer(model, release);
+		if (intinoDslEditor.display() != null) ((IntinoDslEditor)intinoDslEditor.display()).files(editorFiles());
 		refresh();
 	}
 

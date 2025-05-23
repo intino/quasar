@@ -84,6 +84,7 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
         const theme = Theme.get();
         monaco.editor.registerEditorOpener(this.editorOpenerListener(monaco));
         monaco.languages.register({id:"tara", extensions: ['.tara'], aliases: ["TARA", "tara"]});
+        this.monaco = monaco;
         this.editor = monaco.editor.create(container, {
             automaticLayout: true,
             wordBasedSuggestions: 'off',
@@ -178,6 +179,17 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
             if (files[i].active) selectedFile = files[i];
         }
         this.setState({files: fileMap, selectedFile: selectedFile});
+    };
+
+    refreshFile = (position) => {
+        this.updateFile(position);
+    };
+
+    updateFile = (file) => {
+        if (file == null) return;
+        this.monaco.editor.getModels().forEach(m => m.dispose());
+        this.registerModel(file, this.monaco);
+        this.updatePosition(file.position);
     };
 
     refreshPosition = (position) => {

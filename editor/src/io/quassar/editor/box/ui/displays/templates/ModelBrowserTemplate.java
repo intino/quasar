@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox> {
 	private Model model;
 	private String release;
+	private ModelView view;
 	private ModelContainer modelContainer;
 	private File file;
 	private Operation operation;
@@ -45,6 +46,10 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 
 	public void release(String value) {
 		this.release = value;
+	}
+
+	public void view(ModelView view) {
+		this.view = view;
 	}
 
 	public void modelContainer(ModelContainer value) {
@@ -97,7 +102,7 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 		super.refresh();
 		if (model == null) return;
 		IntinoFileBrowser browser = fileBrowser.display();
-		browser.itemAddress(PathHelper.modelPath(model, release) + "&file=:file");
+		browser.itemAddress(PathHelper.modelPath(model, release, view) + "&file=:file");
 		browser.items(IntinoFileBrowserHelper.fileBrowserItems(modelContainer.modelFiles()), true, true);
 		browser.operations(operations());
 		browser.selection(file != null ? IntinoFileBrowserHelper.itemOf(file) : null);

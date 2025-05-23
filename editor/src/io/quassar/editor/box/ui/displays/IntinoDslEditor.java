@@ -28,7 +28,7 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 	private ModelView view;
 	private List<File> files = new ArrayList<>();
 	private File selectedFile;
-	private FilePosition position;
+	private FilePosition selectedPosition;
 	private Consumer<Boolean> fileModifiedListener;
 	private Consumer<IntinoDslEditorFileContent> saveFileListener;
 	private Consumer<Boolean> buildListener;
@@ -51,6 +51,10 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 		this.view = value;
 	}
 
+	public boolean initialized() {
+		return model != null && release != null && files.stream().anyMatch(f -> f.uri().equals(selectedFile.uri()));
+	}
+
 	public boolean sameReleaseAndFile(String newRelease, String newUri) {
 		return release != null && release.equals(newRelease) && selectedFile != null && selectedFile.uri().equals(newUri);
 	}
@@ -62,7 +66,7 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 	public void file(File file, FilePosition position) {
 		this.reloadRequired = this.selectedFile == null || !this.selectedFile.uri().equals(file.uri());
 		this.selectedFile = file;
-		this.position = position;
+		this.selectedPosition = position;
 	}
 
 	public void onFileModified(Consumer<Boolean> listener) {
@@ -103,6 +107,12 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 		selectedFile = selectedFileListener.apply(uri);
 	}
 
+	public void openFile(File file, FilePosition position) {
+		selectedFile = file;
+		selectedPosition = position;
+		notifier.refreshFile(fileOf(file).position(positionOf(position)));
+	}
+
 	@Override
 	public void refresh() {
 		super.refresh();
@@ -117,8 +127,8 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 	}
 
 	private void refreshPosition() {
-		if (position == null) return;
-		notifier.refreshPosition(positionOf(position));
+		if (selectedPosition == null) return;
+		notifier.refreshPosition(positionOf(selectedPosition));
 	}
 
 	private IntinoDslEditorSetup info() {
@@ -127,7 +137,7 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 
 	private IntinoDslEditorFile fileOf(File file) {
 		boolean active = this.selectedFile != null && this.selectedFile.uri().equals(file.uri());
-		return new IntinoDslEditorFile().active(active).name(file.name()).uri(file.uri()).extension(file.extension()).content(content(file)).language(file.language()).position(positionOf(position));
+		return new IntinoDslEditorFile().active(active).name(file.name()).uri(file.uri()).extension(file.extension()).content(content(file)).language(file.language()).position(positionOf(selectedPosition));
 	}
 
 	private IntinoDslEditorFilePosition positionOf(FilePosition position) {
