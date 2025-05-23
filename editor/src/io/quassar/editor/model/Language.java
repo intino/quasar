@@ -100,7 +100,7 @@ public class Language extends SubjectWrapper {
 	}
 
 	public String description() {
-		return get("description");
+		return getOrEmpty("description");
 	}
 
 	public void description(String value) {
@@ -115,32 +115,24 @@ public class Language extends SubjectWrapper {
 		putList("access", values);
 	}
 
-	public String acknowledgment() {
-		return get("acknowledgment");
-	}
-
-	public void acknowledgment(String acknowledgment) {
-		set("acknowledgment", acknowledgment);
-	}
-
-	public String credits() {
-		return get("credits");
-	}
-
-	public void credits(String credits) {
-		set("credits", credits);
-	}
-
 	public String citation() {
-		return get("citation");
+		return getOrEmpty("citation");
 	}
 
 	public void citation(String citation) {
 		set("citation", citation);
 	}
 
+	public String citationLink() {
+		return getOrEmpty("citation-link");
+	}
+
+	public void citationLink(String value) {
+		set("citation-link", value);
+	}
+
 	public String license() {
-		return get("license");
+		return getOrEmpty("license");
 	}
 
 	public void license(String license) {

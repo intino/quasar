@@ -26,7 +26,7 @@ class GoogleLoginDisplay extends AbstractGoogleLoginDisplay {
 	    if (this.state.clientId == null) return (<div>this.translate("You must define google client id in application run arguments")</div>);
 	    return (
 	        <GoogleOAuthProvider clientId={this.state.clientId}>
-	            <GoogleLogin onSuccess={this.handleLoginSuccess.bind(this)} onError={this.handleLoginError.bind(this)} auto_select/>
+	            <GoogleLogin onSuccess={this.handleLoginSuccess.bind(this)} onError={this.handleLoginError.bind(this)}/>
             </GoogleOAuthProvider>
         );
 	};

@@ -3,13 +3,14 @@ package io.quassar.editor.box.ui.displays.templates;
 import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.displays.events.actionable.ToggleEvent;
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.box.commands.LanguageCommands;
 import io.quassar.editor.box.commands.ModelCommands;
-import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.PermissionsHelper;
-import io.quassar.editor.model.*;
+import io.quassar.editor.model.Language;
+import io.quassar.editor.model.LanguageRelease;
+import io.quassar.editor.model.Model;
+import io.quassar.editor.model.User;
 
 import java.util.List;
 import java.util.Set;
@@ -18,10 +19,11 @@ import java.util.function.Consumer;
 public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> {
 	private Model model;
 	private Consumer<Model> saveListener;
+	private Consumer<Model> cloneListener;
 	private Consumer<Model> updateLanguageVersionListener;
 	private Boolean accessType = null;
 	private List<User> collaboratorList = null;
-	private String token;
+	private String release;
 
 	public ModelSettingsDialog(EditorBox box) {
 		super(box);
@@ -31,8 +33,16 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		this.model = model;
 	}
 
+	public void release(String release) {
+		this.release = release;
+	}
+
 	public void onSave(Consumer<Model> listener) {
 		this.saveListener = listener;
+	}
+
+	public void onClone(Consumer<Model> listener) {
+		this.cloneListener = listener;
 	}
 
 	public void onUpdateLanguageVersion(Consumer<Model> listener) {
@@ -63,12 +73,15 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 
 	private void initGeneralBlock() {
 		removeModel.onExecute(e -> removeModel());
+		cloneModel.onExecute(e -> cloneModel());
+		editTitle.onExecute(e -> openTitleDialog());
+		titleDialog.onSave(e -> modelTitleField.value(e));
 	}
 
 	private void refreshGeneralBlock() {
 		Language language = box().languageManager().get(model.language());
 		boolean canRemove = PermissionsHelper.canRemove(model, session(), box());
-		modelTitleField.readonly(!PermissionsHelper.canEditTitle(model, box()));
+		editTitle.readonly(!PermissionsHelper.canEditTitle(model, box()));
 		modelTitleField.value(ModelHelper.label(model, language(), box()));
 		modelDescriptionField.value(model.description());
 		languageName.value(model.language().languageId());
@@ -77,6 +90,7 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		languageSelector.selection(model.language().version());
 		removeModel.readonly(!canRemove);
 		removeModel.formats(Set.of("airRight", "whiteColor", canRemove ? "redBackground" : "greyHardBackground"));
+		cloneModel.readonly(!PermissionsHelper.canClone(model, release, session(), box()));
 		accessType = model.isPrivate();
 		accessTypeField.state(model.isPrivate() ? ToggleEvent.State.On : ToggleEvent.State.Off);
 	}
@@ -94,12 +108,11 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		if (!check()) return;
 		dialog.close();
 		saveModel();
-		//saveLanguageProperties();
 		saveListener.accept(model);
 	}
 
 	private boolean check() {
-		return DisplayHelper.check(modelTitleField, this::translate);
+		return true;
 	}
 
 	private void saveModel() {
@@ -137,11 +150,14 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		notifier.dispatch(PathHelper.languagePath(language));
 	}
 
-	private void saveLanguageProperties() {
-		Language language = box().languageManager().get(model);
-		if (language == null) return;
-		box().commands(LanguageCommands.class).save(language, LanguageProperty.Title, model.title(), username());
-		box().commands(LanguageCommands.class).save(language, LanguageProperty.Description, model.description(), username());
+	private void cloneModel() {
+		dialog.close();
+		cloneListener.accept(model);
+	}
+
+	private void openTitleDialog() {
+		titleDialog.model(model);
+		titleDialog.open();
 	}
 
 }

@@ -73,6 +73,11 @@ public class LoginTemplate extends AbstractLoginTemplate<EditorBox> {
 
 	private void loginUsingUsername(Event event) {
 		if (selectedUser == null) selectedUser = usernameField.value();
+		if (selectedUser == null || selectedUser.isEmpty()) {
+			notFoundUsernameMessage.visible(true);
+			return;
+		}
+		notFoundUsernameMessage.visible(false);
 		login(selectedUser);
 	}
 
@@ -84,6 +89,11 @@ public class LoginTemplate extends AbstractLoginTemplate<EditorBox> {
 
 	private void updateSelectedUser(KeyPressEvent event) {
 		selectedUser = usernameField.value();
+		if (selectedUser == null || selectedUser.isEmpty()) {
+			notFoundUsernameMessage.visible(true);
+			return;
+		}
+		notFoundUsernameMessage.visible(false);
 		login(selectedUser);
 	}
 

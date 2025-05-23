@@ -99,16 +99,17 @@ Template languageTemplate as Relative(height=100%, width=100%, offsetHeight=2px)
 						Block(visible=false) aboutBlock
 							Block(format=doubleAirBottom)
 								Text(value="title", format=h6 bold)
-								Text aboutTitle
+								Text(format=noHtmlStyle) aboutTitle as Code(Html)
 							Block(format=doubleAirBottom)
 								Text(value="what is it", format=h6 bold)
-								Text aboutDescription
+								Text(format=noHtmlStyle) aboutDescription as Code(Html)
 							Block(format=doubleAirBottom)
 								Text(value="how to cite", format=h6 bold)
-								Text aboutCitation
+								Text(format=noHtmlStyle) aboutCitation as Code(Html)
+								Link(title="Copy cite", format=middleAirTop, visible=false) aboutCitationLink as CopyToClipboard
 							Block(format=doubleAirBottom)
 								Text(value="copyright and license", format=h6 bold)
-								Text aboutLicense
+								Text(format=noHtmlStyle) aboutLicense as Code(Html)
 
 						Block(visible=false) versionsBlock
 							Block(format=doubleAirBottom)
@@ -187,14 +188,14 @@ Template(layout=Vertical Flexible) languagePropertiesTemplate
 		Text(value="What is it", translate=true, format=h5 middleAirBottom)
 		Text descriptionField as Editable Memo(height=5Rows)
 	Block(format=doubleAirBottom)
-		Text(value="Acknowledgement", translate=true, format=h5 middleAirBottom)
-		Text acknowledgementField as Editable Memo(height=5Rows)
-	Block(format=doubleAirBottom)
-		Text(value="Credits", translate=true, format=h5 middleAirBottom)
-		Text creditsField as Editable Memo(height=5Rows)
-	Block(format=doubleAirBottom)
 		Text(value="How to cite", translate=true, format=h5 middleAirBottom)
 		Text citationField as Editable Memo(height=5Rows)
+		Text(value="Cite link", translate=true, format=middleAirTop middleAirBottom)
+		Text citationLinkField as Editable Memo(height=5Rows)
+	Block(format=doubleAirBottom)
+		Text(value="Copyright and license", translate=true, format=h5 middleAirBottom)
+		Text licenseField as Editable Memo(height=5Rows)
+
 	Block(format=doubleAirBottom)
 		Text(value="Tags", translate=true, format=h5 middleAirBottom)
 		TemplateStamp(template=tagEditor) tags as Multiple("No tags", arrangement=Horizontal, spacing=DP8)

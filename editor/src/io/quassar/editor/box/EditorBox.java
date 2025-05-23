@@ -70,6 +70,7 @@ public class EditorBox extends AbstractBox {
 
 	public void beforeStart() {
 		boolean exists = archetype.index().exists();
+		if (!exists) new SubjectGenerator(this).generate();
 		subjectStore = createSubjectStore();
 		utilities = new Utilities(archetype.configuration().editor().utilities());
 		commandsFactory = new CommandsFactory(this);
@@ -81,7 +82,6 @@ public class EditorBox extends AbstractBox {
 		projectManager = new ProjectManager(archetype);
 		builderAccessor = new QuassarBuilderServiceAccessor(url(configuration.builderServiceUrl()));
 		setupServiceBuilder();
-		if (!exists) new SubjectGenerator(this).generate();
 	}
 
 	private SubjectStore createSubjectStore() {

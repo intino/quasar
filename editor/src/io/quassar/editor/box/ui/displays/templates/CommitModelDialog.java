@@ -67,9 +67,10 @@ public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
 	private void commit() {
 		if (!check()) return;
 		dialog.close();
-		if (!createRelease().success()) return;
+		CommandResult result = createRelease();
 		hideUserNotification();
-		commitListener.accept(model, version());
+		if (!result.success()) commitFailureListener.accept(model, result);
+		else commitListener.accept(model, version());
 	}
 
 	private CommandResult createRelease() {

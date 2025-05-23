@@ -8,7 +8,6 @@ import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
-import io.quassar.editor.model.Project;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,13 +65,13 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		releaseSelector.onExecute(e -> openRelease(e.option()));
 		checkTrigger.onExecute(e -> check());
 		commitTrigger.onExecute(e -> commit());
-		cloneTrigger.onExecute(e -> cloneModel());
 		downloadTrigger.onExecute(e -> openDownloadDialog());
 		commitModelDialog.onCommit((m, v) -> openRelease(v));
 		commitModelDialog.onCommitFailure((m, v) -> deployListener.accept(m, v));
 		commitModelDialog.onCreateRelease((m, v) -> deployListener.accept(m, v));
 		infoTrigger.onExecute(e -> openSettingsDialog());
 		modelSettingsDialog.onSave(e -> refresh());
+		modelSettingsDialog.onClone(e -> cloneModel());
 		modelSettingsDialog.onUpdateLanguageVersion(e -> notifyUpdateLanguageVersion());
 		executionTrigger.onExecute(e -> openExecutionLauncher());
 	}
@@ -82,9 +81,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		super.refresh();
 		contentBlock.visible(model != null);
 		if (!contentBlock.isVisible()) return;
-		Project project = box().projectManager().find(model);
 		Language language = box().languageManager().get(model);
-		projectModelSelector.readonly(project == null);
 		titleViewer.model(model);
 		titleViewer.refresh();
 		refreshReleaseSelector();
@@ -100,16 +97,15 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		executionTrigger.visible(!model.isTemplate() && release != null && !release.equals(Model.DraftRelease) && !model.language().artifactId().equals(Language.Metta));
 		executionTrigger.readonly(!PermissionsHelper.canLaunchExecution(model, language, release, session()));
 		downloadTrigger.visible(ModelHelper.validReleaseName(release, this::translate));
-		cloneTrigger.visible(!model.isTemplate());
-		cloneTrigger.readonly(!PermissionsHelper.canClone(model, release, session(), box()));
 		languageLogo.visible(language != null);
 		if (languageLogo.isVisible()) languageLogo.value(LanguageHelper.logo(language, box()));
 		helpTrigger.visible(language != null);
 		languageTrigger.visible(language != null);
 		if (language == null) return;
+		helpTrigger.title(LanguageHelper.title(model.language()));
 		helpTrigger.site(PathHelper.languageReleaseHelp(language, model.language().version()));
-		languageTrigger.title(LanguageHelper.title(model.language()));
-		languageTrigger.site(PathHelper.languageUrl(language, session()));
+		languageTrigger.title(translate("Goto %s").formatted(LanguageHelper.title(model.language())));
+		languageTrigger.address(path -> PathHelper.languagePath(path, language));
 	}
 
 	private void refreshReleaseSelector() {
@@ -148,6 +144,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 
 	private void openSettingsDialog() {
 		modelSettingsDialog.model(model);
+		modelSettingsDialog.release(release);
 		modelSettingsDialog.open();
 	}
 

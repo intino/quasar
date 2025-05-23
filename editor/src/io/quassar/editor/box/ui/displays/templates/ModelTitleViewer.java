@@ -19,7 +19,6 @@ public class ModelTitleViewer extends AbstractModelTitleViewer<EditorBox> {
 	@Override
 	public void init() {
 		super.init();
-		titleDialog.onSave(e -> refresh());
 		simpleTitleBlock.onInit(e -> initSimpleTitleBlock());
 		simpleTitleBlock.onShow(e -> refreshSimpleTitleBlock());
 		qualifiedTitleBlock.onInit(e -> initQualifiedTitleBlock());
@@ -37,28 +36,19 @@ public class ModelTitleViewer extends AbstractModelTitleViewer<EditorBox> {
 		else simpleTitleBlock.show();
 	}
 
-	private void openDialog() {
-		titleDialog.model(model);
-		titleDialog.open();
-	}
-
 	private void initSimpleTitleBlock() {
-		title.onExecute(e -> openDialog());
 	}
 
 	private void refreshSimpleTitleBlock() {
-		title.title(ModelHelper.label(model, language(), box()));
-		title.readonly(!PermissionsHelper.canEditTitle(model, box()));
+		title.value(ModelHelper.label(model, language(), box()));
 	}
 
 	private void initQualifiedTitleBlock() {
-		editTitleTrigger.onExecute(e -> openDialog());
 	}
 
 	private void refreshQualifiedTitleBlock() {
 		project.title(model.project());
 		module.title(model.module());
-		editTitleTrigger.readonly(!PermissionsHelper.canEditTitle(model, box()));
 	}
 
 	private void refreshProjectBlock() {
@@ -69,7 +59,7 @@ public class ModelTitleViewer extends AbstractModelTitleViewer<EditorBox> {
 	}
 
 	private void refreshModuleBlock() {
-		moduleBlock.moduleBlockTitle.value(translate("MODELS"));
+		moduleBlock.moduleBlockHeader.moduleBlockTitle.value("");
 		moduleBlock.moduleViewer.onSelect(e -> moduleBlock.close());
 		moduleBlock.moduleViewer.model(model);
 		moduleBlock.moduleViewer.module(model.module());

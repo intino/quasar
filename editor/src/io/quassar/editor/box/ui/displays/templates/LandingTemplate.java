@@ -42,8 +42,8 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 		languagesDialog.onOpen(e -> refreshLanguagesDialog());
 		languagesDialog.onClose(e -> notifyClose());
 		startModelingLogin.onExecute(e -> gotoLogin(PathHelper.landingUrl(LandingDialog.StartModeling, session())));
-		startBuildingLogin.onExecute(e -> gotoLogin(PathHelper.homeUrl(session())));
-		startBuilding.onExecute(e -> startBuilding());
+		//startBuildingLogin.onExecute(e -> gotoLogin(PathHelper.homeUrl(session())));
+		//startBuilding.onExecute(e -> startBuilding());
 	}
 
 	@Override
@@ -61,8 +61,9 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 		Language language = box().languageManager().get(Language.Metta);
 		List<Model> models = box().modelManager().models(language);
 		exploreLanguage.address(path -> PathHelper.languagePath(path, language, username() == null || models.isEmpty() ? LanguageTab.Examples : LanguageTab.Models));
-		startBuildingLogin.visible(user() == null);
-		startBuilding.visible(user() != null);
+		startBuilding.address(path -> PathHelper.languagePath(path, language, username() == null || models.isEmpty() ? LanguageTab.Examples : LanguageTab.Models));
+		//startBuildingLogin.visible(user() == null);
+		//startBuilding.visible(user() != null);
 	}
 
 	private void refreshLanguagesCatalog() {
@@ -93,11 +94,15 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 	}
 
 	private void startModeling(Language language) {
-		String name = ModelHelper.proposeName();
-		LanguageRelease release = language.lastRelease();
-		Model model = box().commands(ModelCommands.class).create(name, name, translate("(no description)"), GavCoordinates.fromString(language, release), username(), username());
-		notifier.dispatch(PathHelper.startingModelPath(model));
+		notifier.dispatch(PathHelper.languagePath(language));
 	}
+
+//	private void startModeling(Language language) {
+//		String name = ModelHelper.proposeName();
+//		LanguageRelease release = language.lastRelease();
+//		Model model = box().commands(ModelCommands.class).create(name, name, translate("(no description)"), GavCoordinates.fromString(language, release), username(), username());
+//		notifier.dispatch(PathHelper.startingModelPath(model));
+//	}
 
 	private void startBuilding() {
 		startModeling(box().languageManager().get(Language.key(Language.QuassarGroup, Language.Metta)));

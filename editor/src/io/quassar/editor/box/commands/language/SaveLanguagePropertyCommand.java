@@ -23,9 +23,9 @@ public class SaveLanguagePropertyCommand extends Command<Boolean> {
 	public Boolean execute() {
 		if (property == LanguageProperty.Title) language.title((String) value);
 		if (property == LanguageProperty.Description) language.description((String) value);
-		if (property == LanguageProperty.Acknowledgment) language.acknowledgment((String) value);
-		if (property == LanguageProperty.Credits) language.credits((String) value);
+		if (property == LanguageProperty.License) language.license((String) value);
 		if (property == LanguageProperty.Citation) language.citation((String) value);
+		if (property == LanguageProperty.CitationLink) language.citationLink((String) value);
 		if (property == LanguageProperty.Tags) language.tags((List<String>) value);
 		if (property == LanguageProperty.GrantAccess) language.grantAccessList((List<String>) value);
 		if (property == LanguageProperty.License) language.license((String) value);

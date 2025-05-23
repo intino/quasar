@@ -8,7 +8,7 @@ Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
 
 	Block(layout=Horizontal Center Flexible, visible=false) contentBlock
 		Block(layout=Horizontal Flexible)
-			AvatarIconButton(title="", size=Small, format=airRight, visible=false) projectModelSelector as Action
+			MaterialIconButton(title="Goto DSL", icon="ArrowUpward", size=Small, format=airRight middleAirLeft) languageTrigger as Action Addressable(EditorElements.language)
 			TemplateStamp(template=modelTitleViewer) titleViewer
 			Block(layout=Horizontal Center, format=doubleAirLeft)
 				SplitButton(title="draft", format=airRight minSelectorWidth, options="draft", defaultOption = "draft", visible=false) releaseSelector as Action
@@ -17,13 +17,11 @@ Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
 				Button(title="forge", format=airRight, visible=false) forgeTrigger as OpenSite(site=empty, target=Blank)
 				Button(title="forge", format=airRight, visible=false) executionTrigger as Action
 				Button(title="download", format=airRight, visible=false) downloadTrigger as Action
-				Button(title="info", format=airRight, visible=false) infoTrigger as Action Readonly
-				Button(title="clone", format=airRight, visible=false) cloneTrigger as Action Affirmed("Cloning the model will create a copy and open it. Do you want to proceed?")
-				Button(title="help", format=airRight, visible=false) helpTrigger as OpenSite(site=empty, target=Blank)
+				Button(title="settings", format=airRight, visible=false) infoTrigger as Action Readonly
 
 		Block(layout=Horizontal Center EndJustified)
 			Image(format=middleAirRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) languageLogo as Absolute(height=25px)
-			Button(title="", format=airRight lowerCase) languageTrigger as OpenSite(site=empty, target=Blank)
+			Button(title="", format=airRight lowerCase) helpTrigger as OpenSite(site=empty, target=Blank)
 
 	TemplateStamp(template=commitModelDialog) commitModelDialog
 	TemplateStamp(template=modelSettingsDialog) modelSettingsDialog

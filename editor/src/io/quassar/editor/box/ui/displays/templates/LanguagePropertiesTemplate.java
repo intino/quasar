@@ -33,9 +33,9 @@ public class LanguagePropertiesTemplate extends AbstractLanguagePropertiesTempla
 		super.init();
 		titleField.onChange(e -> save(LanguageProperty.Title, titleField.value()));
 		descriptionField.onChange(e -> save(LanguageProperty.Description, descriptionField.value()));
-		acknowledgementField.onChange(e -> save(LanguageProperty.Acknowledgment, acknowledgementField.value()));
-		creditsField.onChange(e -> save(LanguageProperty.Credits, creditsField.value()));
 		citationField.onChange(e -> save(LanguageProperty.Citation, citationField.value()));
+		citationLinkField.onChange(e -> save(LanguageProperty.CitationLink, citationLinkField.value()));
+		licenseField.onChange(e -> save(LanguageProperty.License, licenseField.value()));
 		addTagDialog.onOpen(e -> refreshTagDialog());
 		addTag.onExecute(e -> addTag());
 		tagField.onEnterPress(e -> addTag());
@@ -47,9 +47,9 @@ public class LanguagePropertiesTemplate extends AbstractLanguagePropertiesTempla
 		tagSet = new HashSet<>(language.tags());
 		titleField.value(language.title());
 		descriptionField.value(language.description());
-		acknowledgementField.value(language.acknowledgment());
-		creditsField.value(language.credits());
+		licenseField.value(language.license());
 		citationField.value(language.citation());
+		citationLinkField.value(language.citationLink());
 		refreshTags();
 	}
 

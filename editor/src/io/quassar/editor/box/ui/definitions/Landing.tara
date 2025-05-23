@@ -42,8 +42,9 @@ Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, heigh
 				Text(value="No code required", format=blockDescription)
 
 				Block(layout=Vertical CenterCenter, format=doubleAirTop doubleAirBottom)
-					Button(title="Start building", format=blockMainAction) startBuilding as Action
-					Button(title="Start building", format=blockMainAction, visible=false) startBuildingLogin as Action
+					Button(title="Start building", format=blockMainAction) startBuilding as Action Addressable(EditorElements.language)
+					//Button(title="Start building", format=blockMainAction) startBuilding as Action
+					//Button(title="Start building", format=blockMainAction, visible=false) startBuildingLogin as Action
 
 				Block(layout=Vertical Flexible CenterJustified Wrap, format=bringToFront doubleAirTop)
 					Block(layout=Vertical CenterCenter, format=doubleAirBottom)

@@ -5,9 +5,6 @@ import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.ui.types.LanguageView;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.Language;
-import io.quassar.editor.model.LanguageRelease;
-
-import java.util.function.Consumer;
 
 public class LanguageHeaderTemplate extends AbstractLanguageHeaderTemplate<EditorBox> {
 	private Language language;

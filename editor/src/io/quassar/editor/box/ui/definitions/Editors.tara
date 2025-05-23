@@ -5,25 +5,22 @@ use Users
 use UI
 use Theme
 
-Template(layout=Horizontal) modelTitleViewer
+Template(layout=Horizontal Center) modelTitleViewer
 
 	Block simpleTitleBlock as Conditional
-		Link(title="", format=modelViewTitle upperCase) title as Action
+		Text(format=modelViewTitle upperCase) title
 
 	Block(layout=Horizontal Center) qualifiedTitleBlock as Conditional
 		Link(title="", format=modelViewTitle upperCase airRight) project as OpenPopover(projectBlock)
 		Text(value=":", format=modelViewTitleSeparator upperCase airRight)
 		Link(title="", format=modelViewTitle upperCase) module as OpenPopover(moduleBlock)
-		MaterialIconButton(title="Edit name", icon="Edit", size=Small, format=airLeft) editTitleTrigger as Action
 
 	Block(format=popoverStyle) projectBlock as Popover
 		TemplateStamp(template=projectViewer) projectViewer
 
 	Block(format=popoverStyle) moduleBlock as Popover
-		Text(format=h5 middleAirBottom) moduleBlockTitle
+		Block(format=middleAirTop middleAirBottom) moduleBlockHeader > Text(format=h5) moduleBlockTitle
 		TemplateStamp(template=projectModuleViewer) moduleViewer
-
-	TemplateStamp(template=modelTitleDialog) titleDialog
 
 Template projectViewer
 	TemplateStamp(template=projectModuleViewer) modules as Multiple(noItemsMessage="no modules")
@@ -38,7 +35,7 @@ Template(layout=Vertical, format=smallAirBottom) projectModuleEntryViewer
 
 Template(layout=Horizontal) modelTitleDialog
 
-	Dialog(title="Edit name") dialog as Absolute(height=600px, width=700px)
+	Dialog(title="Edit name") dialog as Absolute(height=600px, width=800px)
         Block(layout=Vertical) as Relative(height=100%, offsetHeight=40px)
 			Selector typeSelector as RadioBox
 				Text(value="Simple name") simpleOption as Option
@@ -124,7 +121,10 @@ Template(layout=Horizontal) modelSettingsDialog
         		Block(layout=Vertical Flexible, format=doubleTopSpaced) generalBlock as Relative(width=95%) Conditional(settingsTabSelector.generalOption)
 					Block
 						Text(value="Name", translate=true, format=h5 middleAirBottom)
-						Text(mode=Uppercase) modelTitleField as Editable
+						Block(layout=Horizontal Center)
+							Text(mode=Uppercase, format=airRight) modelTitleField
+							Button(title="Edit", size=Small) editTitle as Action
+							TemplateStamp(template=modelTitleDialog) titleDialog
 					Block(format=doubleAirTop)
 						Text(value="Description", translate=true, format=h5 middleAirBottom)
 						Text modelDescriptionField as Editable Memo(height=4Rows)
@@ -139,6 +139,10 @@ Template(layout=Horizontal) modelSettingsDialog
 						Text(value="Remove model", translate=true, format=h5)
 						Text(value="Removed models cannot be restored!", format=greyColor airBottom, translate=true)
 						Block(layout=Horizontal) > Button(title="Remove model...", highlight=Fill) removeModel as Action Readonly Affirmed("Are you sure to remove model?")
+					Block(format=doubleAirTop)
+						Text(value="Clone model", translate=true, format=h5)
+						Text(value="Copy both model files and resource files to a new model", format=greyColor airBottom, translate=true)
+						Block(layout=Horizontal) > Button(title="Clone model...", highlight=Fill) cloneModel as Action Affirmed("Cloning the model will create a copy and open it. Do you want to proceed?")
 
         		Block(layout=Vertical Flexible, format=doubleTopSpaced) collaboratorsBlock as Relative(width=95%) Conditional(settingsTabSelector.collaboratorsOption)
 					Text(value="Users that will have access", translate=true, format=h5 middleAirBottom)

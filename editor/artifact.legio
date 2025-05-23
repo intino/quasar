@@ -1,15 +1,16 @@
 dsl Legio
 
-Artifact(groupId = "io.quassar", version = "1.0.2") editor
+Artifact(groupId = "io.quassar", version = "1.0.4") editor
 	Dsl("Konos", "13.4.2") > Builder(generationPackage = "box")
 	Archetype("io.quassar", "editor-archetype", "1.0.0")
 
 	Imports
+		Compile("tara.dsl", "metta", "1.0.0")
 		Compile("io.intino.alexandria", "core-framework", "2.2.2")
 		Compile("io.intino.alexandria", "logger4j", "1.1.0")
 		Compile("io.intino.alexandria", "scheduler-framework", "1.2.0")
 		Compile("io.intino.alexandria", "rest", "4.2.4")
-		Compile("io.intino.alexandria", "ui-framework", "6.5.6")
+		Compile("io.intino.alexandria", "ui-framework", "6.5.7")
 		Compile("io.intino.alexandria", "zip", "1.0.5")
 			Exclude("io.intino.tara","language")
 		Compile("io.intino", "language-server", "1.0.0")
@@ -21,7 +22,7 @@ Artifact(groupId = "io.quassar", version = "1.0.2") editor
 		Compile("org.xerial", "sqlite-jdbc", "3.49.1.0")
 		Compile("com.google.api-client", "google-api-client", "2.8.0")
 
-		Web("io.quassar", "editor-elements", "1.0.2")
+		Web("io.quassar", "editor-elements", "1.0.4")
 
 		Test("junit", "junit", "4.13")
 
@@ -76,7 +77,7 @@ RunConfiguration pro
 	Argument("url", "https://quassar.io")
 	Argument("home", "/home/intino")
 	Argument("title", "Quassar")
-	Argument("federation-url", "https://www.monentia.es/login")
+	Argument("federation-url", "")
 	Argument("google-client-id", "910085173896-4b9kmbi0vapnffbas814ab2ruvg7cm36.apps.googleusercontent.com")
 	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
 	Argument("language-repository", "/home/intino/.m2")

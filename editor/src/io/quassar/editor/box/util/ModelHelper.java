@@ -15,7 +15,7 @@ public class ModelHelper {
 
 	public static String label(Model model, String language, EditorBox box) {
 		String result = model.isTitleQualified() ? model.qualifiedTitle() : model.title();
-		if (result.isEmpty()) result = model.name();
+		if (result == null || result.isEmpty()) result = model.name();
 		return model.isTemplate() ? box.translatorService().translate("%s template", language).formatted(result).toUpperCase() : result;
 	}
 

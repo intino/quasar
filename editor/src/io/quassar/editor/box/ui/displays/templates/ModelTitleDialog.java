@@ -123,6 +123,7 @@ public class ModelTitleDialog extends AbstractModelTitleDialog<EditorBox> {
 	}
 
 	private void saveSimpleTitle() {
+		if (!DisplayHelper.check(titleField, this::translate)) return;
 		String value = titleField.value();
 		box().commands(ModelCommands.class).saveSimpleTitle(model, value, username());
 		dialog.close();

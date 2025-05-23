@@ -126,9 +126,11 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 		mainBlock.mainContentBlock.homeBlock.viewsBlock.aboutBlock.visible(view == null || view == LanguageView.About);
 		if (!mainBlock.mainContentBlock.homeBlock.viewsBlock.aboutBlock.isVisible()) return;
 		aboutTitle.value(language.title());
-		aboutDescription.value(valueOrDefault(language.description()));
-		aboutCitation.value(valueOrDefault(language.citation()));
-		aboutLicense.value(valueOrDefault(language.license()));
+		aboutDescription.value(valueOrDefault(language.description()).replace("\n", "<br/>"));
+		aboutCitation.value(valueOrDefault(language.citation()).replace("\n", "<br/>"));
+		aboutCitationLink.visible(!language.citationLink().isEmpty());
+		if (aboutCitationLink.isVisible()) aboutCitationLink.text(language.citationLink());
+		aboutLicense.value(valueOrDefault(language.license()).replace("\n", "<br/>"));
 	}
 
 	private void fill(LanguageRelease release, LanguageReleaseHelp display) {

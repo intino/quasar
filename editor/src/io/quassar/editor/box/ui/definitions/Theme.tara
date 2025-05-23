@@ -56,6 +56,7 @@ Format("background:'white',borderBottom:'3px solid #aaa'", darkContent="backgrou
 Format("color:'white',position:'absolute',top:0,left:0,marginLeft:'180px',marginTop:'6px',textTransform:'uppercase',fontSize:'9pt'") headerSubtitle
 Format("color:'white',background:'#272C34'") footerStyle
 Format("background:'white'", darkContent="background:'#1F1F1F'") whiteBackground
+Format("background:'white',border:'1px solid #dadce0',color:'#3c4043'") whiteButton
 Format("background:'white',color:'black',zIndex:'2'") searchBoxBackground
 Format("background:'#b9d1e3'", darkContent="background:'#2a3443'") leftPanelBackground
 Format("height:'39px'") headerPanel
@@ -298,7 +299,9 @@ Format("background:'#efefef',padding:'10px',marginTop:'15px',borderRadius:'0 0 1
 Format("position:'absolute',width:'100%',height:'100%'") loadingBuilderState
 Format("background:'radial-gradient(#ffffff,#8d8d8d)'") radialBackground
 Format("position:'absolute',width:'100%',height:'100%',cursor:'pointer',left:'0',top:'0'") fullSpaceLink
-Format("width:'100%',borderRadius:'3px',padding:'10px',background:'white',border:'1px solid #173e64'", darkContent="background:'#2c2c2c',border:'1px solid black'") loginBlockStyle
+Format("width:'100%',borderRadius:'3px',padding:'10px',background:'white',border:'1px solid #173e64'", darkContent="background:'black',border:'1px solid black'") localLoginBlockStyle
+Format("overflow:'auto',maxHeight:'300px'") userSelectorStyle
+Format("width:'100%',borderRadius:'3px',padding:'10px',color:'black'") googleLoginBlockStyle
 Format("background:'white'", darkContent="background:'#424242'") tabPanel
 Format("margin:'0',borderRight:'1px solid #ddd'") leftTabPanel
 Format("borderRadius:'10px',border:'0',height:'100%'") panelDrawer
@@ -323,6 +326,7 @@ Format("background:'white',padding:'10px',borderRadius:'10px 10px 0 0'", darkCon
 Format("position:'absolute',right:'0',top:'0',marginRight:'5px',marginTop:'5px'") closeIcon
 Format("position:'relative',marginTop:'5px',minHeight:'400px',overflow:'auto',background:'white'", darkContent="background:'#1F1F1F'") consoleStyle
 Format("height:'95px'") dependencyStyle
+Format("padding:'0',border:'0',background:'transparent'") noHtmlStyle
 
 // Cards
 Format("color:'black',fontSize:'40pt',textShadow:'2px 2px 2px #fff',marginTop:'30px'") cardTitle
