@@ -75,7 +75,7 @@ public class DiagnosticService {
 
 	private void analyzeWorkspace(ModelUnit context) {
 		try {
-			DependencyResolver dependencyResolver = dependencyResolver(context.model());
+			DependencyResolver dependencyResolver = dependencyResolver(context.model(), this.language);
 			dependencyResolver.resolve();
 			for (DependencyException e : dependencyResolver.rulesNotLoaded()) context.dependencyErrors().add(e);
 			new SemanticAnalyzer(context.model(), language).analyze();
@@ -105,7 +105,7 @@ public class DiagnosticService {
 	}
 
 
-	private static DependencyResolver dependencyResolver(Model model) {
-		return new DependencyResolver(model, new Metta(), "io.intino.test", new File("temp/src/io/intino/test/model/rules"), new File(Language.class.getProtectionDomain().getCodeSource().getLocation().getFile()), new File("temp"));
+	private DependencyResolver dependencyResolver(Model model, Language language) {
+		return new DependencyResolver(model, language, "io.intino.test", new File("temp/src/io/intino/test/model/rules"), new File(Language.class.getProtectionDomain().getCodeSource().getLocation().getFile()), new File("temp"));
 	}
 }

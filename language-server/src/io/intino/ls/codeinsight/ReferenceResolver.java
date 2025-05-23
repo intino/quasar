@@ -1,9 +1,12 @@
 package io.intino.ls.codeinsight;
 
 import io.intino.ls.ModelUnit;
+import io.intino.tara.Language;
 import io.intino.tara.model.Element;
 import io.intino.tara.model.ElementContainer;
 import io.intino.tara.model.MogramReference;
+import io.intino.tara.processors.Resolver;
+import io.intino.tara.processors.dependencyresolution.DependencyResolver;
 import org.eclipse.lsp4j.Position;
 
 import java.net.URI;
@@ -11,9 +14,11 @@ import java.util.Map;
 
 public class ReferenceResolver {
 	private final Map<URI, ModelUnit> models;
+	private final Language language;
 
-	public ReferenceResolver(Map<URI, ModelUnit> models) {
+	public ReferenceResolver(Map<URI, ModelUnit> models, Language language) {
 		this.models = models;
+		this.language = language;
 	}
 
 	public Element resolveToDeclaration(URI referenceUri, Position referencePosition) {
@@ -22,11 +27,12 @@ public class ReferenceResolver {
 		Element rerefenceElement = findMogramContainingToken(modelUnit.model(), referencePosition);
 		if (rerefenceElement == null) return null;
 		if (rerefenceElement instanceof MogramReference m) {
-			if (m.target().resolved()) return m.target().get();
+			if (!m.target().resolved())  new DependencyResolver().resolve(m.con);
+				return m.target().get();
+
 		}
 		return null;
 	}
-
 
 	public static Element findMogramContainingToken(Element element, Position position) {
 		if (isInRange(element, position)) {
@@ -35,7 +41,7 @@ public class ReferenceResolver {
 					Element result = findMogramContainingToken(e, position);
 					if (result != null) return result;
 				}
-			return element;
+			if (element instanceof MogramReference mr) return element;
 		}
 		return null;
 	}
