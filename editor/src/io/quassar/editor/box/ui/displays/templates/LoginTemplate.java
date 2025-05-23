@@ -1,13 +1,16 @@
 package io.quassar.editor.box.ui.displays.templates;
 
 import io.intino.alexandria.ui.displays.Display;
+import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.displays.components.selector.SelectorOption;
 import io.intino.alexandria.ui.displays.events.Event;
 import io.intino.alexandria.ui.displays.events.KeyPressEvent;
 import io.intino.alexandria.ui.displays.events.SelectionEvent;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.UserCommands;
+import io.quassar.editor.box.ui.displays.GoogleLoginDisplay;
 import io.quassar.editor.box.util.PathHelper;
+import io.quassar.editor.box.util.UrlHelper;
 import io.quassar.editor.model.User;
 
 public class LoginTemplate extends AbstractLoginTemplate<EditorBox> {
@@ -27,10 +30,27 @@ public class LoginTemplate extends AbstractLoginTemplate<EditorBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
-		refreshUsernameLoginBlock();
+		refreshGoogleLoginBlock();
+		refreshLocalLoginBlock();
 	}
 
-	private void refreshUsernameLoginBlock() {
+	private void refreshGoogleLoginBlock() {
+		googleLoginBlock.visible(!box().configuration().googleClientId().isEmpty());
+		if (!googleLoginBlock.isVisible()) return;
+		if (googleLoginStamp.display() == null) createLoginDisplay();
+		googleLoginStamp.refresh();
+	}
+
+	private void createLoginDisplay() {
+		GoogleLoginDisplay display = new GoogleLoginDisplay(box());
+		display.onSuccess(this::login);
+		display.onFailure(e -> notifyUser(translate("Could not login using Google"), UserMessage.Type.Error));
+		googleLoginStamp.display(display);
+	}
+
+	private void refreshLocalLoginBlock() {
+		localLoginBlock.visible(UrlHelper.isLocalUrl(session().browser().requestUrl()));
+		if (!localLoginBlock.isVisible()) return;
 		userSelector.clear();
 		box().userManager().users().forEach(u -> userSelector.add((SelectorOption) optionDisplayFor(u)));
 		userSelector.children().stream().filter(d -> d instanceof LoginSelectorOption).forEach(Display::refresh);
@@ -68,9 +88,13 @@ public class LoginTemplate extends AbstractLoginTemplate<EditorBox> {
 	}
 
 	private void login(String username) {
-		User user = box().userManager().get(username);
-		if (user == null) user = box().commands(UserCommands.class).create(username, username());
-		session().user(new io.intino.alexandria.ui.services.push.User().username(user.name()).fullName(user.name()));
+		login(new io.intino.alexandria.ui.services.push.User().username(username).fullName(username));
+	}
+
+	private void login(io.intino.alexandria.ui.services.push.User userInfo) {
+		User user = box().userManager().get(userInfo.email());
+		if (user == null) user = box().commands(UserCommands.class).create(userInfo.email(), username());
+		session().user(userInfo);
 		notifier.redirect(redirectUrl(user));
 	}
 
@@ -79,5 +103,6 @@ public class LoginTemplate extends AbstractLoginTemplate<EditorBox> {
 		if (url != null && !url.isEmpty()) return url;
 		return PathHelper.homeUrl(session());
 	}
+
 
 }

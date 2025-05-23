@@ -24,7 +24,6 @@ import io.quassar.editor.model.Utilities;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.lsp4j.services.LanguageServer;
-import org.jetbrains.annotations.NotNull;
 import systems.intino.datamarts.subjectstore.SubjectStore;
 
 import java.io.File;

@@ -35,7 +35,6 @@
     <orderEntry type="library" name="Intino: org.jetbrains.kotlin:kotlin-stdlib:1.9.25" level="project" />
     <orderEntry type="library" name="Intino: org.jetbrains:annotations:13.0" level="project" />
     <orderEntry type="library" name="Intino: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.25" level="project" />
-    <orderEntry type="library" name="Intino: commons-codec:commons-codec:1.18.0" level="project" />
     <orderEntry type="library" name="Intino: org.bouncycastle:bcmail-jdk15:1.46" level="project" />
     <orderEntry type="library" name="Intino: org.bouncycastle:bcprov-jdk15:1.46" level="project" />
     <orderEntry type="library" name="Intino: org.apache.httpcomponents:httpmime:4.5.14" level="project" />
@@ -97,17 +96,10 @@
     <orderEntry type="library" name="Intino: org.apache.tika:tika-core:3.1.0" level="project" />
     <orderEntry type="library" name="Intino: org.slf4j:slf4j-api:2.0.16" level="project" />
     <orderEntry type="library" name="Intino: org.xerial:sqlite-jdbc:3.49.1.0" level="project" />
-    <orderEntry type="library" name="Intino: com.tdunning:t-digest:3.3" level="project" />
-    <orderEntry type="library" name="Intino: org.yaml:snakeyaml:2.4" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:rest:4.2.4" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:http:2.2.4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Intino: log4j:log4j:1.2.14" level="project" />
     <orderEntry type="library" name="Intino: com.jcraft:jsch:0.1.55" level="project" />
-    <orderEntry type="library" name="Intino: systems.intino.datamarts:subject-store:2.0.8" level="project" />
-    <orderEntry type="library" name="Intino: com.github.ben-manes.caffeine:caffeine:3.1.8" level="project" />
-    <orderEntry type="library" name="Intino: org.checkerframework:checker-qual:3.37.0" level="project" />
-    <orderEntry type="library" name="Intino: com.google.errorprone:error_prone_annotations:2.21.1" level="project" />
-    <orderEntry type="library" name="Intino: it.unimi.dsi:fastutil:8.5.11" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:ui-framework:6.5.6" level="project" />
     <orderEntry type="library" name="Intino: io.quassar:editor-archetype:1.0.0" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:primitives:1.1.2" level="project" />
@@ -119,5 +111,30 @@
     <orderEntry type="library" name="Intino: com.github.mwiede:jsch:0.2.24" level="project" />
     <orderEntry type="library" name="Intino: io.intino:quassar-builder-service-accessor:1.0.0" level="project" />
     <orderEntry type="module" module-name="editor-elements" />
+    <orderEntry type="library" name="Intino: com.google.api-client:google-api-client:2.8.0" level="project" />
+    <orderEntry type="library" name="Intino: commons-codec:commons-codec:1.17.1" level="project" />
+    <orderEntry type="library" name="Intino: com.google.oauth-client:google-oauth-client:1.36.0" level="project" />
+    <orderEntry type="library" name="Intino: com.google.auth:google-auth-library-credentials:1.30.0" level="project" />
+    <orderEntry type="library" name="Intino: com.google.auth:google-auth-library-oauth2-http:1.30.0" level="project" />
+    <orderEntry type="library" name="Intino: com.google.auto.value:auto-value-annotations:1.11.0" level="project" />
+    <orderEntry type="library" name="Intino: com.google.code.findbugs:jsr305:3.0.2" level="project" />
+    <orderEntry type="library" name="Intino: com.google.http-client:google-http-client-gson:1.47.0" level="project" />
+    <orderEntry type="library" name="Intino: com.google.guava:guava:33.1.0-jre" level="project" />
+    <orderEntry type="library" name="Intino: com.google.guava:failureaccess:1.0.2" level="project" />
+    <orderEntry type="library" name="Intino: com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava" level="project" />
+    <orderEntry type="library" name="Intino: com.google.j2objc:j2objc-annotations:3.0.0" level="project" />
+    <orderEntry type="library" name="Intino: com.google.http-client:google-http-client-apache-v2:1.47.0" level="project" />
+    <orderEntry type="library" name="Intino: com.google.http-client:google-http-client:1.47.0" level="project" />
+    <orderEntry type="library" name="Intino: io.grpc:grpc-context:1.70.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Intino: io.grpc:grpc-api:1.70.0" level="project" />
+    <orderEntry type="library" name="Intino: io.opencensus:opencensus-api:0.31.1" level="project" />
+    <orderEntry type="library" name="Intino: io.opencensus:opencensus-contrib-http-util:0.31.1" level="project" />
+    <orderEntry type="library" name="Intino: systems.intino.datamarts:subject-store:2.0.8" level="project" />
+    <orderEntry type="library" name="Intino: com.tdunning:t-digest:3.3" level="project" />
+    <orderEntry type="library" name="Intino: org.yaml:snakeyaml:2.4" level="project" />
+    <orderEntry type="library" name="Intino: com.github.ben-manes.caffeine:caffeine:3.1.8" level="project" />
+    <orderEntry type="library" name="Intino: org.checkerframework:checker-qual:3.37.0" level="project" />
+    <orderEntry type="library" name="Intino: com.google.errorprone:error_prone_annotations:2.21.1" level="project" />
+    <orderEntry type="library" name="Intino: it.unimi.dsi:fastutil:8.5.11" level="project" />
   </component>
 </module>

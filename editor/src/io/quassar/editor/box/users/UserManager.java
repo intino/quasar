@@ -45,7 +45,7 @@ public class UserManager {
 	public void remove(User user) {
 		try {
 			File rootDir = archetype.users().user(user.name());
-			if (!rootDir.exists()) return;
+			if (rootDir.exists()) FileUtils.deleteDirectory(rootDir);
 			subjectStore.open(SubjectHelper.pathOf(user)).drop();
 			FileUtils.deleteDirectory(rootDir);
 		} catch (IOException e) {

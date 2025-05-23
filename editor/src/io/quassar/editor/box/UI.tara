@@ -62,18 +62,31 @@ Template(layout=Vertical Flexible, format=radialBackground) loginTemplate as Rel
 			Image(value="/images/logo-expanded.png", format=airLeft airRight doubleAirBottom, mobileReduceFactor=75%) as Absolute(width=300px, height=70px)
 		Block
 			Block(layout=Vertical Center) as Absolute(width=400px)
-				Block(format=loginBlockStyle)
-					Block
-						Text(value="Login using...", format=bold, translate=true)
-						Selector userSelector as ListBox
-						Block(format=doubleAirBottom airLeft airRight) > Text usernameField as Editable(placeholder="new username...")
-					Text(value="User not found", translate=true, format=h6 redColor fullWidth textCentered airBottom, visible=false) notFoundUsernameMessage
 
-				Block(layout=Horizontal, format=doubleAirTop)
-					Button(title="Enter", highlight=Fill) login as Action
+				Block(format=loginBlockStyle doubleAirBottom, visible=false) googleLoginBlock
+					Block
+						Text(value="Login using Google", format=bold, translate=true)
+						Block(format=spaced) > DisplayStamp(display=googleLoginDisplay) googleLoginStamp
+
+				Block(layout=Vertical Center, visible=false) localLoginBlock as Relative(width=100%)
+					Block(format=loginBlockStyle)
+						Block
+							Text(value="Login using...", format=bold, translate=true)
+							Selector userSelector as ListBox
+							Block(format=doubleAirBottom airLeft airRight) > Text usernameField as Editable(placeholder="new username...")
+						Text(value="User not found", translate=true, format=h6 redColor fullWidth textCentered airBottom, visible=false) notFoundUsernameMessage
+
+					Block(layout=Horizontal, format=doubleAirTop)
+						Button(title="Enter", highlight=Fill) login as Action
 
 	TemplateStamp(template=loginSelectorOption, visible=false)
 
 Template(layout=Horizontal Flexible Center) loginSelectorOption
 	Block(layout=Vertical Flexible) > Text username
 	Block(layout=Horizontal EndJustified) > MaterialIconButton(title="Remove", icon="Clear", size=Small) removeUser as Action
+
+Display googleLoginDisplay
+	Notification refresh as Text
+
+	Request success as Text
+	Request failure
