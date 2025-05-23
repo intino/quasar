@@ -107,8 +107,9 @@ public class CreateLanguageReleaseCommand extends Command<CommandResult> {
 
 	private void createDefaultHelp(Language language, LanguageRelease release) {
 		try {
-			InputStream stream = CreateModelCommand.class.getResourceAsStream("/templates/language.template.html");
+			InputStream stream = CreateModelCommand.class.getResourceAsStream("/templates/language.help.template.html");
 			String content = stream != null ? IOUtils.toString(stream, StandardCharsets.UTF_8) : "";
+			content = content.replace("$DSL$", language.name() + " " + release.version());
 			box.languageManager().saveHelp(language, release.version(), content);
 		} catch (IOException e) {
 			Logger.error(e);

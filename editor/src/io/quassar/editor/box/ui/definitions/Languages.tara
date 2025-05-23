@@ -72,7 +72,7 @@ Template languageTemplate as Relative(height=100%, width=100%, offsetHeight=2px)
 					Block(layout=Horizontal) > Button(title="home", format=airTop, highlight=Outline) as Action Addressable(EditorElements.home)
 
 		Block(layout=Vertical Flexible, format=whiteBackground) helpBlock as Relative(width=100%) AutoSize Conditional
-			Block(layout=Vertical Flexible Center) as Relative(width=80%)
+			Block(layout=Vertical Flexible Center) as Relative(width=50%)
 				Block(layout=Vertical Flexible, format=whiteBackground) as Relative(width=100%, height=100%)
 					Block(layout=Horizontal Center, format=bottomLightBordered middleTopSpaced middleBottomSpaced)
 						Block(layout=Horizontal Flexible)

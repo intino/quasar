@@ -42,7 +42,7 @@ public class CreateModelCommand extends Command<Model> {
 	}
 
 	private void createDefaultReadme(Model model) {
-		InputStream stream = CreateModelCommand.class.getResourceAsStream("/templates/readme.template.md");
+		InputStream stream = CreateModelCommand.class.getResourceAsStream("/templates/model.readme.template.md");
 		box.modelManager().createFile(model, io.quassar.editor.box.models.File.withResourcesPath(ModelHelper.validWorkspaceFileName("readme.md")), stream, null);
 	}
 
