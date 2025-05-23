@@ -27,9 +27,7 @@ public class ReferenceResolver {
 		Element rerefenceElement = findMogramContainingToken(modelUnit.model(), referencePosition);
 		if (rerefenceElement == null) return null;
 		if (rerefenceElement instanceof MogramReference m) {
-			if (!m.target().resolved())  new DependencyResolver().resolve(m.con);
-				return m.target().get();
-
+			if (m.target().resolved()) return m.target().get();
 		}
 		return null;
 	}

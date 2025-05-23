@@ -104,7 +104,6 @@ public class DiagnosticService {
 		return new Diagnostic(range, e.getMessage(), level, e.getIssue().origin()[0].source().getPath());
 	}
 
-
 	private DependencyResolver dependencyResolver(Model model, Language language) {
 		return new DependencyResolver(model, language, "io.intino.test", new File("temp/src/io/intino/test/model/rules"), new File(Language.class.getProtectionDomain().getCodeSource().getLocation().getFile()), new File("temp"));
 	}
