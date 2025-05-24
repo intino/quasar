@@ -20,7 +20,7 @@ Artifact("io.intino", "1.0.0") builder-service
 			Snapshot("https://artifactory.intino.io/artifactory/snapshot-libraries")
 
 	Deployment(server = deploy-quassar-dev, runConfiguration = dev)
-	Deployment(server = vps-d07c88a9, runConfiguration = pro)
+	Deployment(server = vps-d07c88a9-vps-ovh-net, runConfiguration = pro)
 	Parameter("language-repository")
 	Parameter("port")
 	Parameter("home")
