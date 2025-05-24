@@ -49,4 +49,4 @@ RunConfiguration pro
 
 
 Server(type=Dev) deploy-quassar-dev
-Server(type=Pro) vps-d07c88a9
+Server(type=Pro) vps-d07c88a9-vps-ovh-net
