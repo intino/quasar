@@ -1,6 +1,6 @@
 dsl Legio
 
-Artifact(groupId = "io.quassar", version = "1.0.5") editor-elements
+Artifact(groupId = "io.quassar", version = "1.0.6") editor-elements
 
 	WebImports
 		WebArtifact("io.intino.alexandria", "ui-framework-elements", "6.5.7") alexandria-ui-elements
