@@ -4,33 +4,37 @@ rule type(modelreader)
     import $package.$outDsl+firstUpperCase~Graph;
     import io.intino.magritte.builder.StashBuilder;
 
-	import java.io.*;
-    import java.nio.file.*;
-    import java.util.*;
-    import java.util.stream.*;
-    import java.util.zip.*;
-    import java.net.URI;
+	import java.io.File;
+    import java.io.IOException;
+    import java.io.OutputStream;
+    import java.net.URISyntaxException;
     import java.net.URL;
     import java.net.http.HttpClient;
     import java.net.http.HttpRequest;
     import java.net.http.HttpResponse;
+    import java.nio.file.Files;
+    import java.nio.file.Path;
     import java.time.Duration;
+    import java.util.List;
+    import java.util.stream.Stream;
+    import java.util.zip.ZipEntry;
+    import java.util.zip.ZipInputStream;
 
     public class ModelReader {
-    	public static $outDsl+firstUpperCase~Graph loadFromURL(URL url, String authToken) throws IOException {
+    	public static $outDsl+firstUpperCase~Graph loadFromURL(URL url, String authToken) throws IOException, URISyntaxException {
 			Path zip = Files.createTempFile("_picota", ".zip");
 			authorizedDownload(url, authToken, zip);
-			return loadFromZip(zip);
+			return loadFromZip(zip.toFile());
 		}
 
     	public static $outDsl+firstUpperCase~Graph loadFromURL(URL url) throws IOException {
         	Path zip = Files.createTempFile("_picota", ".zip");
 			Files.write(zip, url.openStream().readAllBytes());
-			return loadFromZip(zip);
+			return loadFromZip(zip.toFile());
 		}
 
     	public static $outDsl+firstUpperCase~Graph loadFromZip(File $outDsl~File) throws IOException {
-			Path dir = upzip($outDsl~File);
+			Path dir = unzip($outDsl~File);
 			try (Stream<Path> files = Files.walk(dir)) {
 				return load(files
 						.filter(Files::isRegularFile)
@@ -49,19 +53,23 @@ rule type(modelreader)
     		return $outDsl+firstUpperCase~Graph.load(new StashBuilder($outDsl~Files, "$outDslCoors", "accessor", System.out).build());
     	}
 
-    	public static void authorizedDownload(URL url, String authToken, Path targetPath) throws Exception {
+    	public static void authorizedDownload(URL url, String authToken, Path targetPath) throws IOException, URISyntaxException {
 			HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
 			HttpRequest request = HttpRequest.newBuilder()
-					.uri(url.toURI()))
+					.uri(url.toURI())
 					.timeout(Duration.ofMinutes(2))
 					.header("Authorization", "Bearer " + authToken)
 					.GET()
 					.build();
-			HttpResponse<Path> response = client.send(request, HttpResponse.BodyHandlers.ofFile(targetPath));
-			if (response.statusCode() != 200) throw new RuntimeException("Error HTTP: " + response.statusCode());
+			try {
+				HttpResponse<Path> response = client.send(request, HttpResponse.BodyHandlers.ofFile(targetPath));
+				if (response.statusCode() != 200) throw new RuntimeException("Error HTTP: " + response.statusCode());
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
 		}
 
-    	private static Path unzip(java.io.File file) {
+    	private static Path unzip(java.io.File file) throws IOException {
 			Path targetDir = Files.createTempDirectory("zip_extract_");
     		try (ZipInputStream zis = new ZipInputStream(Files.newInputStream(file.toPath()))) {
 				ZipEntry entry;
