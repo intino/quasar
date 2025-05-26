@@ -107,7 +107,7 @@ public class PathHelper {
 	}
 
 	public static String modelUrl(Model model, String release, UISession session) {
-		return session.browser().baseUrl() + "/models/" + model.id() + (release != null ? "?release=" + release : "");
+		return session.browser().baseUrl() + "/models/" + model.language().artifactId() + "/" + model.id() + (release != null ? "?release=" + release : "");
 	}
 
 	private static final String ModelPath = "/models/:language/:model";
