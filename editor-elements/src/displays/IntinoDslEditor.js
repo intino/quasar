@@ -67,15 +67,15 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
 	    return {
             darkMode: theme.isDark(),
             webSocketUrl: Application.configuration.baseUrl.replace("http", "ws") + "/dsl/tara?dsl=" + this.state.info.dslName + "&model=" + this.state.info.modelName + "&model-release=" + this.state.info.modelRelease,
-            language: this.state.selectedFile.language,
+            language: this.selectedFile.language,
             readonly: this.state.info.readonly,
         }
     };
 
     handleInit = (monaco, container) => {
         this.createEditor(monaco, container);
-        this.registerModel(this.state.selectedFile, monaco);
-        if (this.state.selectedFile != null) this.updatePosition(this.state.selectedFile.position);
+        this.registerModel(this.selectedFile, monaco);
+        if (this.selectedFile != null) this.updatePosition(this.selectedFile.position);
     };
 
     createEditor = (monaco, container) => {
@@ -147,7 +147,7 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
     };
 
     handleSave = (value) => {
-        this.requester.fileContent({file: this.state.selectedFile.uri, content: this.state.selectedFile.content});
+        this.requester.fileContent({file: this.selectedFile.uri, content: this.selectedFile.content});
     };
 
     handleExecuteCommand = (command) => {
@@ -155,7 +155,7 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
     };
 
     handleChange = (file, content) => {
-        this.state.selectedFile.content = content;
+        this.selectedFile.content = content;
         this.requester.fileModified();
     };
 
@@ -164,36 +164,34 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
     };
 
     receiveContent = () => {
-        this.requester.fileContent({file: this.state.selectedFile.uri, content: this.state.selectedFile.content});
+        this.requester.fileContent({file: this.selectedFile.uri, content: this.selectedFile.content});
     };
 
     setup = (info) => {
-        this.setState({info});
-    };
-
-    refresh = (files) => {
-        let selectedFile = null;
+        this.selectedFile = null;
         let fileMap = {};
-        for (var i=0; i<files.length; i++) {
-            fileMap[files[i].uri] = files[i];
-            if (files[i].active) selectedFile = files[i];
+        for (var i=0; i<info.files.length; i++) {
+            fileMap[info.files[i].uri] = info.files[i];
+            if (info.files[i].active) this.selectedFile = info.files[i];
         }
-        this.setState({files: fileMap, selectedFile: selectedFile});
+        this.setState({info, files: fileMap });
     };
 
-    refreshFile = (position) => {
-        this.updateFile(position);
+    refreshFile = (file) => {
+        this.updateFile(file);
+    };
+
+    refreshReadonly = (readonly) => {
+        this.editor.updateOptions({ readOnly: readonly, domReadOnly: readonly });
     };
 
     updateFile = (file) => {
+        this.selectedFile = file;
         if (file == null) return;
         this.monaco.editor.getModels().forEach(m => m.dispose());
+        this.editor.setModel(null);
         this.registerModel(file, this.monaco);
         this.updatePosition(file.position);
-    };
-
-    refreshPosition = (position) => {
-        this.updatePosition(position);
     };
 
     updatePosition = (position) => {

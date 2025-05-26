@@ -111,6 +111,10 @@ public class ModelManager {
 		return get(subject);
 	}
 
+	public Model getTemplate(Language language, LanguageRelease release) {
+		return get(subjectStore.subjects().type(SubjectHelper.ModelType).where("usage").equals(Model.Usage.Template.name()).where("language-group").equals(language.group()).where("language-name").equals(language.name()).where("language-version").equals(release.version()).collect().stream().findFirst().orElse(null));
+	}
+
 	public List<String> releases(Model model) {
 		List<File> releases = archetype.models().releases(ArchetypeHelper.relativeModelPath(model.id()), model.id());
 		return releases.stream().map(f -> f.getName().replace(".zip", "")).sorted((o1, o2) -> VersionNumberComparator.getInstance().compare(o1, o2)).toList();

@@ -52,6 +52,7 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 	}
 
 	public boolean initialized() {
+		if (selectedFile == null) return false;
 		return model != null && release != null && files.stream().anyMatch(f -> f.uri().equals(selectedFile.uri()));
 	}
 
@@ -110,6 +111,7 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 	public void openFile(File file, FilePosition position) {
 		selectedFile = file;
 		selectedPosition = position;
+		notifier.refreshReadonly(!PermissionsHelper.canEdit(model, release, session()));
 		notifier.refreshFile(fileOf(file).position(positionOf(position)));
 	}
 
@@ -117,22 +119,22 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 	public void refresh() {
 		super.refresh();
 		if (model == null) return;
-		if (reloadRequired) reload();
-		else refreshPosition();
+		reload();
 	}
 
 	private void reload() {
 		notifier.setup(info());
-		notifier.refresh(files.stream().map(this::fileOf).toList());
-	}
-
-	private void refreshPosition() {
-		if (selectedPosition == null) return;
-		notifier.refreshPosition(positionOf(selectedPosition));
 	}
 
 	private IntinoDslEditorSetup info() {
-		return new IntinoDslEditorSetup().dslName(model.language().artifactId()).modelName(model.name()).modelRelease(release).readonly(!PermissionsHelper.canEdit(model, release, session())).fileAddress(PathHelper.modelPath(model, release, view, ":file"));
+		IntinoDslEditorSetup result = new IntinoDslEditorSetup();
+		result.dslName(model.language().artifactId());
+		result.modelName(model.name());
+		result.modelRelease(release);
+		result.readonly(!PermissionsHelper.canEdit(model, release, session()));
+		result.fileAddress(PathHelper.modelPath(model, release, view, ":file"));
+		result.files(files.stream().map(this::fileOf).toList());
+		return result;
 	}
 
 	private IntinoDslEditorFile fileOf(File file) {

@@ -228,9 +228,8 @@ Schema intinoFileBrowserOperationShortcut
 
 Display intinoDslEditor
 	Notification setup as Object(intinoDslEditorSetup)
-	Notification refresh as Object(intinoDslEditorFile) List
+	Notification refreshReadonly as Bool
 	Notification refreshFile as Object(intinoDslEditorFile)
-	Notification refreshPosition as Object(intinoDslEditorFilePosition)
 	Notification receiveContent
 	Request fileModified
 	Request fileContent as Object(intinoDslEditorFileContent)
@@ -243,6 +242,7 @@ Schema intinoDslEditorSetup
 	Attribute modelRelease as Text
 	Attribute fileAddress as Text
 	Attribute readonly as Bool
+	Attribute files as Object(intinoDslEditorFile) List
 
 Schema intinoDslEditorFile
 	Attribute name as Text

@@ -28,6 +28,7 @@ public class HelpEditor extends AbstractHelpEditor<EditorBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
+		if (language == null || release == null) return;
 		notifier.refresh(box().languageManager().loadHelp(language, release));
 	}
 

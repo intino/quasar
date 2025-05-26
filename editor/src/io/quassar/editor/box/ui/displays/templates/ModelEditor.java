@@ -41,12 +41,14 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 	private boolean selectedFileIsModified = false;
 	private boolean openNewFile = false;
 	private boolean showHelp = false;
+	private boolean releaseChanged = false;
 
 	public ModelEditor(EditorBox box) {
 		super(box);
 	}
 
 	public void model(Model model, String release) {
+		this.releaseChanged = releaseChanged || !release.equals(this.release);
 		this.model = model;
 		this.release = release;
 		this.modelContainer = this.model != null ? box().modelManager().modelContainer(this.model, this.release) : null;
@@ -235,12 +237,13 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		IntinoDslEditor display = intinoDslEditor.display();
 //		if (display == null || !display.sameReleaseAndFile(release, selectedFile.uri())) display = createFileEditor();
 		if (display == null) display = createFileEditor();
-		if (!display.initialized()) {
-			display.model(model);
-			display.release(release);
-			display.view(selectedView);
+		display.model(model);
+		display.release(release);
+		display.view(selectedView);
+		if (releaseChanged || !display.initialized()) {
 			display.file(selectedFile, selectedPosition);
 			display.refresh();
+			releaseChanged = false;
 		}
 		else display.openFile(selectedFile, selectedPosition);
 	}

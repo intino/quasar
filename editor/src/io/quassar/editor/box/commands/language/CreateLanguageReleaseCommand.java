@@ -12,6 +12,7 @@ import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.box.commands.Command.CommandResult;
 import io.quassar.editor.box.commands.model.CreateModelCommand;
 import io.quassar.editor.box.util.ModelHelper;
+import io.quassar.editor.box.util.ShortIdGenerator;
 import io.quassar.editor.box.util.TarHelper;
 import io.quassar.editor.box.util.ZipHelper;
 import io.quassar.editor.model.GavCoordinates;
@@ -43,9 +44,10 @@ public class CreateLanguageReleaseCommand extends Command<CommandResult> {
 	public CommandResult execute() {
 		BuildResult result = build(box.modelManager().get(language.metamodel()));
 		if (!result.success()) return resultOf(result);
+		LanguageRelease previousRelease = language.lastRelease();
 		LanguageRelease release = box.languageManager().createRelease(language, version);
-		createDefaultHelp(language, release);
-		Model template = createTemplateModel(language, release);
+		createHelp(language, release, previousRelease);
+		Model template = createTemplate(language, release, previousRelease);
 		release.template(template.id());
 		return resultOf(result);
 	}
@@ -105,6 +107,11 @@ public class CreateLanguageReleaseCommand extends Command<CommandResult> {
 		return result;
 	}
 
+	private void createHelp(Language language, LanguageRelease release, LanguageRelease previousRelease) {
+		if (previousRelease != null) box.languageManager().saveHelp(language, release.version(), box.languageManager().loadHelp(language, previousRelease.version()));
+		else createDefaultHelp(language, release);
+	}
+
 	private void createDefaultHelp(Language language, LanguageRelease release) {
 		try {
 			InputStream stream = CreateModelCommand.class.getResourceAsStream("/templates/language.help.template.html");
@@ -116,7 +123,20 @@ public class CreateLanguageReleaseCommand extends Command<CommandResult> {
 		}
 	}
 
-	private Model createTemplateModel(Language language, LanguageRelease release) {
+	private Model createTemplate(Language language, LanguageRelease release, LanguageRelease previousRelease) {
+		return previousRelease != null ? cloneTemplate(language, release, previousRelease) : createEmptyTemplate(language, release);
+	}
+
+	private Model cloneTemplate(Language language, LanguageRelease release, LanguageRelease previousRelease) {
+		Model model = box.modelManager().getTemplate(language, previousRelease);
+		Model clone = box.modelManager().clone(model, Model.DraftRelease, ShortIdGenerator.generate(), ModelHelper.proposeName(), author);
+		clone.language(GavCoordinates.fromString(language, release));
+		clone.title(language.name());
+		clone.usage(Model.Usage.Template);
+		return clone;
+	}
+
+	private Model createEmptyTemplate(Language language, LanguageRelease release) {
 		CreateModelCommand command = new CreateModelCommand(box);
 		command.author = author;
 		command.language = GavCoordinates.fromString(language, release);
