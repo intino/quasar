@@ -1,9 +1,12 @@
 package io.quassar.editor.model;
 
+import io.quassar.editor.box.util.SubjectHelper;
+import io.quassar.editor.box.util.VersionNumberComparator;
 import systems.intino.datamarts.subjectstore.model.Subject;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Model extends SubjectWrapper {
 
@@ -114,11 +117,26 @@ public class Model extends SubjectWrapper {
 		put("collaborator", collaborator);
 	}
 
+	public List<ModelRelease> releases() {
+		Stream<Subject> result = subject.children().collect().stream().filter(s -> s.is(SubjectHelper.ModelReleaseType));
+		return result.map(this::releaseOf).toList();
+	}
+
+	public ModelRelease release(String version) {
+		return releases().stream().filter(r -> r.version().equals(version)).findFirst().orElse(null);
+	}
+
+	public ModelRelease lastRelease() {
+		List<ModelRelease> releases = releases();
+		return !releases.isEmpty() ? releases.stream().sorted((o1, o2) -> VersionNumberComparator.getInstance().compare(o2.version(), o1.version())).toList().getFirst() : null;
+	}
+
 	public boolean isPublic() {
 		return !isPrivate();
 	}
 
 	public boolean isPrivate() {
+
 		return visibility() == Visibility.Private;
 	}
 
@@ -153,6 +171,10 @@ public class Model extends SubjectWrapper {
 
 	public boolean isDraft(String release) {
 		return release != null && release.equals(Model.DraftRelease);
+	}
+
+	private ModelRelease releaseOf(Subject subject) {
+		return new ModelRelease(subject);
 	}
 
 }

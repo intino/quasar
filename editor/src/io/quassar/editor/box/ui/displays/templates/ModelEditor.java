@@ -21,7 +21,6 @@ import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
-import javax.swing.text.View;
 import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -248,7 +247,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 
 	private void refreshNonEditableFileBlock() {
 		if (!nonEditableFileBlock.isVisible()) return;
-		fileField.value(new io.intino.alexandria.ui.File().filename(selectedFile.uri()).mimeType(MimeTypes.contentTypeOf(selectedFile.extension())).value(urlOf(PathHelper.downloadModelFileUrl(model, release, selectedFile, session()))));
+		fileField.value(new io.intino.alexandria.ui.File().filename(selectedFile.uri()).mimeType(MimeTypes.contentTypeOf(selectedFile.extension())).value(urlOf(PathHelper.commitFileFileUrl(model, release, selectedFile, session()))));
 	}
 
 	private String withoutExtensionIfModelFile(String name) {

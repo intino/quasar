@@ -90,6 +90,8 @@ Template(layout=Horizontal) commitModelDialog
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(dialog)
             Button(title="Commit", size=Small, highlight=Fill) create as Action
 
+	TemplateStamp(template=downloadModelDialog) downloadModelDialog
+
 Template(layout=Horizontal) downloadModelDialog
 	Link(title="") downloadSilently as Download
 
@@ -97,14 +99,15 @@ Template(layout=Horizontal) downloadModelDialog
         Block(layout=Vertical) as Relative(height=100%, offsetHeight=40px)
 
 			Block(format=doubleAirBottom)
-				Text(value="Zip model", translate=true, format=h5 middleAirBottom)
+				Text(value="Model file (zip format)", translate=true, format=h5 middleAirBottom)
 				Link(title="Download") download as Download
 
 			Block(format=doubleAirBottom)
 				Text(value="Model url", translate=true, format=h5 middleAirBottom)
 				Text modelUrl
-				Block(layout=Horizontal)
-					Link(title="Copy") copyModelUrl as CopyToClipboard
+				Block(layout=Vertical, format=airTop)
+					Link(title="Copy URL", format=smallAirBottom) copyReleaseUrl as CopyToClipboard
+					Link(title="Copy commit") copyReleaseCommit as CopyToClipboard
 
 		Divider
         Block(layout=Horizontal EndJustified)

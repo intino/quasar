@@ -60,7 +60,7 @@ public class GetArtifactoryFileAction implements io.intino.alexandria.rest.Reque
 
 	private String pathInfo() {
 		String pathInfo = context.get("pathInfo");
-		String defaultPath = "/releases";
+		String defaultPath = ArtifactoryHelper.ReleasesPath;
 		return pathInfo.substring(pathInfo.indexOf(defaultPath) + defaultPath.length() + 1);
 	}
 

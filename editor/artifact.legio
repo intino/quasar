@@ -13,7 +13,7 @@ Artifact(groupId = "io.quassar", version = "1.0.5") editor
 		Compile("io.intino.alexandria", "ui-framework", "6.5.7")
 		Compile("io.intino.alexandria", "zip", "1.0.5")
 			Exclude("io.intino.tara","language")
-		Compile("io.intino", "language-server", "1.0.0")
+		Compile("io.intino", "language-server", "1.0.1")
 		Compile("io.intino", "quassar-builder-service-accessor", "1.0.0")
 		Compile("org.apache.commons", "commons-compress", "1.21")
 		Compile("io.intino.amidas", "accessor", "4.1.1")

@@ -1,13 +1,9 @@
 package io.quassar.editor.box.util;
 
 import io.intino.alexandria.ui.services.push.UISession;
-import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.models.File;
 import io.quassar.editor.box.ui.types.*;
-import io.quassar.editor.model.FilePosition;
-import io.quassar.editor.model.Language;
-import io.quassar.editor.model.LanguageRelease;
-import io.quassar.editor.model.Model;
+import io.quassar.editor.model.*;
 
 public class PathHelper {
 
@@ -23,12 +19,17 @@ public class PathHelper {
 		return "/";
 	}
 
-	public static String downloadModelUrl(Model model, String release, UISession session) {
-		return session.browser().baseUrl() + "/downloads/%s/%s".formatted(model.id(), release);
+	public static String commitUrl(Model model, String version, UISession session) {
+		return commitUrl(model.release(version), session);
 	}
 
-	public static String downloadModelFileUrl(Model model, String release, File file, UISession session) {
-		return session.browser().baseUrl() + "/downloads/%s/%s/%s".formatted(model.id(), release, file.uri());
+	public static String commitUrl(ModelRelease release, UISession session) {
+		return session.browser().baseUrl() + "/commits/%s".formatted(release.commit());
+	}
+
+	public static String commitFileFileUrl(Model model, String version, File file, UISession session) {
+		ModelRelease release = model.release(version);
+		return session.browser().baseUrl() + "/commits/%s/%s".formatted(release.commit(), file.uri());
 	}
 
 	public static String landingUrl(LandingDialog dialog, UISession session) {

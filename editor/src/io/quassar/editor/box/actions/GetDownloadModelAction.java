@@ -12,23 +12,23 @@ import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.ZipHelper;
 import io.quassar.editor.model.Model;
+import io.quassar.editor.model.ModelRelease;
 
 public class GetDownloadModelAction extends QuassarAction {
-	public String model;
-	public String release;
+	public String commit;
 
 	public io.intino.alexandria.Resource execute() throws Forbidden {
-		Model quassarModel = box.modelManager().get(model);
-		if (quassarModel == null) {
-			Logger.error("Model %s not found".formatted(model));
+		Model model = box.modelManager().find(commit);
+		ModelRelease release = box.modelManager().findRelease(commit);
+
+		if (model == null || release == null) {
+			Logger.error("Model commit %s not found".formatted(commit));
 			return DisplayHelper.emptyFile();
 		}
 
-		if (!check(quassarModel)) throw new Forbidden("You dont have access to download this model release");
-
 		try {
-			File workspace = box.archetype().models().workspace(ArchetypeHelper.relativeModelPath(model), model);
-			File result = new File(box.archetype().tmp().root(), "%s-%s.zip".formatted(ModelHelper.label(quassarModel, "en", box), release));
+			File workspace = box.archetype().models().workspace(ArchetypeHelper.relativeModelPath(model.id()), model.id());
+			File result = new File(box.archetype().tmp().root(), "%s-%s.zip".formatted(ModelHelper.label(model, "en", box), release.version()));
 			ZipHelper.zip(workspace.toPath(), result.toPath());
 			return new Resource(result.getName(), new FileInputStream(result));
 		} catch (Exception e) {

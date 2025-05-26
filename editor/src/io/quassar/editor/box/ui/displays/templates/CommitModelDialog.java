@@ -7,8 +7,11 @@ import io.quassar.editor.box.commands.Command.CommandResult;
 import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.ui.types.VersionType;
 import io.quassar.editor.box.util.ModelHelper;
+import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.Model;
+import io.quassar.editor.model.ModelRelease;
 
+import java.util.List;
 import java.util.function.BiConsumer;
 
 public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
@@ -79,6 +82,7 @@ public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
 		if (!result.success()) commitFailureListener.accept(model, result);
 		else {
 			createReleaseListener.accept(model, result);
+			openDownloadModel();
 			hideUserNotification();
 		}
 		return result;
@@ -102,6 +106,14 @@ public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
 		if (selected.equals("revisionOption")) return VersionType.Revision;
 		if (selected.equals("minorVersionOption")) return VersionType.MinorVersion;
 		return VersionType.MajorVersion;
+	}
+
+	private void openDownloadModel() {
+		ModelRelease release = model.lastRelease();
+		downloadModelDialog.title(translate("%s %s generated").formatted(ModelHelper.label(model, language(), box()), release.version()));
+		downloadModelDialog.model(model);
+		downloadModelDialog.release(release.version());
+		downloadModelDialog.open();
 	}
 
 }

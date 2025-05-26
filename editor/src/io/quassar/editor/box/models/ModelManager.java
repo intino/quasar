@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -98,10 +99,16 @@ public class ModelManager {
 		return get(key) != null;
 	}
 
+	public Model find(String commit) {
+		Subject subject = subjectStore.subjects().type(SubjectHelper.ModelReleaseType).where("commit").equals(commit).collect().stream().findFirst().orElse(null);
+		if (subject == null || subject.isNull()) return null;
+		return get(subject.parent());
+	}
+
 	public Model get(String key) {
 		Subject subject = subjectStore.open(SubjectHelper.modelPath(key));
 		if (subject == null || subject.isNull()) subject = subjectStore.subjects().type(SubjectHelper.ModelType).where("name").equals(key).collect().stream().findFirst().orElse(null);
-		return subject != null && !subject.isNull() ? new Model(subject) : null;
+		return get(subject);
 	}
 
 	public List<String> releases(Model model) {
@@ -111,6 +118,10 @@ public class ModelManager {
 
 	public File release(Model model, String version) {
 		return archetype.models().release(ArchetypeHelper.relativeModelPath(model.id()), model.id(), version);
+	}
+
+	public ModelRelease findRelease(String commit) {
+		return releaseOf(subjectStore.subjects().type(SubjectHelper.ModelReleaseType).where("commit").equals(commit).collect().stream().findFirst().orElse(null));
 	}
 
 	public Model create(String id, String name, String title, String description, GavCoordinates language, Model.Usage usage, String owner) {
@@ -178,6 +189,7 @@ public class ModelManager {
 			if (isWorkspaceEmpty(model, Model.DraftRelease)) return OperationResult.Error("Workspace is empty");
 			File releaseFile = archetype.models().release(ArchetypeHelper.relativeModelPath(model.id()), model.id(), release);
 			ModelRelease modelRelease = new ModelRelease(subjectStore.create(SubjectHelper.pathOf(model, release)));
+			modelRelease.commit(UUID.randomUUID().toString());
 			modelRelease.version(release);
 			modelRelease.language(model.language());
 			modelRelease.owner(model.owner());
@@ -279,7 +291,11 @@ public class ModelManager {
 	}
 
 	private Model get(Subject subject) {
-		return new Model(subject);
+		return subject != null && !subject.isNull() ? new Model(subject) : null;
+	}
+
+	private ModelRelease releaseOf(Subject subject) {
+		return subject != null && !subject.isNull() ? new ModelRelease(subject) : null;
 	}
 
 	private SubjectQuery with(SubjectQuery query, String name, String value) {

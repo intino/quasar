@@ -20,6 +20,14 @@ public class LanguageRelease extends SubjectWrapper {
 		set("version", version);
 	}
 
+	public String commit() {
+		return get("commit");
+	}
+
+	public void commit(String commit) {
+		set("commit", commit);
+	}
+
 	public String template() {
 		return get("template");
 	}

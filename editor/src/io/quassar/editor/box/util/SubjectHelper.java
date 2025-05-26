@@ -13,6 +13,7 @@ public class SubjectHelper {
 	public static final String LanguageExecutionType = "execution";
 	public static final String ModelType = "model";
 	public static final String UserType = "user";
+	public static final String ModelReleaseType = "release";
 
 	public static final String LanguagePath = "%s.language";
 	public static final String LanguageReleasePath = "%s.language/%s.release";
