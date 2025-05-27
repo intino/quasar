@@ -149,7 +149,7 @@ public class LanguageExecutionTemplate extends AbstractLanguageExecutionTemplate
 
 	private String errorMessage(String content) {
 		String data = content != null ? content.toLowerCase() : "";
-		if (!data.contains("[commit]")) return translate("Invalid command. Make sure it includes [commit] placeholder.");
+		if (!data.contains("[commit]") && !data.contains("[commit-url]")) return translate("Invalid command. Make sure it includes [commit] or [commit-url] placeholder.");
 		return null;
 	}
 

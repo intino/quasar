@@ -282,7 +282,7 @@ Template(layout=Vertical Flexible, format=doubleSpaced) languageExecutionTemplat
 			Text(value="Remote execution", format=h5 bold)
 			Text(value="This template defines how the final URL will be constructed to submit a specific version of a generated DSL model to a remote web service.", translate=true, format=bold)
 			Text(value="You must include placeholder [commit], which will be automatically replaced with the corresponding commit identifier when the model is committed. The system will use this URL whenever a model needs to be executed remotely. Make sure the service is reachable and correctly configured to accept requests in the expected format. If the location or structure of your endpoint changes. You can update this template at any time to reflect the new configuration.", translate=true, format=airBottom)
-			Text(value="Enter a valid URL that includes [commit] placeholder. They will be replaced at runtime", translate=true, format=airTop italic)
+			Text(value="Enter a valid URL that includes [commit] placeholder. Also you can use [commit-url] placeholder instead. They will be replaced at runtime", translate=true, format=airTop italic)
 			Text(format=whiteBackground) remoteField as Editable(placeholder="https://your-application.com/run?model=[commit]")
 
 		Block(format=doubleSpaced airTop greyLightBackground) localEnvironmentBlock as Conditional(executionSelector.localOption) Relative(width=80%)
@@ -292,7 +292,7 @@ Template(layout=Vertical Flexible, format=doubleSpaced) languageExecutionTemplat
 			Block(layout=Horizontal Center, format=airBottom)
 				Block(format=airRight) as Absolute(width=200px) > Selector templateSelector as ComboBox(view=TextView, placeholder="Select template")
 				Button(title="Replace", highlight=None) insertTemplate as Action
-			Text(value="Use the placeholder [commit]. They will be replaced at runtime", translate=true, format=italic)
+			Text(value="Use the placeholder [commit]. Also you can use [commit-url] placeholder instead. They will be replaced at runtime", translate=true, format=italic)
 			Text(format=whiteBackground) localField as Editable Memo(height=15Rows)
 			Block(format=doubleAirTop)
 				Text(value="Installation instructions url", translate=true, format=italic)

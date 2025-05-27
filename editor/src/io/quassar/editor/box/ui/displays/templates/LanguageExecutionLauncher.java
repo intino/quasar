@@ -75,7 +75,7 @@ public class LanguageExecutionLauncher extends AbstractLanguageExecutionLauncher
 
 	private String withParams(String content) {
 		ModelRelease modelRelease = model.release(release);
-		return content.replace("[commit]", modelRelease.commit());
+		return content.replace("[commit]", modelRelease.commit()).replace("[commit-url]", PathHelper.commitUrl(modelRelease, session()));
 	}
 
 }
