@@ -25,13 +25,13 @@ public class ModelRelease extends SubjectWrapper {
 	}
 
 	public GavCoordinates language() {
-		return new GavCoordinates(get("language-group"), get("language-name"), get("language-version"));
+		return new GavCoordinates(get("dsl-group"), get("dsl-name"), get("dsl-version"));
 	}
 
 	public void language(GavCoordinates value) {
-		set("language-group", value.groupId());
-		set("language-name", value.artifactId());
-		set("language-version", value.version());
+		set("dsl-group", value.groupId());
+		set("dsl-name", value.artifactId());
+		set("dsl-version", value.version());
 	}
 
 	public String owner() {

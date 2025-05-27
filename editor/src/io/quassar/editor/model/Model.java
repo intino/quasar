@@ -76,13 +76,13 @@ public class Model extends SubjectWrapper {
 	}
 
 	public static GavCoordinates language(Subject subject) {
-		return new GavCoordinates(subject.get("language-group"), subject.get("language-name"), subject.get("language-version"));
+		return new GavCoordinates(subject.get("dsl-group"), subject.get("dsl-name"), subject.get("dsl-version"));
 	}
 
 	public void language(GavCoordinates value) {
-		set("language-group", value.groupId());
-		set("language-name", value.artifactId());
-		set("language-version", value.version());
+		set("dsl-group", value.groupId());
+		set("dsl-name", value.artifactId());
+		set("dsl-version", value.version());
 	}
 
 	public String owner() {

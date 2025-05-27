@@ -48,18 +48,18 @@ public class ModelManager {
 	}
 
 	public List<Model> models(Language language, String owner) {
-		Map<String, Subject> ownerSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType), "language-group", language.group()).where("language-name").equals(language.name()).where("owner").equals(owner).where("visibility").equals(Visibility.Private.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
-		Map<String, Subject> contributorSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType),"language-group", language.group()).where("language-name").equals(language.name()).where("collaborator").equals(owner).where("visibility").equals(Visibility.Private.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
-		Map<String, Subject> quassarSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType), "language-group", language.group()).where("language-name").equals(language.name()).where("visibility").equals(Visibility.Public.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> ownerSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType), "dsl-group", language.group()).where("dsl-name").equals(language.name()).where("owner").equals(owner).where("visibility").equals(Visibility.Private.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> contributorSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType),"dsl-group", language.group()).where("dsl-name").equals(language.name()).where("collaborator").equals(owner).where("visibility").equals(Visibility.Private.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> quassarSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType), "dsl-group", language.group()).where("dsl-name").equals(language.name()).where("visibility").equals(Visibility.Public.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
 		ownerSubjects.putAll(contributorSubjects);
 		ownerSubjects.putAll(quassarSubjects);
 		return ownerSubjects.values().stream().map(this::get).toList();
 	}
 
 	public List<Model> models(Language language) {
-		Map<String, Subject> ownerSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType),"language-group", language.group()).where("language-name").equals(language.name()).collect());
-		Map<String, Subject> contributorSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType),"language-group", language.group()).where("language-name").equals(language.name()).collect());
-		Map<String, Subject> quassarSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType),"language-group", language.group()).where("language-name").equals(language.name()).collect());
+		Map<String, Subject> ownerSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType),"dsl-group", language.group()).where("dsl-name").equals(language.name()).collect());
+		Map<String, Subject> contributorSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType),"dsl-group", language.group()).where("dsl-name").equals(language.name()).collect());
+		Map<String, Subject> quassarSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType),"dsl-group", language.group()).where("dsl-name").equals(language.name()).collect());
 		ownerSubjects.putAll(contributorSubjects);
 		ownerSubjects.putAll(quassarSubjects);
 		return ownerSubjects.values().stream().map(this::get).toList();
@@ -112,7 +112,7 @@ public class ModelManager {
 	}
 
 	public Model getTemplate(Language language, LanguageRelease release) {
-		return get(subjectStore.subjects().type(SubjectHelper.ModelType).where("usage").equals(Model.Usage.Template.name()).where("language-group").equals(language.group()).where("language-name").equals(language.name()).where("language-version").equals(release.version()).collect().stream().findFirst().orElse(null));
+		return get(subjectStore.subjects().type(SubjectHelper.ModelType).where("usage").equals(Model.Usage.Template.name()).where("dsl-group").equals(language.group()).where("dsl-name").equals(language.name()).where("dsl-version").equals(release.version()).collect().stream().findFirst().orElse(null));
 	}
 
 	public List<String> releases(Model model) {
