@@ -51,7 +51,7 @@ public class DiagnosticService {
 
 	public List<Diagnostic> analyzeWorkspace() {
 		ModelUnit model = merge(new ArrayList<>(models.values()));
-		if (model==null) return List.of();
+		if (model == null) return List.of();
 		analyzeWorkspace(model);
 		List<Diagnostic> diagnostics = new ArrayList<>();
 		model.syntaxErrors().stream().map(DiagnosticService::diagnosticOf).forEach(diagnostics::add);
@@ -61,10 +61,7 @@ public class DiagnosticService {
 	}
 
 	private ModelUnit merge(List<ModelUnit> units) {
-		if (units.isEmpty()) {
-			Logger.warn("No model units found");
-			return null;
-		}
+		if (units.isEmpty()) return null;
 		Model model = new Model(new File(documentManager.root().getPath()).getParentFile().toURI());
 		ModelUnit reference = units.get(0);
 		if (reference.model() == null)
