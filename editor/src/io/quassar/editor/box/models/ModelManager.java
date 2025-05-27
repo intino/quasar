@@ -154,7 +154,11 @@ public class ModelManager {
 	}
 
 	public List<Diagnostic> check(Model model, String release) {
-		return server(model, release).getDiagnosticService().analyzeWorkspace();
+		IntinoLanguageServer server = server(model, release);
+		if (server == null) return emptyList();
+		DiagnosticService diagnosticService = server.getDiagnosticService();
+		if (diagnosticService == null) return emptyList();
+		return diagnosticService.analyzeWorkspace();
 	}
 
 	public void updateLanguageVersion(Model model, String version) {

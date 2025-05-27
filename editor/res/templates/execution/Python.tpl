@@ -1,4 +1,4 @@
 # Example python script
 from your-tool import run
 
-run( [model], [release] )
+run( [commit] )

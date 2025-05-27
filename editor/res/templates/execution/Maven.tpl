@@ -4,7 +4,6 @@
   <artifactId>my-plugin</artifactId>
   <version>1.0</version>
   <configuration>
-    <model>[model]</model>
-    <release>[release]</release>
+    <model>[commit]</model>
   </configuration>
 </plugin>

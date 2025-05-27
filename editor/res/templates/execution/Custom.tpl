@@ -1,1 +1,1 @@
-[model] [release]
+[commit]

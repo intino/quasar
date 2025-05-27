@@ -6,6 +6,7 @@ import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageExecution;
 import io.quassar.editor.model.Model;
+import io.quassar.editor.model.ModelRelease;
 
 public class LanguageExecutionLauncher extends AbstractLanguageExecutionLauncher<EditorBox> {
 	private Model model;
@@ -73,7 +74,8 @@ public class LanguageExecutionLauncher extends AbstractLanguageExecutionLauncher
 	}
 
 	private String withParams(String content) {
-		return content.replace("[model]", model.id()).replace("[release]", release);
+		ModelRelease modelRelease = model.release(release);
+		return content.replace("[commit]", modelRelease.commit());
 	}
 
 }

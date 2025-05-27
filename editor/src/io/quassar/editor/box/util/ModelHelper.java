@@ -4,6 +4,7 @@ import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.ui.types.VersionType;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
+import io.quassar.editor.model.ModelRelease;
 
 import java.util.List;
 import java.util.function.Function;
@@ -12,6 +13,15 @@ import java.util.regex.Pattern;
 public class ModelHelper {
 
 	public static final String FirstReleaseVersion = "1.0.0";
+
+	public static boolean isM1Release(Model model, ModelRelease release) {
+		if (release == null) return false;
+		return isM1Release(model, release.version());
+	}
+
+	public static boolean isM1Release(Model model, String release) {
+		return !model.isTemplate() && release != null && !release.equals(Model.DraftRelease) && !model.language().artifactId().equals(Language.Metta);
+	}
 
 	public static String label(Model model, String language, EditorBox box) {
 		String result = model.isTitleQualified() ? model.qualifiedTitle() : model.title();
@@ -54,4 +64,5 @@ public class ModelHelper {
 	public static String validWorkspaceFileName(String name) {
 		return StringHelper.camelCaseToKebabCase(name).replace("/-", "/").replace(" ", "-");
 	}
+
 }

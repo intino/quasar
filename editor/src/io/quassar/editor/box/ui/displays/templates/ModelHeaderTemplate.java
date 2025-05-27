@@ -94,7 +94,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		forgeTrigger.visible(!model.isTemplate() && release != null && !release.equals(Model.DraftRelease) && model.language().artifactId().equals(Language.Metta));
 		forgeTrigger.readonly(!PermissionsHelper.canForge(model, language, release, session()));
 		if (forgeTrigger.isVisible()) forgeTrigger.site(PathHelper.forgeUrl(model, release, session()));
-		executionTrigger.visible(!model.isTemplate() && release != null && !release.equals(Model.DraftRelease) && !model.language().artifactId().equals(Language.Metta));
+		executionTrigger.visible(ModelHelper.isM1Release(model, release));
 		executionTrigger.readonly(!PermissionsHelper.canLaunchExecution(model, language, release, session()));
 		downloadTrigger.visible(ModelHelper.validReleaseName(release, this::translate));
 		languageLogo.visible(language != null);

@@ -91,6 +91,7 @@ Template(layout=Horizontal) commitModelDialog
             Button(title="Commit", size=Small, highlight=Fill) create as Action
 
 	TemplateStamp(template=downloadModelDialog) downloadModelDialog
+	TemplateStamp(template=languageExecutionLauncher) executionLauncher
 
 Template(layout=Horizontal) downloadModelDialog
 	Link(title="") downloadSilently as Download

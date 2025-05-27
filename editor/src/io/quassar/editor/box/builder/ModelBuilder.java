@@ -113,7 +113,7 @@ public class ModelBuilder {
 	private RunOperationContext context(String builder) {
 		return new RunOperationContext()
 				.imageURL(builder)
-				.generationPackage(destination.groupId())
+				.generationPackage(destination.groupId() + "." + Formatters.normalizeLanguageName(destination.artifactId()).toLowerCase())
 				.languageGroup(language.group())
 				.languageName(Formatters.normalizeLanguageName(language.name()))
 				.languageVersion(model.language().version())
