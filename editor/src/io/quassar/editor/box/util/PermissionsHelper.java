@@ -100,7 +100,7 @@ public class PermissionsHelper {
 
 	public static boolean canEditSettings(Model model, String release, UISession session) {
 		if (!hasPermissions(model, session)) return false;
-		return !model.isExample() || isOwnerOrCollaborator(model, session);
+		return isOwnerOrCollaborator(model, session);
 	}
 
 	public static boolean canForge(Model model, Language language, String release, UISession session) {

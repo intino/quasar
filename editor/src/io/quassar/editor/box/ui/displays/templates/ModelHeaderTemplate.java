@@ -89,7 +89,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		checkTrigger.readonly(!PermissionsHelper.canCheck(model, release, session(), box()));
 		commitTrigger.visible(!model.isTemplate() && !model.isExample() && (release == null || release.equals(translate(Model.DraftRelease))));
 		commitTrigger.readonly(!PermissionsHelper.canCommit(model, release, session(), box()));
-		infoTrigger.visible(!model.isTemplate() && !model.isExample());
+		infoTrigger.visible(!model.isTemplate());
 		infoTrigger.readonly(!PermissionsHelper.canEditSettings(model, release, session()));
 		forgeTrigger.visible(!model.isTemplate() && release != null && !release.equals(Model.DraftRelease) && model.language().artifactId().equals(Language.Metta));
 		forgeTrigger.readonly(!PermissionsHelper.canForge(model, language, release, session()));
