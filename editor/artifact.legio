@@ -22,7 +22,7 @@ Artifact(groupId = "io.quassar", version = "1.0.13") editor
 		Compile("org.xerial", "sqlite-jdbc", "3.49.1.0")
 		Compile("com.google.api-client", "google-api-client", "2.8.0")
 
-		Web("io.quassar", "editor-elements", "1.0.12")
+		Web("io.quassar", "editor-elements", "1.0.13")
 
 		Test("junit", "junit", "4.13")
 
