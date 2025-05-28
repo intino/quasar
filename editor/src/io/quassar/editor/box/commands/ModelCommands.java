@@ -85,10 +85,9 @@ public class ModelCommands extends Commands {
 		return command.execute();
 	}
 
-	public void saveProperties(Model model, String title, String description, String username) {
-		SaveModelPropertiesCommand command = setup(new SaveModelPropertiesCommand(box), username);
+	public void saveDescription(Model model, String description, String username) {
+		SaveModelDescriptionCommand command = setup(new SaveModelDescriptionCommand(box), username);
 		command.model = model;
-		command.title = title;
 		command.description = description;
 		command.execute();
 	}

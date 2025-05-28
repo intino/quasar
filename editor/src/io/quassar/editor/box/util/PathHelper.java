@@ -153,6 +153,13 @@ public class PathHelper {
 		return modelPath(address, model, release, view, file, position);
 	}
 
+	public static String modelUrl(Model model, String release, ModelView view, io.quassar.editor.box.models.File file, FilePosition position, UISession session) {
+		String viewName = view != null ? view.name() : null;
+		String fileUri = file != null ? file.uri() : null;
+		String positionValue = position != null ? position.line() + "-" + position.column() : null;
+		return modelUrl(model.language().artifactId(), model.id(), release, viewName, fileUri, positionValue, session);
+	}
+
 	public static String modelUrl(String language, String model, String release, String view, String file, String position, UISession session) {
 		return modelPath(session.browser().baseUrl() + "/models/:language/:model", language, model, release, view, file, position);
 	}

@@ -2,7 +2,6 @@ package io.quassar.editor.box.ui.displays.templates;
 
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.util.ModelHelper;
-import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.Model;
 
 public class ModelTitleViewer extends AbstractModelTitleViewer<EditorBox> {

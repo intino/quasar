@@ -116,7 +116,7 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 	}
 
 	private void saveModel() {
-		box().commands(ModelCommands.class).saveProperties(model, modelTitleField.value(), modelDescriptionField.value(), username());
+		box().commands(ModelCommands.class).saveDescription(model, modelDescriptionField.value(), username());
 		saveAccessType();
 		saveLanguage();
 		saveCollaborators();

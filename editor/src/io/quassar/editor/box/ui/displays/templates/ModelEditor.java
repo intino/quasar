@@ -113,7 +113,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		headerStamp.onCheck(m -> check());
 		headerStamp.onClone(m -> cloneModel());
 		headerStamp.onDeploy((m, e) -> updateConsole(e));
-		headerStamp.onUpdateLanguageVersion(m -> notifier.redirect(session().browser().requestUrl()));
+		headerStamp.onUpdateLanguageVersion(m -> notifier.redirect(PathHelper.modelUrl(model, release, selectedView, selectedFile, selectedPosition, session())));
 	}
 
 	private void initBrowsers() {
