@@ -56,7 +56,7 @@ public class ProjectModuleEntryViewer extends AbstractProjectModuleEntryViewer<E
 	}
 
 	private void open() {
-		notifier.dispatch(PathHelper.modelPath(model));
+		notifier.redirect(PathHelper.modelUrl(model, session()));
 		selectListener.accept(true);
 	}
 
