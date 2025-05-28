@@ -4,6 +4,7 @@ import io.intino.alexandria.Resource;
 import io.intino.alexandria.exceptions.AlexandriaException;
 import io.intino.alexandria.exceptions.BadRequest;
 import io.intino.alexandria.exceptions.Forbidden;
+import io.intino.alexandria.exceptions.NotFound;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.util.ArtifactoryHelper;
 import io.quassar.editor.model.GavCoordinates;
@@ -16,7 +17,7 @@ public class GetArtifactoryFileAction implements io.intino.alexandria.rest.Reque
 	public EditorBox box;
 	public io.intino.alexandria.http.server.AlexandriaHttpContext context;
 
-	public io.intino.alexandria.Resource execute() throws Forbidden {
+	public io.intino.alexandria.Resource execute() throws Forbidden, NotFound {
 		GavCoordinates coordinates = ArtifactoryHelper.parse(pathInfo());
 
 		if (coordinates == null)
@@ -24,11 +25,11 @@ public class GetArtifactoryFileAction implements io.intino.alexandria.rest.Reque
 
 		Language language = locateLanguage(coordinates);
 		if (language == null)
-			throw new Forbidden("Repository file not found");
+			throw new NotFound("Repository file not found");
 
 		LanguageRelease release = language.release(coordinates.version());
 		if (release == null)
-			throw new Forbidden("Repository file not found");
+			throw new NotFound("Repository file not found");
 
 		String extension = fileExtension();
 		boolean isJar = extension.equals(".jar");

@@ -5,4 +5,5 @@ Service(title = "Quassar Artifactory") quassar-artifactory-api as REST(host = "{
 	Resource("*") artifactoryFile
     	Get(description = "Download release file")
     		Response as File
+    		Exception(NotFound)
     		Exception(Forbidden)
