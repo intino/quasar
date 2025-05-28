@@ -22,12 +22,18 @@ public class GetArtifactoryFileAction implements io.intino.alexandria.rest.Reque
 		if (coordinates == null)
 			throw new Forbidden("Repository file not found");
 
-		String extension = fileExtension();
 		Language language = locateLanguage(coordinates);
+		if (language == null)
+			throw new Forbidden("Repository file not found");
+
+		LanguageRelease release = language.release(coordinates.version());
+		if (release == null)
+			throw new Forbidden("Repository file not found");
+
+		String extension = fileExtension();
 		boolean isJar = extension.equals(".jar");
 		boolean isManifest = extension.equals(".pom");
 
-		LanguageRelease release = language.release(coordinates.version());
 		if (coordinates.artifactId().equals("graph")) return isJar ? new Resource(box.languageManager().loadGraph(language, release)) : emptyManifest();
 
 		boolean isDsl = coordinates.artifactId().equals(language.name());
