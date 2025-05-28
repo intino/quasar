@@ -19,9 +19,7 @@ public class PermissionsHelper {
 	public static boolean hasPermissions(Model model, UISession session) {
 		if (model == null) return false;
 		if (model.isPublic()) return true;
-		String username = session.user() != null ? session.user().username() : null;
-		if (model.owner() != null && model.owner().equals(username)) return true;
-		return model.collaborators().stream().anyMatch(c -> c.equals(username));
+		return isOwnerOrCollaborator(model, session);
 	}
 
 	public static boolean hasPermissions(Language language, UISession session, EditorBox box) {
@@ -64,6 +62,7 @@ public class PermissionsHelper {
 	public static boolean canCommit(Model model, String version, UISession session, EditorBox box) {
 		if (model.isTemplate()) return false;
 		if (!hasPermissions(model, session)) return false;
+		if (model.isExample()) return isOwnerOrCollaborator(model, session);
 		return !box.modelManager().isWorkspaceEmpty(model, version);
 	}
 
@@ -87,13 +86,21 @@ public class PermissionsHelper {
 		return model.owner().equalsIgnoreCase(username);
 	}
 
+	public static boolean isOwnerOrCollaborator(Model model, UISession session) {
+		String username = session.user() != null ? session.user().username() : null;
+		if (model.owner() != null && model.owner().equals(username)) return true;
+		return model.collaborators().stream().anyMatch(c -> c.equals(username));
+	}
+
 	public static boolean canEdit(Model model, String release, UISession session) {
 		if (!hasPermissions(model, session)) return false;
+		if (model.isExample()) return isOwnerOrCollaborator(model, session);
 		return model.isDraft(release);
 	}
 
 	public static boolean canEditSettings(Model model, String release, UISession session) {
-		return hasPermissions(model, session);
+		if (!hasPermissions(model, session)) return false;
+		return !model.isExample() || isOwnerOrCollaborator(model, session);
 	}
 
 	public static boolean canForge(Model model, Language language, String release, UISession session) {

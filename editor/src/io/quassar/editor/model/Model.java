@@ -132,7 +132,7 @@ public class Model extends SubjectWrapper {
 	}
 
 	public boolean isPublic() {
-		return !isPrivate();
+		return isExample() || !isPrivate();
 	}
 
 	public boolean isPrivate() {
