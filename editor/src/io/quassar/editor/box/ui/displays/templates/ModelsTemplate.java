@@ -84,8 +84,8 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 		display.description.value(model.description() != null && !model.description().equals(translate("(no description)")) ? model.description() : null);
 		display.owner.visible(true);
 		if (display.owner.isVisible()) display.owner.value(model.owner());
-		display.version.visible(true);//(tab == LanguageTab.Examples);
-		if (display.version.isVisible()) display.version.value(model.language().version());
+		display.language.visible(true);//(tab == LanguageTab.Examples);
+		if (display.language.isVisible()) display.language.value(model.language().artifactId() + " " + model.language().version());
 		display.createDate.value(model.createDate());
 	}
 

@@ -46,7 +46,7 @@ Template modelsTemplate as Relative(height=100%, width=100%)
 						Link(title="", format=relative bringToFront h5 upperCase, visible=false) siteLabel as Action OpenSite(site=empty, target=Blank)
 						Text description
 						Text owner as Labeled("Owner")
-						Text version as Labeled("DSL version")
+						Text language as Labeled("DSL")
 						Date createDate as Labeled("Create date")
 
 Template modelTemplate as Relative(height=100%, width=100%)
