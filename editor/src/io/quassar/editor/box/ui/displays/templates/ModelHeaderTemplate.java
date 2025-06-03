@@ -136,7 +136,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 			gotoForgeTrigger.site(PathHelper.forgeUrl(model, release, session()));
 			gotoForgeTrigger.title(forgedLanguage.name() + " DSL");
 		}
-		releaseSelector.visible(!model.isTemplate() && !model.isExample());
+		releaseSelector.visible(!model.isTemplate() && !model.isExample() && !model.releases().isEmpty());
 	}
 
 	private void refreshReleaseSelector() {
