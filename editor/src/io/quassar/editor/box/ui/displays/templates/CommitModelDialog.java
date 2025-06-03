@@ -104,6 +104,7 @@ public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
 		String selected = (String) event.selection().getFirst();
 		if (selected.equals("revisionOption")) return VersionType.Revision;
 		if (selected.equals("minorVersionOption")) return VersionType.MinorVersion;
+		if (selected.equals("snapshotVersionOption")) return VersionType.SnapshotVersion;
 		return VersionType.MajorVersion;
 	}
 

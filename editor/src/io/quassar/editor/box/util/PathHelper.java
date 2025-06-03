@@ -117,7 +117,8 @@ public class PathHelper {
 	}
 
 	public static String startingModelPath(Model model) {
-		return modelPath(model) + "/starting";
+		return modelPath(model);
+		//return modelPath(model) + "/starting";
 	}
 
 	public static String modelTemplateUrl(Model model, UISession session) {

@@ -6,6 +6,7 @@ import io.quassar.editor.box.util.ArtifactoryHelper;
 import io.quassar.editor.box.util.SubjectHelper;
 import io.quassar.editor.model.*;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.patch.FileHeader;
 import systems.intino.datamarts.subjectstore.SubjectStore;
 import systems.intino.datamarts.subjectstore.model.Subject;
 
@@ -67,6 +68,18 @@ public class LanguageManager {
 		if (lastExecution != null) copyExecution(language, release, lastExecution);
 		else createExecution(language, release, null, LanguageExecution.Type.None);
 		return release;
+	}
+
+	public void removeRelease(Language language, LanguageRelease release) {
+		try {
+			Subject subject = subjectStore.create(SubjectHelper.pathOf(language, release.version()));
+			if (subject != null) subject.drop();
+			File directory = archetype.languages().release(language.key(), release.version());
+			if (!directory.exists()) return;
+			FileUtils.deleteDirectory(directory);
+		} catch (IOException e) {
+			Logger.error(e);
+		}
 	}
 
 	public LanguageExecution createExecution(Language language, LanguageRelease release, String name, LanguageExecution.Type type) {

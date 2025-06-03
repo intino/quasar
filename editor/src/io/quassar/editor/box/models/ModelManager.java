@@ -209,6 +209,19 @@ public class ModelManager {
 		}
 	}
 
+	public OperationResult removeRelease(Model model, String release) {
+		try {
+			Subject subject = subjectStore.open(SubjectHelper.pathOf(model, release));
+			if (subject != null) subject.drop();
+			File releaseFile = archetype.models().release(ArchetypeHelper.relativeModelPath(model.id()), model.id(), release);
+			if (releaseFile.exists()) releaseFile.delete();
+			return OperationResult.Success();
+		} catch (Exception e) {
+			Logger.error(e);
+			return OperationResult.Error(e.getMessage());
+		}
+	}
+
 	private String manifest(ModelRelease modelRelease) {
 		return Json.toString(modelRelease);
 	}

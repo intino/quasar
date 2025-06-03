@@ -84,6 +84,7 @@ Template(layout=Horizontal) commitModelDialog
 						Text(value="Major version") majorVersionOption as Option
 						Text(value="Minor version") minorVersionOption as Option
 						Text(value="Revision") revisionOption as Option
+						Text(value="Replace existing") snapshotVersionOption as Option
 
 		Divider
         Block(layout=Horizontal EndJustified)

@@ -44,6 +44,7 @@ public class ModelHelper {
 		String[] parts = lastVersion.getLast().split("\\.");
 		if (type == VersionType.MajorVersion) return String.format(VersionPatternMask, Integer.parseInt(parts[0])+1, 0, 0);
 		if (type == VersionType.MinorVersion) return String.format(VersionPatternMask, parts[0], Integer.parseInt(parts[1])+1, 0);
+		if (type == VersionType.SnapshotVersion) return String.format(VersionPatternMask, parts[0], Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
 		return String.format(VersionPatternMask, parts[0], parts[1], Integer.parseInt(parts[2])+1);
 	}
 

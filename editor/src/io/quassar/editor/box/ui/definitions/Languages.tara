@@ -269,7 +269,7 @@ Template(layout=Vertical Flexible, format=doubleSpaced) languageExecutionTemplat
 	Block(layout=Vertical Flexible, visible=false) versionBlock
 
 		Block(format=doubleAirBottom)
-			Text(value="Name", translate=true, format=h5 bold)
+			Text(value="Name used to identify the runtime operation in created models", translate=true, format=h5 bold)
 			Block(format=autoHeight) as Relative(width=80%) > Text(value="Specify the name that will be used to identify the runtime environment for models created with this DSL. This name helps distinguish how and where the generated models will be executed.", translate=true, format=airBottom)
 			Block as Absolute(width=400px) > Text(format=h5) nameField as Editable
 
