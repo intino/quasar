@@ -18,3 +18,7 @@
 .rsw-toolbar {
     font-size: 13pt;
 }
+
+.rsw-btn[title="HTML mode"] {
+    display:none;
+}

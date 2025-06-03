@@ -8,6 +8,14 @@ public class LanguageExecution extends SubjectWrapper {
 		super(subject);
 	}
 
+	public String name() {
+		return getOrEmpty("name");
+	}
+
+	public void name(String value) {
+		set("name", value);
+	}
+
 	public enum Type { None, Local, Remote }
 	public Type type() {
 		return Type.valueOf(get("type"));

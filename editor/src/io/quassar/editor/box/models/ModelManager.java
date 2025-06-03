@@ -150,7 +150,7 @@ public class ModelManager {
 		result.usage(Model.Usage.EndUser);
 		result.createDate(Instant.now());
 		new WorkspaceWriter(workspace(model, release), server(model, release)).clone(result, server(result, Model.DraftRelease));
-		return get(name);
+		return get(id);
 	}
 
 	public List<Diagnostic> check(Model model, String release) {
@@ -248,10 +248,10 @@ public class ModelManager {
 
 	public void remove(Model model) {
 		try {
-			File rootDir = archetype.models().get(ArchetypeHelper.relativePath(model), model.id());
-			if (!rootDir.exists()) return;
 			releases(model).forEach(r -> subjectStore.open(SubjectHelper.pathOf(model, r)).drop());
 			subjectStore.open(SubjectHelper.pathOf(model)).drop();
+			File rootDir = archetype.models().get(ArchetypeHelper.relativePath(model), model.id());
+			if (!rootDir.exists()) return;
 			FileUtils.deleteDirectory(rootDir);
 		} catch (IOException e) {
 			Logger.error(e);

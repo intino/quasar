@@ -125,6 +125,7 @@ Template languageForgeTemplate as Relative(height=100%, width=100%)
 						Image(format=forgeLogoStyle) logo as Absolute(width=200px)
 						Text(format=h4) languageName
 						Link(title="properties") infoLink as Action
+						Link(title="metamodel") metamodelLink as OpenSite(site=empty, target=Blank)
 					Block(layout=Horizontal Center, format=doubleAirTop middleAirLeft middleAirBottom)
 						Block(layout=Vertical Flexible) > Text(value="Releases", translate=true, format=h5 bold)
 						Block(layout=Horizontal EndJustified) > MaterialIconButton(title="refresh", icon="Refresh", size=Small) refreshVersions as Action
@@ -137,12 +138,9 @@ Template languageForgeTemplate as Relative(height=100%, width=100%)
 		Block(layout=Vertical Flexible) as Relative(width=85%)
 			Selector viewSelector as Tabs(format=tabsStyle) Addressable(EditorElements.forge)
 				Text(value="Kit") kit as Option
-				Text(value="Help") help as Option
 				Text(value="Execution") execution as Option
 			Block(layout=Horizontal Flexible)
 				Block(layout=Vertical Flexible)
-					Block(layout=Vertical Flexible) helpBlock as Conditional(viewSelector.help)
-						TemplateStamp(template=languageHelpTemplate) helpStamp
 					Block(layout=Vertical Flexible) kitBlock as Conditional(viewSelector.kit)
 						TemplateStamp(template=languageKitTemplate) kitStamp
 					Block(layout=Vertical Flexible) executionBlock as Conditional(viewSelector.execution)
@@ -209,19 +207,6 @@ Template(layout=Vertical Flexible) languagePropertiesTemplate
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addTagDialog)
             Button(title="Accept", size=Small, highlight=Fill) addTag as Action
 
-Template(layout=Horizontal Flexible) languageHelpTemplate
-	Block(layout=Vertical Flexible, visible=false) selectVersionBlock
-		Text(value="Select version on right panel to open help")
-
-	Block(layout=Vertical Flexible CenterCenter, visible=false) versionNotCreatedBlock
-		Block(layout=Vertical CenterCenter) as Relative(width=40%)
-			Text(value="This version of the DSL has not been defined yet. To define its help, you must first create the version.", format=h5 textCentered)
-			Button(title="Create version", highlight=Fill, format=doubleAirTop) createVersion as Action
-
-	Block(layout=Vertical Flexible, visible=false) versionBlock as Relative(height=100%, width=100%)
-		DisplayStamp(display=helpEditor, format=fullHeight) helpEditor
-		//Text(format=fullHeight fullWidth) helpField as Editable Code(Html)
-
 Display helpEditor
 	Notification refresh as Text
 	Request update as Text
@@ -230,6 +215,11 @@ Template(layout=Vertical Flexible, format=doubleSpaced) languageKitTemplate
 	Block(layout=Vertical Flexible, visible=false) selectVersionBlock
 		Text(value="Select version on right panel to open kit")
 
+	Block(layout=Vertical Flexible CenterCenter, visible=false) noVersionsBlock
+		Block(layout=Vertical CenterCenter) as Relative(width=40%)
+			Text(value="You haven’t committed the metamodel yet. A commit is required to create a DSL release. Please go to the metamodel and commit your changes.", format=h5 textCentered)
+			Button(title="Goto metamodel", highlight=Fill, format=doubleAirTop) metamodelLink as OpenSite(site=empty)
+
 	Block(layout=Vertical Flexible CenterCenter, visible=false) versionNotCreatedBlock
 		Block(layout=Vertical CenterCenter) as Relative(width=40%)
 			Text(value="This version of the DSL has not been defined yet. To define its kit, you must first create the version.", format=h5 textCentered)
@@ -237,33 +227,39 @@ Template(layout=Vertical Flexible, format=doubleSpaced) languageKitTemplate
 
 	Block(layout=Vertical Flexible, visible=false) versionBlock
 
-		Block(format=doubleAirBottom)
-			Text(value="Metamodel", translate=true, format=h5 bold middleAirBottom)
-			Block(layout=Horizontal) > Link(title="") metamodelLink as OpenSite(site=empty, target=Blank)
-
-		Block(format=middleAirBottom, visible=false) downloadsBlock
-			Text(value="Downloads", translate=true, format=h5 bold)
-			TemplateStamp(template=downloadTemplate) downloads as Multiple(arrangement=Horizontal, spacing=DP16, noItemsMessage="There are no downloads available")
-
-		Block(format=middleAirBottom) dependencyBlock
-			Text(value="Model readers", translate=true, format=h5 bold)
-			TemplateStamp(template=dependencyTemplate) dependencies as Multiple(arrangement=Horizontal, spacing=DP16, noItemsMessage="There are no readers available")
+		Block(format=doubleAirBottom autoHeight)
+			Text(value="Help", translate=true, format=h5 bold)
+			Block(format=autoHeight) as Relative(width=80%) > Text(value="In this section, you can customize or update the help content associated with the current release of the DSL. Any changes made here will apply only to this release, allowing you to maintain release-specific and up-to-date documentation based on the features or behavior available.", translate=true, format=airBottom)
+			Block(layout=Horizontal)
+				Button(title="Edit help", highlight=Outline, size=Small) editHelpTrigger as OpenDialog(dialog=helpDialog)
 
 		Block(format=doubleAirBottom)
-			Text(value="Template", translate=true, format=h5 bold)
+			Text(value="Template", translate=true, format=h5 bold middleAirBottom)
+			Block(format=autoHeight) as Relative(width=80%) > Text(value="A template is available here to customize how created models will be generated using this DSL. You can create default definition files that will be used as a base when generating new models.", translate=true, format=airBottom)
 			Block(visible=false) templateDefined
 				Block(layout=Horizontal) > Link(title="") templateLink as OpenSite(site=empty, target=Blank)
 				Date templateCreateDate as Labeled("Created at")
 			Block(layout=Horizontal, visible=false) templateNotDefined
-				Button(title="Create", highlight=Outline) createTemplate as Action
+				Button(title="Create", highlight=Outline, size=Small) createTemplate as Action
 
 		Block(layout=Vertical Flexible) as Relative(height=100%)
 			Text(value="Examples", translate=true, format=h5 bold middleAirBottom)
+			Block(format=autoHeight) as Relative(width=80%) > Text(value="Provide users with a comprehensive catalog of DSL usage examples across various contexts. These examples help illustrate best practices, demonstrate common patterns, and guide users in applying the DSL effectively to real-world scenarios.", translate=true, format=airBottom)
 			TemplateStamp(template=modelsTemplate) modelsCatalog
 
+	Dialog(title="Help") helpDialog as FullScreen
+        Block as Relative(height=100%)
+			DisplayStamp(display=helpEditor, format=fullHeight) helpEditor
+
 Template(layout=Vertical Flexible, format=doubleSpaced) languageExecutionTemplate
+
 	Block(layout=Vertical Flexible, visible=false) selectVersionBlock
 		Text(value="Select version on right panel to open execution environment")
+
+	Block(layout=Vertical Flexible CenterCenter, visible=false) noVersionsBlock
+		Block(layout=Vertical CenterCenter) as Relative(width=40%)
+			Text(value="You haven’t committed the metamodel yet. A commit is required to create a DSL release. Please go to the metamodel and commit your changes.", format=h5 textCentered)
+			Button(title="Goto metamodel", highlight=Fill, format=doubleAirTop) metamodelLink as OpenSite(site=empty)
 
 	Block(layout=Vertical Flexible CenterCenter, visible=false) versionNotCreatedBlock
 		Block(layout=Vertical CenterCenter) as Relative(width=40%)
@@ -271,32 +267,50 @@ Template(layout=Vertical Flexible, format=doubleSpaced) languageExecutionTemplat
 			Button(title="Create version", highlight=Fill, format=doubleAirTop) createVersion as Action
 
 	Block(layout=Vertical Flexible, visible=false) versionBlock
-		Text(value="Specify how a model, written with this DSL, is converted into a concrete artifact.", translate=true, format=airBottom)
 
-		Selector executionSelector as RadioBox
-			Text(value="This DSL doen't have execution environment") noneOption as Option
-			Text(value="Remote execution: Runs through your server infrastructure") remoteOption as Option
-			Text(value="Local execution: The user installs and runs the tool locally") localOption as Option
+		Block(format=doubleAirBottom)
+			Text(value="Name", translate=true, format=h5 bold)
+			Block(format=autoHeight) as Relative(width=80%) > Text(value="Specify the name that will be used to identify the runtime environment for models created with this DSL. This name helps distinguish how and where the generated models will be executed.", translate=true, format=airBottom)
+			Block as Absolute(width=400px) > Text(format=h5) nameField as Editable
 
-		Block(format=doubleSpaced airTop greyLightBackground) remoteEnvironmentBlock as Conditional(executionSelector.remoteOption) Relative(width=80%)
-			Text(value="Remote execution", format=h5 bold)
-			Text(value="This template defines how the final URL will be constructed to submit a specific version of a generated DSL model to a remote web service.", translate=true, format=bold)
-			Text(value="You must include placeholder [commit], which will be automatically replaced with the corresponding commit identifier when the model is committed. The system will use this URL whenever a model needs to be executed remotely. Make sure the service is reachable and correctly configured to accept requests in the expected format. If the location or structure of your endpoint changes. You can update this template at any time to reflect the new configuration.", translate=true, format=airBottom)
-			Text(value="Enter a valid URL that includes [commit] placeholder. Also you can use [commit-url] placeholder instead. They will be replaced at runtime", translate=true, format=airTop italic)
-			Text(format=whiteBackground) remoteField as Editable(placeholder="https://your-application.com/run?model=[commit]")
+		Block(format=middleAirBottom, visible=false) downloadsBlock
+			Text(value="Downloads", translate=true, format=h5 bold)
+			Block(format=autoHeight) as Relative(width=80%) > Text(value="Access all available resources related to this DSL", translate=true, format=airBottom)
+			TemplateStamp(template=downloadTemplate) downloads as Multiple(arrangement=Horizontal, spacing=DP16, noItemsMessage="There are no downloads available")
 
-		Block(format=doubleSpaced airTop greyLightBackground) localEnvironmentBlock as Conditional(executionSelector.localOption) Relative(width=80%)
-			Text(value="Local execution", format=h5 bold)
-			Text(value="This template defines how the final command will be constructed to execute a specific version of a generated DSL model using your tool.", translate=true, format=bold)
-			Text(value="The user will use this command whenever a model needs to be executed locally. You must include the placeholder [commit], which will be automatically replaced with the corresponding commit identifier when the model is committed. You can choose a predefined template or customize it to match the way your tool is invoked—this may involve using build tools like Maven, Docker commands, or scripts specific to your environment. Ensure that the command runs successfully on your machine and that it correctly references the model and release. You can update this template at any time if your tool setup or invocation method changes.", translate=true, format=airBottom)
-			Block(layout=Horizontal Center, format=airBottom)
-				Block(format=airRight) as Absolute(width=200px) > Selector templateSelector as ComboBox(view=TextView, placeholder="Select template")
-				Button(title="Replace", highlight=None) insertTemplate as Action
-			Text(value="Use the placeholder [commit]. Also you can use [commit-url] placeholder instead. They will be replaced at runtime", translate=true, format=italic)
-			Text(format=whiteBackground) localField as Editable Memo(height=15Rows)
-			Block(format=doubleAirTop)
-				Text(value="Installation instructions url", translate=true, format=italic)
-				Text(format=whiteBackground) installationField as Editable
+		Block(format=middleAirBottom) dependencyBlock
+			Text(value="Model parsers", translate=true, format=h5 bold)
+			Block(format=autoHeight) as Relative(width=80%) > Text(value="This section lists the parsers that are automatically generated for interpreting models created with this DSL.", translate=true, format=airBottom)
+			TemplateStamp(template=dependencyTemplate) dependencies as Multiple(arrangement=Horizontal, spacing=DP16, noItemsMessage="There are no readers available")
+
+		Block(format=middleAirBottom)
+			Text(value="Execution environment", translate=true, format=h5 bold)
+			Text(value="Specify how a model, written with this DSL, is converted into a concrete artifact.", translate=true, format=airBottom)
+
+			Selector executionSelector as RadioBox
+				Text(value="This DSL doen't have execution environment") noneOption as Option
+				Text(value="Remote execution: Runs through your server infrastructure") remoteOption as Option
+				Text(value="Local execution: The user installs and runs the tool locally") localOption as Option
+
+			Block(format=doubleSpaced airTop greyLightBackground) remoteEnvironmentBlock as Conditional(executionSelector.remoteOption) Relative(width=80%)
+				Text(value="Remote execution", format=h5 bold)
+				Text(value="This template defines how the final URL will be constructed to submit a specific version of a generated DSL model to a remote web service.", translate=true, format=bold)
+				Text(value="You must include placeholder [commit], which will be automatically replaced with the corresponding commit identifier when the model is committed. The system will use this URL whenever a model needs to be executed remotely. Make sure the service is reachable and correctly configured to accept requests in the expected format. If the location or structure of your endpoint changes. You can update this template at any time to reflect the new configuration.", translate=true, format=airBottom)
+				Text(value="Enter a valid URL that includes [commit] placeholder. Also you can use [commit-url] placeholder instead. They will be replaced at runtime", translate=true, format=airTop italic)
+				Text(format=whiteBackground) remoteField as Editable(placeholder="https://your-application.com/run?model=[commit]")
+
+			Block(format=doubleSpaced airTop greyLightBackground) localEnvironmentBlock as Conditional(executionSelector.localOption) Relative(width=80%)
+				Text(value="Local execution", format=h5 bold)
+				Text(value="This template defines how the final command will be constructed to execute a specific version of a generated DSL model using your tool.", translate=true, format=bold)
+				Text(value="The user will use this command whenever a model needs to be executed locally. You must include the placeholder [commit], which will be automatically replaced with the corresponding commit identifier when the model is committed. You can choose a predefined template or customize it to match the way your tool is invoked—this may involve using build tools like Maven, Docker commands, or scripts specific to your environment. Ensure that the command runs successfully on your machine and that it correctly references the model and release. You can update this template at any time if your tool setup or invocation method changes.", translate=true, format=airBottom)
+				Block(layout=Horizontal Center, format=airBottom)
+					Block(format=airRight) as Absolute(width=200px) > Selector templateSelector as ComboBox(view=TextView, placeholder="Select template")
+					Button(title="Replace", highlight=None) insertTemplate as Action
+				Text(value="Use the placeholder [commit]. Also you can use [commit-url] placeholder instead. They will be replaced at runtime", translate=true, format=italic)
+				Text(format=whiteBackground) localField as Editable Memo(height=15Rows)
+				Block(format=doubleAirTop)
+					Text(value="Installation instructions url", translate=true, format=italic)
+					Text(format=whiteBackground) installationField as Editable
 
 Template downloadTemplate
 	Link(title="") titleLink as Download

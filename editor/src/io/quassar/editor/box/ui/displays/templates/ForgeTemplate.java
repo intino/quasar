@@ -36,8 +36,8 @@ public class ForgeTemplate extends AbstractForgeTemplate<EditorBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
-		notFoundBlock.visible(!PermissionsHelper.hasPermissions(model, session()));
-		contentBlock.visible(PermissionsHelper.hasPermissions(model, session()));
+		notFoundBlock.visible(!PermissionsHelper.hasPermissions(model, session(), box()));
+		contentBlock.visible(PermissionsHelper.hasPermissions(model, session(), box()));
 		if (model == null) return;
 		Language language = box().languageManager().getWithMetamodel(model);
 		hideBlocks();

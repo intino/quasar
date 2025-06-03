@@ -70,18 +70,20 @@ public class LanguageCommands extends Commands {
 		return command.execute();
 	}
 
-	public LanguageExecution createExecution(Language language, String release, LanguageExecution.Type type, String username) {
+	public LanguageExecution createExecution(Language language, String release, String name, LanguageExecution.Type type, String username) {
 		CreateLanguageReleaseExecutionCommand command = setup(new CreateLanguageReleaseExecutionCommand(box), username);
 		command.language = language;
 		command.release = release;
+		command.name = name;
 		command.type = type;
 		return command.execute();
 	}
 
-	public void saveExecution(Language language, String release, LanguageExecution.Type type, String content, String username) {
+	public void saveExecution(Language language, String release, String name, LanguageExecution.Type type, String content, String username) {
 		SaveLanguageReleaseExecutionCommand command = setup(new SaveLanguageReleaseExecutionCommand(box), username);
 		command.language = language;
 		command.release = release;
+		command.name = name;
 		command.type = type;
 		command.content = content;
 		command.execute();

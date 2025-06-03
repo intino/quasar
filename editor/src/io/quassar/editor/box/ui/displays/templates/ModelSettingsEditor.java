@@ -16,16 +16,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> {
+public class ModelSettingsEditor extends AbstractModelSettingsEditor<EditorBox> {
 	private Model model;
-	private Consumer<Model> saveListener;
+	private Consumer<Model> saveTitleListener;
 	private Consumer<Model> cloneListener;
 	private Consumer<Model> updateLanguageVersionListener;
-	private Boolean accessType = null;
-	private List<User> collaboratorList = null;
 	private String release;
 
-	public ModelSettingsDialog(EditorBox box) {
+	public ModelSettingsEditor(EditorBox box) {
 		super(box);
 	}
 
@@ -37,8 +35,8 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		this.release = release;
 	}
 
-	public void onSave(Consumer<Model> listener) {
-		this.saveListener = listener;
+	public void onSaveTitle(Consumer<Model> listener) {
+		this.saveTitleListener = listener;
 	}
 
 	public void onClone(Consumer<Model> listener) {
@@ -49,10 +47,6 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		this.updateLanguageVersionListener = listener;
 	}
 
-	public void open() {
-		dialog.open();
-	}
-
 	@Override
 	public void init() {
 		super.init();
@@ -60,12 +54,11 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		generalBlock.onShow(e -> refreshGeneralBlock());
 		collaboratorsBlock.onInit(e -> initCollaboratorsBlock());
 		collaboratorsBlock.onShow(e -> refreshCollaboratorsBlock());
-		dialog.onOpen(e -> refreshDialog());
-		saveSettings.onExecute(e -> saveSettings());
 	}
 
-	private void refreshDialog() {
-		dialog.title(translate("Information of %s").formatted(ModelHelper.label(model, language(), box())));
+	@Override
+	public void refresh() {
+		super.refresh();
 		Language language = box().languageManager().get(model);
 		if (language == null) settingsTabSelector.hideOption("languageOption");
 		settingsTabSelector.select(0);
@@ -75,7 +68,13 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		removeModel.onExecute(e -> removeModel());
 		cloneModel.onExecute(e -> cloneModel());
 		editTitle.onExecute(e -> openTitleDialog());
-		titleDialog.onSave(e -> modelTitleField.value(e));
+		titleDialog.onSave(e -> {
+			modelTitleField.value(e);
+			saveTitleListener.accept(model);
+		});
+		modelDescriptionField.onChange(e -> saveDescription());
+		languageSelector.onSelect(e -> saveLanguage());
+		accessTypeField.onToggle(e -> saveAccessType());
 	}
 
 	private void refreshGeneralBlock() {
@@ -84,19 +83,21 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		editTitle.readonly(!PermissionsHelper.canEditTitle(model, box()));
 		modelTitleField.value(ModelHelper.label(model, language(), box()));
 		modelDescriptionField.value(model.description());
+		modelDescriptionField.readonly(model.isExample() || model.isTemplate());
 		languageName.value(model.language().languageId());
 		languageSelector.clear();
 		languageSelector.addAll(language.releases().stream().map(LanguageRelease::version).toList().reversed());
 		languageSelector.selection(model.language().version());
+		languageSelector.readonly(model.isExample() || model.isTemplate());
 		removeModel.readonly(!canRemove);
-		removeModel.formats(Set.of("airRight", "whiteColor", canRemove ? "redBackground" : "greyHardBackground"));
+		removeModel.formats(Set.of("airRight", "whiteColor", canRemove ? "redBackground" : "disabledButton"));
 		cloneModel.readonly(!PermissionsHelper.canClone(model, release, session(), box()));
-		accessType = model.isPrivate();
 		accessTypeField.state(model.isPrivate() ? ToggleEvent.State.On : ToggleEvent.State.Off);
+		accessTypeField.readonly(model.isExample() || model.isTemplate());
 	}
 
 	private void initCollaboratorsBlock() {
-		collaboratorsStamp.onChange(e -> this.collaboratorList = e);
+		collaboratorsStamp.onChange(this::saveCollaborators);
 	}
 
 	private void refreshCollaboratorsBlock() {
@@ -104,26 +105,11 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		collaboratorsStamp.refresh();
 	}
 
-	private void saveSettings() {
-		if (!check()) return;
-		dialog.close();
-		saveModel();
-		saveListener.accept(model);
-	}
-
-	private boolean check() {
-		return true;
-	}
-
-	private void saveModel() {
+	private void saveDescription() {
 		box().commands(ModelCommands.class).saveDescription(model, modelDescriptionField.value(), username());
-		saveAccessType();
-		saveLanguage();
-		saveCollaborators();
 	}
 
 	private void saveAccessType() {
-		if (accessType == null) return;
 		boolean isPrivate = accessTypeField.state() == ToggleEvent.State.On;
 		if (isPrivate) box().commands(ModelCommands.class).makePrivate(model, username());
 		else box().commands(ModelCommands.class).makePublic(model, username());
@@ -137,9 +123,8 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 		updateLanguageVersionListener.accept(model);
 	}
 
-	private void saveCollaborators() {
-		if (collaboratorList == null) return;
-		box().commands(ModelCommands.class).save(model, collaboratorList, username());
+	private void saveCollaborators(List<User> collaborators) {
+		box().commands(ModelCommands.class).save(model, collaborators, username());
 	}
 
 	private void removeModel() {
@@ -151,7 +136,6 @@ public class ModelSettingsDialog extends AbstractModelSettingsDialog<EditorBox> 
 	}
 
 	private void cloneModel() {
-		dialog.close();
 		cloneListener.accept(model);
 	}
 

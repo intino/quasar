@@ -37,6 +37,11 @@ public class ResourcesReader implements FileReader {
 	}
 
 	@Override
+	public boolean exists(io.quassar.editor.box.models.File file) {
+		return new File(workspace.root(), file.uri()).exists();
+	}
+
+	@Override
 	public io.quassar.editor.box.models.File get(String uri) {
 		return WorkspaceHelper.fileOf(new File(workspace.root(), uri), workspace);
 	}

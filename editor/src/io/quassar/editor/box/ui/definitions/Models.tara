@@ -11,20 +11,24 @@ Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
 			MaterialIconButton(title="Goto DSL", icon="ArrowUpward", size=Small, format=airRight middleAirLeft) languageTrigger as Action Addressable(EditorElements.language)
 			TemplateStamp(template=modelTitleViewer) titleViewer
 			Block(layout=Horizontal Center, format=doubleAirLeft)
+				Button(title="1. edit", size=Small, format=airRight, highlight=Fill) editTrigger as Action
+				Button(title="2. check", size=Small, format=airRight, highlight=Outline) checkTrigger as Action > Shortcut(key="F9", metaKeys=Control)
+				Button(title="3. commit", size=Small, format=airRight, highlight=Outline, visible=false) commitTrigger as Action Readonly
+				Button(title="4. Forge DSL", size=Small, format=airRight, highlight=Outline, visible=false) forgeTrigger as OpenSite(site=empty, target=Blank) Readonly
+				Button(title="4. Execute", size=Small, format=airRight, highlight=Outline, visible=false) executionTrigger as Action Readonly
 				SplitButton(title="draft", format=airRight minSelectorWidth, options="draft", defaultOption = "draft", visible=false) releaseSelector as Action
-				Button(title="check", size=Small) checkTrigger as Action > Shortcut(key="F9", metaKeys=Control)
-				Button(title="commit", format=airRight, visible=false) commitTrigger as Action
-				Button(title="forge", format=airRight, visible=false) forgeTrigger as OpenSite(site=empty, target=Blank)
-				Button(title="forge", format=airRight, visible=false) executionTrigger as Action
 				Button(title="download", format=airRight, visible=false) downloadTrigger as Action
-				Button(title="settings", format=airRight, visible=false) infoTrigger as Action Readonly
+				Button(title="clone", format=airRight, visible=false) cloneTrigger as Action
+				Block(visible=false, format=airLeft) noLanguageDefinedBlock > Text(value="A DSL has not been created for this metamodel yet", translate=true)
+				Block(layout=Horizontal, visible=false, format=airLeft) languageDefinedBlock
+					Text(value="This metamodel has been used to create", translate=true, format=middleAirRight)
+					Link(title="") gotoForgeTrigger as OpenSite(site=empty, target=Blank)
 
 		Block(layout=Horizontal Center EndJustified)
 			Image(format=middleAirRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) languageLogo as Absolute(height=25px)
 			Button(title="", format=airRight lowerCase) helpTrigger as OpenSite(site=empty, target=Blank)
 
 	TemplateStamp(template=commitModelDialog) commitModelDialog
-	TemplateStamp(template=modelSettingsDialog) modelSettingsDialog
 	TemplateStamp(template=languageExecutionLauncher) executionLauncher
 	TemplateStamp(template=modelTitleDialog) modelTitleDialog
 	TemplateStamp(template=downloadModelDialog) downloadModelDialog
@@ -71,42 +75,49 @@ Template modelEditor as Relative(height=100%, width=100%)
 				Text(value="Could not load model. Click the info button to use a different DSL version", format=textCentered greyColor, translate=true)
 				Block(layout=Horizontal) > Button(title="info", format=airTop, highlight=Outline) infoTrigger as Action
 
-	Block(layout=Horizontal Flexible, visible=false) contentBlock as Resizable
+	Block(layout=Horizontal Flexible, visible=false) contentBlock
 
-		Block(layout=Horizontal Flexible) as Relative(width=20%)
-			Block(format=tabPanel leftTabPanel autoWidth) tabSelectorBlock as Relative(height=100%)
-				Block(format=panelDrawer) tabSelectorDrawer as Drawer(variant=PersistentAndMini) Absolute(width=200px)
-					Block(layout=Horizontal Center, format=middleAirLeft middleAirRight middleAirTop) as Absolute(height=30px)
-						Block(layout=Horizontal EndJustified Center) as Absolute(height=30px)
-							MaterialIconButton(title="open menu", icon="ChevronRight", size=Small, format=airLeft) as OpenDrawer(drawer=tabSelectorDrawer)
-							MaterialIconButton(title = "minimize", icon="ChevronLeft", size=Small, format=airLeft) as CloseDrawer(drawer=tabSelectorDrawer)
-							Text(value="Tools", format=airLeft, translate=true)
-					Divider
-					Block(layout=Vertical Flexible) views
+		Block(format=tabPanel leftTabPanel autoWidth) tabSelectorBlock as Relative(height=100%)
+			Block(format=panelDrawer) tabSelectorDrawer as Drawer(variant=PersistentAndMini) Absolute(width=200px)
+				Block(layout=Horizontal Center, format=middleAirLeft middleAirRight middleAirTop) as Absolute(height=30px)
+					Block(layout=Horizontal EndJustified Center) as Absolute(height=30px)
+						MaterialIconButton(title="open menu", icon="ChevronRight", size=Small, format=airLeft) as OpenDrawer(drawer=tabSelectorDrawer)
+						MaterialIconButton(title = "minimize", icon="ChevronLeft", size=Small, format=airLeft) as CloseDrawer(drawer=tabSelectorDrawer)
+						Text(value="Tools", format=airLeft, translate=true)
+				Divider
+				Block(layout=Vertical Flexible) views
+					Block(layout=Vertical Flexible) mainView
 						Selector tabSelector as ListBox Addressable(EditorElements.model)
 							Block(layout=Horizontal Center) model as Option > MaterialIcon(icon="DescriptionOutlined", title="Model", format=airRight); Text(value="Model", translate=true)
 							Block(layout=Horizontal Center) resources as Option > MaterialIcon(icon="AccountTreeOutlined", title="Resources", format=airRight); Text(value="Resources", translate=true)
+					Block(layout=Vertical) footerView
+						Selector footerSelector as ListBox Addressable(EditorElements.model)
+							Block(layout=Horizontal Center) settings as Option > MaterialIcon(icon="SettingsOutlined", title="Settings", format=airRight) settingsIcon; Text(value="Settings", translate=true)
 
-			Block(layout=Vertical Flexible, format=whiteBackground) browserBlock as Relative(width=100%, height=100%)
-				Block(layout=Vertical Flexible) modelBrowserBlock as Conditional(tabSelectorBlock.tabSelectorDrawer.views.tabSelector.model) Relative(height=100%, width=100%) > TemplateStamp(template=modelBrowserTemplate) modelBrowserStamp
-				Block(layout=Vertical Flexible) resourcesBrowserBlock as Conditional(tabSelectorBlock.tabSelectorDrawer.views.tabSelector.resources) Relative(height=100%, width=100%) > TemplateStamp(template=resourcesBrowserTemplate) resourcesBrowserStamp
+		Block(layout=Vertical Flexible) settingsBlock as Conditional(tabSelectorBlock.tabSelectorDrawer.views.footerView.footerSelector.settings) Relative(height=100%, width=100%) > TemplateStamp(template=modelSettingsTemplate) settingsStamp
 
-		Block(layout=Vertical Flexible) as Relative(width=80%)
-			Block(layout=Horizontal, format=leftBordered headerPanel greyLightBackground leftSpaced rightSpaced)
-				Block(layout=Horizontal Flexible)
-					Text(value="", format=h6, translate=true) filename
-					Block(layout=Horizontal, visible=false, format=airLeft) fileModifiedMessage > Text(value="modified", translate=true, format=airRight redColor bold)
-					Block(layout=Horizontal, visible=false, format=airLeft) fileSavedMessage > Text(value="saved", translate=true, format=airRight greenColor bold)
-				Block(layout=Horizontal EndJustified)
-			Block(layout=Vertical Flexible) as Resizable Relative(height=100%)
-				Block(layout=Vertical Flexible) as Relative(height=60%)
-					Block(layout=Vertical Flexible CenterCenter, format=whiteBackground) fileNotSelectedBlock
-						Text(value="Select file on left panel to open it")
-					Block(layout=Vertical Flexible, format=whiteBackground) nonEditableFileBlock
-						File fileField
-					Block(layout=Vertical Flexible, visible=false) editableFileBlock
-						DisplayStamp(display=intinoDslEditor, format=fullHeight) intinoDslEditor
-				Block(visible=false) consoleBlock as Relative(height=40%) > TemplateStamp(template=consoleTemplate) console
+		Block(layout=Horizontal Flexible, visible=false) modelEditionBlock as Resizable
+			Block(layout=Horizontal Flexible) as Relative(width=20%)
+				Block(layout=Vertical Flexible, format=whiteBackground) browserBlock as Relative(width=100%, height=100%)
+					Block(layout=Vertical Flexible) modelBrowserBlock as Conditional(tabSelectorBlock.tabSelectorDrawer.views.mainView.tabSelector.model) Relative(height=100%, width=100%) > TemplateStamp(template=modelBrowserTemplate) modelBrowserStamp
+					Block(layout=Vertical Flexible) resourcesBrowserBlock as Conditional(tabSelectorBlock.tabSelectorDrawer.views.mainView.tabSelector.resources) Relative(height=100%, width=100%) > TemplateStamp(template=resourcesBrowserTemplate) resourcesBrowserStamp
+
+			Block(layout=Vertical Flexible) as Relative(width=80%)
+				Block(layout=Horizontal, format=leftBordered headerPanel greyLightBackground leftSpaced rightSpaced)
+					Block(layout=Horizontal Flexible)
+						Text(value="", format=h6, translate=true) filename
+						Block(layout=Horizontal, visible=false, format=airLeft) fileModifiedMessage > Text(value="modified", translate=true, format=airRight redColor bold)
+						Block(layout=Horizontal, visible=false, format=airLeft) fileSavedMessage > Text(value="saved", translate=true, format=airRight greenColor bold)
+					Block(layout=Horizontal EndJustified)
+				Block(layout=Vertical Flexible) as Resizable Relative(height=100%)
+					Block(layout=Vertical Flexible) as Relative(height=60%)
+						Block(layout=Vertical Flexible CenterCenter, format=whiteBackground) fileNotSelectedBlock
+							Text(value="Select file on left panel to open it")
+						Block(layout=Vertical Flexible, format=whiteBackground) nonEditableFileBlock
+							File fileField
+						Block(layout=Vertical Flexible, visible=false) editableFileBlock
+							DisplayStamp(display=intinoDslEditor, format=fullHeight) intinoDslEditor
+					Block(visible=false) consoleBlock as Relative(height=40%) > TemplateStamp(template=consoleTemplate) console
 
 	Dialog(title="File modified") fileModifiedDialog as Absolute(width=500px, height=180px)
         Block as Relative(height=100%, offsetHeight=40px)
@@ -125,6 +136,13 @@ Template modelEditor as Relative(height=100%, width=100%)
 		Divider
 		Block(layout=Horizontal EndJustified)
 			Button(title="Close", size=Small, highlight=Fill) as CloseDialog(helpDialog)
+
+Template(layout=Vertical Flexible) modelSettingsTemplate as Relative(height=100%, width=100%)
+	Block(layout=Horizontal, format=headerPanel greyLightBackground leftSpaced rightSpaced)
+		Block(layout=Horizontal Flexible) > Text(value="Settings", format=h6, translate=true)
+
+	Block(layout=Vertical Flexible)
+		TemplateStamp(template=modelSettingsEditor) modelSettingsEditor
 
 Template(layout=Vertical Flexible) modelBrowserTemplate as Relative(height=100%, width=100%)
 	Link(title="") removeFileTrigger as Action Affirmed("Are you sure to remove?")

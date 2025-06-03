@@ -10,6 +10,7 @@ import io.quassar.editor.model.LanguageRelease;
 public class CreateLanguageReleaseExecutionCommand extends Command<LanguageExecution> {
 	public Language language;
 	public String release;
+	public String name;
 	public LanguageExecution.Type type;
 
 	public CreateLanguageReleaseExecutionCommand(EditorBox box) {
@@ -20,7 +21,7 @@ public class CreateLanguageReleaseExecutionCommand extends Command<LanguageExecu
 	public LanguageExecution execute() {
 		LanguageRelease release = language.release(this.release);
 		if (release.execution() != null) release.execution().type(type);
-		else box.languageManager().createExecution(language, release, type);
+		else box.languageManager().createExecution(language, release, name, type);
 		return release.execution();
 	}
 

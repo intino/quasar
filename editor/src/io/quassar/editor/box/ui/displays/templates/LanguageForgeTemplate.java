@@ -38,8 +38,6 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 		infoLink.onExecute(e -> showInfoBlock());
 		infoDialog.onOpen(e -> refreshInfoDialog());
 		infoDialog.onClose(e -> refreshProperties());
-		helpBlock.onInit(e -> initHelpBlock());
-		helpBlock.onShow(e -> refreshHelpBlock());
 		kitBlock.onInit(e -> initKitBlock());
 		kitBlock.onShow(e -> refreshKitBlock());
 		executionBlock.onInit(e -> initExecutionBlock());
@@ -67,15 +65,13 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 		viewSelector.address(path -> PathHelper.forgePath(path, model.id(), release));
 		if (view != null) viewSelector.selection(view.name());
 		hideViews();
-		if (view == ForgeView.Help) helpBlock.show();
-		else if (view == ForgeView.Kit) kitBlock.show();
+		if (view == ForgeView.Kit) kitBlock.show();
 		else if (view == ForgeView.Execution) executionBlock.show();
 		else kitBlock.show();
 	}
 
 	private void hideViews() {
-		if (helpBlock.isVisible()) helpBlock.hide();
-		else if (kitBlock.isVisible()) kitBlock.hide();
+		if (kitBlock.isVisible()) kitBlock.hide();
 		else if (executionBlock.isVisible()) executionBlock.hide();
 	}
 
@@ -83,16 +79,6 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 		infoStamp.language(language);
 		infoStamp.release(release);
 		infoStamp.refresh();
-	}
-
-	private void initHelpBlock() {
-		helpStamp.onCreateVersion(this::versionCreated);
-	}
-
-	private void refreshHelpBlock() {
-		helpStamp.language(language);
-		helpStamp.release(release);
-		helpStamp.refresh();
 	}
 
 	private void initKitBlock() {
@@ -116,8 +102,10 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 	}
 
 	private void refreshProperties() {
+		Model metamodel = box().modelManager().get(language.metamodel());
 		logo.value(LanguageHelper.logo(language, box()));
 		languageName.value(language.name().toLowerCase());
+		metamodelLink.site(PathHelper.modelUrl(metamodel, release, session()));
 	}
 
 	private void refreshVersions() {

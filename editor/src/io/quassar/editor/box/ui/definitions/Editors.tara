@@ -114,48 +114,42 @@ Template(layout=Horizontal) downloadModelDialog
         Block(layout=Horizontal EndJustified)
             Button(title="Close", size=Small, highlight=Fill) as CloseDialog(dialog)
 
-Template(layout=Horizontal) modelSettingsDialog
+Template modelSettingsEditor
 
-	Dialog(title="Info") dialog as Absolute(width=700px, height=800px)
-        Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
-        	Selector settingsTabSelector as Tabs(format=tabsStyle)
-        		Text(value="General") generalOption as Option
-        		Text(value="Collaborators") collaboratorsOption as Option
-        	Block(layout=Vertical Center) as Relative(width=100%)
-        		Block(layout=Vertical Flexible, format=doubleTopSpaced) generalBlock as Relative(width=95%) Conditional(settingsTabSelector.generalOption)
-					Block
-						Text(value="Name", translate=true, format=h5 middleAirBottom)
-						Block(layout=Horizontal Center)
-							Text(mode=Uppercase, format=airRight) modelTitleField
-							Button(title="Edit", size=Small) editTitle as Action
-							TemplateStamp(template=modelTitleDialog) titleDialog
-					Block(format=doubleAirTop)
-						Text(value="Description", translate=true, format=h5 middleAirBottom)
-						Text modelDescriptionField as Editable Memo(height=4Rows)
-					Block(format=doubleAirTop)
-						Text(value="DSL version", translate=true, format=h5 middleAirBottom)
-						Text(format=bold middleAirBottom) languageName
-						Selector languageSelector as ComboBox
-					Block(format=doubleAirTop)
-						Text(value="Model access", translate=true, format=h5 middleAirBottom)
-						Switch(title="Model is private") accessTypeField
-					Block(format=doubleAirTop)
-						Text(value="Remove model", translate=true, format=h5)
-						Text(value="Removed models cannot be restored!", format=greyColor airBottom, translate=true)
-						Block(layout=Horizontal) > Button(title="Remove model...", highlight=Fill) removeModel as Action Readonly Affirmed("Are you sure to remove model?")
-					Block(format=doubleAirTop)
-						Text(value="Clone model", translate=true, format=h5)
-						Text(value="Copy both model files and resource files to a new model", format=greyColor airBottom, translate=true)
-						Block(layout=Horizontal) > Button(title="Clone model...", highlight=Fill) cloneModel as Action Affirmed("Cloning the model will create a copy and open it. Do you want to proceed?")
+	Selector settingsTabSelector as Tabs(format=tabsStyle)
+		Text(value="General") generalOption as Option
+		Text(value="Collaborators") collaboratorsOption as Option
 
-        		Block(layout=Vertical Flexible, format=doubleTopSpaced) collaboratorsBlock as Relative(width=95%) Conditional(settingsTabSelector.collaboratorsOption)
-					Text(value="Users that will have access", translate=true, format=h5 middleAirBottom)
-					TemplateStamp(template=collaboratorsTemplate) collaboratorsStamp
+	Block(layout=Vertical, format=doubleAirLeft) as Relative(width=60%)
+		Block(layout=Vertical Flexible, format=doubleTopSpaced) generalBlock as Relative(width=95%) Conditional(settingsTabSelector.generalOption)
+			Block
+				Text(value="Name", translate=true, format=h5 middleAirBottom)
+				Block(layout=Horizontal Center)
+					Text(mode=Uppercase, format=airRight) modelTitleField
+					Button(title="Edit", size=Small) editTitle as Action
+					TemplateStamp(template=modelTitleDialog) titleDialog
+			Block(format=doubleAirTop)
+				Text(value="Description", translate=true, format=h5 middleAirBottom)
+				Text modelDescriptionField as Editable Memo(height=4Rows)
+			Block(format=doubleAirTop)
+				Text(value="DSL version", translate=true, format=h5 middleAirBottom)
+				Text(format=bold middleAirBottom) languageName
+				Selector languageSelector as ComboBox
+			Block(format=doubleAirTop)
+				Text(value="Model access", translate=true, format=h5 middleAirBottom)
+				Switch(title="Model is private") accessTypeField
+			Block(format=doubleAirTop)
+				Text(value="Remove model", translate=true, format=h5)
+				Text(value="Removed models cannot be restored!", format=greyColor airBottom, translate=true)
+				Block(layout=Horizontal) > Button(title="Remove model...", highlight=Fill) removeModel as Action Readonly Affirmed("Are you sure to remove model?")
+			Block(format=doubleAirTop)
+				Text(value="Clone model", translate=true, format=h5)
+				Text(value="Copy both model files and resource files to a new model", format=greyColor airBottom, translate=true)
+				Block(layout=Horizontal) > Button(title="Clone model...", highlight=Fill) cloneModel as Action Affirmed("Cloning the model will create a copy and open it. Do you want to proceed?")
 
-		Divider
-        Block(layout=Horizontal)
-        	Block(layout=Horizontal StartJustified Flexible) > Button(title="Close", size=Small, format=airRight) as CloseDialog(dialog)
-            Block(layout=Horizontal EndJustified) > Button(title="Apply", size=Small, highlight=Fill) saveSettings as Action
+		Block(layout=Vertical Flexible, format=doubleTopSpaced) collaboratorsBlock as Relative(width=95%) Conditional(settingsTabSelector.collaboratorsOption)
+			Text(value="Users that will have access", translate=true, format=h5 middleAirBottom)
+			TemplateStamp(template=collaboratorsTemplate) collaboratorsStamp
 
 Template(layout=Horizontal Center, format=tag) tagEditor
 	Text(format=smallAirRight) nameField
@@ -182,7 +176,7 @@ Template(layout=Horizontal) languageEditor as Relative(width=100%, height=100%)
 		Link(title="Generate", format=languageEditorLogoStyle) generateLogo as Action Readonly
 
 Template(layout=Horizontal) languageExecutionLauncher
-	Link(title="") siteLauncher as OpenSite(site=empty, target=Blank)
+	Link(title=" ") siteLauncher as OpenSite(site=empty, target=Blank)
 
 	Dialog(title="Execution instructions") localDialog as Absolute(width=800px, height=600px)
         Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)

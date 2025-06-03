@@ -65,12 +65,13 @@ public class LanguageManager {
 		LanguageRelease release = new LanguageRelease(subjectStore.create(SubjectHelper.pathOf(language, version)));
 		release.version(version);
 		if (lastExecution != null) copyExecution(language, release, lastExecution);
-		else createExecution(language, release, LanguageExecution.Type.None);
+		else createExecution(language, release, null, LanguageExecution.Type.None);
 		return release;
 	}
 
-	public LanguageExecution createExecution(Language language, LanguageRelease release, LanguageExecution.Type type) {
+	public LanguageExecution createExecution(Language language, LanguageRelease release, String name, LanguageExecution.Type type) {
 		LanguageExecution result = new LanguageExecution(subjectStore.create(SubjectHelper.executionPathOf(language, release)));
+		result.name(name);
 		result.type(type);
 		return result;
 	}
@@ -275,7 +276,7 @@ public class LanguageManager {
 	}
 
 	private void copyExecution(Language language, LanguageRelease release, LanguageExecution execution) {
-		LanguageExecution result = createExecution(language, release, execution.type());
+		LanguageExecution result = createExecution(language, release, execution.name(), execution.type());
 		result.content(execution.content(LanguageExecution.Type.Local));
 		result.content(execution.content(LanguageExecution.Type.Remote));
 	}

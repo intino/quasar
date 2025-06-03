@@ -1,6 +1,8 @@
 package io.quassar.editor.box.languages;
 
+import io.intino.ls.IntinoDocumentService;
 import io.intino.ls.IntinoLanguageServer;
+import io.intino.ls.document.DocumentManager;
 import io.intino.ls.document.FileDocumentManager;
 import io.intino.ls.document.GitDocumentManager;
 import io.intino.tara.Language;
@@ -17,15 +19,22 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public class LanguageServerManager {
 	private final LanguageLoader languageLoader;
 	private final BiFunction<Model, String, URI> workspaceProvider;
 	private final Map<String, LanguageServer> servers = new HashMap<>();
+	private Consumer<Model> changeWorkspaceListener;
 
 	public LanguageServerManager(LanguageLoader languageLoader, BiFunction<Model, String, URI> workspaceProvider) {
 		this.languageLoader = languageLoader;
 		this.workspaceProvider = workspaceProvider;
+	}
+
+	public LanguageServerManager onChangeWorkspace(Consumer<Model> listener) {
+		this.changeWorkspaceListener = listener;
+		return this;
 	}
 
 	public LanguageServer create(Language language, URI workspaceRoot) throws IOException {
@@ -58,7 +67,7 @@ public class LanguageServerManager {
 	private LanguageServer create(Model model, String release) throws IOException {
 		Language language = languageLoader.get(model.language());
 		URI workspace = workspaceProvider.apply(model, release);
-		return create(language, workspace);
+		return withListeners(model, create(language, workspace));
 	}
 
 	private URL urlOf(String value) {
@@ -68,6 +77,11 @@ public class LanguageServerManager {
 		} catch (MalformedURLException | URISyntaxException e) {
 			return null;
 		}
+	}
+
+	private LanguageServer withListeners(Model model, LanguageServer server) {
+		((IntinoDocumentService)server.getTextDocumentService()).onChange(e -> changeWorkspaceListener.accept(model));
+		return server;
 	}
 
 }

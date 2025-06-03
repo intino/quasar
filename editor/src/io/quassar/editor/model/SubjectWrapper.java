@@ -46,6 +46,11 @@ public class SubjectWrapper {
 		subject.update().put(name, value);
 	}
 
+	protected void del(String name, String value) {
+		cache.remove(name);
+		subject.update().del(name, value);
+	}
+
 	protected void putList(String name, List<String> values) {
 		listCache.remove(name);
 		Subject.Updating updating = subject.update();

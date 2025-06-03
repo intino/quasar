@@ -132,6 +132,10 @@ public class PathHelper {
 		return modelPath(ModelPath, model, release, view, null, null);
 	}
 
+	public static String modelPath(Model model, String release, ModelView view, File file) {
+		return modelPath(ModelPath, model, release, view, file != null ? file.uri() : null, null);
+	}
+
 	public static String modelPath(Model model, String release, ModelView view, String file) {
 		return modelPath(ModelPath, model, release, view, file, null);
 	}
@@ -203,7 +207,7 @@ public class PathHelper {
 
 	private static final String ForgePath = "/forge/:model/:release";
 	public static String forgeUrl(Model model, String release, UISession session) {
-		return session.browser().baseUrl() + ForgePath.replace(":model", model.id()).replace(":release", release);
+		return session.browser().baseUrl() + ForgePath.replace(":model", model.id()).replace(":release", release != null && !release.equals(Model.DraftRelease) ? release : "1.0.0");
 	}
 
 	public static String forgePath(String address, String model, String release) {

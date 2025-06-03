@@ -20,7 +20,7 @@ public class ModelHelper {
 	}
 
 	public static boolean isM1Release(Model model, String release) {
-		return !model.isTemplate() && release != null && !release.equals(Model.DraftRelease) && !model.language().artifactId().equals(Language.Metta);
+		return !model.isTemplate() && release != null && !model.language().artifactId().equals(Language.Metta);
 	}
 
 	public static String label(Model model, String language, EditorBox box) {

@@ -56,8 +56,9 @@ public class LanguageExecutionLauncher extends AbstractLanguageExecutionLauncher
 	}
 
 	private void openSite(String site) {
-		siteLauncher.site(withParams(site));
-		siteLauncher.launch();
+		notifier.redirect(withParams(site));
+//		siteLauncher.site(withParams(site));
+//		siteLauncher.launch();
 	}
 
 	private void refreshLocalDialog() {

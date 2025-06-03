@@ -1,21 +1,18 @@
 package io.quassar.editor.box.ui.displays.templates;
 
 import io.intino.alexandria.ui.displays.UserMessage;
-import io.intino.alexandria.ui.server.UIFile;
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.box.commands.Command.CommandResult;
 import io.quassar.editor.box.commands.LanguageCommands;
 import io.quassar.editor.box.commands.ModelCommands;
+import io.quassar.editor.box.ui.displays.HelpEditor;
 import io.quassar.editor.box.ui.types.LanguageTab;
-import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
 
-import java.io.File;
 import java.util.function.Consumer;
 
 public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> {
@@ -45,40 +42,33 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 		createVersion.onExecute(e -> createVersion());
 		createTemplate.onExecute(e -> createTemplate());
 		modelsCatalog.onCreateModel(e -> createModel());
+		helpDialog.onOpen(e -> refreshHelpDialog());
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
-		selectVersionBlock.visible(release == null);
+		boolean hasCommits = hasCommits();
+		selectVersionBlock.visible(release == null && language != null);
 		versionBlock.visible(release != null && release() != null);
-		versionNotCreatedBlock.visible(release != null && release() == null);
+		versionNotCreatedBlock.visible(release != null && release() == null && hasCommits);
+		refreshNoVersionsBlock(hasCommits);
 		if (!versionBlock.isVisible()) return;
-		refreshMetamodel();
-		refreshDownloads();
-		refreshMavenDependencies();
 		refreshTemplate();
 		refreshExamples();
 	}
 
-	private void refreshMetamodel() {
+	private boolean hasCommits() {
+		if (language == null) return false;
 		Model metamodel = box().modelManager().get(language.metamodel());
-		metamodelLink.title(ModelHelper.label(metamodel, language(), box()));
-		metamodelLink.site(PathHelper.modelUrl(metamodel, release, session()));
+		return metamodel != null && !metamodel.releases().isEmpty();
 	}
 
-	private void refreshDownloads() {
-		File graphFile = box().languageManager().loadGraph(language, release());
-		downloadsBlock.visible(graphFile != null);
-		if (!downloadsBlock.isVisible()) return;
-		downloads.clear();
-		fill(graphFile, downloads.add());
-		//box().languageManager().loadReaders(language, release()).forEach(r -> fill(r, downloads.add()));
-	}
-
-	private void refreshMavenDependencies() {
-		dependencies.clear();
-		box().languageManager().loadReaders(language, release()).forEach(r -> fill(r, dependencies.add()));
+	private void refreshNoVersionsBlock(boolean hasCommits) {
+		noVersionsBlock.visible(language != null && !hasCommits);
+		if (!noVersionsBlock.isVisible()) return;
+		Model metamodel = box().modelManager().get(language.metamodel());
+		metamodelLink.site(PathHelper.modelUrl(metamodel, session()));
 	}
 
 	private void refreshTemplate() {
@@ -98,20 +88,6 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 		modelsCatalog.release(release());
 		modelsCatalog.tab(LanguageTab.Examples);
 		modelsCatalog.refresh();
-	}
-
-	private void fill(File file, DownloadTemplate display) {
-		display.language(language);
-		display.release(release);
-		display.file(file);
-		display.refresh();
-	}
-
-	private void fill(File file, DependencyTemplate display) {
-		display.language(language);
-		display.release(release);
-		display.file(file);
-		display.refresh();
 	}
 
 	private void createVersion() {
@@ -135,6 +111,16 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 		Model result = box().commands(ModelCommands.class).createExample(language, release(), username());
 		refreshExamples();
 		return result;
+	}
+
+	private void refreshHelpDialog() {
+		helpDialog.title(translate("Edit help for %s release").formatted(release));
+		helpEditor.clear();
+		HelpEditor display = new HelpEditor(box());
+		helpEditor.display(display);
+		display.language(language);
+		display.release(release);
+		display.refresh();
 	}
 
 }

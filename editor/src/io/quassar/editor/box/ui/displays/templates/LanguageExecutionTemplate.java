@@ -6,12 +6,16 @@ import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command.CommandResult;
 import io.quassar.editor.box.commands.LanguageCommands;
 import io.quassar.editor.box.util.Formatters;
+import io.quassar.editor.box.util.LanguageHelper;
+import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageExecution;
 import io.quassar.editor.model.LanguageExecution.Type;
 import io.quassar.editor.model.LanguageRelease;
+import io.quassar.editor.model.Model;
 import org.apache.commons.io.IOUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -43,6 +47,7 @@ public class LanguageExecutionTemplate extends AbstractLanguageExecutionTemplate
 	public void init() {
 		super.init();
 		createVersion.onExecute(e -> createVersion());
+		nameField.onChange(e -> saveName());
 		executionSelector.onSelect(e -> saveType());
 		localEnvironmentBlock.onInit(e -> initLocalEnvironmentBlock());
 		localEnvironmentBlock.onShow(e -> refreshLocalEnvironmentBlock());
@@ -53,14 +58,65 @@ public class LanguageExecutionTemplate extends AbstractLanguageExecutionTemplate
 	@Override
 	public void refresh() {
 		super.refresh();
-		LanguageRelease languageRelease = language.release(release);
-		selectVersionBlock.visible(release == null);
-		versionBlock.visible(release != null && languageRelease != null);
-		versionNotCreatedBlock.visible(release != null && languageRelease == null);
-		if (languageRelease == null) return;
+		boolean hasCommits = hasCommits();
+		selectVersionBlock.visible(release == null && language != null);
+		versionBlock.visible(release != null && release() != null);
+		versionNotCreatedBlock.visible(release != null && release() == null && hasCommits);
+		refreshNoVersionsBlock(hasCommits);
+		if (!versionBlock.isVisible()) return;
 		LanguageExecution execution = execution();
-		if (execution == null) execution = box().commands(LanguageCommands.class).createExecution(language, release, Type.None, username());
+		nameField.value(execution != null ? execution.name() : null);
+		refreshDownloads();
+		refreshMavenDependencies();
+		refreshExecutionEnvironment();
+	}
+
+	private boolean hasCommits() {
+		if (language == null) return false;
+		Model metamodel = box().modelManager().get(language.metamodel());
+		return metamodel != null && !metamodel.releases().isEmpty();
+	}
+
+	private void refreshNoVersionsBlock(boolean hasCommits) {
+		noVersionsBlock.visible(language != null && !hasCommits);
+		if (!noVersionsBlock.isVisible()) return;
+		Model metamodel = box().modelManager().get(language.metamodel());
+		metamodelLink.site(PathHelper.modelUrl(metamodel, session()));
+	}
+
+	private void refreshDownloads() {
+		File graphFile = box().languageManager().loadGraph(language, release());
+		//downloadsBlock.visible(graphFile != null);
+		downloadsBlock.visible(false);
+		if (!downloadsBlock.isVisible()) return;
+		downloads.clear();
+		fill(graphFile, downloads.add());
+		//box().languageManager().loadReaders(language, release()).forEach(r -> fill(r, downloads.add()));
+	}
+
+	private void refreshMavenDependencies() {
+		dependencies.clear();
+		box().languageManager().loadReaders(language, release()).forEach(r -> fill(r, dependencies.add()));
+	}
+
+	private void refreshExecutionEnvironment() {
+		LanguageExecution execution = execution();
+		if (execution == null) execution = box().commands(LanguageCommands.class).createExecution(language, release, nameField.value(), Type.None, username());
 		executionSelector.select(execution.type().name().toLowerCase() + "Option");
+	}
+
+	private void fill(File file, DownloadTemplate display) {
+		display.language(language);
+		display.release(release);
+		display.file(file);
+		display.refresh();
+	}
+
+	private void fill(File file, DependencyTemplate display) {
+		display.language(language);
+		display.release(release);
+		display.file(file);
+		display.refresh();
 	}
 
 	private void createVersion() {
@@ -71,10 +127,15 @@ public class LanguageExecutionTemplate extends AbstractLanguageExecutionTemplate
 		hideUserNotification();
 	}
 
+	private void saveName() {
+		LanguageExecution execution = execution();
+		box().commands(LanguageCommands.class).saveExecution(language, release, nameField.value(), execution != null ? execution.type() : Type.None, execution != null ? execution.content(execution.type()) : "", username());
+	}
+
 	private void saveType() {
 		Type selected = selectedExecution();
 		LanguageExecution execution = execution();
-		box().commands(LanguageCommands.class).saveExecution(language, release, selected, execution != null ? execution.content(selected) : "", username());
+		box().commands(LanguageCommands.class).saveExecution(language, release, execution != null ? execution.name() : null, selected, execution != null ? execution.content(selected) : "", username());
 	}
 
 	private Type selectedExecution() {
@@ -129,12 +190,16 @@ public class LanguageExecutionTemplate extends AbstractLanguageExecutionTemplate
 	}
 
 	private void saveRemoteConfiguration(String content) {
-		box().commands(LanguageCommands.class).saveExecution(language, release, Type.Remote, content, username());
+		LanguageExecution execution = execution();
+		String name = execution != null ? execution.name() : null;
+		box().commands(LanguageCommands.class).saveExecution(language, release, name, Type.Remote, content, username());
 		remoteField.error(errorMessage(content));
 	}
 
 	private void saveLocalConfiguration(String content) {
-		box().commands(LanguageCommands.class).saveExecution(language, release, Type.Local, content, username());
+		LanguageExecution execution = execution();
+		String name = execution != null ? execution.name() : null;
+		box().commands(LanguageCommands.class).saveExecution(language, release, name, Type.Local, content, username());
 		localField.error(errorMessage(content));
 	}
 
@@ -151,6 +216,10 @@ public class LanguageExecutionTemplate extends AbstractLanguageExecutionTemplate
 		String data = content != null ? content.toLowerCase() : "";
 		if (!data.contains("[commit]") && !data.contains("[commit-url]")) return translate("Invalid command. Make sure it includes [commit] or [commit-url] placeholder.");
 		return null;
+	}
+
+	private LanguageRelease release() {
+		return language.release(release);
 	}
 
 }

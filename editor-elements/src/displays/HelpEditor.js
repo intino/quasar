@@ -6,6 +6,7 @@ import HelpEditorRequester from "../../gen/displays/requesters/HelpEditorRequest
 import DisplayFactory from 'alexandria-ui-elements/src/displays/DisplayFactory';
 import { withSnackbar } from 'notistack';
 import Editor from 'react-simple-wysiwyg';
+import Theme from 'app-elements/gen/Theme';
 
 const styles = theme => ({});
 
@@ -22,7 +23,7 @@ class HelpEditor extends AbstractHelpEditor {
 	};
 
 	render() {
-	     return (<Editor containerProps={{ style: { resize: 'vertical' } }} value={this.state.content} onChange={this.handleChange.bind(this)} />);
+	     return (<Editor containerProps={{ style: { resize: 'vertical' } }} value={this.content()} onChange={this.handleChange.bind(this)} />);
 	};
 
 	refresh = (content) => {
@@ -33,6 +34,18 @@ class HelpEditor extends AbstractHelpEditor {
 	    this.setState({content: e.target.value});
 	    this.requester.update(e.target.value);
 	};
+
+    content = () => {
+        const result = this.state.content;
+        const isDark = Theme.get().isDark();
+        const content = "<div class='help'>" + result + "</div>";
+        return isDark ? this.addDark(content) : content;
+    };
+
+    addDark = (content) => {
+        return "<div class='dark'>" + content + "</div>";
+    };
+
 }
 
 export default withStyles(styles, { withTheme: true })(withSnackbar(HelpEditor));

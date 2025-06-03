@@ -5,6 +5,7 @@ import io.intino.alexandria.ui.displays.events.SelectionEvent;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.ui.datasources.CollaboratorsDatasource;
 import io.quassar.editor.box.ui.displays.items.CollaboratorSelectorItem;
+import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.Model;
 import io.quassar.editor.model.User;
 

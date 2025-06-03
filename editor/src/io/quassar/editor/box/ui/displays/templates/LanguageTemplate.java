@@ -74,7 +74,7 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 		helpTitle.value(translate(title(LanguageView.Help)).formatted(LanguageHelper.title(GavCoordinates.fromString(language, release))));
 		helpLogo.value(LanguageHelper.logo(language, box()));
 		String content = box().languageManager().loadHelp(language, release);
-		helpStamp.content(content);
+		helpStamp.content("<div class='help'>" + content + "</div>");
 		helpStamp.refresh();
 	}
 

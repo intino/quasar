@@ -1,5 +1,6 @@
 package io.quassar.editor.box.ui.displays.templates;
 
+import com.sun.net.httpserver.Authenticator;
 import io.intino.alexandria.MimeTypes;
 import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.displays.events.SelectionEvent;
@@ -17,6 +18,7 @@ import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.PathHelper;
+import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
@@ -82,11 +84,30 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		initBrowsers();
 		initFileEditor();
 		initFileModifiedDialog();
-		//tabSelector.onSelect(this::updateSelectedBlock);
+		initSettings();
+		tabSelector.onSelect(e -> hideFooterBlocks());
+		footerSelector.onSelect(e -> hideMainBlocks());
 		helpDialog.onClose(e -> notifier.dispatch(PathHelper.modelPath(model, release)));
 		helpDialog.onOpen(e -> refreshHelpDialog());
 		console.onClose(e -> consoleBlock.hide());
-		infoTrigger.onExecute(e -> headerStamp.openInfo());
+	}
+
+	private void initSettings() {
+		infoTrigger.onExecute(e -> openSettings());
+		settingsBlock.onInit(e -> initSettingsBlock());
+		settingsBlock.onShow(e -> refreshSettingsBlock());
+	}
+
+	private void initSettingsBlock() {
+		settingsStamp.onSaveTitle(e -> refreshHeader());
+		settingsStamp.onClone(e -> cloneModel());
+		settingsStamp.onUpdateLanguageVersion(e -> updateLanguageVersion());
+	}
+
+	private void refreshSettingsBlock() {
+		settingsStamp.model(model);
+		settingsStamp.release(release);
+		settingsStamp.refresh();
 	}
 
 	@Override
@@ -100,10 +121,16 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 
 	private void refreshContent() {
 		tabSelector.address(path -> PathHelper.modelViewPath(path, model, release));
+		footerSelector.address(path -> PathHelper.modelViewPath(path, model, release));
+		footerSelector.readonly(!PermissionsHelper.canEditSettings(model, release, session(), box()));
 		contentBlock.visible(model != null && modelContainer != null);
+		modelEditionBlock.visible(selectedView != ModelView.Settings);
 		if (!contentBlock.isVisible()) return;
 		if (selectedFile != null) tabSelector.select(selectedFile.isResource() ? "resources" : "model");
-		else if (selectedView != null) tabSelector.select(selectedView.name().toLowerCase());
+		else if (selectedView != null) {
+			if (selectedView == ModelView.Settings) footerSelector.select("settings");
+			else tabSelector.select(selectedView.name().toLowerCase());
+		}
 		else if (tabSelector.selection().isEmpty()) tabSelector.select("model");
 		else tabSelector.select(tabSelector.selection().getFirst());
 		refreshFile();
@@ -113,7 +140,6 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		headerStamp.onCheck(m -> check());
 		headerStamp.onClone(m -> cloneModel());
 		headerStamp.onDeploy((m, e) -> updateConsole(e));
-		headerStamp.onUpdateLanguageVersion(m -> notifier.redirect(PathHelper.modelUrl(model, release, selectedView, selectedFile, selectedPosition, session())));
 	}
 
 	private void initBrowsers() {
@@ -211,11 +237,13 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		selectedFileIsModified = false;
 		if (openNewFile) open(selectedNewFile);
 		else refreshFileEditorToolbar();
+		headerStamp.checked(false);
 	}
 
 	private void refreshHeader() {
 		headerStamp.model(model);
 		headerStamp.release(release);
+		headerStamp.view(selectedView);
 		headerStamp.file(selectedFile);
 		headerStamp.refresh();
 	}
@@ -323,25 +351,27 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		if (file != null) open(file);
 	}
 
-	private void check() {
+	private boolean check() {
 		notifyUser(translate("Checking model..."), UserMessage.Type.Loading);
 		Command.CommandResult result = box().commands(ModelCommands.class).check(model, username());
+		headerStamp.checked(result.success());
 		updateConsole(result);
 		if (result.success()) notifyUser("Model checked successfully", UserMessage.Type.Success);
 		else hideUserNotification();
+		return result.success();
 	}
 
 	private void cloneModel() {
 		notifyUser(translate("Cloning model..."), UserMessage.Type.Loading);
 		Model newModel = box().commands(ModelCommands.class).clone(model, release, ModelHelper.proposeName(), username());
 		notifier.dispatch(PathHelper.modelPath(newModel));
-		hideUserNotification();
+		notifyUser(translate("Model cloned"), UserMessage.Type.Success);
 	}
 
 	private void refreshHelpDialog() {
 		String help = box().languageManager().loadHelp(model.language());
 		helpDialog.title("%s help".formatted(LanguageHelper.title(model.language())));
-		helpStamp.content(help);
+		helpStamp.content("<div class='help'>" + help + "</div>");
 		helpStamp.refresh();
 	}
 
@@ -368,6 +398,27 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		if (selectedView == null || selectedView == ModelView.Model) modelBrowserStamp.selection(uri);
 		else resourcesBrowserStamp.selection(uri);
 		return selectedFile;
+	}
+
+	private void openSettings() {
+		tabSelector.selection(Collections.emptyList());
+		footerSelector.select("settings");
+	}
+
+	private void updateLanguageVersion() {
+		notifier.redirect(PathHelper.modelUrl(model, release, selectedView, selectedFile, selectedPosition, session()));
+	}
+
+	private void hideMainBlocks() {
+		tabSelector.selection(Collections.emptyList());
+		modelEditionBlock.hide();
+		intinoDslEditor.clear();
+	}
+
+	private void hideFooterBlocks() {
+		modelEditionBlock.show();
+		footerSelector.selection(Collections.emptyList());
+		settingsBlock.hide();
 	}
 
 }

@@ -1,12 +1,20 @@
 package io.quassar.editor.box.ui.displays.templates;
 
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.models.File;
 import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.box.util.SessionHelper;
+import io.quassar.editor.box.util.WorkspaceHelper;
 import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.Model;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static io.quassar.editor.box.models.File.ResourcesDirectory;
 
 public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	private Model model;
@@ -51,18 +59,33 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
-		notFoundBlock.visible(!PermissionsHelper.hasPermissions(model, session()));
+		notFoundBlock.visible(!PermissionsHelper.hasPermissions(model, session(), box()));
 		refreshContent();
 	}
 
 	private void refreshContent() {
-		contentBlock.visible(PermissionsHelper.hasPermissions(model, session()));
+		contentBlock.visible(PermissionsHelper.hasPermissions(model, session(), box()));
 		if (!contentBlock.isVisible()) return;
 		modelEditor.model(model, release);
-		modelEditor.view(selectedView);
-		modelEditor.file(selectedFile, selectedPosition);
+		modelEditor.view(view());
+		modelEditor.file(file(), selectedPosition);
 		modelEditor.showHelp(showHelp);
 		modelEditor.refresh();
+	}
+
+	private ModelView view() {
+		if (selectedView == ModelView.Settings) return PermissionsHelper.canEditSettings(model, release, session(), box()) ? selectedView : ModelView.Model;
+		return selectedView;
+	}
+
+	private File file() {
+		if (selectedView == ModelView.Settings) return null;
+		if (selectedFile != null && modelContainer.exists(selectedFile)) return selectedFile;
+		if (modelContainer == null) return null;
+		List<File> files = selectedView == null || selectedView == ModelView.Model ?
+				modelContainer.modelFiles().stream().sorted(Comparator.comparing(File::name)).toList() :
+				modelContainer.resourceFiles().stream().filter(f -> !f.uri().equals(ResourcesDirectory)).sorted(Comparator.comparing(File::name)).toList();
+		return !files.isEmpty() ? files.getFirst() : null;
 	}
 
 }

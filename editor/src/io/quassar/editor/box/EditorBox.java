@@ -10,6 +10,7 @@ import io.intino.builderservice.schemas.RegisterBuilder;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.commands.Commands;
 import io.quassar.editor.box.commands.CommandsFactory;
+import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.languages.LanguageLoader;
 import io.quassar.editor.box.languages.LanguageManager;
 import io.quassar.editor.box.languages.LanguageServerManager;
@@ -17,9 +18,13 @@ import io.quassar.editor.box.languages.LanguageServerWebSocketHandler;
 import io.quassar.editor.box.languages.artifactories.LocalLanguageArtifactory;
 import io.quassar.editor.box.models.ModelManager;
 import io.quassar.editor.box.projects.ProjectManager;
+import io.quassar.editor.box.ui.displays.templates.HomeTemplate;
+import io.quassar.editor.box.ui.displays.templates.ModelHeaderTemplate;
+import io.quassar.editor.box.ui.displays.templates.ModelTemplate;
 import io.quassar.editor.box.users.UserManager;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
+import io.quassar.editor.model.User;
 import io.quassar.editor.model.Utilities;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -30,9 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class EditorBox extends AbstractBox {
 	private final Archetype archetype;
@@ -76,7 +79,7 @@ public class EditorBox extends AbstractBox {
 		commandsFactory = new CommandsFactory(this);
 		languageLoader = new LanguageLoader(new LocalLanguageArtifactory(archetype, this::modelWithLanguage));
 		languageManager = new LanguageManager(archetype, subjectStore);
-		serverManager = new LanguageServerManager(languageLoader, this::workSpaceOf);
+		serverManager = new LanguageServerManager(languageLoader, this::workSpaceOf).onChangeWorkspace(m -> notifyChangeWorkspace(m));
 		modelManager = new ModelManager(archetype, subjectStore, l -> languageManager.get(l), serverManager);
 		userManager = new UserManager(archetype, subjectStore);
 		projectManager = new ProjectManager(archetype);
@@ -178,6 +181,10 @@ public class EditorBox extends AbstractBox {
 		} catch (InternalServerError e) {
 			Logger.error(e);
 		}
+	}
+
+	private void notifyChangeWorkspace(Model model) {
+		souls().stream().filter(Objects::nonNull).map(s -> s.displays(ModelHeaderTemplate.class)).flatMap(Collection::stream).filter(t -> t.model().id().equals(model.id())).forEach(h -> h.checked(false));
 	}
 
 }

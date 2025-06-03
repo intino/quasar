@@ -1,12 +1,9 @@
 package io.quassar.editor.box.util;
 
-import io.intino.alexandria.Scale;
-import io.intino.alexandria.Timetag;
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.models.File;
 import io.quassar.editor.box.models.Workspace;
-import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.lsp4j.FileCreate;
@@ -20,10 +17,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;

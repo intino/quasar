@@ -111,7 +111,7 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 	public void openFile(File file, FilePosition position) {
 		selectedFile = file;
 		selectedPosition = position;
-		notifier.refreshReadonly(!PermissionsHelper.canEdit(model, release, session()));
+		notifier.refreshReadonly(!PermissionsHelper.canEdit(model, release, session(), box()));
 		notifier.refreshFile(fileOf(file).position(positionOf(position)));
 	}
 
@@ -131,7 +131,7 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 		result.dslName(model.language().artifactId());
 		result.modelName(model.name());
 		result.modelRelease(release);
-		result.readonly(!PermissionsHelper.canEdit(model, release, session()));
+		result.readonly(!PermissionsHelper.canEdit(model, release, session(), box()));
 		result.fileAddress(PathHelper.modelPath(model, release, view, ":file"));
 		result.files(files.stream().map(this::fileOf).toList());
 		return result;

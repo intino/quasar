@@ -5,6 +5,7 @@ import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.box.commands.language.RemoveLanguageCommand;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
 
 public class RemoveModelCommand extends Command<Boolean> {
@@ -18,6 +19,7 @@ public class RemoveModelCommand extends Command<Boolean> {
 	public Boolean execute() {
 		Language language = box.languageManager().get(model);
 		if (language != null && ModelHelper.isMetamodel(model, box)) removeLanguage(language);
+		unlinkModel();
 		removeModel();
 		return true;
 	}
@@ -27,6 +29,14 @@ public class RemoveModelCommand extends Command<Boolean> {
 		command.author = author;
 		command.language = language;
 		command.execute();
+	}
+
+	private void unlinkModel() {
+		if (!model.isExample()) return;
+		Language language = box.languageManager().get(model);
+		LanguageRelease release = language.release(model.language().version());
+		if (release == null) return;
+		release.removeExample(model.id());
 	}
 
 	private void removeModel() {

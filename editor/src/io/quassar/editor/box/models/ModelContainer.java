@@ -33,4 +33,8 @@ public class ModelContainer {
 		return File.isResource(uri) ? new ResourcesReader(workspace).get(uri) : new ModelReader(workspace, server).get(uri);
 	}
 
+	public boolean exists(File file) {
+		return file.isResource() ? new ResourcesReader(workspace).exists(file) : new ModelReader(workspace, server).exists(file);
+	}
+
 }

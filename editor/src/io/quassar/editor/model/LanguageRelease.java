@@ -48,6 +48,10 @@ public class LanguageRelease extends SubjectWrapper {
 		put("example", example);
 	}
 
+	public void removeExample(String example) {
+		del("example", example);
+	}
+
 	public LanguageExecution execution() {
 		Stream<Subject> result = subject.children().collect().stream().filter(s -> s.is(SubjectHelper.LanguageExecutionType));
 		return result.findFirst().map(this::executionOf).orElse(null);

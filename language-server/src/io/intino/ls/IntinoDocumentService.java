@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 import static io.intino.ls.codeinsight.completion.CompletionService.completionContextOf;
 import static java.util.concurrent.CompletableFuture.completedFuture;
@@ -45,6 +46,7 @@ public class IntinoDocumentService implements TextDocumentService {
 	private final AtomicReference<LanguageClient> client;
 	private final ParsingService parsingService;
 	private final CompletionService completionService;
+	private Consumer<URI> changeListener;
 
 	public IntinoDocumentService(Language language, DocumentManager documentManager, DiagnosticService diagnosticService, Map<URI, ModelUnit> models, AtomicReference<LanguageClient> client) {
 		this.language = language;
@@ -57,6 +59,10 @@ public class IntinoDocumentService implements TextDocumentService {
 		this.models = models;
 		this.client = client;
 		loadModels();
+	}
+
+	public void onChange(Consumer<URI> listener) {
+		this.changeListener = listener;
 	}
 
 	private void loadModels() {
@@ -78,7 +84,6 @@ public class IntinoDocumentService implements TextDocumentService {
 		URI uri = URI.create(normalize(params.getTextDocument().getUri()));
 		parsingService.updateModel(new StringSource(uri.getPath(), params.getTextDocument().getText()));
 		notifyDiagnostics(uri, params.getTextDocument().getVersion());
-
 	}
 
 	@Override
@@ -87,10 +92,11 @@ public class IntinoDocumentService implements TextDocumentService {
 			URI uri = URI.create(normalize(params.getTextDocument().getUri()));
 			InputStream doc = workspaceManager.getDocumentText(uri);
 			String content = applyChanges(doc != null ? new String(doc.readAllBytes()) : "", params.getContentChanges());
-			if (content == null || content.isEmpty()) content = "dsl " + language.languageName() + "\n\n";
+			if (content.isEmpty()) content = "dsl " + language.languageName() + "\n\n";
 			workspaceManager.upsertDocument(uri, language.languageName(), content == null ? "" : content);
 			parsingService.updateModel(new StringSource(uri.getPath(), content));
 			notifyDiagnostics(uri, params.getTextDocument().getVersion());
+			if (changeListener != null) changeListener.accept(uri);
 		} catch (Throwable e) {
 			Logger.error(e);
 		}

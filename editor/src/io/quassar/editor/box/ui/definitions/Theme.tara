@@ -78,6 +78,7 @@ Format("padding:'5px'") middleSpaced
 Format("paddingLeft:'10px'") leftSpaced
 Format("paddingTop:'20px'") doubleTopSpaced
 Format("paddingLeft:'20px'") doubleLeftSpaced
+Format("paddingLeft:'6px'") settingsTab
 Format("paddingBottom:'1px'") verySmallBottomSpaced
 Format("paddingRight:'10px'") rightSpaced
 Format("paddingRight:'20px'") doubleRightSpaced
@@ -198,6 +199,7 @@ Format("boxShadow:'rgba(215, 69, 69, 0.4) 0px 5px, rgba(215, 69, 69, 0.3) 0px 10
 Format("background:'#333'") mainBackground
 Format("background:'#efefef'", darkContent="background:'#404348'") greyLightBackground
 Format("background:'#aaa'") greyHardBackground
+Format("color:'#a3a3a3',background:'#dcdcdc'") disabledButton
 Format("color:'#777'") grey
 Format("color:'white'") white
 Format("bottom:'-10px',textAlign:'center',width:'100%',color:'red',marginLeft:'10px'") loginError

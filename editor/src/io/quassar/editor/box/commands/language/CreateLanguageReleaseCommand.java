@@ -47,6 +47,7 @@ public class CreateLanguageReleaseCommand extends Command<CommandResult> {
 		LanguageRelease previousRelease = language.lastRelease();
 		LanguageRelease release = box.languageManager().createRelease(language, version);
 		createHelp(language, release, previousRelease);
+		copyExamples(language, release, previousRelease);
 		Model template = createTemplate(language, release, previousRelease);
 		release.template(template.id());
 		return resultOf(result);
@@ -123,11 +124,25 @@ public class CreateLanguageReleaseCommand extends Command<CommandResult> {
 		}
 	}
 
-	private Model createTemplate(Language language, LanguageRelease release, LanguageRelease previousRelease) {
-		return previousRelease != null ? cloneTemplate(language, release, previousRelease) : createEmptyTemplate(language, release);
+	private void copyExamples(Language language, LanguageRelease release, LanguageRelease previousRelease) {
+		if (previousRelease == null) return;
+		previousRelease.examples().forEach(e -> copyExample(language, release, e));
 	}
 
-	private Model cloneTemplate(Language language, LanguageRelease release, LanguageRelease previousRelease) {
+	private void copyExample(Language language, LanguageRelease release, String example) {
+		Model model = box.modelManager().get(example);
+		Model copy = box.modelManager().clone(model, Model.DraftRelease, ShortIdGenerator.generate(), model.name(), author);
+		copy.language(GavCoordinates.fromString(language, release));
+		copy.title(model.title());
+		copy.usage(Model.Usage.Example);
+		release.addExample(copy.id());
+	}
+
+	private Model createTemplate(Language language, LanguageRelease release, LanguageRelease previousRelease) {
+		return previousRelease != null ? copyTemplate(language, release, previousRelease) : createEmptyTemplate(language, release);
+	}
+
+	private Model copyTemplate(Language language, LanguageRelease release, LanguageRelease previousRelease) {
 		Model model = box.modelManager().getTemplate(language, previousRelease);
 		Model clone = box.modelManager().clone(model, Model.DraftRelease, ShortIdGenerator.generate(), ModelHelper.proposeName(), author);
 		clone.language(GavCoordinates.fromString(language, release));

@@ -115,7 +115,7 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 		browser.operations(operations());
 		browser.selection(file != null ? IntinoFileBrowserHelper.itemOf(file) : null);
 		browser.refresh();
-		addFileField.readonly(!PermissionsHelper.canEdit(model, release, session()));
+		addFileField.readonly(!PermissionsHelper.canEdit(model, release, session(), box()));
 	}
 
 	private void createBrowser() {
@@ -135,10 +135,10 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 	private List<IntinoFileBrowserOperation> operations() {
 		if (model == null) return Collections.emptyList();
 		return List.of(
-			new IntinoFileBrowserOperation().name("Add file...").shortcut(new IntinoFileBrowserOperationShortcut().ctrlKey(true).key("N")).enabled(PermissionsHelper.canEdit(model, release, session())),
-			new IntinoFileBrowserOperation().name("Add folder...").shortcut(new IntinoFileBrowserOperationShortcut().shiftKey(true).ctrlKey(true).key("N")).enabled(PermissionsHelper.canEdit(model, release, session())),
-			new IntinoFileBrowserOperation().name("Rename...").shortcut(new IntinoFileBrowserOperationShortcut().ctrlKey(true).key("R")).enabled(file != null && PermissionsHelper.canEdit(model, release, session())),
-			new IntinoFileBrowserOperation().name("Remove").shortcut(new IntinoFileBrowserOperationShortcut().ctrlKey(true).key("Backspace")).enabled(file != null && PermissionsHelper.canEdit(model, release, session()))
+			new IntinoFileBrowserOperation().name("Add file...").shortcut(new IntinoFileBrowserOperationShortcut().ctrlKey(true).key("N")).enabled(PermissionsHelper.canEdit(model, release, session(), box())),
+			new IntinoFileBrowserOperation().name("Add folder...").shortcut(new IntinoFileBrowserOperationShortcut().shiftKey(true).ctrlKey(true).key("N")).enabled(PermissionsHelper.canEdit(model, release, session(), box())),
+			new IntinoFileBrowserOperation().name("Rename...").shortcut(new IntinoFileBrowserOperationShortcut().ctrlKey(true).key("R")).enabled(file != null && PermissionsHelper.canEdit(model, release, session(), box())),
+			new IntinoFileBrowserOperation().name("Remove").shortcut(new IntinoFileBrowserOperationShortcut().ctrlKey(true).key("Backspace")).enabled(file != null && PermissionsHelper.canEdit(model, release, session(), box()))
 		);
 	}
 

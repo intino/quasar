@@ -69,7 +69,6 @@ public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
 		if (!check()) return;
 		dialog.close();
 		CommandResult result = createRelease();
-		hideUserNotification();
 		if (!result.success()) commitFailureListener.accept(model, result);
 		else commitListener.accept(model, version());
 	}
@@ -77,11 +76,13 @@ public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
 	private CommandResult createRelease() {
 		notifyUser(translate("Committing..."), UserMessage.Type.Loading);
 		CommandResult result = box().commands(ModelCommands.class).createRelease(model, version(), username());
-		if (!result.success()) commitFailureListener.accept(model, result);
+		if (!result.success()) {
+			hideUserNotification();
+			commitFailureListener.accept(model, result);
+		}
 		else {
 			createReleaseListener.accept(model, result);
 			openFinishDialog();
-			hideUserNotification();
 		}
 		return result;
 	}
@@ -107,10 +108,7 @@ public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
 	}
 
 	private void openFinishDialog() {
-		ModelRelease release = model.lastRelease();
-		boolean isM1 = ModelHelper.isM1Release(model, release);
-		if (isM1) openExecutionDialog(release);
-		else openDownloadModel(release);
+		notifyUser(translate("Your changes have been saved and are now part of the current release"), UserMessage.Type.Success);
 	}
 
 	private void openExecutionDialog(ModelRelease release) {

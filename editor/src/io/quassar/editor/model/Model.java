@@ -136,7 +136,6 @@ public class Model extends SubjectWrapper {
 	}
 
 	public boolean isPrivate() {
-
 		return visibility() == Visibility.Private;
 	}
 
