@@ -1,5 +1,5 @@
 def.file
-/Users/oroncal/workspace/infrastructure/quassar/temp/builder-service/workspace/picota/src/DigitalTwin.tara#true
+/Users/oroncal/workspace/infrastructure/quassar/temp/builder-service/workspace/picota-m2/src/model.tara#true
 
 project
 picota

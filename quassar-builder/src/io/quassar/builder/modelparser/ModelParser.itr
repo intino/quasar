@@ -1,4 +1,4 @@
-rule type(modelreader)
+rule type(modelparser)
 	package $package;
 
     import $package.$outDsl+firstUpperCase~Graph;
@@ -20,28 +20,31 @@ rule type(modelreader)
     import java.util.zip.ZipEntry;
     import java.util.zip.ZipInputStream;
 
-    public class ModelReader {
-    	public static $outDsl+firstUpperCase~Graph loadFromURL(URL url, String authToken) throws IOException, URISyntaxException {
+    public class ModelParser {
+    	public static Model loadFromURL(URL url, String authToken) throws IOException, URISyntaxException {
 			Path zip = Files.createTempFile("_picota", ".zip");
 			authorizedDownload(url, authToken, zip);
 			return loadFromZip(zip.toFile());
 		}
 
-    	public static $outDsl+firstUpperCase~Graph loadFromURL(URL url) throws IOException {
+    	public static Model loadFromURL(URL url) throws IOException {
         	Path zip = Files.createTempFile("_picota", ".zip");
 			Files.write(zip, url.openStream().readAllBytes());
 			return loadFromZip(zip.toFile());
 		}
 
-    	public static $outDsl+firstUpperCase~Graph loadFromZip(File $outDsl~File) throws IOException {
+		public record Model($outDsl+firstUpperCase~Graph graph, String metadata){}
+
+    	public static Model loadFromZip(File $outDsl~File) throws IOException {
 			Path dir = unzip($outDsl~File);
 			try (Stream<Path> files = Files.walk(dir)) {
-				return load(files
+				$outDsl+firstUpperCase~Graph graph = load(files
 						.filter(Files::isRegularFile)
 						.filter(path -> !path.getFileName().toString().startsWith("."))
 						.filter(path -> path.getFileName().toString().endsWith(".tara"))
 						.map(Path::toFile)
 						.toList());
+				return new Model(graph, readManifest(new File(dir.toFile(), "manifest.json")));
 			}
     	}
 
@@ -67,6 +70,14 @@ rule type(modelreader)
 				if (response.statusCode() != 200) throw new RuntimeException("Error HTTP: " + response.statusCode());
 			} catch (InterruptedException e) {
 				throw new RuntimeException(e);
+			}
+		}
+
+		private static String readManifest(File manifest) {
+			try {
+				return manifest.exists() ? Files.readString(manifest.toPath()) : null;
+			} catch (IOException e) {
+				return null;
 			}
 		}
 

@@ -32,7 +32,7 @@ public class BuilderRunnerUseCaseTest {
 	@Test
 	@Ignore
 	public void should_run_quassar_builder_with_picota_m2() {
-		QuassarcRunner.main(new String[]{"/Users/oroncal/workspace/infrastructure/quassar/temp/builder-service/workspace/garaxia/tara_args.txt"});
+		QuassarcRunner.main(new String[]{"/Users/oroncal/workspace/infrastructure/quassar/quassar-builder/test-res/picota-m2.txt"});
 	}
 
 	@Test

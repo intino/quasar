@@ -4,7 +4,7 @@ rule type(pom)
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<modelVersion>4.0.0</modelVersion>
 		<groupId>$groupId.$name</groupId>
-		<artifactId>reader-java</artifactId>
+		<artifactId>parser-java</artifactId>
 		<version>$version</version>
 		<properties>
 			<maven.compiler.source>21</maven.compiler.source>
@@ -19,8 +19,8 @@ rule type(pom)
 		</repositories>
 
 		<build>
-			<outputDirectory>out/production/$name~-model-reader-java</outputDirectory>
-			<directory>out/build/$name~-model-reader-java</directory>
+			<outputDirectory>out/production/$name~-model-parser-java</outputDirectory>
+			<directory>out/build/$name~-model-parser-java</directory>
 			<plugins>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>

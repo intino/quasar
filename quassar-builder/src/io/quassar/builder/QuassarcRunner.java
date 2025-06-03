@@ -6,7 +6,7 @@ public class QuassarcRunner {
 	public static void main(String[] args) {
 		QuassarBuilderRunner runner = new QuassarBuilderRunner();
 		runner.register(GenerateGraphOperation.class);
-		runner.register(GenerateModelReaderOperation.class);
+		runner.register(GenerateModelParserOperation.class);
 		runner.start(args);
 	}
 }

@@ -1,4 +1,4 @@
-package io.quassar.builder.modelreader;
+package io.quassar.builder.modelparser;
 
 import io.intino.builder.CompilerConfiguration;
 import io.intino.itrules.Engine;
@@ -9,10 +9,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-public class ModelReaderGenerator {
+public class ModelParserGenerator {
 	private final CompilerConfiguration conf;
 
-	public ModelReaderGenerator(CompilerConfiguration conf) {
+	public ModelParserGenerator(CompilerConfiguration conf) {
 		this.conf = conf;
 	}
 
@@ -32,15 +32,15 @@ public class ModelReaderGenerator {
 
 	private void generateModelReaderClass() {
 		try {
-			FrameBuilder builder = new FrameBuilder().add("modelreader")
+			FrameBuilder builder = new FrameBuilder().add("modelparser")
 					.add("outdsl", conf.dsl().outDsl())
 					.add("outdslCoors", conf.groupId() + ":" + conf.dsl().outDsl() + ":" + conf.version())
 					.add("version", conf.version())
 					.add("package", conf.generationPackage());
-			String content = new Engine(new ModelReaderTemplate()).render(builder.toFrame());
+			String content = new Engine(new ModelParserTemplate()).render(builder.toFrame());
 			File dir = new File(conf.srcDirectory(), conf.generationPackage().replace(".", "/"));
 			dir.mkdirs();
-			Files.writeString(new File(dir, "ModelReader.java").toPath(), content);
+			Files.writeString(new File(dir, "ModelParser.java").toPath(), content);
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}

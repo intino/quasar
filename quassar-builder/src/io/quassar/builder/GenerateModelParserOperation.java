@@ -13,7 +13,7 @@ import io.intino.tara.builder.core.operation.model.ModelOperation;
 import io.intino.tara.builder.utils.FileSystemUtils;
 import io.intino.tara.model.Level;
 import io.intino.tara.processors.model.Model;
-import io.quassar.builder.modelreader.ModelReaderGenerator;
+import io.quassar.builder.modelparser.ModelParserGenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,11 +27,11 @@ import static io.intino.builder.BuildConstants.GENERATION_PACKAGE;
 import static io.intino.tara.model.Level.M2;
 import static java.io.File.separator;
 
-public class GenerateModelReaderOperation extends ModelOperation {
+public class GenerateModelParserOperation extends ModelOperation {
 	public static final String TARA_DSL = "tara.dsl";
 	private final CompilerConfiguration configuration;
 
-	public GenerateModelReaderOperation(CompilationUnit unit) {
+	public GenerateModelParserOperation(CompilationUnit unit) {
 		super(unit);
 		this.configuration = unit.configuration();
 	}
@@ -41,9 +41,9 @@ public class GenerateModelReaderOperation extends ModelOperation {
 		if (model.mograms().isEmpty() || model.mograms().stream().allMatch(m -> m.level() == Level.M1)) return;
 		new LayerGenerationOperation(unit).call(model);
 		if (isM2(model) && hasM3()) generateMetaModel();
-		boolean generate = new ModelReaderGenerator(unit.configuration()).generate();
+		boolean generate = new ModelParserGenerator(unit.configuration()).generate();
 		if (!generate)
-			throw new CompilationFailedException(Phases.CODE_GENERATION, unit, new Exception("Impossible to generate model readers. Internal error"));
+			throw new CompilationFailedException(Phases.CODE_GENERATION, unit, new Exception("Impossible to generate model parsers. Internal error"));
 		copyLanguageAsBuildItem();
 	}
 
