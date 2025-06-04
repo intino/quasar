@@ -1,6 +1,6 @@
 <!-- Include in your POM file -->
 <plugin>
-  <groupId>com.my-tool/groupId>
+  <groupId>com.my-tool</groupId>
   <artifactId>my-plugin</artifactId>
   <version>1.0</version>
   <configuration>

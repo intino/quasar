@@ -7,7 +7,7 @@ use Models
 use Languages
 use Theme
 
-Service EditorElements as UI(port = "{port}", title = "{title}", favicon = "/icons/favicons/favicon.ico")
+Service EditorElements as UI(port = "{port}", title = "{title}", favicon = "/images/favicon.ico")
 	Authentication(by="{federation-url}")
 
 	Resource(path = "/") home as Page(homeTemplate) Main > Parameter dialog
