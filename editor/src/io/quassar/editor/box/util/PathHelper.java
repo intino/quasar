@@ -208,7 +208,8 @@ public class PathHelper {
 
 	private static final String ForgePath = "/forge/:model/:release";
 	public static String forgeUrl(Model model, String release, UISession session) {
-		return session.browser().baseUrl() + ForgePath.replace(":model", model.id()).replace(":release", release != null && !release.equals(Model.DraftRelease) ? release : "1.0.0");
+		String lastRelease = model.lastRelease() != null ? model.lastRelease().version() : "1.0.0";
+		return session.browser().baseUrl() + ForgePath.replace(":model", model.id()).replace(":release", release != null && !release.equals(Model.DraftRelease) ? release : lastRelease);
 	}
 
 	public static String forgePath(String address, String model, String release) {
