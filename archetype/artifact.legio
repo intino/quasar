@@ -1,6 +1,6 @@
 dsl Legio
 
-Artifact("io.quassar", "1.0.0") archetype
+Artifact("io.quassar", "1.0.1") archetype
 	Package(mode = ModulesAndLibrariesLinkedByManifest)
 	IntinoPlugin("io.intino.archetype", "archetype-plugin", "2.0.1", Export)
 
