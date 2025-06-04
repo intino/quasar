@@ -27,12 +27,12 @@ TARGETS:{ime editor}
     - releaseDslManifest(dsl, version) in "{dsl}/releases/{version}/dsl.xml"
     - releaseHelp(dsl, version) in "{dsl}/releases/{version}/help.html"
     - releaseGraph(dsl, version) in "{dsl}/releases/{version}/graph.json"
-    - releaseReaders(dsl, version) in "{dsl}/releases/{version}/readers" with ".zip"
-    - releaseReadersDir(dsl, version) in "{dsl}/releases/{version}/readers"
-    - releaseReaderDir(dsl, version, name) in "{dsl}/releases/{version}/readers/{name}"
-    - releaseReaderFile(dsl, version, name) in "{dsl}/releases/{version}/readers/{name}.zip"
-    - releaseReaderJar(dsl, version, name) in "{dsl}/releases/{version}/readers/{name}.jar"
-    - releaseReaderManifest(dsl, version, name) in "{dsl}/releases/{version}/readers/{name}.xml"
+    - releaseParsers(dsl, version) in "{dsl}/releases/{version}/parsers" with ".zip"
+    - releaseParsersDir(dsl, version) in "{dsl}/releases/{version}/parsers"
+    - releaseParserDir(dsl, version, name) in "{dsl}/releases/{version}/parsers/{name}"
+    - releaseParserFile(dsl, version, name) in "{dsl}/releases/{version}/parsers/{name}.zip"
+    - releaseParserJar(dsl, version, name) in "{dsl}/releases/{version}/parsers/{name}.jar"
+    - releaseParserManifest(dsl, version, name) in "{dsl}/releases/{version}/parsers/{name}.xml"
 
 + projects in "projects"
 

@@ -63,7 +63,7 @@ public class CreateLanguageReleaseCommand extends Command<CommandResult> {
 			TarHelper.extract(resource.inputStream(), destination);
 			box.languageManager().saveDsl(language, version, dslOf(destination));
 			box.languageManager().saveGraph(language, version, graphOf(destination));
-			box.languageManager().saveReaders(language, version, readersOf(destination));
+			box.languageManager().saveParsers(language, version, parsersOf(destination));
 			return result;
 		}
 		catch (Exception | InternalServerError | NotFound e) {
@@ -92,7 +92,7 @@ public class CreateLanguageReleaseCommand extends Command<CommandResult> {
 		return Arrays.stream(files).filter(f -> f.getName().equals(GraphFilename)).findFirst().orElse(null);
 	}
 
-	private List<File> readersOf(File destination) throws Exception {
+	private List<File> parsersOf(File destination) throws Exception {
 		File[] files = destination.listFiles();
 		if (files == null) return emptyList();
 		return compressed(Arrays.stream(files).filter(f -> f.isDirectory() && !f.getName().equals(LanguageDir)).toList());

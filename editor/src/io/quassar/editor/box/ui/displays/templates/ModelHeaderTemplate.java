@@ -67,8 +67,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	}
 
 	public void checked(boolean value) {
-		step = value ? Step.Check : Step.Edit;
-		refreshToolbar();
+		updateStep(value ? Step.Check : Step.Edit);
 	}
 
 	@Override
@@ -79,6 +78,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		checkTrigger.onExecute(e -> check());
 		commitTrigger.onExecute(e -> commit());
 		downloadTrigger.onExecute(e -> openDownloadDialog());
+		forgeTrigger.onOpen(e -> updateStep(Step.Forge));
 		cloneTrigger.onExecute(e -> cloneModel());
 		commitModelDialog.onCommit((m, v) -> openRelease(v));
 		commitModelDialog.onCommitFailure((m, v) -> deployListener.accept(m, v));
@@ -92,7 +92,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		contentBlock.visible(model != null);
 		if (!contentBlock.isVisible()) return;
 		Language language = box().languageManager().get(model);
-		step = !Model.DraftRelease.equals(release) ? Step.Forge : Step.Edit;
+		step = !Model.DraftRelease.equals(release) ? Step.Commit : Step.Edit;
 		titleViewer.model(model);
 		titleViewer.refresh();
 		refreshReleaseSelector();
@@ -159,15 +159,13 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	}
 
 	private void check() {
-		step = checkListener.apply(model) ? Step.Check : Step.Edit;
-		refreshToolbar();
+		updateStep(checkListener.apply(model) ? Step.Check : Step.Edit);
 	}
 
 	private void commit() {
 		commitModelDialog.model(model);
 		commitModelDialog.open();
-		step = Step.Commit;
-		refreshToolbar();
+		updateStep(Step.Commit);
 	}
 
 	private void cloneModel() {
@@ -184,6 +182,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		executionLauncher.model(model);
 		executionLauncher.release(release);
 		executionLauncher.launch();
+		updateStep(Step.Forge);
 	}
 
 	private static final String DefaultExecutionName = "4. forge";
@@ -195,6 +194,11 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		if (languageRelease.execution() == null) return translate(DefaultExecutionName);
 		String name = languageRelease.execution().name();
 		return translate(!name.isEmpty() ? "4. " + name : DefaultExecutionName);
+	}
+
+	private void updateStep(Step step) {
+		this.step = step;
+		refreshToolbar();
 	}
 
 }

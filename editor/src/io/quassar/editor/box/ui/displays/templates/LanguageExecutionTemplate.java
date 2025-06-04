@@ -6,7 +6,6 @@ import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command.CommandResult;
 import io.quassar.editor.box.commands.LanguageCommands;
 import io.quassar.editor.box.util.Formatters;
-import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageExecution;
@@ -96,7 +95,7 @@ public class LanguageExecutionTemplate extends AbstractLanguageExecutionTemplate
 
 	private void refreshMavenDependencies() {
 		dependencies.clear();
-		box().languageManager().loadReaders(language, release()).forEach(r -> fill(r, dependencies.add()));
+		box().languageManager().loadParsers(language, release()).forEach(r -> fill(r, dependencies.add()));
 	}
 
 	private void refreshExecutionEnvironment() {

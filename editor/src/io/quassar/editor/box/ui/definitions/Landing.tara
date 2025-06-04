@@ -14,8 +14,8 @@ Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, heigh
 
 		Block(layout=Horizontal CenterJustified Wrap, format=landingSection)
 			Block(layout=Vertical Center, format=block)
-				Text(value="The model is the product", format=blockSubtitle)
-				Text(value="Model with a DSL", format=blockTitle)
+				Text(value="The model is the product", format=blockHint)
+				Text(value="Model with a DSL", format=blockTitle doubleAirBottom)
 				Text(value="Use existing DSL from our community", format=blockDescription)
 				Text(value="to build your models", format=blockDescription)
 
@@ -36,15 +36,14 @@ Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, heigh
 			Block(layout=Vertical Center) > Block(format=doubleAirLeft doubleAirRight doubleAirBottom)
 
 			Block(layout=Vertical Center, format=block)
-				Text(value="A DSL for every domain", format=blockSubtitle)
-				Text(value="Build your own DSL", format=blockTitle)
+				Text(value="A DSL for every domain", format=blockHint)
+				Text(value="Build your own DSL", format=blockTitle doubleAirBottom)
 				Text(value="Design it as a model using metta", format=blockDescription)
 				Text(value="No code required", format=blockDescription)
 
 				Block(layout=Vertical CenterCenter, format=doubleAirTop doubleAirBottom)
 					Button(title="Start building", format=blockMainAction) startBuilding as Action Addressable(EditorElements.language)
-					//Button(title="Start building", format=blockMainAction) startBuilding as Action
-					//Button(title="Start building", format=blockMainAction, visible=false) startBuildingLogin as Action
+					Button(title="Start building", format=blockMainAction, visible=false) startBuildingLogin as Action
 
 				Block(layout=Vertical Flexible CenterJustified Wrap, format=bringToFront doubleAirTop)
 					Block(layout=Vertical CenterCenter, format=doubleAirBottom)
@@ -61,23 +60,49 @@ Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, heigh
 			Block(format=landingCatalog) > TemplateStamp(template=languagesLandingTemplate) languagesCatalog
 
 		Block(layout=Vertical Center, format=landingSection) as Relative(width=60%)
-			Text(value="In Quassar, every DSL starts with a model", format=blockTitle)
-			Text(value="You define your language as structured model using metta DSL", format=blockDescription)
-			Text(value="Then Quassar turns it into a new working DSL", format=blockDescription)
+			Text(value="Design a DSL, deliver a Solution", format=blockTitle)
+			Text(value="Model anything - Generate everything", format=blockSubtitle tripleAirBottom)
 
-			Block(layout=Horizontal Center, format=doubleAirTop doubleAirBottom)
-				Button(title="Explore", format=blockMainAction doubleAirLeft doubleAirRight) exploreLanguage as Action Addressable(EditorElements.language)
+			Text(value="How it works", format=blockSubtitle bold tripleAirBottom tripleAirTop)
 
-		Block(layout=Vertical Center, format=landingSection landingSectionBordered) as Relative(width=60%)
-			Text(value="From metta to solutions", format=blockTitle doubleAirBottom)
-			Text(value="Model your DSL with metta", format=blockLightSubtitle doubleAirTop)
-			Text(value="Start by modeling the structure and rules of your domain-specific language", format=blockDescription italic)
-			Text(value="You don't write code. You design the language as a model", format=blockDescription italic)
-			Text(value="Use your DSL to create domain models", format=blockLightSubtitle doubleAirTop)
-			Text(value="Once your DSL is ready, use it to describe real-world problems or logic in your domain", format=blockDescription italic)
-			Text(value="Forge software artifacts from models", format=blockLightSubtitle doubleAirTop)
-			Text(value="With one click, turn your models into code, configs, docs, or deployable components", format=blockDescription italic doubleAirBottom)
-			Image(value="/images/landing-metta.png", format=doubleAirTop doubleAirBottom) as Relative(width=60%)
+		Block(layout=Vertical Center, format=landingSubSection) as Relative(width=32%)
+			Icon(icon="/images/landing/design.png", format=landingIcon)
+			Text(value="Define your DSL with Metta", format=landingSubSectionTitle, translate=true)
+			Block(layout=Vertical CenterCenter) as Relative(width=100%) > Text(value="Turn domain concepts into language features with declarative modeling.", format=landingSubSectionDescription textCentered, translate=true)
+
+		Block(format=doubleAirBottom) > Text(value="divider", format=landingTransparent)
+
+		Block(layout=Vertical Center, format=landingSubSection) as Relative(width=32%)
+			Icon(icon="/images/landing/build.png", format=landingIcon)
+			Text(value="Quassar builds DSL tools", format=landingSubSectionTitle, translate=true)
+			Block(layout=Vertical CenterCenter) as Relative(width=100%) > Text(value="Automatically generates a parser and a full modelling environment with syntax highlighting, validation, and autocomplete.", format=landingSubSectionDescription textCentered, translate=true)
+
+		Block(format=doubleAirBottom) > Text(value="divider", format=landingTransparent)
+
+		Block(layout=Vertical Center, format=landingSubSection) as Relative(width=32%)
+			Icon(icon="/images/landing/package.png", format=landingIcon)
+			Text(value="Add onboarding", format=landingSubSectionTitle, translate=true)
+			Block(layout=Vertical CenterCenter) as Relative(width=100%) > Text(value="Provide help, examples, and model templates so users can model with clarity and confidence", format=landingSubSectionDescription textCentered, translate=true)
+
+		Block(format=doubleAirBottom) > Text(value="divider", format=landingTransparent)
+
+		Block(layout=Vertical Center, format=landingSubSection) as Relative(width=32%)
+			Icon(icon="/images/landing/coding.png", format=landingIcon)
+			Text(value="Code how models are executed", format=landingSubSectionTitle, translate=true)
+			Block(layout=Vertical CenterCenter) as Relative(width=100%) > Text(value="Implement the behavior of your DSL using the automatically generated parser", format=landingSubSectionDescription textCentered, translate=true)
+
+		Block(format=doubleAirBottom) > Text(value="divider", format=landingTransparent)
+
+		Block(layout=Vertical Center, format=landingSubSection) as Relative(width=32%)
+			Icon(icon="/images/landing/play.png", format=landingIcon)
+			Text(value="Let users build solutions with your DSL", format=landingSubSectionTitle, translate=true)
+			Block(layout=Vertical CenterCenter) as Relative(width=100%) > Text(value="Users can now create models in the modeling environment and run them in the execution environment", format=landingSubSectionDescription textCentered, translate=true)
+
+		Block(format=doubleAirBottom) > Text(value="divider", format=landingTransparent)
+
+		Block(layout=Horizontal Center, format=doubleAirTop doubleAirBottom)
+			Button(title="Explore", format=blockMainAction doubleAirLeft doubleAirRight) exploreLanguage as Action Addressable(EditorElements.language)
+			Button(title="Explore", format=blockMainAction, visible=false) exploreLanguageLogin as Action
 
 	Dialog(title="") modelsDialog as Relative(height=80%, width=60%)
         Block(layout=Horizontal) as Relative(height=100%, offsetHeight=40px)

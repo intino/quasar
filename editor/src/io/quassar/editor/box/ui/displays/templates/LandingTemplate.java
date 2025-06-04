@@ -42,7 +42,8 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 		languagesDialog.onOpen(e -> refreshLanguagesDialog());
 		languagesDialog.onClose(e -> notifyClose());
 		startModelingLogin.onExecute(e -> gotoLogin(PathHelper.landingUrl(LandingDialog.StartModeling, session())));
-		//startBuildingLogin.onExecute(e -> gotoLogin(PathHelper.homeUrl(session())));
+		startBuildingLogin.onExecute(e -> gotoLogin(PathHelper.homeUrl(session())));
+		exploreLanguageLogin.onExecute(e -> gotoLogin(PathHelper.homeUrl(session())));
 		//startBuilding.onExecute(e -> startBuilding());
 	}
 
@@ -60,10 +61,12 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 		if (startModeling.isVisible()) startModeling.address(path -> PathHelper.landingPath(path, LandingDialog.StartModeling));
 		Language language = box().languageManager().get(Language.Metta);
 		List<Model> models = box().modelManager().models(language);
-		exploreLanguage.address(path -> PathHelper.languagePath(path, language, username() == null || models.isEmpty() ? LanguageTab.Examples : LanguageTab.Models));
 		startBuilding.address(path -> PathHelper.languagePath(path, language, username() == null || models.isEmpty() ? LanguageTab.Examples : LanguageTab.Models));
-		//startBuildingLogin.visible(user() == null);
-		//startBuilding.visible(user() != null);
+		startBuilding.visible(user() != null);
+		startBuildingLogin.visible(user() == null);
+		exploreLanguage.address(path -> PathHelper.languagePath(path, language, username() == null || models.isEmpty() ? LanguageTab.Examples : LanguageTab.Models));
+		exploreLanguage.visible(user() != null);
+		exploreLanguageLogin.visible(user() == null);
 	}
 
 	private void refreshLanguagesCatalog() {

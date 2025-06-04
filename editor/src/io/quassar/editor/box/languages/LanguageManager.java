@@ -6,7 +6,6 @@ import io.quassar.editor.box.util.ArtifactoryHelper;
 import io.quassar.editor.box.util.SubjectHelper;
 import io.quassar.editor.model.*;
 import org.apache.commons.io.FileUtils;
-import org.eclipse.jgit.patch.FileHeader;
 import systems.intino.datamarts.subjectstore.SubjectStore;
 import systems.intino.datamarts.subjectstore.model.Subject;
 
@@ -14,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -136,26 +134,26 @@ public class LanguageManager {
 		copy(graph, archetype.languages().releaseGraph(language.key(), release));
 	}
 
-	public File loadReader(Language language, LanguageRelease release, String name) {
+	public File loadParser(Language language, LanguageRelease release, String name) {
 		if (release == null) return null;
-		File result = archetype.languages().releaseReaderJar(language.key(), release.version(), name);
-		if (!result.exists()) ArtifactoryHelper.prepareReaderDependency(language, release, name, archetype.languages());
+		File result = archetype.languages().releaseParserJar(language.key(), release.version(), name);
+		if (!result.exists()) ArtifactoryHelper.prepareParserDependency(language, release, name, archetype.languages());
 		return result.exists() ? result : null;
 	}
 
-	public File loadReaderManifest(Language language, LanguageRelease release, String name) {
-		File manifest = archetype.languages().releaseReaderManifest(language.key(), release.version(), name);
-		if (!manifest.exists()) ArtifactoryHelper.prepareReaderDependency(language, release, name, archetype.languages());
+	public File loadParserManifest(Language language, LanguageRelease release, String name) {
+		File manifest = archetype.languages().releaseParserManifest(language.key(), release.version(), name);
+		if (!manifest.exists()) ArtifactoryHelper.prepareParserDependency(language, release, name, archetype.languages());
 		return manifest.exists() ? manifest : null;
 	}
 
-	public List<File> loadReaders(Language language, LanguageRelease release) {
+	public List<File> loadParsers(Language language, LanguageRelease release) {
 		if (release == null) return null;
-		return archetype.languages().releaseReaders(language.key(), release.version());
+		return archetype.languages().releaseParsers(language.key(), release.version());
 	}
 
-	public void saveReaders(Language language, String release, List<File> readers) {
-		copy(readers, archetype.languages().releaseReadersDir(language.key(), release));
+	public void saveParsers(Language language, String release, List<File> parsers) {
+		copy(parsers, archetype.languages().releaseParsersDir(language.key(), release));
 	}
 
 	public String loadHelp(Language language, String version) {

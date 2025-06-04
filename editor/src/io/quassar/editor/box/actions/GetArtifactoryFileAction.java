@@ -38,7 +38,7 @@ public class GetArtifactoryFileAction implements io.intino.alexandria.rest.Reque
 		if (coordinates.artifactId().equals("graph")) return isJar ? new Resource(box.languageManager().loadGraph(language, release)) : emptyManifest();
 
 		boolean isDsl = coordinates.artifactId().equals(language.name());
-		return isDsl ? loadDsl(language, release, isManifest) : loadReader(language, release, coordinates.artifactId(), isManifest);
+		return isDsl ? loadDsl(language, release, isManifest) : loadParser(language, release, coordinates.artifactId(), isManifest);
 	}
 
 	private Language locateLanguage(GavCoordinates coordinates) {
@@ -55,10 +55,10 @@ public class GetArtifactoryFileAction implements io.intino.alexandria.rest.Reque
 		return new Resource(box.languageManager().loadDsl(language, release));
 	}
 
-	private Resource loadReader(Language language, LanguageRelease release, String artifactId, boolean isManifest) {
-		String file = ArtifactoryHelper.readerNameFrom(artifactId);
-		if (isManifest) return new Resource(box.languageManager().loadReaderManifest(language, release, file));
-		return new Resource(box.languageManager().loadReader(language, release, file));
+	private Resource loadParser(Language language, LanguageRelease release, String artifactId, boolean isManifest) {
+		String file = ArtifactoryHelper.parserNameFor(artifactId);
+		if (isManifest) return new Resource(box.languageManager().loadParserManifest(language, release, file));
+		return new Resource(box.languageManager().loadParser(language, release, file));
 	}
 
 	private String fileExtension() {

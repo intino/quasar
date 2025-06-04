@@ -22,8 +22,8 @@ public class ArtifactoryHelper {
 	public static final String ReleasesPath = "/artifacts/releases";
 	public static final String DependencyTemplate = "<dependency>\n\t<groupId>%s</groupId>\n\t<artifactId>%s</artifactId>\n\t<version>%s</version>\n</dependency>";
 	public static final String RepositoryTemplate = "<repository>\n\t<id>Quassar</id>\n\t<url>%s" + ReleasesPath + "</url>\n</repository>";
-	public static final String ReadersDirectory = "/readers/";
-	public static final String ReaderPrefix = "reader-";
+	public static final String ParsersDirectory = "/parsers/";
+	public static final String ParserPrefix = "parser-";
 
 	public static void prepareDsl(Language language, LanguageRelease release, Archetype.Languages archetype) {
 		try {
@@ -42,35 +42,35 @@ public class ArtifactoryHelper {
 		}
 	}
 
-	public static void prepareReaderDependency(Language language, LanguageRelease release, String name, Archetype.Languages archetype) {
-		File file = archetype.releaseReaderFile(language.key(), release.version(), name);
+	public static void prepareParserDependency(Language language, LanguageRelease release, String name, Archetype.Languages archetype) {
+		File file = archetype.releaseParserFile(language.key(), release.version(), name);
 		if (!file.exists()) return;
-		File tempDir = extractReaderToDirectory(language, release, name, archetype, file);
-		File jarFile = locateJarFileInReader(release, tempDir);
+		File tempDir = extractParserToDirectory(language, release, name, archetype, file);
+		File jarFile = locateJarFileInParser(release, tempDir);
 		if (jarFile == null) return;
 		File destination = extractJar(jarFile);
-		modifyReaderManifestAndCopy(destination, language, release, name, archetype);
+		modifyParserManifestAndCopy(destination, language, release, name, archetype);
 		removeDirectory(tempDir);
 	}
 
 	@Nullable
-	private static File locateJarFileInReader(LanguageRelease release, File readerDirectory) {
-		File[] files = readerDirectory.listFiles();
+	private static File locateJarFileInParser(LanguageRelease release, File parserDirectory) {
+		File[] files = parserDirectory.listFiles();
 		if (files == null) {
-			removeDirectory(readerDirectory);
+			removeDirectory(parserDirectory);
 			return null;
 		}
 		File jarFile = Arrays.stream(files).filter(f -> f.getName().endsWith(release.version() + ".jar")).findFirst().orElse(null);
 		if (jarFile == null) {
-			removeDirectory(readerDirectory);
+			removeDirectory(parserDirectory);
 			return null;
 		}
 		return jarFile;
 	}
 
 	@NotNull
-	private static File extractReaderToDirectory(Language language, LanguageRelease release, String name, Archetype.Languages archetype, File file) {
-		File tempDir = archetype.releaseReaderDir(language.key(), release.version(), name);
+	private static File extractParserToDirectory(Language language, LanguageRelease release, String name, Archetype.Languages archetype, File file) {
+		File tempDir = archetype.releaseParserDir(language.key(), release.version(), name);
 		if (tempDir.exists()) removeDirectory(tempDir);
 		ZipHelper.extract(file, tempDir);
 		return tempDir;
@@ -82,14 +82,14 @@ public class ArtifactoryHelper {
 		return destination;
 	}
 
-	private static void modifyReaderManifestAndCopy(File jarDir, Language language, LanguageRelease release, String name, Archetype.Languages archetype) {
+	private static void modifyParserManifestAndCopy(File jarDir, Language language, LanguageRelease release, String name, Archetype.Languages archetype) {
 		try {
 			File manifest = locateManifest(jarDir);
 			if (manifest == null) return;
-			File manifestDestination = archetype.releaseReaderManifest(language.key(), release.version(), name);
-			Files.writeString(manifestDestination.toPath(), manifestOf(manifest, ArtifactoryHelper.dependencyGroup(language), ArtifactoryHelper.dependencyName(archetype.releaseReaderFile(language.key(), release.version(), name)), release.version()));
-			Files.writeString(manifest.toPath(), manifestOf(manifest, ArtifactoryHelper.dependencyGroup(language), ArtifactoryHelper.dependencyName(archetype.releaseReaderFile(language.key(), release.version(), name)), release.version()));
-			ZipHelper.zip(jarDir.toPath(), archetype.releaseReaderJar(language.key(), release.version(), name).toPath());
+			File manifestDestination = archetype.releaseParserManifest(language.key(), release.version(), name);
+			Files.writeString(manifestDestination.toPath(), manifestOf(manifest, ArtifactoryHelper.dependencyGroup(language), ArtifactoryHelper.dependencyName(archetype.releaseParserFile(language.key(), release.version(), name)), release.version()));
+			Files.writeString(manifest.toPath(), manifestOf(manifest, ArtifactoryHelper.dependencyGroup(language), ArtifactoryHelper.dependencyName(archetype.releaseParserFile(language.key(), release.version(), name)), release.version()));
+			ZipHelper.zip(jarDir.toPath(), archetype.releaseParserJar(language.key(), release.version(), name).toPath());
 		}
 		catch (Exception e) {
 			Logger.error(e);
@@ -138,8 +138,8 @@ public class ArtifactoryHelper {
 		return new GavCoordinates(groupIdBuilder.toString(), artifactId, version);
 	}
 
-	public static String readerNameFrom(String artifactId) {
-		return artifactId.replace(ReaderPrefix, "");
+	public static String parserNameFor(String artifactId) {
+		return artifactId.replace(ParserPrefix, "");
 	}
 
 	public static String dependencyGroup(Language language) {
@@ -148,7 +148,7 @@ public class ArtifactoryHelper {
 
 	public static String dependencyName(File dependency) {
 		String extension = FilenameUtils.getExtension(dependency.getName());
-		String prefix = dependency.getAbsolutePath().contains(ReadersDirectory) ? ReaderPrefix : "";
+		String prefix = dependency.getAbsolutePath().contains(ParsersDirectory) ? ParserPrefix : "";
 		return prefix + dependency.getName().replace("." + extension, "");
 	}
 
