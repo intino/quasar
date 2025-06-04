@@ -27,6 +27,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	private Consumer<Model> cloneListener;
 	private BiConsumer<Model, CommandResult> deployListener;
 	private Step step = Step.Edit;
+	private boolean checked = false;
 
 	private enum Step { Edit, Check, Commit, Forge }
 
@@ -92,7 +93,8 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		contentBlock.visible(model != null);
 		if (!contentBlock.isVisible()) return;
 		Language language = box().languageManager().get(model);
-		step = !Model.DraftRelease.equals(release) ? Step.Commit : Step.Edit;
+		step = !Model.DraftRelease.equals(release) ? Step.Commit : (checked ? Step.Check : Step.Edit);
+		checked = false;
 		titleViewer.model(model);
 		titleViewer.refresh();
 		refreshReleaseSelector();
@@ -159,6 +161,10 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	}
 
 	private void check() {
+		if (!Model.DraftRelease.equals(release)) {
+			openRelease(Model.DraftRelease);
+			checked = true;
+		}
 		updateStep(checkListener.apply(model) ? Step.Check : Step.Edit);
 	}
 

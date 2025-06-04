@@ -109,7 +109,8 @@ public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
 	}
 
 	private void openFinishDialog() {
-		notifyUser(translate("Your changes have been saved and are now part of the current release"), UserMessage.Type.Success);
+		hideUserNotification();
+		//notifyUser(translate("Your changes have been saved and are now part of the current release"), UserMessage.Type.Success);
 	}
 
 	private void openExecutionDialog(ModelRelease release) {

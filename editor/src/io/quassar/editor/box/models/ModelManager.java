@@ -6,10 +6,7 @@ import io.intino.ls.IntinoLanguageServer;
 import io.intino.ls.codeinsight.DiagnosticService;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.languages.LanguageServerManager;
-import io.quassar.editor.box.util.ArchetypeHelper;
-import io.quassar.editor.box.util.SubjectHelper;
-import io.quassar.editor.box.util.VersionNumberComparator;
-import io.quassar.editor.box.util.ZipHelper;
+import io.quassar.editor.box.util.*;
 import io.quassar.editor.model.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.tika.Tika;
@@ -201,7 +198,7 @@ public class ModelManager {
 			modelRelease.version(release);
 			modelRelease.language(model.language());
 			modelRelease.owner(model.owner());
-			ZipHelper.zip(workspace(model, Model.DraftRelease).root().toPath(), manifest(modelRelease), releaseFile.toPath());
+			ZipHelper.zip(workspace(model, Model.DraftRelease).root().toPath(), manifest(model, modelRelease), releaseFile.toPath());
 			return OperationResult.Success();
 		} catch (Exception e) {
 			Logger.error(e);
@@ -222,8 +219,15 @@ public class ModelManager {
 		}
 	}
 
-	private String manifest(ModelRelease modelRelease) {
-		return Json.toString(modelRelease);
+	private String manifest(Model model, ModelRelease modelRelease) {
+		Manifest manifest = new Manifest();
+		manifest.id(model.id());
+		manifest.name(model.isTitleQualified() ? model.qualifiedTitle() : model.title());
+		manifest.commit(modelRelease.commit());
+		manifest.version(modelRelease.version());
+		manifest.dsl(model.language().toString());
+		manifest.owner(model.owner());
+		return Json.toString(manifest);
 	}
 
 	public boolean existsFile(Model model, String name, io.quassar.editor.box.models.File parent) {
