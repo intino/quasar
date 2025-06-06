@@ -19,6 +19,7 @@
     font-size: 13pt;
 }
 
-.rsw-btn[title="HTML mode"] {
-    display:none;
+.rsw-ce {
+    height: calc(100vh - 200px);
+    overflow: auto;
 }

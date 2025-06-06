@@ -72,7 +72,7 @@ Template languageTemplate as Relative(height=100%, width=100%, offsetHeight=2px)
 					Block(layout=Horizontal) > Button(title="home", format=airTop, highlight=Outline) as Action Addressable(EditorElements.home)
 
 		Block(layout=Vertical Flexible, format=whiteBackground) helpBlock as Relative(width=100%) AutoSize Conditional
-			Block(layout=Vertical Flexible Center) as Relative(width=50%)
+			Block(layout=Vertical Flexible Center) as Absolute(width=1024px)
 				Block(layout=Vertical Flexible, format=whiteBackground) as Relative(width=100%, height=100%)
 					Block(layout=Horizontal Center, format=bottomLightBordered middleTopSpaced middleBottomSpaced)
 						Block(layout=Horizontal Flexible)
@@ -212,6 +212,8 @@ Display helpEditor
 	Request update as Text
 
 Template(layout=Vertical Flexible, format=doubleSpaced) languageKitTemplate
+	Link(title="") openModel as OpenSite(site=empty, target=Blank)
+
 	Block(layout=Vertical Flexible, visible=false) selectVersionBlock
 		Text(value="Select version on right panel to open kit")
 
@@ -227,25 +229,29 @@ Template(layout=Vertical Flexible, format=doubleSpaced) languageKitTemplate
 
 	Block(layout=Vertical Flexible, visible=false) versionBlock
 
-		Block(format=doubleAirBottom autoHeight)
-			Text(value="Help", translate=true, format=h5 bold)
-			Block(format=autoHeight) as Relative(width=80%) > Text(value="In this section, you can customize or update the help content associated with the current release of the DSL. Any changes made here will apply only to this release, allowing you to maintain release-specific and up-to-date documentation based on the features or behavior available.", translate=true, format=airBottom)
-			Block(layout=Horizontal)
-				Button(title="Edit help", highlight=Outline, size=Small) editHelpTrigger as OpenDialog(dialog=helpDialog)
+		Block(layout=Vertical Flexible)
+			Block(format=doubleAirBottom autoHeight)
+				Text(value="Help", translate=true, format=h5 bold)
+				Block(format=autoHeight) as Relative(width=80%) > Text(value="In this section, you can customize or update the help content associated with the current release of the DSL. Any changes made here will apply only to this release, allowing you to maintain release-specific and up-to-date documentation based on the features or behavior available.", translate=true, format=airBottom)
+				Block(layout=Horizontal)
+					Button(title="Edit help", highlight=Outline, size=Small) editHelpTrigger as OpenDialog(dialog=helpDialog)
 
-		Block(format=doubleAirBottom)
-			Text(value="Template", translate=true, format=h5 bold middleAirBottom)
-			Block(format=autoHeight) as Relative(width=80%) > Text(value="A template is available here to customize how created models will be generated using this DSL. You can create default definition files that will be used as a base when generating new models.", translate=true, format=airBottom)
-			Block(visible=false) templateDefined
-				Block(layout=Horizontal) > Link(title="") templateLink as OpenSite(site=empty, target=Blank)
-				Date templateCreateDate as Labeled("Created at")
-			Block(layout=Horizontal, visible=false) templateNotDefined
-				Button(title="Create", highlight=Outline, size=Small) createTemplate as Action
+			Block(format=doubleAirBottom)
+				Text(value="Template", translate=true, format=h5 bold middleAirBottom)
+				Block(format=autoHeight) as Relative(width=80%) > Text(value="A template is available here to customize how created models will be generated using this DSL. You can create default definition files that will be used as a base when generating new models.", translate=true, format=airBottom)
+				Block(visible=false) templateDefined
+					Block(layout=Horizontal) > Link(title="") templateLink as OpenSite(site=empty, target=Blank)
+					Date templateCreateDate as Labeled("Created at")
+				Block(layout=Horizontal, visible=false) templateNotDefined
+					Button(title="Create", highlight=Outline, size=Small) createTemplate as Action
 
-		Block(layout=Vertical Flexible) as Relative(height=100%)
-			Text(value="Examples", translate=true, format=h5 bold middleAirBottom)
-			Block(format=autoHeight) as Relative(width=80%) > Text(value="Provide users with a comprehensive catalog of DSL usage examples across various contexts. These examples help illustrate best practices, demonstrate common patterns, and guide users in applying the DSL effectively to real-world scenarios.", translate=true, format=airBottom)
-			TemplateStamp(template=modelsTemplate) modelsCatalog
+			Block(layout=Vertical Flexible, format=doubleAirBottom) as Relative(height=100%)
+				Text(value="Examples", translate=true, format=h5 bold middleAirBottom)
+				Block(format=autoHeight) as Relative(width=80%) > Text(value="Provide users with a comprehensive catalog of DSL usage examples across various contexts. These examples help illustrate best practices, demonstrate common patterns, and guide users in applying the DSL effectively to real-world scenarios.", translate=true, format=airBottom)
+				TemplateStamp(template=modelsTemplate) modelsCatalog
+
+		Block(layout=Horizontal End StartJustified, format=topBordered doubleTopSpaced)
+			Button(title="Start modelling", format=blockKitAction) startModeling as Action
 
 	Dialog(title="Help") helpDialog as FullScreen
         Block as Relative(height=100%)

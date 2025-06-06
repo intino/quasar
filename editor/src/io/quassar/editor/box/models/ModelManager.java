@@ -206,6 +206,19 @@ public class ModelManager {
 		}
 	}
 
+	public OperationResult replaceRelease(Model model, String release) {
+		try {
+			if (isWorkspaceEmpty(model, Model.DraftRelease)) return OperationResult.Error("Workspace is empty");
+			File releaseFile = archetype.models().release(ArchetypeHelper.relativeModelPath(model.id()), model.id(), release);
+			ModelRelease modelRelease = model.release(release);
+			ZipHelper.zip(workspace(model, Model.DraftRelease).root().toPath(), manifest(model, modelRelease), releaseFile.toPath());
+			return OperationResult.Success();
+		} catch (Exception e) {
+			Logger.error(e);
+			return OperationResult.Error(e.getMessage());
+		}
+	}
+
 	public OperationResult removeRelease(Model model, String release) {
 		try {
 			Subject subject = subjectStore.open(SubjectHelper.pathOf(model, release));
@@ -283,6 +296,11 @@ public class ModelManager {
 
 	public InputStream content(Model model, String release, String uri) {
 		return new WorkspaceReader(workspace(model, release), server(model, release)).content(uri);
+	}
+
+	public boolean hasModelsWith(Language language, ModelRelease modelRelease) {
+		if (language == null || modelRelease == null) return false;
+		return !subjectStore.subjects().type(SubjectHelper.ModelType).where("dsl-name").equals(language.name()).where("dsl-version").equals(modelRelease.version()).where("usage").equals(Model.Usage.EndUser.name()).collect().isEmpty();
 	}
 
 	private IntinoLanguageServer server(Model model, String release) {

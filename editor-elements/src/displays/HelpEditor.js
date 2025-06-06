@@ -23,7 +23,8 @@ class HelpEditor extends AbstractHelpEditor {
 	};
 
 	render() {
-	     return (<Editor containerProps={{ style: { resize: 'vertical' } }} value={this.content()} onChange={this.handleChange.bind(this)} />);
+	     window.setTimeout(() => this.addDarkMode(), 1);
+	     return (<Editor containerProps={{ style: { resize: 'vertical' } }} value={this.state.content} onChange={this.handleChange.bind(this)} />);
 	};
 
 	refresh = (content) => {
@@ -35,15 +36,12 @@ class HelpEditor extends AbstractHelpEditor {
 	    this.requester.update(e.target.value);
 	};
 
-    content = () => {
-        const result = this.state.content;
+    addDarkMode = () => {
         const isDark = Theme.get().isDark();
-        const content = "<div class='help'>" + result + "</div>";
-        return isDark ? this.addDark(content) : content;
-    };
-
-    addDark = (content) => {
-        return "<div class='dark'>" + content + "</div>";
+        if (!isDark) return;
+        const elements = document.getElementsByClassName("rsw-editor");
+        if (elements.length == 0) return;
+        elements[0].className = "rsw-editor dark";
     };
 
 }

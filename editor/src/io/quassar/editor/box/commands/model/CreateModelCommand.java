@@ -38,12 +38,6 @@ public class CreateModelCommand extends Command<Model> {
 
 	private void createDefaultWorkspace(Model model) {
 		box.modelManager().createFile(model, ModelHelper.validWorkspaceFileName("Main.tara"), null, null);
-		createDefaultReadme(model);
-	}
-
-	private void createDefaultReadme(Model model) {
-		InputStream stream = CreateModelCommand.class.getResourceAsStream("/templates/model.readme.template.md");
-		box.modelManager().createFile(model, io.quassar.editor.box.models.File.withResourcesPath(ModelHelper.validWorkspaceFileName("readme.md")), stream, null);
 	}
 
 }

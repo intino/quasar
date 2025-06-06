@@ -131,7 +131,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		executionTrigger.readonly(step == Step.Edit || release == null || release.equals(Model.DraftRelease) || !PermissionsHelper.canLaunchExecution(model, language, release, session(), box()));
 		executionTrigger.highlight(step == Step.Forge ? Actionable.Highlight.Fill : Actionable.Highlight.Outline);
 		downloadTrigger.visible(ModelHelper.validReleaseName(release, this::translate));
-		cloneTrigger.visible(session().user() != null && model.isExample());
+		cloneTrigger.visible(session().user() != null && model.isExample() && !PermissionsHelper.isOwnerOrCollaborator(model, session(), box()));
 		noLanguageDefinedBlock.visible(!model.isTemplate() && model.language().artifactId().equals(Language.Metta) && (forgedLanguage == null || model.releases().isEmpty()));
 		languageDefinedBlock.visible(forgedLanguage != null && !model.isTemplate() && model.language().artifactId().equals(Language.Metta) && !model.releases().isEmpty());
 		if (languageDefinedBlock.isVisible()) {

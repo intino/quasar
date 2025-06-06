@@ -92,6 +92,12 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<EditorBox> 
 		removeModel.readonly(!canRemove);
 		removeModel.formats(Set.of("airRight", "whiteColor", canRemove ? "redBackground" : "disabledButton"));
 		cloneModel.readonly(!PermissionsHelper.canClone(model, release, session(), box()));
+		refreshAccessTypeBlock();
+	}
+
+	private void refreshAccessTypeBlock() {
+		generalBlock.accessTypeBlock.visible(false);
+		if (!generalBlock.accessTypeBlock.isVisible()) return;
 		accessTypeField.state(model.isPrivate() ? ToggleEvent.State.On : ToggleEvent.State.Off);
 		accessTypeField.readonly(model.isExample() || model.isTemplate());
 	}

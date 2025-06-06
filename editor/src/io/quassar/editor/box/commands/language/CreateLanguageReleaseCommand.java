@@ -11,10 +11,7 @@ import io.quassar.editor.box.builder.ModelBuilder;
 import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.box.commands.Command.CommandResult;
 import io.quassar.editor.box.commands.model.CreateModelCommand;
-import io.quassar.editor.box.util.ModelHelper;
-import io.quassar.editor.box.util.ShortIdGenerator;
-import io.quassar.editor.box.util.TarHelper;
-import io.quassar.editor.box.util.ZipHelper;
+import io.quassar.editor.box.util.*;
 import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
@@ -61,9 +58,9 @@ public class CreateLanguageReleaseCommand extends Command<CommandResult> {
 			Resource resource = result.zipArtifacts();
 			destination = box.archetype().tmp().builds(UUID.randomUUID().toString());
 			TarHelper.extract(resource.inputStream(), destination);
-			box.languageManager().saveDsl(language, version, dslOf(destination));
-			box.languageManager().saveGraph(language, version, graphOf(destination));
-			box.languageManager().saveParsers(language, version, parsersOf(destination));
+			box.languageManager().saveDsl(language, version, LanguageHelper.dslOf(destination));
+			box.languageManager().saveGraph(language, version, LanguageHelper.graphOf(destination));
+			box.languageManager().saveParsers(language, version, LanguageHelper.parsersOf(destination));
 			return result;
 		}
 		catch (Exception | InternalServerError | NotFound e) {
@@ -72,40 +69,6 @@ public class CreateLanguageReleaseCommand extends Command<CommandResult> {
 		} finally {
 			if (destination != null) destination.delete();
 		}
-	}
-
-	private static final String LanguageDir = "language";
-	private File dslOf(File destination) {
-		File[] files = destination.listFiles();
-		if (files == null) return null;
-		File dir = Arrays.stream(files).filter(f -> f.getName().equals(LanguageDir)).findFirst().orElse(null);
-		if (dir == null) return null;
-		File[] languageFiles = dir.listFiles();
-		if (languageFiles == null) return null;
-		return Arrays.stream(languageFiles).filter(l -> l.getName().endsWith(".jar")).findFirst().orElse(null);
-	}
-
-	private static final String GraphFilename = "graph.json";
-	private File graphOf(File destination) {
-		File[] files = destination.listFiles();
-		if (files == null) return null;
-		return Arrays.stream(files).filter(f -> f.getName().equals(GraphFilename)).findFirst().orElse(null);
-	}
-
-	private List<File> parsersOf(File destination) throws Exception {
-		File[] files = destination.listFiles();
-		if (files == null) return emptyList();
-		return compressed(Arrays.stream(files).filter(f -> f.isDirectory() && !f.getName().equals(LanguageDir)).toList());
-	}
-
-	private static List<File> compressed(List<File> list) throws Exception {
-		List<File> result = new ArrayList<>();
-		for (File file : list) {
-			File zipFile = new File(file.getParent(), file.getName().substring(file.getName().lastIndexOf("-")+1) + ".zip");
-			ZipHelper.zip(file.toPath(), zipFile.toPath());
-			result.add(zipFile);
-		}
-		return result;
 	}
 
 	private void createHelp(Language language, LanguageRelease release, LanguageRelease previousRelease) {

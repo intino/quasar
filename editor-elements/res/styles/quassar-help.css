@@ -1,54 +1,61 @@
-.help {
+.help, .rsw-editor {
     padding: 10px 30px;
     background-color: #fafafa;
 }
 
-.dark .help {
+.rsw-editor.dark .rsw-ce.rsw-html {
+    color: white;
+}
+
+.dark .help, .rsw-editor.dark {
     background-color: #121212;
 }
 
-.help .section, .help nav {
+.help .section, .help nav,
+.rsw-editor .section, .rsw-editor nav {
     margin-bottom: 3.5em;
 }
 
-.dark .help a {
+.dark .help a, .rsw-editor a {
     color: #9399ff;
 }
 
-.help div, .help a, .help p, .help dl, .help dt, .help dd {
+.help div, .help a, .help p, .help dl, .help dt, .help dd,
+.rsw-editor div, .rsw-editor a, .rsw-editor p, .rsw-editor dl, .rsw-editor dt, .rsw-editor dd {
     font-size: 1rem;
 }
 
-.help .main-content {
+.help .main-content, .rsw-editor .main-content {
   width: 720px;
   margin: 0 auto; 
   padding: 2rem;
   background-color: #ffffff;
 }
 
-.dark .help .main-content {
+.dark .help .main-content,
+.rsw-editor .main-content {
     background-color: #1e1e1e;
     box-shadow: none;
 }
 
-.help h1 {
+.help h1, .rsw-editor h1 {
   font-size: 2.5rem;
   margin-top: 0;
   margin-bottom: 1.2rem;
   font-weight: 700;
 }
 
-.help h2 {
+.help h2, .rsw-editor h2 {
   font-size: 2rem;
   margin-bottom: 1rem;
   font-weight: 600;
 }
 
-.help h3 {
+.help h3, .rsw-editor h3 {
   font-size: 1.5rem;
 }
 
-.help h3.concept-title {
+.help h3.concept-title, .rsw-editor h3.concept-title {
   border-bottom: 2px solid #dee2e6;
   padding-bottom: 0.4rem;
   margin-top: 2rem;
@@ -56,41 +63,42 @@
   font-weight: 500;
 }
 
-.dark .help h3.concept-title {
+.dark .help h3.concept-title, .rsw-editor.dark h3.concept-title {
     border-color: #444;
 }
 
-.help p {
+.help p, .rsw-editor p {
   margin-bottom: 1rem;
 }
 
-.help ul {
+.help ul, .rsw-editor ul {
   margin-bottom: 1rem;
   padding-left: 1.5rem;
 }
 
-.help ul pre {
+.help ul pre, .rsw-editor ul pre {
   margin-left: 1em;  
   text-indent: 1em;
 }
 
-.dark .help code, .dark .help pre {
+.dark .help code, .dark .help pre,
+.rsw-editor.dark code, .rsw-editor.dark pre {
 background-color: #2d2d2d;
 }
 
-.help li {
+.help li, .rsw-editor li {
   margin-bottom: 0.5rem;
   font-size: 1rem;
 }
 
-.help table {
+.help table, .rsw-editor table {
   width: 100%;
   border-collapse: collapse;
   font-family: sans-serif;
   font-size: 0.85rem; /* más pequeño que el texto base */
 }
 
-.help table th {
+.help table th, .rsw-editor table th {
   text-align: left;
   padding: 0.5rem 0.75rem;
   border-bottom: 2px solid #ccc;
@@ -98,13 +106,13 @@ background-color: #2d2d2d;
   background-color: #f5f5f5;
 }
 
-.help table td {
+.help table td, .rsw-editor table td {
   padding: 0.5rem 0.75rem;
   border-bottom: 1px solid #e0e0e0;
   vertical-align: top;
 }
 
-.help code {
+.help code, .rsw-editor code {
   background-color: #e9ecef;
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
@@ -112,7 +120,7 @@ background-color: #2d2d2d;
   font-size: 0.8rem;
 }
 
-.help pre code {
+.help pre code, .rsw-editor pre code {
   display: block;
   line-height: 1.5;
   padding: 1rem;
@@ -124,22 +132,22 @@ background-color: #2d2d2d;
   tab-size: 4;
 }
 
-.help .dark pre code {
+.help .dark pre code, .rsw-editor .dark pre code {
   background-color: #f6f8fa;
 }
 
-.help pre code::first-line {
+.help pre code::first-line, .rsw-editor pre code::first-line {
   all: unset;
 }
 
-.help pre > code {
+.help pre > code, .rsw-editor pre > code {
   text-indent: 0 !important;
   margin-left: 0 !important;
   white-space: pre !important;
   font-variant-ligatures: none; /* elimina efectos visuales inconsistentes */
 }
 
-.help .syntax-block {
+.help .syntax-block, .rsw-editor .syntax-block {
   color: #2a2a2a;
   font-family: "Courier New", monospace;
   border-left: 3px solid #6666cc;
@@ -149,21 +157,21 @@ background-color: #2d2d2d;
   overflow-x: auto;
 }
 
-.help pre.syntax-block code {
+.help pre.syntax-block code, .rsw-editor pre.syntax-block code {
   background-color: #eff;
   font-size: 0.75rem !important;
 }
 
-.dark .help pre.syntax-block code {
+.dark .help pre.syntax-block code, .rsw-editor.dark pre.syntax-block code {
   background-color: #abc1c1;
   color: black;
 }
 
-.help strong {
+.help strong, .rsw-editor strong {
   font-weight: 600;
 }
 
-.help .example-block {
+.help .example-block, .rsw-editor .example-block {
   border: 1px solid #e0e0e8;
   border-left: 4px solid #6b6bc1;
   padding: 1rem 1.25rem;
@@ -171,7 +179,7 @@ background-color: #2d2d2d;
   border-radius: 6px;
 }
 
-.help .example-label {
+.help .example-label, .rsw-editor .example-label {
   font-weight: 600;
   font-size: 0.95rem;
   margin-bottom: 0.25rem;

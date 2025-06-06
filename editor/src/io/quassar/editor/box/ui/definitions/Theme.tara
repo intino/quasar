@@ -227,6 +227,7 @@ Format("fontSize:'24pt',color:'white',marginTop:'20px'") blockLightSubtitle
 Format("fontSize:'16pt',color:'white',textAlign:'center'") blockDescription
 Format("fontStyle:'italic'") italic
 Format("border:'2px solid white',borderRadius:'20px',padding:'13px 30px',fontSize:'10pt',background:'#1b70c0',color:'white'") blockMainAction
+Format("border:'2px solid white',borderRadius:'20px',padding:'8px 22px',background:'#1b70c0',color:'white'") blockKitAction
 Format("color:'white',fontSize:'12pt',fontWeight:'bold'") blockAction
 Format("color:'white',fontSize:'18pt',border:'2px solid white',background:'#404040',borderRadius:'12px',width:'45px',textAlign:'center'") stepBudge
 Format("color:'white',fontSize:'14pt',marginTop:'5px',fontWeight:'bold'") stepTitle

@@ -90,7 +90,6 @@ public class PermissionsHelper {
 		String username = session.user() != null ? session.user().username() : null;
 		if (model.owner() != null && model.owner().equals(username)) return true;
 		if (model.collaborators().stream().anyMatch(c -> c.equals(username))) return true;
-		if (!model.isExample() && !model.isTemplate()) return false;
 		Language language = box.languageManager().get(model.language());
 		Model metamodel = box.modelManager().get(language.metamodel());
 		return metamodel != null && isOwnerOrCollaborator(metamodel, session, box);
@@ -121,6 +120,6 @@ public class PermissionsHelper {
 	}
 
 	public static boolean canEditTitle(Model model, EditorBox box) {
-		return !model.isExample() && !model.isTemplate() && box.languageManager().getWithMetamodel(model) == null;
+		return !model.isTemplate() && box.languageManager().getWithMetamodel(model) == null;
 	}
 }

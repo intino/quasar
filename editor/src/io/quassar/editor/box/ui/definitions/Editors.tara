@@ -81,10 +81,6 @@ Template(layout=Horizontal) commitModelDialog
 
 				Block(layout=Vertical EndJustified, format=doubleAirTop)
 					Selector versionTypeSelector as RadioBox
-						Text(value="Major version") majorVersionOption as Option
-						Text(value="Minor version") minorVersionOption as Option
-						Text(value="Revision") revisionOption as Option
-						Text(value="Replace existing") snapshotVersionOption as Option
 
 		Divider
         Block(layout=Horizontal EndJustified)
@@ -136,7 +132,7 @@ Template modelSettingsEditor
 				Text(value="DSL version", translate=true, format=h5 middleAirBottom)
 				Text(format=bold middleAirBottom) languageName
 				Selector languageSelector as ComboBox
-			Block(format=doubleAirTop)
+			Block(format=doubleAirTop, visible=false) accessTypeBlock
 				Text(value="Model access", translate=true, format=h5 middleAirBottom)
 				Switch(title="Model is private") accessTypeField
 			Block(format=doubleAirTop)

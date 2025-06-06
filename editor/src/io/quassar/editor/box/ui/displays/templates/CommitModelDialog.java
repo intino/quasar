@@ -7,9 +7,11 @@ import io.quassar.editor.box.commands.Command.CommandResult;
 import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.ui.types.VersionType;
 import io.quassar.editor.box.util.ModelHelper;
+import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 import io.quassar.editor.model.ModelRelease;
 
+import java.util.List;
 import java.util.function.BiConsumer;
 
 public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
@@ -48,7 +50,7 @@ public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
 		dialog.onOpen(e -> refreshDialog());
 		create.onExecute(e -> commit());
 		versionTypeSelector.onSelect(this::updateVersion);
-		versionTypeSelector.selection("revisionOption");
+		versionTypeSelector.selection(translate("Revision"));
 	}
 
 	private void refreshDialog() {
@@ -57,11 +59,18 @@ public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
 		refreshVersionBlock(value);
 	}
 
+	private static final List<String> AllVersions = List.of("Major version", "Minor version", "Revision", "Replace existing");
+	private static final List<String> Versions = List.of("Major version", "Minor version", "Revision");
 	private void refreshVersionBlock(String value) {
 		versionPropertiesBlock.visible(true);
 		if (!versionPropertiesBlock.isVisible()) return;
+		Language language = box().languageManager().getWithMetamodel(model);
+		boolean versionInUse = box().modelManager().hasModelsWith(language, model.lastRelease());
+		boolean hasVersions = model.lastRelease() != null;
 		version.value(value);
-		versionTypeSelector.selection("revisionOption");
+		versionTypeSelector.clear();
+		versionTypeSelector.addAll((versionInUse || !hasVersions ? Versions : AllVersions).stream().map(this::translate).toList());
+		versionTypeSelector.selection(translate("Revision"));
 		versionTypeSelector.readonly(value.equals("1.0.0"));
 	}
 
@@ -102,9 +111,9 @@ public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
 
 	private VersionType versionType(SelectionEvent event) {
 		String selected = (String) event.selection().getFirst();
-		if (selected.equals("revisionOption")) return VersionType.Revision;
-		if (selected.equals("minorVersionOption")) return VersionType.MinorVersion;
-		if (selected.equals("snapshotVersionOption")) return VersionType.SnapshotVersion;
+		if (selected.equals(translate("Revision"))) return VersionType.Revision;
+		if (selected.equals(translate("Minor version"))) return VersionType.MinorVersion;
+		if (selected.equals(translate("Replace existing"))) return VersionType.SnapshotVersion;
 		return VersionType.MajorVersion;
 	}
 

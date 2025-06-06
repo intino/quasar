@@ -51,7 +51,7 @@ Template modelsTemplate as Relative(height=100%, width=100%)
 						Text description
 						Text owner as Labeled("Owner")
 						Text language as Labeled("DSL")
-						Date createDate as Labeled("Create date")
+						Date createDate as Labeled("Created")
 
 Template modelTemplate as Relative(height=100%, width=100%)
 
