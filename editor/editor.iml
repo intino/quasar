@@ -89,7 +89,6 @@
     <orderEntry type="library" name="Intino: org.java-websocket:Java-WebSocket:1.5.3" level="project" />
     <orderEntry type="library" name="Intino: org.apache.tika:tika-core:3.1.0" level="project" />
     <orderEntry type="library" name="Intino: org.slf4j:slf4j-api:2.0.16" level="project" />
-    <orderEntry type="library" name="Intino: systems.intino.datamarts:subject-store:2.0.11" level="project" />
     <orderEntry type="library" name="Intino: com.tdunning:t-digest:3.3" level="project" />
     <orderEntry type="library" name="Intino: org.yaml:snakeyaml:2.4" level="project" />
     <orderEntry type="library" name="Intino: com.github.ben-manes.caffeine:caffeine:3.1.8" level="project" />
@@ -135,5 +134,6 @@
     <orderEntry type="library" name="Intino: io.intino:language-server:1.0.3" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:ui-framework:6.5.9" level="project" />
     <orderEntry type="library" name="Intino: io.quassar:editor-archetype:1.0.1" level="project" />
+    <orderEntry type="library" name="Intino: systems.intino.datamarts:subject-store:2.0.21" level="project" />
   </component>
 </module>

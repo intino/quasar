@@ -20,6 +20,10 @@ import static java.util.Collections.emptyList;
 
 public class LanguageHelper {
 
+	public static boolean hasExamples(Language language) {
+		return language.lastRelease() != null && !language.lastRelease().examples().isEmpty();
+	}
+
 	public static void generateLogo(String language, File destiny) {
 		try {
 			BufferedImage image = new LanguageLogoGenerator().put(language.charAt(0)).image();

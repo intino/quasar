@@ -22,6 +22,13 @@ public class PermissionsHelper {
 		return isOwnerOrCollaborator(model, session, box);
 	}
 
+	public static boolean hasAccessToMetamodel(Language language, UISession session, EditorBox box) {
+		if (language.metamodel() == null) return false;
+		Model metamodel = box.modelManager().get(language.metamodel());
+		if (metamodel == null) return false;
+		return isOwnerOrCollaborator(metamodel, session, box);
+	}
+
 	public static boolean hasPermissions(Language language, UISession session, EditorBox box) {
 		if (language == null) return false;
 		if (language.isPublic()) return true;
@@ -103,7 +110,7 @@ public class PermissionsHelper {
 
 	public static boolean canEditSettings(Model model, String release, UISession session, EditorBox box) {
 		if (!hasPermissions(model, session, box)) return false;
-		return isOwnerOrCollaborator(model, session, box);
+		return !model.isTemplate() && isOwnerOrCollaborator(model, session, box);
 	}
 
 	public static boolean canForge(Model model, Language language, String release, UISession session, EditorBox box) {

@@ -7,10 +7,7 @@ import io.quassar.editor.box.commands.LanguageCommands;
 import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.ui.displays.HelpEditor;
 import io.quassar.editor.box.ui.types.LanguageTab;
-import io.quassar.editor.box.util.ModelHelper;
-import io.quassar.editor.box.util.NameHelper;
 import io.quassar.editor.box.util.PathHelper;
-import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
@@ -38,13 +35,24 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 		this.createVersionListener = listener;
 	}
 
+	public void notifyRemove(Model model) {
+		modelsCatalog.reload();
+	}
+
+	public void notifyChange(Model model) {
+		if (!model.isExample()) return;
+		if (model.language().languageId().equals(language.name())) return;
+		modelsCatalog.refresh(model);
+	}
+
 	@Override
 	public void init() {
 		super.init();
 		createVersion.onExecute(e -> createVersion());
 		createTemplate.onExecute(e -> createTemplate());
-		modelsCatalog.onCreateModel(e -> createModel());
 		helpDialog.onOpen(e -> refreshHelpDialog());
+		examplesDialog.onOpen(e -> refreshExamplesDialog());
+		modelsCatalog.onCreateModel(e -> createModel());
 		startModeling.onExecute(e -> startModeling());
 	}
 
@@ -58,7 +66,6 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 		refreshNoVersionsBlock(hasCommits);
 		if (!versionBlock.isVisible()) return;
 		refreshTemplate();
-		refreshExamples();
 	}
 
 	private boolean hasCommits() {
@@ -80,9 +87,7 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 		templateDefined.visible(template != null);
 		templateNotDefined.visible(template == null);
 		if (template == null) return;
-		templateLink.title(ModelHelper.label(template, language(), box()));
 		templateLink.site(PathHelper.modelUrl(template, Model.DraftRelease, session()));
-		templateCreateDate.value(template.createDate());
 	}
 
 	private void refreshExamples() {
@@ -127,11 +132,13 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 	}
 
 	private void startModeling() {
-		LanguageRelease release = language.release(this.release);
-		String name = ModelHelper.proposeName();
-		Model model = box().commands(ModelCommands.class).create(name, name, translate("(no description)"), GavCoordinates.fromString(language, release), username(), username());
-		openModel.site(PathHelper.modelUrl(model, session()));
+		openModel.site(PathHelper.languageUrl(language, session()));
 		openModel.launch();
+	}
+
+	private void refreshExamplesDialog() {
+		examplesDialog.title(translate("Examples of %s %s").formatted(language.name(), release));
+		refreshExamples();
 	}
 
 }

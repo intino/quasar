@@ -13,6 +13,7 @@ import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
 import io.quassar.editor.model.User;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -104,9 +105,17 @@ public class ModelsDatasource extends PageDatasource<Model> {
 	}
 
 	private List<Model> sort(List<Model> models, List<String> sortings) {
-		if (sortings.contains("Language")) return models.stream().sorted(Comparator.comparing(m -> m.language() != null ? m.language().version() : "z")).toList();
-		else if (sortings.contains("Owner")) return models.stream().sorted(Comparator.comparing(m -> m.owner() != null ? m.owner() : "z")).toList();
-		return models.stream().sorted(Comparator.comparing(m -> m.name().toLowerCase())).toList();
+		if (sortings.contains("last modified")) return models.stream().sorted(lastModifiedComparator()).toList();
+		return models.stream().sorted(Comparator.comparing(Model::createDate)).toList();
+	}
+
+	private Comparator<? super Model> lastModifiedComparator() {
+		return (Comparator<Model>) (o1, o2) -> {
+			Instant instant1 = o1.updateDate();
+			Instant instant2 = o2.updateDate();
+			if (instant1 == null || instant2 == null) return -1;
+			return instant2.compareTo(instant1);
+		};
 	}
 
 	private void saveParameters(String condition, List<Filter> filters) {

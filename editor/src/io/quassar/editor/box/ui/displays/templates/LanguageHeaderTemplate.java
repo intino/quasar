@@ -3,6 +3,7 @@ package io.quassar.editor.box.ui.displays.templates;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.ui.types.LanguageView;
+import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.Language;
 
@@ -53,8 +54,9 @@ public class LanguageHeaderTemplate extends AbstractLanguageHeaderTemplate<Edito
 	}
 
 	private void refreshExamples() {
-		examplesText.visible(tab == null || tab == LanguageTab.Examples);
-		examplesLink.visible(tab == null || tab == LanguageTab.Models);
+		boolean hasExamples = LanguageHelper.hasExamples(language);
+		examplesText.visible(hasExamples && (tab == null || tab == LanguageTab.Examples));
+		examplesLink.visible(hasExamples && (tab == null || tab == LanguageTab.Models));
 		if (examplesLink.isVisible()) examplesLink.address(a -> PathHelper.languagePath(a, language, LanguageTab.Examples, view));
 	}
 

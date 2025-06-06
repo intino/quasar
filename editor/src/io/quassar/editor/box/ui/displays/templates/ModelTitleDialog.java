@@ -39,6 +39,7 @@ public class ModelTitleDialog extends AbstractModelTitleDialog<EditorBox> {
 		super.init();
 		dialog.onOpen(e -> refreshDialog());
 		addDialog.onOpen(e -> refreshAddDialog());
+		simpleTitleBlock.onInit(e -> initSimpleTitleBlock());
 		simpleTitleBlock.onShow(e -> refreshSimpleTitleBlock());
 		qualifiedTitleBlock.onInit(e -> initQualifiedTitleBlock());
 		qualifiedTitleBlock.onShow(e -> refreshQualifiedTitleBlock());
@@ -48,7 +49,16 @@ public class ModelTitleDialog extends AbstractModelTitleDialog<EditorBox> {
 	}
 
 	private void refreshDialog() {
+		typeSelector.visible(!model.isExample());
+		if (!typeSelector.isVisible()) {
+			simpleTitleBlock.show();
+			return;
+		}
 		typeSelector.select(model.isTitleQualified() ? "qualifiedOption" : "simpleOption");
+	}
+
+	private void initSimpleTitleBlock() {
+		titleField.onEnterPress(e -> saveTitle());
 	}
 
 	private void refreshSimpleTitleBlock() {

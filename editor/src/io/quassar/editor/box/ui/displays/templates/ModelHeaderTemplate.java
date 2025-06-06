@@ -101,13 +101,37 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		refreshToolbar();
 		languageLogo.visible(language != null);
 		if (languageLogo.isVisible()) languageLogo.value(LanguageHelper.logo(language, box()));
-		helpTrigger.visible(language != null);
-		languageTrigger.visible(language != null);
-		if (language == null) return;
+		refreshHelpTrigger(language);
+		refreshMetamodelTrigger(language);
+		refreshLanguageTrigger(language);
+		refreshCloseTrigger(language);
+	}
+
+	private void refreshHelpTrigger(Language language) {
+		helpTrigger.visible(language != null && !PermissionsHelper.hasAccessToMetamodel(language, session(), box()));
+		if (!helpTrigger.isVisible()) return;
 		helpTrigger.title(LanguageHelper.title(model.language()));
 		helpTrigger.site(PathHelper.languageReleaseHelp(language, model.language().version()));
+	}
+
+	private void refreshMetamodelTrigger(Language language) {
+		metamodelTrigger.visible(language != null && PermissionsHelper.hasAccessToMetamodel(language, session(), box()));
+		if (!metamodelTrigger.isVisible()) return;
+		metamodelTrigger.title(LanguageHelper.title(model.language()));
+		metamodelTrigger.site(PathHelper.modelUrl(box().modelManager().get(language.metamodel()), model.language().version(), session()));
+	}
+
+	private void refreshLanguageTrigger(Language language) {
+		languageTrigger.visible(language != null && !model.isTemplate() && !PathHelper.comesFromForge(session()));
+		if (!languageTrigger.isVisible() || language == null) return;
 		languageTrigger.title(translate("Goto %s").formatted(LanguageHelper.title(model.language())));
 		languageTrigger.address(path -> PathHelper.languagePath(path, language));
+	}
+
+	private void refreshCloseTrigger(Language language) {
+		closeTrigger.visible(language != null && model.isTemplate() || PathHelper.comesFromForge(session()));
+		if (!closeTrigger.isVisible()) return;
+		closeTrigger.title(translate(model.isTemplate() ? "Template" : "Example"));
 	}
 
 	private void refreshToolbar() {
@@ -191,7 +215,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		updateStep(Step.Forge);
 	}
 
-	private static final String DefaultExecutionName = "4. forge";
+	private static final String DefaultExecutionName = "4. execute";
 	private String executionName() {
 		Language language = box().languageManager().get(model.language());
 		if (language == null) return translate(DefaultExecutionName);

@@ -104,7 +104,17 @@ public class PathHelper {
 	}
 
 	public static String modelUrl(Model model, UISession session) {
+		if (model == null) return null;
 		return modelUrl(model, null, session);
+	}
+
+	public static String modelUrlFromForge(Model model, UISession session) {
+		if (model == null) return null;
+		return modelUrl(model, null, session) + "?from=forge";
+	}
+
+	public static boolean comesFromForge(UISession session) {
+		return session.browser().requestUrl().toLowerCase().contains("from=forge");
 	}
 
 	public static String modelUrl(Model model, String release, UISession session) {

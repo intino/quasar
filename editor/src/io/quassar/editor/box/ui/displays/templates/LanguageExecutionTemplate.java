@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class LanguageExecutionTemplate extends AbstractLanguageExecutionTemplate<EditorBox> {
@@ -147,15 +148,6 @@ public class LanguageExecutionTemplate extends AbstractLanguageExecutionTemplate
 	private void initLocalEnvironmentBlock() {
 		localField.onChange(e -> saveLocalConfiguration(e.value()));
 		installationField.onChange(e -> saveInstallationUrl(e.value()));
-		insertTemplate.onExecute(e -> insertTemplate());
-	}
-
-	private void insertTemplate() {
-		String selectedLanguage = !templateSelector.selection().isEmpty() ? templateSelector.selection().getFirst() : null;
-		if (selectedLanguage == null) return;
-		localField.value(templateContent(selectedLanguage));
-		saveLocalConfiguration(localField.value());
-		localField.focus();
 	}
 
 	private String templateContent(String language) {
@@ -174,13 +166,37 @@ public class LanguageExecutionTemplate extends AbstractLanguageExecutionTemplate
 		LanguageExecution execution = execution();
 		localField.value(execution != null ? execution.content(Type.Local) : null);
 		installationField.value(execution != null ? execution.installationUrl() : null);
-		templateSelector.clear();
-		templateSelector.addAll(Languages);
-		templateSelector.selection(Languages.getFirst());
+		exampleTemplates.clear();
+		Languages.forEach(l -> fill(l, exampleTemplates.add()));
+	}
+
+	private void fill(String language, ExampleTemplate display) {
+		display.templateLanguage(language);
+		display.onClick(e -> insertTemplate(language));
+		display.refresh();
+	}
+
+	private void insertTemplate(String templateLanguage) {
+		if (templateLanguage == null) return;
+		localField.value(templateContent(templateLanguage));
+		saveLocalConfiguration(localField.value());
+		localField.focus();
+		if (installationField.value() != null && !installationField.value().isEmpty() && InstallationUrls.values().stream().noneMatch(i -> i.equalsIgnoreCase(installationField.value()))) return;
+		installationField.value(defaultInstallation(templateLanguage));
+	}
+
+	private static final Map<String, String> InstallationUrls = Map.of(
+		"Docker", "https://docs.docker.com/engine/install/",
+		"Maven", "https://maven.apache.org/install.html",
+		"Python", "https://docs.python.org"
+	);
+	private String defaultInstallation(String templateLanguage) {
+		return InstallationUrls.getOrDefault(templateLanguage, "");
 	}
 
 	private void initRemoteEnvironmentBlock() {
 		remoteField.onChange(e -> saveRemoteConfiguration(e.value()));
+		copyRemoteExample.onExecute(e -> { remoteField.value("https://your-application.com/run?model=[commit]"); remoteField.focus(); });
 	}
 
 	private void refreshRemoteEnvironmentBlock() {

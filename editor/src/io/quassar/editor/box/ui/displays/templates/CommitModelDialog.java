@@ -54,24 +54,27 @@ public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
 	}
 
 	private void refreshDialog() {
-		String value = ModelHelper.nextVersion(model, VersionType.Revision, box());
-		dialog.title("Commit %s".formatted(ModelHelper.label(model, language(), box())));
-		refreshVersionBlock(value);
-	}
-
-	private static final List<String> AllVersions = List.of("Major version", "Minor version", "Revision", "Replace existing");
-	private static final List<String> Versions = List.of("Major version", "Minor version", "Revision");
-	private void refreshVersionBlock(String value) {
-		versionPropertiesBlock.visible(true);
-		if (!versionPropertiesBlock.isVisible()) return;
 		Language language = box().languageManager().getWithMetamodel(model);
 		boolean versionInUse = box().modelManager().hasModelsWith(language, model.lastRelease());
 		boolean hasVersions = model.lastRelease() != null;
+		List<String> options = (versionInUse || !hasVersions ? Versions : AllVersions).stream().map(this::translate).toList();
+		VersionType type = versionInUse && hasVersions ? VersionType.Revision : VersionType.SnapshotVersion;
+		dialog.title("Commit %s".formatted(ModelHelper.label(model, language(), box())));
+		refreshVersionBlock(type, options);
+	}
+
+	private static final List<String> AllVersions = List.of("Replace existing", "Revision", "Minor version", "Major version");
+	private static final List<String> Versions = List.of("Revision", "Minor version", "Major version");
+	private void refreshVersionBlock(VersionType type, List<String> options) {
+		versionPropertiesBlock.visible(true);
+		if (!versionPropertiesBlock.isVisible()) return;
+		String value = ModelHelper.nextVersion(model, type, box());
 		version.value(value);
 		versionTypeSelector.clear();
-		versionTypeSelector.addAll((versionInUse || !hasVersions ? Versions : AllVersions).stream().map(this::translate).toList());
-		versionTypeSelector.selection(translate("Revision"));
+		versionTypeSelector.addAll(options);
+		versionTypeSelector.selection(type == VersionType.Revision ? translate("Revision") : translate("Replace existing"));
 		versionTypeSelector.readonly(value.equals("1.0.0"));
+		version.value(ModelHelper.nextVersion(model, type, box()));
 	}
 
 	private void commit() {

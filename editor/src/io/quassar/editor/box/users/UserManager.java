@@ -22,7 +22,7 @@ public class UserManager {
 	}
 
 	public List<User> users() {
-		return subjectStore.subjects().type(SubjectHelper.UserType).isRoot().collect().stream().map(this::get).toList();
+		return subjectStore.query().isType(SubjectHelper.UserType).isRoot().collect().stream().map(this::get).toList();
 	}
 
 	public boolean exists(String key) {
@@ -31,7 +31,7 @@ public class UserManager {
 
 	public User get(String key) {
 		Subject subject = subjectStore.open(SubjectHelper.userPath(key));
-		if (subject == null || subject.isNull()) subject = subjectStore.subjects().type(SubjectHelper.UserType).where("name").equals(key).collect().stream().findFirst().orElse(null);
+		if (subject == null || subject.isNull()) subject = subjectStore.query().isType(SubjectHelper.UserType).where("name").equals(key).collect().stream().findFirst().orElse(null);
 		return get(subject);
 	}
 

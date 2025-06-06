@@ -14,7 +14,6 @@ Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, heigh
 
 		Block(layout=Horizontal CenterJustified Wrap, format=landingSection)
 			Block(layout=Vertical Center, format=block)
-				Text(value="The model is the product", format=blockHint)
 				Text(value="Model with a DSL", format=blockTitle doubleAirBottom)
 				Text(value="Use existing DSL from our community", format=blockDescription)
 				Text(value="to build your models", format=blockDescription)
@@ -36,7 +35,6 @@ Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, heigh
 			Block(layout=Vertical Center) > Block(format=doubleAirLeft doubleAirRight doubleAirBottom)
 
 			Block(layout=Vertical Center, format=block)
-				Text(value="A DSL for every domain", format=blockHint)
 				Text(value="Build your own DSL", format=blockTitle doubleAirBottom)
 				Text(value="Design it as a model using metta", format=blockDescription)
 				Text(value="No code required", format=blockDescription)
@@ -56,13 +54,10 @@ Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, heigh
 						Text(value="Make your DSL available to other users", format=stepDescription)
 
 		Block(layout=Vertical, format=landingSection) as Relative(width=60%)
-			Text(value="Select DSL", translate=true, format=landingSectionTitle)
+			Text(value="Featured DSLs", translate=true, format=landingSectionTitle)
 			Block(format=landingCatalog) > TemplateStamp(template=languagesLandingTemplate) languagesCatalog
 
 		Block(layout=Vertical Center, format=landingSection) as Relative(width=60%)
-			Text(value="Design a DSL, deliver a Solution", format=blockTitle)
-			Text(value="Model anything - Generate everything", format=blockSubtitle tripleAirBottom)
-
 			Text(value="How it works", format=blockSubtitle bold tripleAirBottom tripleAirTop)
 
 		Block(layout=Vertical Center, format=landingSubSection) as Relative(width=32%)

@@ -98,11 +98,21 @@ public class Model extends SubjectWrapper {
 	}
 
 	public Instant createDate() {
-		return Instant.parse(get("create-date"));
+		String value = get("create-date");
+		return value != null ? Instant.parse(value) : null;
 	}
 
 	public void createDate(Instant date) {
 		set("create-date", date.toString());
+	}
+
+	public Instant updateDate() {
+		String value = get("update-date");
+		return value != null ? Instant.parse(value) : null;
+	}
+
+	public void updateDate(Instant date) {
+		set("update-date", date.toString());
 	}
 
 	public List<String> collaborators() {

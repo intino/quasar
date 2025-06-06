@@ -56,6 +56,7 @@ public class LanguagesTemplate extends AbstractLanguagesTemplate<EditorBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
+		searchBox.value(null);
 		refreshLanguages();
 	}
 

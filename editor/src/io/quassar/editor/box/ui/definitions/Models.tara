@@ -9,14 +9,15 @@ Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
 	Block(layout=Horizontal Center Flexible, visible=false) contentBlock
 		Block(layout=Horizontal Flexible)
 			MaterialIconButton(title="Goto DSL", icon="ArrowUpward", size=Small, format=airRight middleAirLeft) languageTrigger as Action Addressable(EditorElements.language)
+			Link(title="", size=Small, format=airRight middleAirLeft modelExampleLink) closeTrigger as CloseApp
 			TemplateStamp(template=modelTitleViewer) titleViewer
 			Block(layout=Horizontal Center, format=doubleAirLeft)
 				Button(title="1. edit", size=Small, format=airRight, highlight=Fill) editTrigger as Action
 				Button(title="2. check", size=Small, format=airRight, highlight=Outline) checkTrigger as Action > Shortcut(key="F9", metaKeys=Control)
 				Button(title="3. commit", size=Small, format=airRight, highlight=Outline, visible=false) commitTrigger as Action Readonly
 				Button(title="4. Forge DSL", size=Small, format=airRight, highlight=Outline, visible=false) forgeTrigger as OpenSite(site=empty, target=Blank) Readonly
-				Button(title="4. Execute", size=Small, format=airRight, highlight=Outline, visible=false) executionTrigger as Action Readonly
 				SplitButton(title="draft", format=airRight minSelectorWidth, options="draft", defaultOption = "draft", visible=false) releaseSelector as Action
+				Button(title="4. Execute", size=Small, format=airRight, highlight=Outline, visible=false) executionTrigger as Action Readonly
 				Button(title="download", format=airRight, visible=false) downloadTrigger as Action
 				Button(title="clone", format=airRight, visible=false) cloneTrigger as Action
 				Block(visible=false, format=airLeft) noLanguageDefinedBlock > Text(value="A DSL has not been created for this metamodel yet", translate=true)
@@ -26,7 +27,8 @@ Template(layout=Horizontal Center, format=subHeaderStyle) modelHeaderTemplate
 
 		Block(layout=Horizontal Center EndJustified)
 			Image(format=middleAirRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) languageLogo as Absolute(height=25px)
-			Button(title="", format=airRight lowerCase) helpTrigger as OpenSite(site=empty, target=Blank)
+			Button(title="", format=airRight lowerCase, visible=false) helpTrigger as OpenSite(site=empty, target=Blank)
+			Button(title="", format=airRight lowerCase, visible=false) metamodelTrigger as OpenSite(site=empty, target=Blank)
 
 	TemplateStamp(template=commitModelDialog) commitModelDialog
 	TemplateStamp(template=languageExecutionLauncher) executionLauncher
@@ -38,7 +40,13 @@ Template modelsTemplate as Relative(height=100%, width=100%)
 
 	Block(layout=Horizontal Center, format=middleAirBottom)
 		Button(title="New", size=Small, highlight=Outline, visible=false) addModelTrigger as Action
-		SearchBox(collections=body.modelList, visible=false) searchBox
+		Block(layout=Horizontal Center Flexible, visible=false) catalogOperations
+			Block(layout=Horizontal Flexible EndJustified, format=airRight)
+				Link(title="most recent", format=airRight, visible=false) mostRecentLink
+				Text(value="most recent", format=airRight, visible=false) mostRecentText
+				Link(title="last modified", visible=false) lastModifiedLink
+				Text(value="last modified", visible=false) lastModifiedText
+			Block > SearchBox(collections=body.modelList) searchBox
 
 	Block(layout=Vertical Flexible) body
 		List(itemClass="io.quassar.editor.model.Model") modelList
@@ -49,9 +57,10 @@ Template modelsTemplate as Relative(height=100%, width=100%)
 						Link(title="", format=relative bringToFront h5 upperCase, visible=false) label as Action Addressable(EditorElements.model)
 						Link(title="", format=relative bringToFront h5 upperCase, visible=false) siteLabel as Action OpenSite(site=empty, target=Blank)
 						Text description
-						Text owner as Labeled("Owner")
-						Text language as Labeled("DSL")
-						Date createDate as Labeled("Created")
+						Block(layout=Horizontal)
+							Text(format=airRight) language as Labeled("DSL")
+							Date(format=airRight) createDate as Labeled("Created")
+							Date updateDate as Labeled("Updated")
 
 Template modelTemplate as Relative(height=100%, width=100%)
 

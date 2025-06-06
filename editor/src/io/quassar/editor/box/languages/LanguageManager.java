@@ -42,7 +42,7 @@ public class LanguageManager {
 	}
 
 	public List<Language> languages() {
-		return subjectStore.subjects().type(SubjectHelper.LanguageType).isRoot().collect().stream().map(this::get).toList();
+		return subjectStore.query().isType(SubjectHelper.LanguageType).isRoot().collect().stream().map(this::get).toList();
 	}
 
 	public Language create(String group, String name, Model metamodel, Language.Level level, String title, String description) {
@@ -184,7 +184,7 @@ public class LanguageManager {
 
 	public boolean exists(String language) {
 		if (new File(archetype.languages().root(), language).exists()) return true;
-		return !subjectStore.subjects().type(SubjectHelper.LanguageType).where("name").equals(language).collect().isEmpty();
+		return !subjectStore.query().isType(SubjectHelper.LanguageType).where("name").equals(language).collect().isEmpty();
 	}
 
 	public Language getDefault() {
@@ -192,8 +192,8 @@ public class LanguageManager {
 	}
 
 	public Language getWithMetamodel(Model model) {
-		List<systems.intino.datamarts.subjectstore.model.Subject> result = subjectStore.subjects().type(SubjectHelper.LanguageType).where("metamodel").equals(SubjectHelper.modelPath(model.id())).collect();
-		if (result.isEmpty()) result = subjectStore.subjects().type(SubjectHelper.LanguageType).where("metamodel").equals(model.id()).collect();
+		List<systems.intino.datamarts.subjectstore.model.Subject> result = subjectStore.query().isType(SubjectHelper.LanguageType).where("metamodel").equals(SubjectHelper.modelPath(model.id())).collect();
+		if (result.isEmpty()) result = subjectStore.query().isType(SubjectHelper.LanguageType).where("metamodel").equals(model.id()).collect();
 		return !result.isEmpty() ? get(result.getFirst()) : null;
 	}
 
@@ -207,7 +207,7 @@ public class LanguageManager {
 
 	public Language get(String key) {
 		Language language = get(subjectStore.open(SubjectHelper.languagePath(key)));
-		if (language == null) language = get(subjectStore.subjects().type(SubjectHelper.LanguageType).where("group").equals(Language.groupFrom(key)).where("name").equals(Language.nameFrom(key)).collect().stream().findFirst().orElse(null));
+		if (language == null) language = get(subjectStore.query().isType(SubjectHelper.LanguageType).where("group").equals(Language.groupFrom(key)).where("name").equals(Language.nameFrom(key)).collect().stream().findFirst().orElse(null));
 		return language;
 	}
 

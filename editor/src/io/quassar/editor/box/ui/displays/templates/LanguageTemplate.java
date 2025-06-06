@@ -9,6 +9,7 @@ import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
+import org.apache.commons.codec.language.bm.Lang;
 
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 	public void open(String language, String tab, String view) {
 		this.language = box().languageManager().get(language);
 		this.release = null;
-		this.tab = tab != null ? LanguageTab.from(tab) : SessionHelper.languageTab(session());
+		this.tab = tab != null ? LanguageTab.from(tab) : targetTab();
 		this.view = view != null ? LanguageView.from(view) : SessionHelper.languageView(session());
 		refresh();
 	}
@@ -149,6 +150,12 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 		LanguageRelease release = language.lastRelease();
 		String name = ModelHelper.proposeName();
 		return box().commands(ModelCommands.class).create(name, name, "", GavCoordinates.fromString(language, release), DisplayHelper.user(session()), username());
+	}
+
+	private LanguageTab targetTab() {
+		LanguageTab result = SessionHelper.languageTab(session());
+		if (result == LanguageTab.Examples && !LanguageHelper.hasExamples(language)) return LanguageTab.Models;
+		return result;
 	}
 
 }

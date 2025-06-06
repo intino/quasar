@@ -75,12 +75,12 @@ Template(layout=Horizontal) commitModelDialog
         Block(layout=Vertical) as Relative(height=100%, offsetHeight=40px)
 
 			Block(layout=Vertical, visible=false) versionPropertiesBlock
-				Block(layout=Vertical Flexible CenterCenter, format=bordered topSpaced bottomSpaced)
+				Block(layout=Vertical EndJustified)
+					Selector versionTypeSelector as RadioBox
+
+				Block(layout=Vertical Flexible CenterCenter, format=bordered topSpaced bottomSpaced airTop)
 					Text(value="New version number", format=middleAirBottom)
 					Text(format=veryLargeFontSize) version
-
-				Block(layout=Vertical EndJustified, format=doubleAirTop)
-					Selector versionTypeSelector as RadioBox
 
 		Divider
         Block(layout=Horizontal EndJustified)
@@ -112,6 +112,7 @@ Template(layout=Horizontal) downloadModelDialog
             Button(title="Close", size=Small, highlight=Fill) as CloseDialog(dialog)
 
 Template modelSettingsEditor
+	Link(title="") closeTrigger as CloseApp
 
 	Selector settingsTabSelector as Tabs(format=tabsStyle)
 		Text(value="General") generalOption as Option
@@ -139,7 +140,7 @@ Template modelSettingsEditor
 				Text(value="Remove model", translate=true, format=h5)
 				Text(value="Removed models cannot be restored!", format=greyColor airBottom, translate=true)
 				Block(layout=Horizontal) > Button(title="Remove model...", highlight=Fill) removeModel as Action Readonly Affirmed("Are you sure to remove model?")
-			Block(format=doubleAirTop)
+			Block(format=doubleAirTop, visible=false) cloneModelBlock
 				Text(value="Clone model", translate=true, format=h5)
 				Text(value="Copy both model files and resource files to a new model", format=greyColor airBottom, translate=true)
 				Block(layout=Horizontal) > Button(title="Clone model...", highlight=Fill) cloneModel as Action Affirmed("Cloning the model will create a copy and open it. Do you want to proceed?")

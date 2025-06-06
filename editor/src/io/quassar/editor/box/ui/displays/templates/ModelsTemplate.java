@@ -14,7 +14,7 @@ import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
 
 import java.util.Collections;
-import java.util.function.Consumer;
+import java.util.List;
 import java.util.function.Function;
 
 public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
@@ -49,21 +49,37 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 		this.createModelListener = listener;
 	}
 
+	public void refresh(Model model) {
+		int index = modelList.findItem(i -> i instanceof Model && ((Model)i).id().equals(model.id()));
+		if (index == -1) return;
+		modelList.refresh(index, model);
+	}
+
 	@Override
 	public void init() {
 		super.init();
 		addModelTrigger.onExecute(e -> notifyCreateModel());
 		modelList.onAddItem(this::refresh);
+		mostRecentLink.onExecute(e -> updateSorting("most recent"));
+		lastModifiedLink.onExecute(e -> updateSorting("last modified"));
+	}
+
+	public void reload() {
+		ModelsDatasource source = new ModelsDatasource(box(), session(), language, language.release(this.release.version()), tab);
+		modelList.source(source);
+		modelList.reload();
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
+		refreshSorting("most recent");
+		searchBox.condition(null);
 		addModelTrigger.visible(createModelListener != null && PermissionsHelper.canAddModel(language, session(), box()));
 		ModelsDatasource source = new ModelsDatasource(box(), session(), language, release, tab);
 		modelList.source(source);
 		modelList.reload();
-		searchBox.visible(source.itemCount(null, Collections.emptyList()) > DisplayHelper.MinItemsCount);
+		catalogOperations.visible(source.itemCount(null, Collections.emptyList()) > DisplayHelper.MinItemsCount);
 	}
 
 	private void refresh(AddCollectionItemEvent event) {
@@ -79,14 +95,13 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 		display.siteLabel.visible(mode == Mode.Forge);
 		if (display.siteLabel.isVisible()) {
 			display.siteLabel.title(ModelHelper.label(model, language(), box()));
-			display.siteLabel.site(PathHelper.modelUrl(model, session()));
+			display.siteLabel.site(PathHelper.modelUrlFromForge(model, session()));
 		}
 		display.description.value(model.description() != null && !model.description().equals(translate("(no description)")) ? model.description() : null);
-		display.owner.visible(true);
-		if (display.owner.isVisible()) display.owner.value(model.owner());
 		display.language.visible(true);//(tab == LanguageTab.Examples);
 		if (display.language.isVisible()) display.language.value(model.language().artifactId() + " " + model.language().version());
 		display.createDate.value(model.createDate());
+		display.updateDate.value(model.updateDate());
 	}
 
 	private void notifyCreateModel() {
@@ -94,9 +109,21 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 		Model model = createModelListener.apply(true);
 		if (mode == Mode.Normal) notifier.dispatch(PathHelper.startingModelPath(model));
 		else {
-			modelTrigger.site(PathHelper.modelUrl(model, session()));
+			modelTrigger.site(PathHelper.modelUrlFromForge(model, session()));
 			modelTrigger.launch();
 		}
+	}
+
+	private void updateSorting(String sorting) {
+		modelList.sortings(List.of(sorting));
+		refreshSorting(sorting);
+	}
+
+	private void refreshSorting(String sorting) {
+		mostRecentLink.visible(!sorting.equals("most recent"));
+		mostRecentText.visible(sorting.equals("most recent"));
+		lastModifiedLink.visible(!sorting.equals("last modified"));
+		lastModifiedText.visible(sorting.equals("last modified"));
 	}
 
 }

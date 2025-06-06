@@ -48,7 +48,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	public void open(String model, String release, String view, String file, String position, boolean showHelp) {
 		this.model = box().modelManager().get(model);
 		this.release = release != null ? release : Model.DraftRelease;
-		this.selectedView = view != null ? ModelView.from(view) : SessionHelper.modelView(session());
+		this.selectedView = view != null ? ModelView.from(view) : ModelView.Model;
 		this.modelContainer = this.model != null ? box().modelManager().modelContainer(this.model, this.release) : null;
 		this.selectedFile = file != null && modelContainer != null ? modelContainer.file(file) : null;
 		this.selectedPosition = position != null ? FilePosition.from(position) : null;

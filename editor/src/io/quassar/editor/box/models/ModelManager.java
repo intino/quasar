@@ -45,27 +45,27 @@ public class ModelManager {
 	}
 
 	public List<Model> models(Language language, String owner) {
-		Map<String, Subject> ownerSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType), "dsl-group", language.group()).where("dsl-name").equals(language.name()).where("owner").equals(owner).where("visibility").equals(Visibility.Private.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
-		Map<String, Subject> contributorSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType),"dsl-group", language.group()).where("dsl-name").equals(language.name()).where("collaborator").equals(owner).where("visibility").equals(Visibility.Private.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
-		Map<String, Subject> quassarSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType), "dsl-group", language.group()).where("dsl-name").equals(language.name()).where("visibility").equals(Visibility.Public.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> ownerSubjects = mapOf(with(subjectStore.query().isType(SubjectHelper.ModelType), "dsl-group", language.group()).where("dsl-name").equals(language.name()).where("owner").equals(owner).where("visibility").equals(Visibility.Private.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> contributorSubjects = mapOf(with(subjectStore.query().isType(SubjectHelper.ModelType),"dsl-group", language.group()).where("dsl-name").equals(language.name()).where("collaborator").equals(owner).where("visibility").equals(Visibility.Private.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> quassarSubjects = mapOf(with(subjectStore.query().isType(SubjectHelper.ModelType), "dsl-group", language.group()).where("dsl-name").equals(language.name()).where("visibility").equals(Visibility.Public.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
 		ownerSubjects.putAll(contributorSubjects);
 		ownerSubjects.putAll(quassarSubjects);
 		return ownerSubjects.values().stream().map(this::get).toList();
 	}
 
 	public List<Model> models(Language language) {
-		Map<String, Subject> ownerSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType),"dsl-group", language.group()).where("dsl-name").equals(language.name()).collect());
-		Map<String, Subject> contributorSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType),"dsl-group", language.group()).where("dsl-name").equals(language.name()).collect());
-		Map<String, Subject> quassarSubjects = mapOf(with(subjectStore.subjects().type(SubjectHelper.ModelType),"dsl-group", language.group()).where("dsl-name").equals(language.name()).collect());
+		Map<String, Subject> ownerSubjects = mapOf(with(subjectStore.query().isType(SubjectHelper.ModelType),"dsl-group", language.group()).where("dsl-name").equals(language.name()).collect());
+		Map<String, Subject> contributorSubjects = mapOf(with(subjectStore.query().isType(SubjectHelper.ModelType),"dsl-group", language.group()).where("dsl-name").equals(language.name()).collect());
+		Map<String, Subject> quassarSubjects = mapOf(with(subjectStore.query().isType(SubjectHelper.ModelType),"dsl-group", language.group()).where("dsl-name").equals(language.name()).collect());
 		ownerSubjects.putAll(contributorSubjects);
 		ownerSubjects.putAll(quassarSubjects);
 		return ownerSubjects.values().stream().map(this::get).toList();
 	}
 
 	public List<Model> models(String owner) {
-		Map<String, Subject> ownerSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).where("owner").equals(owner).where("visibility").equals(Visibility.Private.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
-		Map<String, Subject> contributorSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).where("collaborator").equals(owner).where("visibility").equals(Visibility.Private.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
-		Map<String, Subject> quassarSubjects = mapOf(subjectStore.subjects().type(SubjectHelper.ModelType).where("visibility").equals(Visibility.Public.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> ownerSubjects = mapOf(subjectStore.query().isType(SubjectHelper.ModelType).where("owner").equals(owner).where("visibility").equals(Visibility.Private.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> contributorSubjects = mapOf(subjectStore.query().isType(SubjectHelper.ModelType).where("collaborator").equals(owner).where("visibility").equals(Visibility.Private.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> quassarSubjects = mapOf(subjectStore.query().isType(SubjectHelper.ModelType).where("visibility").equals(Visibility.Public.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
 		ownerSubjects.putAll(contributorSubjects);
 		ownerSubjects.putAll(quassarSubjects);
 		return ownerSubjects.values().stream().map(this::get).toList();
@@ -77,18 +77,18 @@ public class ModelManager {
 	}
 
 	public List<Model> models(String project, String module, String owner) {
-		List<Subject> result = subjectStore.subjects().type(SubjectHelper.ModelType).where("owner").equals(owner).where("project").equals(project).where("module").equals(module).collect();
+		List<Subject> result = subjectStore.query().isType(SubjectHelper.ModelType).where("owner").equals(owner).where("project").equals(project).where("module").equals(module).collect();
 		return result.stream().map(this::get).toList();
 	}
 
 	public List<String> projects(String owner) {
-		List<Subject> result = subjectStore.subjects().type(SubjectHelper.ModelType).where("owner").equals(owner).collect();
+		List<Subject> result = subjectStore.query().isType(SubjectHelper.ModelType).where("owner").equals(owner).collect();
 		return result.stream().map(s -> s.get("project")).filter(r -> r != null && !r.isEmpty()).distinct().toList();
 	}
 
 	public List<String> modules(String project, String owner) {
 		if (project == null) return emptyList();
-		List<Subject> result = subjectStore.subjects().type(SubjectHelper.ModelType).where("owner").equals(owner).where("project").equals(project).collect();
+		List<Subject> result = subjectStore.query().isType(SubjectHelper.ModelType).where("owner").equals(owner).where("project").equals(project).collect();
 		return result.stream().map(s -> s.get("module")).filter(r -> r != null && !r.isEmpty()).distinct().toList();
 	}
 
@@ -97,19 +97,20 @@ public class ModelManager {
 	}
 
 	public Model find(String commit) {
-		Subject subject = subjectStore.subjects().type(SubjectHelper.ModelReleaseType).where("commit").equals(commit).collect().stream().findFirst().orElse(null);
+		Subject subject = subjectStore.query().isType(SubjectHelper.ModelReleaseType).where("commit").equals(commit).collect().stream().findFirst().orElse(null);
 		if (subject == null || subject.isNull()) return null;
 		return get(subject.parent());
 	}
 
 	public Model get(String key) {
+		if (key == null) return null;
 		Subject subject = subjectStore.open(SubjectHelper.modelPath(key));
-		if (subject == null || subject.isNull()) subject = subjectStore.subjects().type(SubjectHelper.ModelType).where("name").equals(key).collect().stream().findFirst().orElse(null);
+		if (subject == null || subject.isNull()) subject = subjectStore.query().isType(SubjectHelper.ModelType).where("name").equals(key).collect().stream().findFirst().orElse(null);
 		return get(subject);
 	}
 
 	public Model getTemplate(Language language, LanguageRelease release) {
-		return get(subjectStore.subjects().type(SubjectHelper.ModelType).where("usage").equals(Model.Usage.Template.name()).where("dsl-group").equals(language.group()).where("dsl-name").equals(language.name()).where("dsl-version").equals(release.version()).collect().stream().findFirst().orElse(null));
+		return get(subjectStore.query().isType(SubjectHelper.ModelType).where("usage").equals(Model.Usage.Template.name()).where("dsl-group").equals(language.group()).where("dsl-name").equals(language.name()).where("dsl-version").equals(release.version()).collect().stream().findFirst().orElse(null));
 	}
 
 	public List<String> releases(Model model) {
@@ -122,7 +123,7 @@ public class ModelManager {
 	}
 
 	public ModelRelease findRelease(String commit) {
-		return releaseOf(subjectStore.subjects().type(SubjectHelper.ModelReleaseType).where("commit").equals(commit).collect().stream().findFirst().orElse(null));
+		return releaseOf(subjectStore.query().isType(SubjectHelper.ModelReleaseType).where("commit").equals(commit).collect().stream().findFirst().orElse(null));
 	}
 
 	public Model create(String id, String name, String title, String description, GavCoordinates language, Model.Usage usage, String owner) {
@@ -135,6 +136,7 @@ public class ModelManager {
 		model.isPrivate(true);
 		model.usage(usage);
 		model.createDate(Instant.now());
+		model.updateDate(Instant.now());
 		return model;
 	}
 
@@ -146,6 +148,7 @@ public class ModelManager {
 		result.isPrivate(true);
 		result.usage(Model.Usage.EndUser);
 		result.createDate(Instant.now());
+		model.updateDate(Instant.now());
 		new WorkspaceWriter(workspace(model, release), server(model, release)).clone(result, server(result, Model.DraftRelease));
 		return get(id);
 	}
@@ -248,23 +251,28 @@ public class ModelManager {
 	}
 
 	public io.quassar.editor.box.models.File createFile(Model model, String name, InputStream content, io.quassar.editor.box.models.File parent) {
+		model.updateDate(Instant.now());
 		return new WorkspaceWriter(workspace(model, Model.DraftRelease), server(model, Model.DraftRelease)).createFile(name, content, parent);
 	}
 
 	public io.quassar.editor.box.models.File createFolder(Model model, String name, io.quassar.editor.box.models.File parent) {
+		model.updateDate(Instant.now());
 		return new WorkspaceWriter(workspace(model, Model.DraftRelease), server(model, Model.DraftRelease)).createFolder(name, parent);
 	}
 
 	public void save(Model model, io.quassar.editor.box.models.File file, InputStream content) {
+		model.updateDate(Instant.now());
 		new WorkspaceWriter(workspace(model, Model.DraftRelease), server(model, Model.DraftRelease)).save(file, content);
 	}
 
 	public io.quassar.editor.box.models.File rename(Model model, io.quassar.editor.box.models.File file, String newName) {
+		model.updateDate(Instant.now());
 		return new WorkspaceWriter(workspace(model, Model.DraftRelease), server(model, Model.DraftRelease)).rename(file, newName);
 	}
 
 	public io.quassar.editor.box.models.File move(Model model, io.quassar.editor.box.models.File file, io.quassar.editor.box.models.File directory) {
 		try {
+			model.updateDate(Instant.now());
 			return new WorkspaceWriter(workspace(model, Model.DraftRelease), server(model, Model.DraftRelease)).move(file, directory);
 		} catch (Exception e) {
 			Logger.error(e);
@@ -273,6 +281,7 @@ public class ModelManager {
 	}
 
 	public void remove(Model model, io.quassar.editor.box.models.File file) {
+		model.updateDate(Instant.now());
 		new WorkspaceWriter(workspace(model, Model.DraftRelease), server(model, Model.DraftRelease)).remove(file);
 	}
 
@@ -300,7 +309,7 @@ public class ModelManager {
 
 	public boolean hasModelsWith(Language language, ModelRelease modelRelease) {
 		if (language == null || modelRelease == null) return false;
-		return !subjectStore.subjects().type(SubjectHelper.ModelType).where("dsl-name").equals(language.name()).where("dsl-version").equals(modelRelease.version()).where("usage").equals(Model.Usage.EndUser.name()).collect().isEmpty();
+		return !subjectStore.query().isType(SubjectHelper.ModelType).where("dsl-name").equals(language.name()).where("dsl-version").equals(modelRelease.version()).where("usage").equals(Model.Usage.EndUser.name()).collect().isEmpty();
 	}
 
 	private IntinoLanguageServer server(Model model, String release) {

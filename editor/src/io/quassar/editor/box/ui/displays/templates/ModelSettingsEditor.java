@@ -12,7 +12,9 @@ import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
 import io.quassar.editor.model.User;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -59,8 +61,7 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<EditorBox> 
 	@Override
 	public void refresh() {
 		super.refresh();
-		Language language = box().languageManager().get(model);
-		if (language == null) settingsTabSelector.hideOption("languageOption");
+		if (model.isExample()) settingsTabSelector.hideOption("collaboratorsOption");
 		settingsTabSelector.select(0);
 	}
 
@@ -83,7 +84,7 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<EditorBox> 
 		editTitle.readonly(!PermissionsHelper.canEditTitle(model, box()));
 		modelTitleField.value(ModelHelper.label(model, language(), box()));
 		modelDescriptionField.value(model.description());
-		modelDescriptionField.readonly(model.isExample() || model.isTemplate());
+		modelDescriptionField.readonly(model.isTemplate());
 		languageName.value(model.language().languageId());
 		languageSelector.clear();
 		languageSelector.addAll(language.releases().stream().map(LanguageRelease::version).toList().reversed());
@@ -91,6 +92,7 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<EditorBox> 
 		languageSelector.readonly(model.isExample() || model.isTemplate());
 		removeModel.readonly(!canRemove);
 		removeModel.formats(Set.of("airRight", "whiteColor", canRemove ? "redBackground" : "disabledButton"));
+		generalBlock.cloneModelBlock.visible(!model.isTemplate() && !model.isExample());
 		cloneModel.readonly(!PermissionsHelper.canClone(model, release, session(), box()));
 		refreshAccessTypeBlock();
 	}
@@ -138,7 +140,13 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<EditorBox> 
 		String language = model.language().artifactId();
 		box().commands(ModelCommands.class).remove(model, username());
 		hideUserNotification();
-		notifier.dispatch(PathHelper.languagePath(language));
+		if (model.isExample()) doClose();
+		else notifier.dispatch(PathHelper.languagePath(language));
+	}
+
+	private void doClose() {
+		closeTrigger.launch();
+		box().souls().stream().filter(Objects::nonNull).map(s -> s.displays(LanguageKitTemplate.class)).flatMap(Collection::stream).distinct().forEach(d -> d.notifyRemove(model));
 	}
 
 	private void cloneModel() {

@@ -13,7 +13,7 @@ import java.util.function.Function;
 
 public class DisplayHelper {
 
-	public static long MinItemsCount = 0;
+	public static long MinItemsCount = 5;
 
 	public static String valueOrDefault(String value) {
 		return value != null && !value.isEmpty() ? value : "-";
