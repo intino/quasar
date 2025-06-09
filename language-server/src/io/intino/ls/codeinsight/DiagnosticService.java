@@ -54,7 +54,7 @@ public class DiagnosticService {
 		if (model == null) return List.of();
 		analyzeWorkspace(model);
 		List<Diagnostic> diagnostics = new ArrayList<>();
-		model.syntaxErrors().stream().map(DiagnosticService::diagnosticOf).forEach(diagnostics::add);
+		model.syntaxErrors().stream().filter(d -> d.getLine() > 0).map(DiagnosticService::diagnosticOf).distinct().forEach(diagnostics::add);
 		model.dependencyErrors().stream().map(DiagnosticService::diagnosticOf).forEach(diagnostics::add);
 		model.semanticErrors().stream().map(DiagnosticService::diagnosticOf).forEach(diagnostics::add);
 		return diagnostics;
@@ -103,7 +103,7 @@ public class DiagnosticService {
 	private static Diagnostic diagnosticOf(SemanticException e) {
 		Element.TextRange textRange = e.origin()[0].textRange();
 		Range range = new Range(new Position(textRange.startLine() - 1, textRange.startColumn()), new Position(textRange.endLine() - 1, textRange.endColumn()));
-		DiagnosticSeverity level = e.level() == SemanticIssue.Level.ERROR ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning;
+		DiagnosticSeverity level = e.level() == SemanticIssue.Level.ERROR || e.level() == SemanticIssue.Level.RECOVERABLE_ERROR ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning;
 		return new Diagnostic(range, e.getMessage(), level, e.getIssue().origin()[0].source().getPath());
 	}
 

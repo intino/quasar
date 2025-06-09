@@ -1,4 +1,4 @@
-TARGETS:{ime editor}
+TARGETS:{editor}
 
 + configuration
     - modelSequence() in "model-sequence.tsv"
