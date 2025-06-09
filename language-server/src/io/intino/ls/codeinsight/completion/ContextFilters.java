@@ -2,7 +2,6 @@ package io.intino.ls.codeinsight.completion;
 
 import io.intino.tara.language.grammar.TaraGrammar;
 import io.intino.tara.language.grammar.TaraGrammar.BodyContext;
-import io.intino.tara.language.grammar.TaraGrammar.PropertyDescriptiveContext;
 import io.intino.tara.language.grammar.TaraGrammar.SignatureContext;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
@@ -17,11 +16,11 @@ import static io.intino.tara.language.grammar.TaraGrammar.IDENTIFIER;
 class ContextFilters {
 	public static final Predicate<CompletionContext> afterIs = new AfterIsFilter().and(new InFacetFilter());
 	public static final Predicate<CompletionContext> afterAs = new AfterElementTypeFitFilter(TaraGrammar.AS);
-	public static final Predicate<CompletionContext> afterNewLineInBody = new AfterNewLineInBodyFilter().and(afterIs.negate());
+	public static final Predicate<CompletionContext> afterNewLineInBody = new AfterNewLineInBodyFilter();
 	public static final Predicate<CompletionContext> afterNewLine = new AfterNewLineRootFilter();
 	public static final Predicate<CompletionContext> afterEquals = new AfterEqualsFilter();
 	public static final Predicate<CompletionContext> afterMogramIdentifier = new AfterElementTypeFitFilter(IDENTIFIER);
-	public static final Predicate<CompletionContext> inParameterName = new InParameters().and(afterEquals.negate());
+	public static final Predicate<CompletionContext> inParameters = new InParameters().and(afterEquals.negate());
 
 	private ContextFilters() {
 	}
@@ -45,7 +44,7 @@ class ContextFilters {
 		@Override
 		public boolean test(CompletionContext context) {
 			return context.ruleOnPosition() != null &&
-				   inBody(context.ruleOnPosition()) && afterNewLine(context.ruleOnPosition());
+					inBody(context.ruleOnPosition()) && afterNewLine(context.ruleOnPosition());
 		}
 
 		private boolean afterNewLine(ParserRuleContext context) {
@@ -60,17 +59,17 @@ class ContextFilters {
 	private static class AfterIsFilter implements Predicate<CompletionContext> {
 		@Override
 		public boolean test(CompletionContext context) {
-			return !isNotAcceptable(context.tokenOnPosition(), context.ruleOnPosition()) &&
-				   in(context.ruleOnPosition(), SignatureContext.class) &&
-				   afterIs(context.ruleOnPosition());
+			return isAcceptable(context.tokenOnPosition(), context.ruleOnPosition()) &&
+					in(context.ruleOnPosition(), SignatureContext.class) &&
+					afterIs(context.ruleOnPosition());
 		}
 
 		private boolean afterIs(ParserRuleContext context) {
 			final ParserRuleContext parent = context.getParent().getParent();
-			return parent != null && hasPreviousAs(parent);
+			return parent != null && hasPreviousIs(parent);
 		}
 
-		private boolean hasPreviousAs(ParserRuleContext parent) {
+		private boolean hasPreviousIs(ParserRuleContext parent) {
 			ParseTree prevSibling = prevSibling(parent);
 			while (prevSibling != null) {
 				if (is(prevSibling, TaraGrammar.IS)) return true;
@@ -79,8 +78,8 @@ class ContextFilters {
 			return false;
 		}
 
-		private boolean isNotAcceptable(Object element, ParserRuleContext context) {
-			return !(context instanceof ParserRuleContext) || context == null || context.getParent() == null;
+		private boolean isAcceptable(Object element, ParserRuleContext context) {
+			return context != null && context instanceof ParserRuleContext && context.getParent() != null;
 		}
 	}
 
@@ -88,11 +87,14 @@ class ContextFilters {
 		@Override
 		public boolean test(CompletionContext context) {
 			final ParserRuleContext realContext = TreeUtils.contextOf(context.ruleOnPosition(), TaraGrammar.ValueContext.class);
-			return isCandidate(context.tokenOnPosition(), realContext) && prevSibling((ParserRuleContext) prevSibling(realContext)) != null && isPreviousEquals(realContext);
+			return isCandidate(context.ruleOnPosition(), realContext) &&
+					prevSibling(realContext) != null &&
+					isPreviousEquals(realContext);
 		}
 
 		private boolean isPreviousEquals(ParserRuleContext context) {
-			return ((ParserRuleContext) prevSibling((ParserRuleContext) prevSibling(context))).getToken(TaraGrammar.EQUALS, 0) != null;
+			ParseTree token = prevSibling(context);
+			return token instanceof TerminalNode t && t.getSymbol().getType() == TaraGrammar.EQUALS;
 		}
 	}
 
@@ -110,7 +112,8 @@ class ContextFilters {
 	private static class InFacetFilter implements Predicate<CompletionContext> {
 		@Override
 		public boolean test(CompletionContext context) {
-			return acceptableParent(context.tokenOnPosition(), context.ruleOnPosition()) && !(facet(context.ruleOnPosition()) && TreeUtils.getMogramContainerOf(context.ruleOnPosition()) == null);
+			return acceptableParent(context.tokenOnPosition(), context.ruleOnPosition()) &&
+					!(facet(context.ruleOnPosition()) && TreeUtils.getMogramContainerOf(context.ruleOnPosition()) == null);
 		}
 
 		private boolean facet(ParserRuleContext context) {
@@ -122,12 +125,12 @@ class ContextFilters {
 		@Override
 		public boolean test(CompletionContext context) {
 			return acceptableParent(context.elementOnPosition(), context.ruleOnPosition()) &&
-				   parameter(context.ruleOnPosition()) &&
-				   TreeUtils.getMogramContainerOf(context.ruleOnPosition()) != null;
+					parameter(context.ruleOnPosition()) &&
+					TreeUtils.getMogramContainerOf(context.ruleOnPosition()) != null;
 		}
 
 		private boolean parameter(ParserRuleContext context) {
-			return in(context, PropertyDescriptiveContext.class);
+			return in(context, TaraGrammar.SignaturePropertyContext.class);
 		}
 	}
 
@@ -147,13 +150,13 @@ class ContextFilters {
 	}
 
 	private static boolean acceptableParent(Object element, ParserRuleContext context) {
-		return element instanceof ParserRuleContext && context != null && context.getParent() != null;
+		return context instanceof ParserRuleContext && context != null && context.getParent() != null;
 	}
 
-	private static boolean in(ParserRuleContext context, Class<? extends ParserRuleContext> container) {
+	private static boolean in(ParserRuleContext context, Class<? extends ParserRuleContext> target) {
 		ParserRuleContext parent = context.getParent();
 		while (parent != null) {
-			if (container.isInstance(parent)) return true;
+			if (target.isInstance(parent)) return true;
 			parent = parent.getParent();
 		}
 		return false;
@@ -171,7 +174,7 @@ class ContextFilters {
 
 	private static boolean previousNewLine(ParserRuleContext context) {
 		return prevSibling(context) != null && (is(context, TaraGrammar.NEWLINE) || context instanceof TaraGrammar.ImportsContext ||
-												context instanceof TaraGrammar.DslDeclarationContext);
+				context instanceof TaraGrammar.DslDeclarationContext);
 	}
 
 	private static boolean previousNewLineIndent(ParserRuleContext context) {

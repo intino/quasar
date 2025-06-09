@@ -1,18 +1,17 @@
 package io.intino.ls.codeinsight.completion;
 
 import io.intino.tara.Language;
+import io.intino.tara.language.semantics.Constraint;
 import io.intino.tara.model.*;
 import io.intino.tara.model.rules.Size;
-import io.intino.tara.language.semantics.Constraint;
-import io.intino.tara.processors.Resolver;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static io.intino.ls.codeinsight.completion.CompletionService.TARA_FAKE_TOKEN;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
@@ -58,9 +57,9 @@ public class CompletionUtils {
 	}
 
 	private List<Constraint> constraintsOf(List<Constraint> constraints) {
-		List<Constraint> list = new ArrayList<>();
-		constraints.stream().map(constraint -> ((Constraint.Facet) constraint).constraints()).forEach(list::addAll);
-		return list;
+		return constraints.stream()
+				.flatMap(constraint -> ((Constraint.Facet) constraint).constraints().stream())
+				.collect(Collectors.toList());
 	}
 
 	List<CompletionItem> collectBodyParameters(Mogram mogram) {
@@ -69,10 +68,14 @@ public class CompletionUtils {
 	}
 
 	List<CompletionItem> collectSignatureParameters(Mogram mogram) {
-		if (language == null) return null;
-		if (mogram == null) return null;
+		if (language == null || mogram == null) return null;
 		List<Constraint.Property> constraints = isInFacet() ? facetParameterConstraintsOf(mogram) : parameterConstraintsOf(mogram);
-		return buildCompletionForParameters(constraints, mogram.parameters());
+		return buildCompletionForParameters(constraints, removeFakes(mogram));
+	}
+
+	private static List<PropertyDescription> removeFakes(Mogram mogram) {
+		return mogram.parameters().stream()
+				.filter(p -> !p.values().isEmpty() && !p.values().get(0).toString().equals(TARA_FAKE_TOKEN)).toList();
 	}
 
 	private boolean isInFacet() {
@@ -81,10 +84,10 @@ public class CompletionUtils {
 	}
 
 	private List<Constraint.Property> parameterConstraintsOf(Mogram mogram) {
-		final List<Constraint> nodeConstraints = language.constraints(mogram.types().get(0));
-		if (nodeConstraints == null) return emptyList();
+		final List<Constraint> constraints = language.constraints(mogram.types().get(0));
+		if (constraints == null) return emptyList();
 		List<Constraint.Property> parameters = new ArrayList<>();
-		for (Constraint constraint : nodeConstraints)
+		for (Constraint constraint : constraints)
 			if (constraint instanceof Constraint.Property) parameters.add((Constraint.Property) constraint);
 			else if (constraint instanceof Constraint.Facet && hasFacet(mogram, (Constraint.Facet) constraint))
 				parameters.addAll(((Constraint.Facet) constraint).constraints().stream().filter(c -> c instanceof Constraint.Property).map(c -> (Constraint.Property) c).toList());
@@ -111,11 +114,11 @@ public class CompletionUtils {
 	}
 
 	private List<Constraint> facetConstraints(List<Constraint> mogramConstraints, List<Facet> facets) {
-		List<String> facetTypes = facets.stream().map(Facet::type).toList();
+		List<String> facetTypes = facets.stream().map(Facet::fullType).toList();
 		List<Constraint> list = new ArrayList<>();
 		if (mogramConstraints == null) return list;
 		for (Constraint constraint : mogramConstraints)
-			if (constraint instanceof Constraint.Facet && facetTypes.contains(((Constraint.Facet) constraint).type()))
+			if (constraint instanceof Constraint.Facet f && facetTypes.contains(f.type()))
 				list.add(constraint);
 		return list;
 	}
@@ -148,7 +151,7 @@ public class CompletionUtils {
 	}
 
 	private boolean hasFacet(ElementContainer container, Constraint.Facet f) {
-		return (container instanceof Mogram m) && m.appliedFacets().stream().anyMatch(facet -> facet.type().equals(f.type()) || facet.fullType().equals(f.type()));
+		return (container instanceof Mogram m) && m.appliedFacets().stream().anyMatch(facet -> Objects.equals(facet.type(), f.type()) || Objects.equals(facet.fullType(), f.type()));
 	}
 
 	private List<CompletionItem> createCompletionItem(Constraint.OneOf constraint) {
@@ -169,10 +172,15 @@ public class CompletionUtils {
 	}
 
 	private CompletionItem createCompletionItem(Constraint.Facet facet) {
-		CompletionItem item = new CompletionItem("facet " + facet.type());
+		String simpleType = simpleType(facet.type());
+		CompletionItem item = new CompletionItem("facet " + simpleType);
 		item.setKind(CompletionItemKind.Interface);
-		item.setInsertText(facet.type());
+		item.setInsertText(simpleType);
 		return item;
+	}
+
+	private String simpleType(String type) {
+		return type.contains(".") ? type.substring(type.lastIndexOf('.') + 1) : type;
 	}
 
 	private boolean contains(List<PropertyDescription> parameters, String name) {

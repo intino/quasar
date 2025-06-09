@@ -40,7 +40,7 @@ public class CompletionService {
 
 	public CompletionService() {
 		map.put(ContextFilters.afterIs, (context, result) -> {
-			if (!(context.elementOnPosition() instanceof TaraGrammar.MetaidentifierContext)) return;
+			if (!(context.ruleOnPosition() instanceof TaraGrammar.MetaidentifierContext)) return;
 			final CompletionUtils completionUtils = new CompletionUtils(context);
 			Element element = context.elementOnPosition();
 			if (element instanceof Mogram m) result.addAll(completionUtils.collectAllowedFacets(m));
@@ -63,10 +63,11 @@ public class CompletionService {
 					result.add(CompletionProvider.create("as ", CompletionItemKind.Keyword));
 				}
 		);
-		map.put(ContextFilters.inParameterName, (context, result) -> {
-					if (!(context.elementOnPosition() instanceof PropertyDescription)) return;
-					Element element = context.elementOnPosition();
-					if (element instanceof Mogram m) result.addAll(new CompletionUtils(context).collectSignatureParameters(m));
+		map.put(ContextFilters.inParameters, (context, result) -> {
+					if (context.elementOnPosition() instanceof Mogram m){
+						new Resolver(context.language()).resolve(m);
+						result.addAll(new CompletionUtils(context).collectSignatureParameters(m));
+					}
 				}
 		);
 	}
