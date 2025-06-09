@@ -34,8 +34,8 @@ public class ConsoleEntryTemplate extends AbstractConsoleEntryTemplate<EditorBox
 		warningIcon.visible(message.kind() == Message.Kind.WARNING);
 		errorIcon.visible(message.kind() == Message.Kind.ERROR);
 		file.title(message.uri());
-		file.address(path -> PathHelper.modelPath(path, model, release, message.uri(), new FilePosition(message.line(), message.column())));
-		location.value(message.line() + ":" + message.column());
+		file.address(path -> PathHelper.modelPath(path, model, release, message.uri(), new FilePosition(message.line()+1, message.column())));
+		location.value(message.line()+1 + ":" + message.column());
 		content.value(message.content());
 	}
 

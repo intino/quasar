@@ -1,6 +1,6 @@
 dsl Legio
 
-Artifact(groupId = "io.quassar", version = "1.0.28") editor
+Artifact(groupId = "io.quassar", version = "1.0.29") editor
 	Dsl("Konos", "13.4.4") > Builder(generationPackage = "box")
 	Archetype("io.quassar", "editor-archetype", "1.0.1")
 
@@ -22,7 +22,7 @@ Artifact(groupId = "io.quassar", version = "1.0.28") editor
 		Compile("org.xerial", "sqlite-jdbc", "3.49.1.0")
 		Compile("com.google.api-client", "google-api-client", "2.8.0")
 
-		Web("io.quassar", "editor-elements", "1.0.28")
+		Web("io.quassar", "editor-elements", "1.0.29")
 
 		Test("junit", "junit", "4.13")
 

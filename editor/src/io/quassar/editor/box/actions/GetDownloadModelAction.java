@@ -27,10 +27,8 @@ public class GetDownloadModelAction extends QuassarAction {
 		}
 
 		try {
-			File workspace = box.archetype().models().workspace(ArchetypeHelper.relativeModelPath(model.id()), model.id());
-			File result = new File(box.archetype().tmp().root(), "%s-%s.zip".formatted(ModelHelper.label(model, "en", box), release.version()));
-			ZipHelper.zip(workspace.toPath(), result.toPath());
-			return new Resource(result.getName(), new FileInputStream(result));
+			File result = box.modelManager().release(model, release.version());
+			return new Resource(ModelHelper.label(model, "es", box) + ".zip", new FileInputStream(result));
 		} catch (Exception e) {
 			Logger.error(e);
 			return DisplayHelper.emptyFile();
