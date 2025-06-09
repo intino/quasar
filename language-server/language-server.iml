@@ -91,7 +91,6 @@
     <orderEntry type="library" name="Intino: com.google.code.gson:gson:2.13.1" level="project" />
     <orderEntry type="library" name="Intino: com.google.errorprone:error_prone_annotations:2.38.0" level="project" />
     <orderEntry type="library" name="Intino: tara.dsl:metta:2.0.0" level="project" />
-    <orderEntry type="library" name="Intino: com.jcraft:jsch:0.1.55" level="project" />
     <orderEntry type="library" scope="TEST" name="Intino: log4j:log4j:1.2.14" level="project" />
   </component>
 </module>
