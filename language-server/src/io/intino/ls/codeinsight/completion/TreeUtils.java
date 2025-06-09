@@ -14,7 +14,12 @@ import org.eclipse.lsp4j.Position;
 import java.util.Objects;
 
 public class TreeUtils {
-	public static ParserRuleContext contextOf(ParserRuleContext element, Class<? extends ParserRuleContext> contestClass) {
+	public static ParserRuleContext contextOf(ParserRuleContext element, Class<? extends ParserRuleContext> contextClass) {
+		ParserRuleContext parent = element.getParent();
+		while (parent != null) {
+			if (contextClass.isInstance(parent)) return parent;
+			parent = parent.getParent();
+		}
 		return null;
 	}
 
@@ -28,7 +33,7 @@ public class TreeUtils {
 	}
 
 	public static Mogram getMogramContainerOn(Model model, Position position) {
-		return model.elements().stream()
+		return model.mograms().stream()
 				.map(element -> findInElement((ElementContainer) element, position))
 				.filter(Objects::nonNull)
 				.findFirst()
@@ -39,11 +44,13 @@ public class TreeUtils {
 		Element.TextRange range = element.textRange();
 		if (!contains(range, position)) return null;
 		if (element.mograms().isEmpty()) return (Mogram) element;
-		else return element.mograms().stream()
+		Mogram innerMogram = element.mograms().stream()
 				.map(mogram -> findInElement(mogram, position))
 				.filter(Objects::nonNull)
 				.findFirst()
 				.orElse(null);
+		if (innerMogram == null) return (Mogram) element;
+		else return innerMogram;
 	}
 
 	public static boolean contains(Element.TextRange range, Position position) {
