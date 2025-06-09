@@ -80,7 +80,7 @@ class ContextFilters {
 		}
 
 		private boolean isNotAcceptable(Object element, ParserRuleContext context) {
-			return !(element instanceof ParserRuleContext) || context == null || context.getParent() == null;
+			return !(context instanceof ParserRuleContext) || context == null || context.getParent() == null;
 		}
 	}
 

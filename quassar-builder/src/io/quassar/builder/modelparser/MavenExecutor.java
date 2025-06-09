@@ -23,9 +23,7 @@ public class MavenExecutor {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String line;
 			try (PrintWriter writer = new PrintWriter(log)) {
-				while ((line = reader.readLine()) != null) {
-					writer.println(line);
-				}
+				while ((line = reader.readLine()) != null) writer.println(line);
 				int exitCode = process.waitFor();
 				writer.println("mvn finished with exit code: " + exitCode);
 			}
