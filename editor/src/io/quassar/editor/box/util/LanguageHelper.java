@@ -21,7 +21,7 @@ import static java.util.Collections.emptyList;
 public class LanguageHelper {
 
 	public static boolean hasExamples(Language language) {
-		return language.lastRelease() != null && !language.lastRelease().examples().isEmpty();
+		return language != null && language.lastRelease() != null && !language.lastRelease().examples().isEmpty();
 	}
 
 	public static void generateLogo(String language, File destiny) {

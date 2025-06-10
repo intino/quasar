@@ -41,7 +41,8 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	@Override
 	public void dispatchModel(Soul soul, String language, String model, String release, String view, String file, String position) {
 		SessionHelper.register(soul.session(), ModelView.from(view));
-		soul.currentLayer(HomeTemplate.class).openModel(model, release, view, clean(file), position);
+		if (model.equalsIgnoreCase("new")) soul.currentLayer(HomeTemplate.class).createModel(language);
+		else soul.currentLayer(HomeTemplate.class).openModel(model, release, view, clean(file), position);
 	}
 
 	@Override
