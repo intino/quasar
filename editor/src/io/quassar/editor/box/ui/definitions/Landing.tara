@@ -96,8 +96,8 @@ Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, heigh
 		Block(format=doubleAirBottom) > Text(value="divider", format=landingTransparent)
 
 		Block(layout=Horizontal Center, format=doubleAirTop doubleAirBottom)
-			Button(title="Explore", format=blockMainAction doubleAirLeft doubleAirRight) exploreLanguage as Action Addressable(EditorElements.language)
-			Button(title="Explore", format=blockMainAction, visible=false) exploreLanguageLogin as Action
+			Button(title="Create your DSL", format=blockMainAction doubleAirLeft doubleAirRight) exploreLanguage as Action
+			Button(title="Create your DSL", format=blockMainAction, visible=false) exploreLanguageLogin as Action
 
 	Dialog(title="") modelsDialog as Relative(height=80%, width=60%)
         Block(layout=Horizontal) as Relative(height=100%, offsetHeight=40px)

@@ -1,9 +1,15 @@
 package io.quassar.editor.box.ui.displays.templates;
 
+import io.intino.alexandria.logger.Logger;
 import io.intino.alexandria.ui.displays.components.BlockConditional;
 import io.intino.alexandria.ui.services.push.User;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.commands.UserCommands;
+import io.quassar.editor.box.util.ModelHelper;
+import io.quassar.editor.box.util.PathHelper;
+import io.quassar.editor.box.util.PermissionsHelper;
+import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
@@ -34,6 +40,27 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 		registerUserIfNeeded();
 	}
 
+	public void createModel(String languageId) {
+		Language language = box().languageManager().get(languageId);
+		if (language == null) {
+			Logger.warn("Trying to create model from not recognized language");
+			notifier.redirect(PathHelper.languageUrl(languageId, session()));
+			return;
+		}
+		if (!PermissionsHelper.canAddModel(language, session(), box())) {
+			session().add("callback", session().browser().requestUrl());
+			notifier.redirect(PathHelper.loginUrl(session()));
+			return;
+		}
+		String name = ModelHelper.proposeName();
+		if (language.lastRelease() == null) {
+			Logger.warn("Trying to create model from language " + language.name() + " with no releases");
+			return;
+		}
+		Model model = box().commands(ModelCommands.class).create(name, name, "", new GavCoordinates(language.group(), language.name(), language.lastRelease().version()), username(), username());
+		notifier.redirect(PathHelper.modelUrl(model, session()));
+	}
+
 	public void openHome(String dialog) {
 		openLanding(dialog);
 	}
@@ -56,6 +83,7 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 		if (languagePage.languageStamp != null) languagePage.languageStamp.open(language, tab, view);
 	}
 
+	private static final String New = "new";
 	public void openModel(String model, String release, String view, String file, String position) {
 		Model modelInstance = box().modelManager().get(model);
 		Language language = modelInstance != null ? box().languageManager().get(modelInstance) : null;
@@ -73,6 +101,9 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 	public void openTemplate(String languageKey, String version) {
 		Language language = box().languageManager().get(languageKey);
 		LanguageRelease release = language.release(version);
+
+
+
 		openModel(release.template(), release.version(), null, null, null);
 	}
 
