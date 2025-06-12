@@ -12,7 +12,9 @@ import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.box.commands.Command.CommandResult;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.TarHelper;
+import io.quassar.editor.box.util.WorkspaceHelper;
 import io.quassar.editor.model.*;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.util.List;
@@ -41,8 +43,21 @@ public class CreateModelReleaseCommand extends Command<CommandResult> {
 		if (language == null) return result;
 		LanguageRelease release = language.release(version);
 		if (release == null) return result;
+		removeTemporalWorkspace();
 		BuildResult rebuildResult = rebuild(language, release);
 		return !rebuildResult.success() ? OperationResult.Error(rebuildResult.messages().stream().map(Message::content).collect(Collectors.joining("; "))) : result;
+	}
+
+	private void removeTemporalWorkspace() {
+		try {
+			if (Model.DraftRelease.equals(version)) return;
+			File file = WorkspaceHelper.releaseWorkSpace(model, version, box.archetype());
+			if (file == null || !file.exists()) return;
+			FileUtils.deleteDirectory(file);
+		}
+		catch (Exception e) {
+			Logger.error(e);
+		}
 	}
 
 	private CommandResult check() {
