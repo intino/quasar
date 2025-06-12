@@ -1,5 +1,6 @@
 dsl Konos
 
+use Editors
 use Languages
 use Models
 use UI
@@ -99,16 +100,17 @@ Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, heigh
 			Button(title="Create your DSL", format=blockMainAction doubleAirLeft doubleAirRight) exploreLanguage as Action
 			Button(title="Create your DSL", format=blockMainAction, visible=false) exploreLanguageLogin as Action
 
-	Dialog(title="") modelsDialog as Relative(height=80%, width=60%)
+	Dialog(title="") modelsDialogBox as Relative(height=80%, width=60%)
         Block(layout=Horizontal) as Relative(height=100%, offsetHeight=40px)
+        	Block(format=middleAirBottom) > TemplateStamp(template=modelsDialog) modelsDialog
         	TemplateStamp(template=modelsTemplate) modelsStamp
 		Divider
         Block(layout=Horizontal EndJustified)
-            Button(title="Close", size=Small, highlight=Fill) as CloseDialog(modelsDialog)
+            Button(title="Close", size=Small, highlight=Fill) as CloseDialog(modelsDialogBox)
 
 	Dialog(title="") languagesDialog as Relative(height=80%, width=60%)
         Block(layout=Horizontal) as Relative(height=100%, offsetHeight=40px)
         	TemplateStamp(template=languagesTemplate) languagesStamp
 		Divider
         Block(layout=Horizontal EndJustified)
-            Button(title="Close", size=Small, highlight=Fill) as CloseDialog(modelsDialog)
+            Button(title="Close", size=Small, highlight=Fill) as CloseDialog(languagesDialog)

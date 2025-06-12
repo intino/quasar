@@ -3,14 +3,13 @@ package io.quassar.editor.box.ui.displays.templates;
 import io.intino.alexandria.ui.displays.components.Actionable;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command.CommandResult;
+import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.PermissionsHelper;
-import io.quassar.editor.model.Language;
-import io.quassar.editor.model.LanguageRelease;
-import io.quassar.editor.model.Model;
+import io.quassar.editor.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +21,11 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	private Model model;
 	private String release;
 	private ModelView view;
+	private LanguageTab tab;
 	private io.quassar.editor.box.models.File file;
+	private FilePosition filePosition;
 	private Function<Model, Boolean> checkListener;
+	private Consumer<Model> openSettingsListener;
 	private Consumer<Model> cloneListener;
 	private BiConsumer<Model, CommandResult> deployListener;
 	private Step step = Step.Edit;
@@ -51,8 +53,20 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		this.view = value;
 	}
 
+	public void tab(LanguageTab tab) {
+		this.tab = tab;
+	}
+
 	public void file(io.quassar.editor.box.models.File value) {
 		this.file = value;
+	}
+
+	public void position(FilePosition position) {
+		this.filePosition = position;
+	}
+
+	public void onOpenSettings(Consumer<Model> listener) {
+		this.openSettingsListener = listener;
 	}
 
 	public void onCheck(Function<Model, Boolean> listener) {
@@ -75,6 +89,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	public void init() {
 		super.init();
 		releaseSelector.onExecute(e -> openRelease(e.option()));
+		settingsTrigger.onExecute(e -> openSettingsListener.accept(model));
 		editTrigger.onExecute(e -> edit());
 		checkTrigger.onExecute(e -> check());
 		commitTrigger.onExecute(e -> commit());
@@ -99,26 +114,8 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		titleViewer.refresh();
 		refreshReleaseSelector();
 		refreshToolbar();
-		languageLogo.visible(language != null);
-		if (languageLogo.isVisible()) languageLogo.value(LanguageHelper.logo(language, box()));
-		refreshHelpTrigger(language);
-		refreshMetamodelTrigger(language);
 		refreshLanguageTrigger(language);
 		refreshCloseTrigger(language);
-	}
-
-	private void refreshHelpTrigger(Language language) {
-		helpTrigger.visible(language != null && !PermissionsHelper.hasAccessToMetamodel(language, session(), box()));
-		if (!helpTrigger.isVisible()) return;
-		helpTrigger.title(LanguageHelper.title(model.language()));
-		helpTrigger.site(PathHelper.languageReleaseHelp(language, model.language().version()));
-	}
-
-	private void refreshMetamodelTrigger(Language language) {
-		metamodelTrigger.visible(language != null && PermissionsHelper.hasAccessToMetamodel(language, session(), box()));
-		if (!metamodelTrigger.isVisible()) return;
-		metamodelTrigger.title(LanguageHelper.title(model.language()));
-		metamodelTrigger.site(PathHelper.modelUrl(box().modelManager().get(language.metamodel()), model.language().version(), session()));
 	}
 
 	private void refreshLanguageTrigger(Language language) {
@@ -137,6 +134,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	private void refreshToolbar() {
 		Language language = box().languageManager().get(model);
 		Language forgedLanguage = box().languageManager().getWithMetamodel(model);
+		settingsTrigger.visible(PermissionsHelper.canEditSettings(model, release, session(), box()));
 		editTrigger.highlight(step == Step.Edit ? Actionable.Highlight.Fill : Actionable.Highlight.Outline);
 		editTrigger.visible(!model.isTemplate() && !model.isExample());
 		checkTrigger.readonly(!PermissionsHelper.canCheck(model, release, session(), box()));
@@ -150,19 +148,27 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		forgeTrigger.readonly(step == Step.Edit || release == null || release.equals(Model.DraftRelease) || !PermissionsHelper.canForge(model, language, release, session(), box()));
 		forgeTrigger.highlight(step == Step.Forge ? Actionable.Highlight.Fill : Actionable.Highlight.Outline);
 		if (forgeTrigger.isVisible()) forgeTrigger.site(PathHelper.forgeUrl(model, release, session()));
-		executionTrigger.visible(!model.isTemplate() && !model.isExample() && ModelHelper.isM1Release(model, release));
+		executionTrigger.visible(!model.isTemplate() && !model.isExample() && ModelHelper.isM1Release(model, release) && executionDefined());
 		if (executionTrigger.isVisible()) executionTrigger.title(executionName());
 		executionTrigger.readonly(step == Step.Edit || release == null || release.equals(Model.DraftRelease) || !PermissionsHelper.canLaunchExecution(model, language, release, session(), box()));
 		executionTrigger.highlight(step == Step.Forge ? Actionable.Highlight.Fill : Actionable.Highlight.Outline);
-		downloadTrigger.visible(ModelHelper.validReleaseName(release, this::translate));
+		downloadTrigger.visible(ModelHelper.validReleaseName(release, this::translate) && !executionDefined() && !model.language().artifactId().equals(Language.Metta));
+		downloadTrigger.highlight(step == Step.Forge ? Actionable.Highlight.Fill : Actionable.Highlight.Outline);
 		cloneTrigger.visible(session().user() != null && model.isExample() && !PermissionsHelper.isOwnerOrCollaborator(model, session(), box()));
 		noLanguageDefinedBlock.visible(!model.isTemplate() && model.language().artifactId().equals(Language.Metta) && (forgedLanguage == null || model.releases().isEmpty()));
 		languageDefinedBlock.visible(forgedLanguage != null && !model.isTemplate() && model.language().artifactId().equals(Language.Metta) && !model.releases().isEmpty());
-		if (languageDefinedBlock.isVisible()) {
+		if (languageDefinedBlock.isVisible() && forgedLanguage != null) {
 			gotoForgeTrigger.site(PathHelper.forgeUrl(model, release, session()));
-			gotoForgeTrigger.title(forgedLanguage.name() + " DSL");
+			gotoForgeTrigger.title("%s DSL".formatted(forgedLanguage.name()));
 		}
 		releaseSelector.visible(!model.isTemplate() && !model.isExample() && !model.releases().isEmpty());
+		languageToolbar.model(model);
+		languageToolbar.release(release);
+		languageToolbar.view(view);
+		languageToolbar.tab(tab);
+		languageToolbar.file(file);
+		languageToolbar.filePosition(filePosition);
+		languageToolbar.refresh();
 	}
 
 	private void refreshReleaseSelector() {
@@ -176,7 +182,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 
 	private void openRelease(String release) {
 		String releaseName = release.equals(translate(Model.DraftRelease)) ? Model.DraftRelease : release;
-		notifier.dispatch(PathHelper.modelPath(model, releaseName, view, file));
+		notifier.dispatch(PathHelper.modelPath(model, releaseName, tab, view, file));
 	}
 
 	private void edit() {
@@ -203,6 +209,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	}
 
 	private void openDownloadDialog() {
+		updateStep(Step.Forge);
 		downloadModelDialog.model(model);
 		downloadModelDialog.release(release);
 		downloadModelDialog.open();
@@ -215,15 +222,24 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 		updateStep(Step.Forge);
 	}
 
+	private static final String NoExecutionName = "4. inspect";
 	private static final String DefaultExecutionName = "4. execute";
 	private String executionName() {
 		Language language = box().languageManager().get(model.language());
 		if (language == null) return translate(DefaultExecutionName);
 		LanguageRelease languageRelease = language.release(model.language().version());
 		if (languageRelease == null) return translate(DefaultExecutionName);
-		if (languageRelease.execution() == null) return translate(DefaultExecutionName);
+		if (languageRelease.execution() == null || languageRelease.execution().type() == LanguageExecution.Type.None) return translate(NoExecutionName);
 		String name = languageRelease.execution().name();
 		return translate(!name.isEmpty() ? "4. " + name : DefaultExecutionName);
+	}
+
+	private boolean executionDefined() {
+		Language language = box().languageManager().get(model.language());
+		if (language == null) return false;
+		LanguageRelease languageRelease = language.release(model.language().version());
+		if (languageRelease == null) return false;
+		return languageRelease.execution() != null && languageRelease.execution().type() != LanguageExecution.Type.None && !languageRelease.execution().content().isEmpty();
 	}
 
 	private void updateStep(Step step) {

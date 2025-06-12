@@ -36,7 +36,7 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 	}
 
 	public void notifyRemove(Model model) {
-		modelsCatalog.reload();
+		modelsCatalog.refresh();
 	}
 
 	public void notifyChange(Model model) {
@@ -95,6 +95,7 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 		modelsCatalog.mode(ModelsTemplate.Mode.Forge);
 		modelsCatalog.release(release());
 		modelsCatalog.tab(LanguageTab.Examples);
+		modelsCatalog.bindTo(modelsDialog);
 		modelsCatalog.refresh();
 	}
 

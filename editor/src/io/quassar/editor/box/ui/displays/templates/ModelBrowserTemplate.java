@@ -12,6 +12,7 @@ import io.quassar.editor.box.schemas.IntinoFileBrowserItem;
 import io.quassar.editor.box.schemas.IntinoFileBrowserOperation;
 import io.quassar.editor.box.schemas.IntinoFileBrowserOperationShortcut;
 import io.quassar.editor.box.ui.displays.IntinoFileBrowser;
+import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.box.util.*;
 import io.quassar.editor.model.Language;
@@ -26,6 +27,7 @@ import java.util.function.Consumer;
 public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox> {
 	private Model model;
 	private String release;
+	private LanguageTab tab;
 	private ModelView view;
 	private ModelContainer modelContainer;
 	private File file;
@@ -46,6 +48,10 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 
 	public void release(String value) {
 		this.release = value;
+	}
+
+	public void tab(LanguageTab tab) {
+		this.tab = tab;
 	}
 
 	public void view(ModelView view) {
@@ -102,7 +108,7 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 		super.refresh();
 		if (model == null) return;
 		IntinoFileBrowser browser = fileBrowser.display();
-		browser.itemAddress(PathHelper.modelPath(model, release, view) + "&file=:file");
+		browser.itemAddress(PathHelper.modelPath(model, release, tab, view) + "&file=:file");
 		browser.items(IntinoFileBrowserHelper.fileBrowserItems(modelContainer.modelFiles()), true, true);
 		browser.operations(operations());
 		browser.selection(file != null ? IntinoFileBrowserHelper.itemOf(file) : null);

@@ -1,13 +1,9 @@
 package io.quassar.editor.box.ui.displays;
 
 import io.intino.alexandria.ui.Soul;
-import io.quassar.editor.box.ui.displays.templates.ForgeTemplate;
 import io.quassar.editor.box.ui.displays.templates.HomeTemplate;
 import io.quassar.editor.box.ui.types.*;
-import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.SessionHelper;
-
-import java.time.Instant;
 
 public class RouteDispatcher extends AbstractRouteDispatcher {
 
@@ -22,10 +18,9 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	}
 
 	@Override
-	public void dispatchLanguage(Soul soul, String language, String tab, String view) {
+	public void dispatchLanguage(Soul soul, String language, String tab) {
 		SessionHelper.register(soul.session(), LanguageTab.from(tab));
-		SessionHelper.register(soul.session(), LanguageView.from(view));
-		soul.currentLayer(HomeTemplate.class).openLanguage(language, tab, view);
+		soul.currentLayer(HomeTemplate.class).openLanguage(language, tab);
 	}
 
 	@Override
@@ -39,15 +34,10 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	}
 
 	@Override
-	public void dispatchModel(Soul soul, String language, String model, String release, String view, String file, String position) {
+	public void dispatchModel(Soul soul, String language, String model, String release, String tab, String view, String file, String position) {
 		SessionHelper.register(soul.session(), ModelView.from(view));
 		if (model.equalsIgnoreCase("new")) soul.currentLayer(HomeTemplate.class).createModel(language);
-		else soul.currentLayer(HomeTemplate.class).openModel(model, release, view, clean(file), position);
-	}
-
-	@Override
-	public void dispatchStartingModel(Soul soul, String language, String model) {
-		soul.currentLayer(HomeTemplate.class).openStartingModel(model);
+		else soul.currentLayer(HomeTemplate.class).openModel(model, release, tab, view, clean(file), position);
 	}
 
 	@Override

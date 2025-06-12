@@ -12,11 +12,10 @@ Service EditorElements as UI(port = "{port}", title = "{title}", favicon = "/ima
 
 	Resource(path = "/") home as Page(homeTemplate) Main > Parameter dialog
 	Resource(path = "/about") about as Page(homeTemplate)
-	Resource(path = "/models/:language") language as Page(homeTemplate) > Parameter tab; Parameter view
+	Resource(path = "/models/:language") language as Page(homeTemplate) > Parameter tab
 	Resource(path = "/models/:language/help") languageReleaseHelp as Page(homeTemplate) > Parameter version
 	Resource(path = "/models/:language/template") languageReleaseTemplate as Page(homeTemplate) > Parameter version
-	Resource(path = "/models/:language/:model") model as Page(homeTemplate) > Parameter release; Parameter view; Parameter file; Parameter pos
-	Resource(path = "/models/:language/:model/starting") startingModel as Page(homeTemplate)
+	Resource(path = "/models/:language/:model/:release") model as Page(homeTemplate) > Parameter tab; Parameter view; Parameter file; Parameter pos
 	Resource(path = "/forge/:model/:release") forge as Page(homeTemplate) > Parameter view
 	Resource(path = "/login") login as Page(loginTemplate)
 

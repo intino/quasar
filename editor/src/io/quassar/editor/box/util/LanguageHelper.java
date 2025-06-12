@@ -2,6 +2,7 @@ package io.quassar.editor.box.util;
 
 import io.intino.alexandria.logger.Logger;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
@@ -41,6 +42,12 @@ public class LanguageHelper {
 
 	public static File mavenDslFile(Language language, String version, EditorBox box) {
 		return new File(MavenDslFile.formatted(box.configuration().languageRepository(), mavenDirectory(language.name()), version, Formatters.normalizeLanguageName(language.name()), version));
+	}
+
+	public static String title(LanguageTab tab) {
+		if (tab == LanguageTab.Help) return "%s %s help";
+		else if (tab == LanguageTab.Examples) return "%s %s examples";
+		return "about %s %s";
 	}
 
 	public static String title(GavCoordinates release) {
