@@ -36,7 +36,7 @@ public class WorkspaceHelper {
 		}
 	}
 
-	private static java.io.File releaseWorkSpace(Model model, String release, Archetype archetype) {
+	public static java.io.File releaseWorkSpace(Model model, String release, Archetype archetype) {
 		try {
 			java.io.File releaseFile = archetype.models().release(ArchetypeHelper.relativePath(model), model.id(), release);
 			java.io.File workspace = archetype.tmp().releaseWorkspace(model.id(), release);
