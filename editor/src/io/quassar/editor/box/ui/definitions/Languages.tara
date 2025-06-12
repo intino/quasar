@@ -149,7 +149,7 @@ Template languageForgeTemplate as Relative(height=100%, width=100%)
 						Image(format=forgeLogoStyle) logo as Absolute(width=200px)
 						Text(format=h4) languageName
 						Link(title="properties") infoLink as Action
-						Link(title="metamodel") metamodelLink as OpenSite(site=empty, target=Blank)
+						Link(title="metamodel") metamodelLink as OpenSite(site=empty)
 					Block(layout=Horizontal Center, format=doubleAirTop middleAirLeft middleAirBottom)
 						Block(layout=Vertical Flexible) > Text(value="Releases", translate=true, format=h5 bold)
 						Block(layout=Horizontal EndJustified) > MaterialIconButton(title="refresh", icon="Refresh", size=Small) refreshVersions as Action
@@ -236,7 +236,7 @@ Display helpEditor
 	Request update as Text
 
 Template(layout=Vertical Flexible, format=doubleSpaced) languageKitTemplate
-	Link(title="") openModel as OpenSite(site=empty, target=Blank)
+	Link(title="") openModel as OpenSite(site=empty)
 
 	Block(layout=Vertical Flexible, visible=false) selectVersionBlock
 		Text(value="Select version on right panel to open kit")
