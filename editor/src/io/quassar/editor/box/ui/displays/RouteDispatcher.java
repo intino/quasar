@@ -24,6 +24,11 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	}
 
 	@Override
+	public void dispatchLanguageNew(Soul soul, String language) {
+		soul.currentLayer(HomeTemplate.class).createModel(language);
+	}
+
+	@Override
 	public void dispatchLanguageReleaseHelp(Soul soul, String language, String version) {
 		soul.currentLayer(HomeTemplate.class).openHelp(language, version);
 	}
@@ -36,8 +41,7 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	@Override
 	public void dispatchModel(Soul soul, String language, String model, String release, String tab, String view, String file, String position) {
 		SessionHelper.register(soul.session(), ModelView.from(view));
-		if (model.equalsIgnoreCase("new")) soul.currentLayer(HomeTemplate.class).createModel(language);
-		else soul.currentLayer(HomeTemplate.class).openModel(model, release, tab, view, clean(file), position);
+		soul.currentLayer(HomeTemplate.class).openModel(model, release, tab, view, clean(file), position);
 	}
 
 	@Override
