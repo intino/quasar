@@ -62,6 +62,7 @@ public class CreateModelReleaseCommand extends Command<CommandResult> {
 			destination = box.archetype().tmp().builds(UUID.randomUUID().toString());
 			TarHelper.extract(resource.inputStream(), destination);
 			box.languageManager().saveDsl(language, release.version(), LanguageHelper.dslOf(destination));
+			box.languageManager().saveDslManifest(language, release.version(), LanguageHelper.dslManifestOf(destination));
 			box.languageManager().saveGraph(language, release.version(), LanguageHelper.graphOf(destination));
 			box.languageManager().saveParsers(language, release.version(), LanguageHelper.parsersOf(destination));
 			return result;

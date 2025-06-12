@@ -84,6 +84,16 @@ public class LanguageHelper {
 		return Arrays.stream(languageFiles).filter(l -> l.getName().endsWith(".jar")).findFirst().orElse(null);
 	}
 
+	public static File dslManifestOf(File destination) {
+		File[] files = destination.listFiles();
+		if (files == null) return null;
+		File dir = Arrays.stream(files).filter(f -> f.getName().equals(LanguageDir)).findFirst().orElse(null);
+		if (dir == null) return null;
+		File[] languageFiles = dir.listFiles();
+		if (languageFiles == null) return null;
+		return Arrays.stream(languageFiles).filter(l -> l.getName().endsWith(".pom")).findFirst().orElse(null);
+	}
+
 	private static final String GraphFilename = "graph.json";
 	public static File graphOf(File destination) {
 		File[] files = destination.listFiles();
