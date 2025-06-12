@@ -5,5 +5,8 @@ Artifact("io.quassar", "1.0.0") builder-sdk
 		Compile("io.intino.tara", "builder", "1.3.0")
 		Test("junit", "junit", "4.13")
 	Package(mode = ModulesAndLibrariesLinkedByManifest)
-
+	Distribution
+		Artifactory("intino-maven")
+			Release("https://artifactory.intino.io/artifactory/release-libraries")
+			Snapshot("https://artifactory.intino.io/artifactory/snapshot-libraries")
 RunConfiguration local
