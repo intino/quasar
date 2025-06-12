@@ -48,18 +48,15 @@ public class GetArtifactoryFileAction implements io.intino.alexandria.rest.Reque
 		return language;
 	}
 
-	private Resource loadDsl(Language language, LanguageRelease release, boolean isManifest, boolean isDigest) {
-		if (isManifest) {
-			File result = isDigest ? box.languageManager().loadDslManifestDigest(language, release) : box.languageManager().loadDslManifest(language, release);
-			return result != null ? new Resource(result) : emptyFile();
-		}
-		return new Resource(isDigest ? box.languageManager().loadDslDigest(language, release) : box.languageManager().loadDsl(language, release));
+	private Resource loadDsl(Language language, LanguageRelease release, boolean isManifest, boolean isDigest) throws NotFound {
+		if (isManifest) return resourceOf(isDigest ? box.languageManager().loadDslManifestDigest(language, release) : box.languageManager().loadDslManifest(language, release));
+		return resourceOf(isDigest ? box.languageManager().loadDslDigest(language, release) : box.languageManager().loadDsl(language, release));
 	}
 
-	private Resource loadParser(Language language, LanguageRelease release, String artifactId, boolean isManifest, boolean isDigest) {
+	private Resource loadParser(Language language, LanguageRelease release, String artifactId, boolean isManifest, boolean isDigest) throws NotFound {
 		String file = ArtifactoryHelper.parserNameFor(artifactId);
-		if (isManifest) return new Resource(isDigest ? box.languageManager().loadParserManifestDigest(language, release, file) : box.languageManager().loadParserManifest(language, release, file));
-		return new Resource(isDigest ? box.languageManager().loadParserDigest(language, release, file) : box.languageManager().loadParser(language, release, file));
+		if (isManifest) return resourceOf(isDigest ? box.languageManager().loadParserManifestDigest(language, release, file) : box.languageManager().loadParserManifest(language, release, file));
+		return resourceOf(isDigest ? box.languageManager().loadParserDigest(language, release, file) : box.languageManager().loadParser(language, release, file));
 	}
 
 	private String fileExtension() {
@@ -79,6 +76,11 @@ public class GetArtifactoryFileAction implements io.intino.alexandria.rest.Reque
 
 	private static Resource emptyFile() {
 		return new Resource("pom.xml", new byte[0]);
+	}
+
+	private Resource resourceOf(File file) throws NotFound {
+		if (file == null) throw new NotFound("File not found");
+		return new Resource(file);
 	}
 
 }
