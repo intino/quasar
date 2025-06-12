@@ -36,6 +36,7 @@ public class PermissionsHelper {
 		String username = session.user() != null ? session.user().username() : null;
 		String owner = box.languageManager().owner(language);
 		if (owner != null && owner.equals(username)) return true;
+		if (!box.modelManager().models(language, username).isEmpty()) return true;
 		return language.grantAccessList().stream().anyMatch(a -> a.equals(owner));
 	}
 

@@ -73,34 +73,29 @@ public class PathHelper {
 	}
 
 	public static String languagePath(Language language) {
-		return languagePath("/models/:language", language.key(), null, null);
+		return languagePath("/models/:language", language.key(), null);
 	}
 
 	public static String languagePath(String language) {
-		return languagePath("/models/:language", language, null, null);
+		return languagePath("/models/:language", language, null);
 	}
 
 	public static String languagePath(String address, Language language) {
-		return languagePath(address, language.key(), null, null);
+		return languagePath(address, language.key(), null);
 	}
 
 	public static String languagePath(String address, String language) {
-		return languagePath(address, language, null, null);
-	}
-
-	public static String languagePath(String address, String language, LanguageTab tab, LanguageView view) {
-		String result = address.replace(":language", language);
-		result += tab != null ? (result.contains("?") ? "&" : "?") + "tab=" + tab.name().toLowerCase() : "";
-		result += view != null ? (result.contains("?") ? "&" : "?") + "view=" + view.name().toLowerCase() : "";
-		return result;
+		return languagePath(address, language, null);
 	}
 
 	public static String languagePath(String address, Language language, LanguageTab tab) {
-		return languagePath(address, language.key(), tab, null);
+		return languagePath(address, language.name(), tab);
 	}
 
-	public static String languagePath(String address, Language language, LanguageTab tab, LanguageView view) {
-		return languagePath(address, language.key(), tab, view);
+	public static String languagePath(String address, String language, LanguageTab tab) {
+		String result = address.replace(":language", language);
+		result += tab != null ? (result.contains("?") ? "&" : "?") + "tab=" + tab.name().toLowerCase() : "";
+		return result;
 	}
 
 	public static String modelUrl(Model model, UISession session) {
@@ -118,12 +113,12 @@ public class PathHelper {
 	}
 
 	public static String modelUrl(Model model, String release, UISession session) {
-		return session.browser().baseUrl() + "/models/" + model.language().artifactId() + "/" + model.id() + (release != null ? "?release=" + release : "");
+		return session.browser().baseUrl() + "/models/" + model.language().artifactId() + "/" + model.id() + "/" + (release != null ? release : Model.DraftRelease);
 	}
 
-	private static final String ModelPath = "/models/:language/:model";
+	private static final String ModelPath = "/models/:language/:model/:release";
 	public static String modelPath(Model model) {
-		return modelPath(ModelPath, model, null, null, null, null);
+		return modelPath(ModelPath, model.language().artifactId(), model.id(), Model.DraftRelease, LanguageTab.About.name(), null, null, null);
 	}
 
 	public static String startingModelPath(Model model) {
@@ -135,66 +130,86 @@ public class PathHelper {
 		return session.browser().baseUrl() + modelPath(model) + "/template";
 	}
 
+	public static String modelPath(String path, Model model) {
+		return modelPath(path, model.language().artifactId(), model.id(), Model.DraftRelease, null, null, null, null);
+	}
+
 	public static String modelPath(Model model, String release) {
-		return modelPath(ModelPath, model, release, null, null, null);
+		return modelPath(ModelPath, model.language().artifactId(), model.id(), release, null, null, null, null);
 	}
 
-	public static String modelPath(Model model, String release, ModelView view) {
-		return modelPath(ModelPath, model, release, view, null, null);
+	public static String modelPath(Model model, String release, LanguageTab tab, ModelView view) {
+		String tabName = tab != null ? tab.name() : LanguageTab.About.name();
+		String viewName = view != null ? view.name() : "";
+		return modelPath(ModelPath, model.language().artifactId(), model.id(), release, tabName, viewName, null, null);
 	}
 
-	public static String modelPath(Model model, String release, ModelView view, File file) {
-		return modelPath(ModelPath, model, release, view, file != null ? file.uri() : null, null);
+	public static String modelPath(Model model, String release, LanguageTab tab, ModelView view, File file) {
+		String tabName = tab != null ? tab.name() : LanguageTab.About.name();
+		String viewName = view != null ? view.name() : "";
+		String fileName = file != null ? file.uri() : "";
+		return modelPath(ModelPath, model.language().artifactId(), model.id(), release, tabName, viewName, fileName, null);
 	}
 
-	public static String modelPath(Model model, String release, ModelView view, String file) {
-		return modelPath(ModelPath, model, release, view, file, null);
+	public static String modelPath(Model model, String release, LanguageTab tab, ModelView view, String file) {
+		String tabName = tab != null ? tab.name() : LanguageTab.About.name();
+		String viewName = view != null ? view.name() : "";
+		return modelPath(ModelPath, model.language().artifactId(), model.id(), release, tabName, viewName, file, null);
 	}
 
-	public static String modelPath(Model model, String release, File file) {
-		return modelPath(ModelPath, model, release, null, file != null ? file.uri() : null, null);
+	public static String modelPath(String path, Model model, String release, LanguageTab tab, ModelView view, File file, FilePosition position) {
+		String tabName = tab != null ? tab.name() : LanguageTab.About.name();
+		String viewName = view != null ? view.name() : "";
+		String positionValue = position != null ? position.line() + "-" + position.column() : null;
+		return modelPath(path, model.language().artifactId(), model.id(), release, tabName, viewName, file != null ? file.uri() : null, positionValue);
 	}
 
-	public static String modelPath(Model model, String release, File file, FilePosition position) {
-		return modelPath(ModelPath, model, release, null, file != null ? file.uri() : null, position);
+	public static String modelPath(String path, Model model, String release, LanguageTab tab, ModelView view, String file, FilePosition position) {
+		String tabName = tab != null ? tab.name() : LanguageTab.About.name();
+		String viewName = view != null ? view.name() : "";
+		String positionValue = position != null ? position.line() + "-" + position.column() : null;
+		return modelPath(path, model.language().artifactId(), model.id(), release, tabName, viewName, file, positionValue);
 	}
 
-	public static String modelPath(String address, Model model) {
-		return modelPath(address, model, null, null, null, null);
+	public static String modelPath(Model model, String release, LanguageTab tab, File file) {
+		String tabName = tab != null ? tab.name() : LanguageTab.About.name();
+		String viewName = file != null && file.isResource() ? ModelView.Resources.name() : ModelView.Model.name();
+		String fileName = file != null ? file.uri() : "";
+		return modelPath(ModelPath, model.language().artifactId(), model.id(), release, tabName, viewName, fileName, null);
 	}
 
-	public static String modelPath(String address, Model model, String release, String file, FilePosition position) {
-		ModelView view = file != null && io.quassar.editor.box.models.File.isResource(file) ? ModelView.Resources : ModelView.Model;
-		return modelPath(address, model, release, view, file, position);
+	public static String modelPath(Model model, String release, LanguageTab tab, File file, FilePosition position) {
+		String tabName = tab != null ? tab.name() : LanguageTab.About.name();
+		String viewName = file != null && file.isResource() ? ModelView.Resources.name() : ModelView.Model.name();
+		String fileName = file != null ? file.uri() : "";
+		String positionValue = position != null ? position.line() + "-" + position.column() : null;
+		return modelPath(ModelPath, model.language().artifactId(), model.id(), release, tabName, viewName, fileName, positionValue);
 	}
 
-	public static String modelUrl(Model model, String release, ModelView view, io.quassar.editor.box.models.File file, FilePosition position, UISession session) {
+	public static String modelUrl(Model model, String release, LanguageTab tab, ModelView view, io.quassar.editor.box.models.File file, FilePosition position, UISession session) {
+		String tabName = tab != null ? tab.name() : null;
 		String viewName = view != null ? view.name() : null;
 		String fileUri = file != null ? file.uri() : null;
 		String positionValue = position != null ? position.line() + "-" + position.column() : null;
-		return modelUrl(model.language().artifactId(), model.id(), release, viewName, fileUri, positionValue, session);
+		return modelUrl(model.language().artifactId(), model.id(), release, tabName, viewName, fileUri, positionValue, session);
 	}
 
-	public static String modelUrl(String language, String model, String release, String view, String file, String position, UISession session) {
-		return modelPath(session.browser().baseUrl() + "/models/:language/:model", language, model, release, view, file, position);
+	public static String modelUrl(String language, String model, String release, String tab, String view, String file, String position, UISession session) {
+		return modelPath(session.browser().baseUrl() + ModelPath, language, model, release, tab, view, file, position);
 	}
 
-	public static String modelPath(String address, Model model, String release, ModelView view, String file, FilePosition position) {
-		return modelPath(address, model.language().artifactId(), model.id(), release, view != null ? view.name() : null, file, position != null ? position.line() + "-" + position.column() : null);
-	}
-
-	public static String modelPath(String address, String language, String model, String release, String view, String file, String position) {
-		String result = address.replace(":language", language).replace(":model", model);
-		result += release != null ? "?release=" + release : "";
-		result += view != null ? ((result.contains("?") ? "&" : "?") + "view=" + view) : "";
+	public static String modelPath(String address, String language, String model, String release, String tab, String view, String file, String position) {
+		String result = address.replace(":language", language).replace(":model", model).replace(":release", release != null ? release : Model.DraftRelease);
+		result += tab != null ? ((result.contains("?") ? "&" : "?") + "tab=" + tab.toLowerCase()) : "";
+		result += view != null ? ((result.contains("?") ? "&" : "?") + "view=" + view.toLowerCase()) : "";
 		result += file != null ? ((result.contains("?") ? "&" : "?") + "file=" + file) : "";
 		result += position != null ? ((result.contains("?") ? "&" : "?") + "pos=" + position) : "";
 		return result;
 	}
 
-	public static String modelViewPath(String address, Model model, String release) {
-		String result = address.replace(":language", model.language().artifactId()).replace(":model", model.id());
-		result += release != null ? "?release=" + release : "";
+	public static String modelViewPath(String address, Model model, String release, LanguageTab tab) {
+		String result = address.replace(":language", model.language().artifactId()).replace(":model", model.id()).replace(":release", release);
+		result += tab != null ? "?tab=" + tab.name() : "";
 		result += (result.contains("?") ? "&" : "?") + "view=:view";
 		return result;
 	}

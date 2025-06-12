@@ -3,34 +3,38 @@ package io.quassar.editor.box.ui.displays.templates;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.ui.types.LanguageTab;
-import io.quassar.editor.box.ui.types.LanguageView;
-import io.quassar.editor.box.util.*;
+import io.quassar.editor.box.util.DisplayHelper;
+import io.quassar.editor.box.util.LanguageHelper;
+import io.quassar.editor.box.util.ModelHelper;
+import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
-import org.apache.commons.codec.language.bm.Lang;
 
 import java.util.List;
-
-import static io.quassar.editor.box.util.DisplayHelper.valueOrDefault;
+import java.util.Set;
 
 public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 	private Language language;
 	private LanguageRelease release;
 	private LanguageTab tab;
-	private LanguageView view;
 
 	public LanguageTemplate(EditorBox box) {
 		super(box);
 	}
 
-	public void open(String language, String tab, String view) {
+	public void open(String language, String tab) {
 		this.language = box().languageManager().get(language);
 		this.release = null;
-		this.tab = tab != null ? LanguageTab.from(tab) : targetTab();
-		this.view = view != null ? LanguageView.from(view) : SessionHelper.languageView(session());
+		this.tab = tab != null ? LanguageTab.from(tab) : LanguageTab.About;
 		refresh();
+	}
+
+	public void openTab(String tab) {
+		this.tab = tab != null ? LanguageTab.from(tab) : LanguageTab.About;
+		refreshHeader();
+		refreshViews(false);
 	}
 
 	public void openHelp(String language, String version) {
@@ -72,7 +76,7 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 	}
 
 	private void refreshHelpBlock() {
-		helpTitle.value(translate(title(LanguageView.Help)).formatted(LanguageHelper.title(GavCoordinates.fromString(language, release))));
+		helpTitle.value(translate(LanguageHelper.title(LanguageTab.Help)).formatted(LanguageHelper.title(GavCoordinates.fromString(language, release)), release.version()));
 		helpLogo.value(LanguageHelper.logo(language, box()));
 		String content = box().languageManager().loadHelp(language, release);
 		helpStamp.content("<div class='help'>" + content + "</div>");
@@ -80,13 +84,23 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 	}
 
 	private void initMainBlock() {
-		mainBlock.mainContentBlock.homeBlock.onShow(e -> refreshHome());
+		languageExplorer.onExpand(e -> expandHome());
+		languageExplorer.onCollapse(e -> collapseHome());
+		mainBlock.mainContentBlock.homeBlock.onShow(e -> refreshViews(true));
 		mainBlock.mainContentBlock.modelsBlock.onShow(e -> refreshModels());
+		mainBlock.mainContentBlock.modelsBlock.modelsStamp.onCreateModel(e -> createModel());
+	}
+
+	private void expandHome() {
+		mainBlock.mainContentBlock.refreshLayout(55, 45);
+	}
+
+	private void collapseHome() {
+		mainBlock.mainContentBlock.refreshLayout(95, 4);
 	}
 
 	private void refreshMainBlock() {
-		mainBlock.mainContentBlock.modelsBlock.modelsStamp.onCreateModel(tab != LanguageTab.Examples ? e -> createModel() : null);
-		refreshHome();
+		refreshViews(true);
 		refreshModels();
 	}
 
@@ -95,54 +109,20 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 		if (!headerStamp.isVisible()) return;
 		headerStamp.language(language);
 		headerStamp.tab(tab);
-		headerStamp.view(view);
 		headerStamp.refresh();
 	}
 
-	private void refreshHome() {
-		title.value(translate(title()).formatted(language.key().toLowerCase()));
-		logo.value(LanguageHelper.logo(language, box()));
-		refreshHelpVersions();
-		refreshAbout();
-	}
-
-	private String title() {
-		return title(view);
-	}
-
-	private String title(LanguageView view) {
-		if (view == LanguageView.Help) return "%s help";
-		return "about %s";
-	}
-
-	private void refreshHelpVersions() {
-		mainBlock.mainContentBlock.homeBlock.viewsBlock.versionsBlock.visible(view == LanguageView.Help);
-		if (!mainBlock.mainContentBlock.homeBlock.viewsBlock.versionsBlock.isVisible()) return;
-		List<LanguageRelease> releases = language.releases();
-		helps.clear();
-		releases.forEach(r -> fill(r, helps.add()));
-	}
-
-	private void refreshAbout() {
-		mainBlock.mainContentBlock.homeBlock.viewsBlock.aboutBlock.visible(view == null || view == LanguageView.About);
-		if (!mainBlock.mainContentBlock.homeBlock.viewsBlock.aboutBlock.isVisible()) return;
-		aboutTitle.value(language.title());
-		aboutDescription.value(valueOrDefault(language.description()).replace("\n", "<br/>"));
-		aboutCitation.value(valueOrDefault(language.citation()).replace("\n", "<br/>"));
-		aboutCitationLink.visible(!language.citationLink().isEmpty());
-		if (aboutCitationLink.isVisible()) aboutCitationLink.text(language.citationLink());
-		aboutLicense.value(valueOrDefault(language.license()).replace("\n", "<br/>"));
-	}
-
-	private void fill(LanguageRelease release, LanguageReleaseHelp display) {
-		display.language(language);
-		display.release(release);
-		display.refresh();
+	private void refreshViews(boolean invalidate) {
+		languageExplorer.invalidateCache(invalidate);
+		languageExplorer.language(language);
+		languageExplorer.release(release != null ? release.version() : language.lastRelease().version());
+		languageExplorer.tab(tab);
+		languageExplorer.refresh();
 	}
 
 	private void refreshModels() {
 		mainBlock.mainContentBlock.modelsBlock.modelsStamp.language(language);
-		mainBlock.mainContentBlock.modelsBlock.modelsStamp.tab(tab);
+		mainBlock.mainContentBlock.modelsBlock.modelsStamp.bindTo(modelsDialog);
 		mainBlock.mainContentBlock.modelsBlock.modelsStamp.refresh();
 	}
 
@@ -150,12 +130,6 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 		LanguageRelease release = language.lastRelease();
 		String name = ModelHelper.proposeName();
 		return box().commands(ModelCommands.class).create(name, name, "", GavCoordinates.fromString(language, release), DisplayHelper.user(session()), username());
-	}
-
-	private LanguageTab targetTab() {
-		LanguageTab result = SessionHelper.languageTab(session());
-		if (result == LanguageTab.Examples && !LanguageHelper.hasExamples(language)) return LanguageTab.Models;
-		return result;
 	}
 
 }

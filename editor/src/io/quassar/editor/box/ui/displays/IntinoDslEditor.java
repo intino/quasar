@@ -7,6 +7,7 @@ import io.quassar.editor.box.schemas.IntinoDslEditorFile;
 import io.quassar.editor.box.schemas.IntinoDslEditorFileContent;
 import io.quassar.editor.box.schemas.IntinoDslEditorFilePosition;
 import io.quassar.editor.box.schemas.IntinoDslEditorSetup;
+import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.PermissionsHelper;
@@ -25,6 +26,7 @@ import java.util.function.Function;
 public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 	private Model model;
 	private String release;
+	private LanguageTab tab;
 	private ModelView view;
 	private List<File> files = new ArrayList<>();
 	private File selectedFile;
@@ -45,6 +47,10 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 
 	public void release(String value) {
 		this.release = value;
+	}
+
+	public void tab(LanguageTab value) {
+		this.tab = value;
 	}
 
 	public void view(ModelView value) {
@@ -132,7 +138,7 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 		result.modelName(model.name());
 		result.modelRelease(release);
 		result.readonly(!PermissionsHelper.canEdit(model, release, session(), box()));
-		result.fileAddress(PathHelper.modelPath(model, release, view, ":file"));
+		result.fileAddress(PathHelper.modelPath(model, release, tab, view, ":file"));
 		result.files(files.stream().map(this::fileOf).toList());
 		return result;
 	}

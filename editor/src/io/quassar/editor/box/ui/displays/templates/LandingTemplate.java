@@ -37,14 +37,14 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 	@Override
 	public void init() {
 		super.init();
-		modelsDialog.onOpen(e -> refreshModelsDialog());
-		modelsDialog.onClose(e -> notifyClose());
+		modelsDialogBox.onOpen(e -> refreshModelsDialog());
+		modelsDialogBox.onClose(e -> notifyClose());
 		languagesDialog.onOpen(e -> refreshLanguagesDialog());
 		languagesDialog.onClose(e -> notifyClose());
 		startModelingLogin.onExecute(e -> gotoLogin(PathHelper.landingUrl(LandingDialog.StartModeling, session())));
 		startBuildingLogin.onExecute(e -> gotoLogin(PathHelper.homeUrl(session())));
 		exploreLanguageLogin.onExecute(e -> gotoLogin(PathHelper.homeUrl(session())));
-		//startBuilding.onExecute(e -> startBuilding());
+		exploreLanguage.onExecute(e -> startBuilding());
 	}
 
 	@Override
@@ -61,10 +61,10 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 		if (startModeling.isVisible()) startModeling.address(path -> PathHelper.landingPath(path, LandingDialog.StartModeling));
 		Language language = box().languageManager().get(Language.Metta);
 		List<Model> models = box().modelManager().models(language);
-		startBuilding.address(path -> PathHelper.languagePath(path, language, username() == null || models.isEmpty() ? LanguageTab.Examples : LanguageTab.Models));
+		startBuilding.address(path -> PathHelper.languagePath(path, language, LanguageTab.Examples));
 		startBuilding.visible(user() != null);
 		startBuildingLogin.visible(user() == null);
-		exploreLanguage.address(path -> PathHelper.languagePath(path, language, username() == null || models.isEmpty() ? LanguageTab.Examples : LanguageTab.Models));
+		//exploreLanguage.address(path -> PathHelper.languagePath(path, language, username() == null || models.isEmpty() ? LanguageTab.Examples : LanguageTab.Models));
 		exploreLanguage.visible(user() != null);
 		exploreLanguageLogin.visible(user() == null);
 	}
@@ -74,15 +74,16 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 	}
 
 	private void openDialogIfRequired() {
-		if (dialog == null) { closing = true; languagesDialog.close(); modelsDialog.close(); }
+		if (dialog == null) { closing = true; languagesDialog.close(); modelsDialogBox.close(); }
 		if (dialog == LandingDialog.Languages) languagesDialog.open();
-		else if (dialog == LandingDialog.Examples) modelsDialog.open();
+		else if (dialog == LandingDialog.Examples) modelsDialogBox.open();
 		else if (dialog == LandingDialog.StartModeling) languagesDialog.open();
 	}
 
 	private void refreshModelsDialog() {
 		closing = false;
-		modelsDialog.title("Example Metta models");
+		modelsDialogBox.title("Example Metta models");
+		modelsStamp.bindTo(modelsDialog);
 		modelsStamp.language(box().languageManager().get(Language.key(Language.QuassarGroup, Language.Metta)));
 		modelsStamp.tab(LanguageTab.Examples);
 		modelsStamp.refresh();
@@ -100,15 +101,15 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 		notifier.dispatch(PathHelper.languagePath(language));
 	}
 
-//	private void startModeling(Language language) {
-//		String name = ModelHelper.proposeName();
-//		LanguageRelease release = language.lastRelease();
-//		Model model = box().commands(ModelCommands.class).create(name, name, translate("(no description)"), GavCoordinates.fromString(language, release), username(), username());
-//		notifier.dispatch(PathHelper.startingModelPath(model));
-//	}
-
 	private void startBuilding() {
-		startModeling(box().languageManager().get(Language.key(Language.QuassarGroup, Language.Metta)));
+		startBuilding(box().languageManager().get(Language.key(Language.QuassarGroup, Language.Metta)));
+	}
+
+	private void startBuilding(Language language) {
+		String name = ModelHelper.proposeName();
+		LanguageRelease release = language.lastRelease();
+		Model model = box().commands(ModelCommands.class).create(name, name, translate("(no description)"), GavCoordinates.fromString(language, release), username(), username());
+		notifier.dispatch(PathHelper.startingModelPath(model));
 	}
 
 	private void notifyClose() {

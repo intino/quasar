@@ -6,20 +6,18 @@ use UI
 use Theme
 
 Template(layout=Horizontal Center, format=subHeaderStyle) languageHeaderTemplate
-
 	Block(layout=Horizontal Flexible)
-		Block(layout=Horizontal) as Relative(width=100%)
-			Text(value="models", format=doubleAirRight bold) modelsText
-			Link(title="models", format=doubleAirRight, visible=false) modelsLink as Action Addressable(EditorElements.language)
-			Text(value="examples", format=doubleAirRight bold, visible=false) examplesText
-			Link(title="examples", format=doubleAirRight, visible=false) examplesLink as Action Addressable(EditorElements.language)
+	Block(layout=Horizontal Center EndJustified)
+		TemplateStamp(template=languageToolbar) toolbar
 
-	Block(layout=Horizontal EndJustified)
-		Link(title="metamodel", format=doubleAirRight, visible=false) metamodelLink as Action Addressable(EditorElements.model)
-		Text(value="help", format=doubleAirRight bold, visible=false) helpText
-		Link(title="help", format=doubleAirRight, visible=false) helpLink as Action Addressable(EditorElements.language)
-		Text(value="about", format=doubleAirRight bold) aboutText
-		Link(title="about", format=doubleAirRight, visible=false) aboutLink as Action Addressable(EditorElements.language)
+Template(layout=Horizontal Center) languageToolbar
+	Text(value="", format=doubleAirRight bold) aboutText
+	Link(title="", format=doubleAirRight, visible=false) aboutLink as Action Addressable(EditorElements.language)
+	Text(value="help", format=doubleAirRight bold, visible=false) helpText
+	Link(title="help", format=doubleAirRight, visible=false) helpLink as Action Addressable(EditorElements.language)
+	Text(value="examples", format=doubleAirRight bold, visible=false) examplesText
+	Link(title="examples", format=doubleAirRight, visible=false) examplesLink as Action Addressable(EditorElements.language)
+	Image(format=middleAirRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) languageLogo as Absolute(height=25px)
 
 Template languagesTemplate as Relative(height=100%, width=100%)
 
@@ -83,38 +81,64 @@ Template languageTemplate as Relative(height=100%, width=100%, offsetHeight=2px)
 
 		Block(layout=Vertical Flexible) mainBlock as Relative(width=100%) Conditional
 
-			Block(layout=Horizontal Flexible, format=whiteBackground) mainContentBlock as Relative(width=100%, height=100%) Resizable
+			Block(layout=Horizontal Flexible, format=whiteBackground) mainContentBlock as Relative(width=100%, height=100%) Resizable(minSize=4%)
 
-				Block(layout=Vertical Flexible, format=doubleLeftSpaced doubleRightSpaced bottomSpaced topSpaced) modelsBlock as Relative(width=65%)
+				Block(layout=Vertical Flexible, format=doubleLeftSpaced doubleRightSpaced bottomSpaced topSpaced) modelsBlock as Relative(width=55%)
+					Block(format=middleAirBottom) > TemplateStamp(template=modelsDialog) modelsDialog
 					TemplateStamp(template=modelsTemplate) modelsStamp
 
-				Block(layout=Vertical Flexible) homeBlock as Relative(width=35%)
-					Block(layout=Horizontal Flexible Center, format=bottomLightBordered middleTopSpaced middleBottomSpaced doubleLeftSpaced)
-						Block(layout=Horizontal Flexible)
-							Text(format=h2) title
-						Block(layout=Horizontal EndJustified, format=doubleAirRight)
-							Image(format=airRight, mobileReduceFactor=75%, colorInvertedWithDarkMode=true) logo as Absolute(height=50px)
+				Block(layout=Vertical Flexible) homeBlock as Relative(width=45%)
+					Block(layout=Vertical Flexible) viewsBlock as AutoSize Relative(height=100%)
+						TemplateStamp(template=languageExplorer) languageExplorer
 
-					Block(layout=Vertical Flexible, format=doubleAirTop doubleLeftSpaced doubleRightSpaced doubleBottomSpaced) viewsBlock as AutoSize
-						Block(visible=false) aboutBlock
-							Block(format=doubleAirBottom)
-								Text(value="title", format=h6 bold)
-								Text(format=noHtmlStyle) aboutTitle as Code(Html)
-							Block(format=doubleAirBottom)
-								Text(value="what is it", format=h6 bold)
-								Text(format=noHtmlStyle) aboutDescription as Code(Html)
-							Block(format=doubleAirBottom)
-								Text(value="how to cite", format=h6 bold)
-								Text(format=noHtmlStyle) aboutCitation as Code(Html)
-								Link(title="Copy cite", format=middleAirTop, visible=false) aboutCitationLink as CopyToClipboard
-							Block(format=doubleAirBottom)
-								Text(value="copyright and license", format=h6 bold)
-								Text(format=noHtmlStyle) aboutLicense as Code(Html)
+Template(layout=Vertical Flexible) languageExplorer as Relative(height=100%, width=100%)
 
-						Block(visible=false) versionsBlock
-							Block(format=doubleAirBottom)
-								Text(value="versions", format=h6 bold)
-								TemplateStamp(template=languageReleaseHelp) helps as Multiple(noItemsMessage="No help available")
+	Block(layout=Vertical Flexible, visible=false) collapsedBlock
+		Block(layout=Horizontal Center, format=languageExplorerHeader)
+			Block(layout=Horizontal CenterCenter Flexible)
+				MaterialIconButton(title="open panel", icon="ChevronLeft") expandExplorer as Action
+		Block(layout=Vertical Flexible, format=relative) as Relative(height=100%)
+			Block(layout=Vertical Flexible) as AutoSize > Link(title=" ", format=collapsedBlockLink) expandExplorerFull as Action
+
+	Block(layout=Vertical Flexible, visible=false) expandedBlock
+		Block(layout=Horizontal Center, format=languageExplorerHeader)
+			Block(layout=Horizontal Center Flexible)
+				MaterialIconButton(title = "minimize", icon="ChevronRight") collapseExplorer as Action
+				Block(layout=Vertical Flexible, visible=false) simpleTitle > Text(format=h2) title
+				Block(layout=Horizontal Flexible, visible=false) releaseTitle
+					Text(format=h2 middleAirRight) titlePrefix
+					Block(layout=Horizontal EndJustified, format=middleAirRight) as Absolute(width=120px) > Selector(format=h2) releaseSelector as ComboBox(view=TextView)
+					Text(format=h2 middleAirRight) titleSuffix
+
+			Block(layout=Horizontal EndJustified, format=airRight)
+				TemplateStamp(template=modelsDialog, visible=false) examplesDialog
+
+		Block(format=doubleAirTop doubleLeftSpaced doubleRightSpaced doubleBottomSpaced) aboutBlock as Conditional
+			Block(format=doubleAirBottom, visible=false) metamodelBlock
+				Text(value="metamodel", format=h6 bold)
+				Link(title="open", format=middleAirRight) metamodelLink as Action Addressable(EditorElements.model)
+			Block(format=doubleAirBottom, visible=false) forgeBlock
+				Text(value="forge", format=h6 bold)
+				Link(title="open", format=middleAirRight) forgeLink as OpenSite(site=empty)
+			Block(format=doubleAirBottom)
+				Text(value="title", format=h6 bold)
+				Text(format=noHtmlStyle) aboutTitle as Code(Html)
+			Block(format=doubleAirBottom)
+				Text(value="what is it", format=h6 bold)
+				Text(format=noHtmlStyle) aboutDescription as Code(Html)
+			Block(format=doubleAirBottom)
+				Text(value="how to cite", format=h6 bold)
+				Text(format=noHtmlStyle) aboutCitation as Code(Html)
+				Link(title="Copy cite", format=middleAirTop, visible=false) aboutCitationLink as CopyToClipboard
+			Block(format=doubleAirBottom)
+				Text(value="copyright and license", format=h6 bold)
+				Text(format=noHtmlStyle) aboutLicense as Code(Html)
+
+		Block(layout=Vertical Flexible) versionsBlock as Conditional Relative(height=100%)
+			Block as AutoSize Relative(width=100%, height=100%) > HtmlViewer releaseHelpStamp
+
+		Block(layout=Vertical Flexible) examplesBlock as Conditional Relative(height=100%)
+			TemplateStamp(template=modelsTemplate) examplesStamp
 
 Template languageForgeTemplate as Relative(height=100%, width=100%)
 	Block(layout=Horizontal Flexible) as Relative(height=100%, width=100%) Resizable(minSize=15%)
@@ -137,7 +161,7 @@ Template languageForgeTemplate as Relative(height=100%, width=100%)
 					Text(format=metaForgeCredits) parentLanguageTitle
 		Block(layout=Vertical Flexible) as Relative(width=85%)
 			Selector viewSelector as Tabs(format=tabsStyle) Addressable(EditorElements.forge)
-				Text(value="Kit") kit as Option
+				Text(value="Modeling") kit as Option
 				Text(value="Execution") execution as Option
 			Block(layout=Horizontal Flexible)
 				Block(layout=Vertical) as Absolute(width=800px)
@@ -230,7 +254,7 @@ Template(layout=Vertical Flexible, format=doubleSpaced) languageKitTemplate
 	Block(layout=Vertical Flexible, visible=false) versionBlock
 
 		Block(format=doubleAirBottom)
-			Text(value="1. Define the template", translate=true, format=h5 bold)
+			Text(value="Define the template", translate=true, format=h5 bold)
 			Block(format=autoHeight) as Relative(width=80%) > Text(value="You need to define the base template that will be used to generate all models created with this DSL. This template serves as the default structure applied automatically whenever a new model is created, allowing you to customize its initial layout and behavior.", translate=true, format=middleAirBottom)
 			Block(layout=Horizontal, visible=false) templateDefined
 				Button(title="Define", format=blockKitAction) templateLink as OpenSite(site=empty, target=Blank)
@@ -238,20 +262,20 @@ Template(layout=Vertical Flexible, format=doubleSpaced) languageKitTemplate
 				Button(title="Define", format=blockKitAction) createTemplate as Action
 
 		Block(format=doubleAirBottom autoHeight)
-			Text(value="2. Edit the help", translate=true, format=h5 bold)
+			Text(value="Edit the help", translate=true, format=h5 bold)
 			Block(format=autoHeight) as Relative(width=80%) > Text(value="Here you can edit the help content that will be shown for this version of the DSL. This way, your users will always see up-to-date and relevant guidance based on the current features.", translate=true, format=middleAirBottom)
 			Block(layout=Horizontal)
 				Button(title="Edit", format=blockKitAction) editHelpTrigger as OpenDialog(dialog=helpDialog)
 
 		Block(format=doubleAirBottom)
-			Text(value="3. Explore the modeling experience", translate=true, format=h5 bold)
-			Block(format=autoHeight) as Relative(width=80%) > Text(value="You can preview how the modeling environment will appear to end users based on your defined template. It’s a chance to test the structure, behavior, and overall flow before finalizing your DSL setup.", translate=true, format=middleAirBottom)
-			Block(layout=Horizontal) > Button(title="Explore", format=blockKitAction) startModeling as Action Addressable(EditorElements.language)
-
-		Block(layout=Vertical Flexible, format=doubleAirBottom) as Relative(height=100%)
-			Text(value="4. Add examples (optional)", translate=true, format=h5 bold)
+			Text(value="Add examples", translate=true, format=h5 bold)
 			Block(format=autoHeight) as Relative(width=80%) > Text(value="In this step, you can optionally provide example models created with your DSL. These examples serve as practical references to help users understand how to use the language effectively. They can include common use cases, full configurations, or edge cases to illustrate specific features.", translate=true, format=middleAirBottom)
 			Block(layout=Horizontal) > Button(title="Add", format=blockKitAction) as OpenDialog(dialog=examplesDialog)
+
+		Block(format=doubleAirBottom)
+			Text(value="Explore the modeling experience", translate=true, format=h5 bold)
+			Block(format=autoHeight) as Relative(width=80%) > Text(value="You can preview how the modeling environment will appear to end users based on your defined template. It’s a chance to test the structure, behavior, and overall flow before finalizing your DSL setup.", translate=true, format=middleAirBottom)
+			Block(layout=Horizontal) > Button(title="Explore", format=blockKitAction) startModeling as Action Addressable(EditorElements.language)
 
 	Dialog(title="Help") helpDialog as FullScreen
         Block as Relative(height=100%)
@@ -259,6 +283,7 @@ Template(layout=Vertical Flexible, format=doubleSpaced) languageKitTemplate
 
 	Dialog(title="") examplesDialog as Relative(height=80%, width=80%)
         Block as Relative(height=100%, offsetHeight=40px)
+			Block(format=middleAirBottom) > TemplateStamp(template=modelsDialog) modelsDialog
 			TemplateStamp(template=modelsTemplate) modelsCatalog
 		Divider
         Block(layout=Horizontal EndJustified)
@@ -291,11 +316,11 @@ Template(layout=Vertical Flexible, format=doubleSpaced) languageExecutionTemplat
 			Block(format=autoHeight) as Relative(width=80%) > Text(value="Access all available resources related to this DSL", translate=true, format=airBottom)
 			TemplateStamp(template=downloadTemplate) downloads as Multiple(arrangement=Horizontal, spacing=DP16, noItemsMessage="There are no downloads available")
 
-		Block(format=middleAirBottom)
+		Block(format=middleAirBottom doubleAirTop)
 			Text(value="2. Deploy the execution environment", translate=true, format=h5 bold)
 			Text(value="After building your execution logic, deploy it to the target environment where models will be executed. This can be a local service, a remote server, a Docker container, or a Maven plugin — depending on your setup.", translate=true, format=airBottom)
 
-		Block(format=middleAirBottom)
+		Block(format=middleAirBottom doubleAirTop)
 			Text(value="3. How to execute models", translate=true, format=h5 bold)
 			Text(value="Once the runtime environment has been deployed, users will be able to execute their models via a visible action in the model editor. You must define the label for that action and specify its behavior when triggered.", translate=true, format=airBottom)
 

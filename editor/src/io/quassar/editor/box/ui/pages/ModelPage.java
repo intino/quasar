@@ -11,6 +11,7 @@ public class ModelPage extends AbstractModelPage {
 	public String file;
 	public String pos;
 	public String nav;
+	public String tab;
 
 	@Override
 	public String redirectUrl() {

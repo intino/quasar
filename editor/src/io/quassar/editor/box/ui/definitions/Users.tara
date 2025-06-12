@@ -4,21 +4,26 @@ use Theme
 
 Template(layout=Vertical Flexible) collaboratorsTemplate
 
-	Block(visible=false, format=middleAirBottom) noCollaboratorsBlock > Text(value="No collaborators have been added yet", format=message, translate=true)
-	Block(visible=false) collaboratorsBlock > TemplateStamp(template=collaboratorItemTemplate) collaborators as Multiple
+	Block
+		Text(value="Add people", translate=true, format=h5 middleAirBottom)
+		Text(value="Add a list of emails separated by either semicolon or newline", translate=true, format=message middleAirBottom)
+		Text peopleField as Editable Memo(height=8Rows)
+		Block(layout=Horizontal) > Button(title="Invite", highlight=Fill, format=middleAirTop) invite as Action
 
-	Block(layout=Horizontal Center StartJustified, format=doubleAirTop) as Absolute(width=400px)
-		Selector(format=doubleAirRight) collaboratorSelector as CollectionBox(placeholder="Select a user to add as collaborator")
-			List(itemClass="io.quassar.editor.model.User", noItemsMessage="No users") collaboratorSelectorList as Selectable
-				Mold > Item(height = 20px) collaboratorSelectorItem > Block > Text name
+	Block(format=doubleAirTop)
+		Text(value="Owner", translate=true, format=h5 middleAirBottom)
+		Text ownerField
+
+	Block(format=doubleAirTop doubleAirBottom)
+		Text(value="Collaborators", translate=true, format=h5 middleAirBottom)
+		TemplateStamp(template=collaboratorItemTemplate) collaborators as Multiple(noItemsMessage="No collaborators have been defined for this model yet.")
 
 Template collaboratorItemTemplate
-	Block(format=item userItem)
-		Block(layout=Horizontal)
-			Block(layout=Vertical Flexible CenterJustified) > Text(format=h5 bold) name
-			Block(layout=Horizontal Center EndJustified)
-				Block(layout=Horizontal Center, format=bringToFront)
-					Link(title="Remove", format=redColor middleAirBottom upperCase) removeUser as Action
+	Block(format=item) as HoverContainer
+		Block(layout=Horizontal Center)
+			Text(format=doubleAirRight) name
+			Block(layout=Horizontal Center, format=bringToFront doubleAirLeft, hidden=IfNotHover)
+				Link(title="remove access", format=blueColor upperCase) removeUser as Action
 
 Template addCollaboratorDialog
 

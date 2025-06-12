@@ -107,7 +107,7 @@ public class ModelCommands extends Commands {
 		command.execute();
 	}
 
-	public void save(Model model, List<User> collaborators, String username) {
+	public void save(Model model, List<String> collaborators, String username) {
 		SaveModelCollaboratorsCommand command = setup(new SaveModelCollaboratorsCommand(box), username);
 		command.model = model;
 		command.collaborators = collaborators;
