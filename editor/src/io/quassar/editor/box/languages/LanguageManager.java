@@ -123,8 +123,20 @@ public class LanguageManager {
 		return loadDsl(language.key(), release.version());
 	}
 
+	public File loadDslDigest(Language language, LanguageRelease release) {
+		File digest = archetype.languages().releaseDslJarDigest(language.key(), release.version());
+		if (!digest.exists()) ArtifactoryHelper.prepareDsl(language, release, archetype.languages());
+		return digest.exists() ? digest : null;
+	}
+
 	public File loadDslManifest(Language language, LanguageRelease release) {
 		File manifest = archetype.languages().releaseDslManifest(language.key(), release.version());
+		if (!manifest.exists()) ArtifactoryHelper.prepareDsl(language, release, archetype.languages());
+		return manifest.exists() ? manifest : null;
+	}
+
+	public File loadDslManifestDigest(Language language, LanguageRelease release) {
+		File manifest = archetype.languages().releaseDslManifestDigest(language.key(), release.version());
 		if (!manifest.exists()) ArtifactoryHelper.prepareDsl(language, release, archetype.languages());
 		return manifest.exists() ? manifest : null;
 	}
@@ -147,8 +159,20 @@ public class LanguageManager {
 		return result.exists() ? result : null;
 	}
 
+	public File loadParserDigest(Language language, LanguageRelease release, String name) {
+		File manifest = archetype.languages().releaseParserJarDigest(language.key(), release.version(), name);
+		if (!manifest.exists()) ArtifactoryHelper.prepareParserDependency(language, release, name, archetype.languages());
+		return manifest.exists() ? manifest : null;
+	}
+
 	public File loadParserManifest(Language language, LanguageRelease release, String name) {
 		File manifest = archetype.languages().releaseParserManifest(language.key(), release.version(), name);
+		if (!manifest.exists()) ArtifactoryHelper.prepareParserDependency(language, release, name, archetype.languages());
+		return manifest.exists() ? manifest : null;
+	}
+
+	public File loadParserManifestDigest(Language language, LanguageRelease release, String name) {
+		File manifest = archetype.languages().releaseParserManifestDigest(language.key(), release.version(), name);
 		if (!manifest.exists()) ArtifactoryHelper.prepareParserDependency(language, release, name, archetype.languages());
 		return manifest.exists() ? manifest : null;
 	}

@@ -16,7 +16,7 @@
     margin-bottom: 3.5em;
 }
 
-.dark .help a, .rsw-editor a {
+.dark .help a, .rsw-editor a, code a {
     color: #9399ff;
 }
 

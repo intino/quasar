@@ -24,8 +24,8 @@ Format("") subtitle2
 Format("fontSize:'13pt'") largeFontSize
 Format("fontSize:'16pt'") veryLargeFontSize
 Format("fontWeight:'bold'") bold
-Format("color:'#888'") greyColor
-Format("color:'#555'") greyHardColor
+Format("color:'#888'", darkContent="color:'#aaa'") greyColor
+Format("color:'#555'", darkContent="color:'#eee'") greyHardColor
 Format("color:'white'") whiteColor
 Format("color:'#F44335'") redColor
 Format("background:'#F44335'") redBackground
@@ -320,7 +320,7 @@ Format("margin:'0',borderRight:'1px solid #ddd'") leftTabPanel
 Format("borderRadius:'10px',border:'0',height:'100%'") panelDrawer
 Format("fontSize:'20pt'") dslFieldInput
 Format("position:'absolute',bottom:'0',zIndex:'1'") languageEditorLogoStyle
-Format("border:'1px solid #ccc',borderRadius:'5px',marginBottom:'5px'") forgeLogoStyle
+Format("borderRadius:'5px',marginBottom:'5px'") forgeLogoStyle
 Format("background:'#dee2e9'", darkContent="background:'#212938'") forgePanelBackground
 Format("color:'#294575',fontSize:'22pt',marginLeft:'11px',marginTop:'-8px'", darkContent="color:'#8c95a3'") metaForgeCredits
 Format("minWidth:'300px'") minResizablePanelWidth

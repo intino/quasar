@@ -35,22 +35,32 @@ public class ArtifactoryHelper {
 				removeDirectory(destination);
 				return;
 			}
-			Files.copy(manifest.toPath(), archetype.releaseDslManifest(language.key(), release.version()).toPath());
+			File manifestDestination = archetype.releaseDslManifest(language.key(), release.version());
+			Files.copy(manifest.toPath(), manifestDestination.toPath());
+			createDigest(jarFile, archetype.releaseDslJarDigest(language.key(), release.version()));
+			createDigest(manifestDestination, archetype.releaseDslManifestDigest(language.key(), release.version()));
 			removeDirectory(destination);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			Logger.error(e);
 		}
 	}
 
 	public static void prepareParserDependency(Language language, LanguageRelease release, String name, Archetype.Languages archetype) {
-		File file = archetype.releaseParserFile(language.key(), release.version(), name);
-		if (!file.exists()) return;
-		File tempDir = extractParserToDirectory(language, release, name, archetype, file);
-		File jarFile = locateJarFileInParser(release, tempDir);
-		if (jarFile == null) return;
-		File destination = extractJar(jarFile);
-		modifyParserManifestAndCopy(destination, language, release, name, archetype);
-		removeDirectory(tempDir);
+		try {
+			File file = archetype.releaseParserFile(language.key(), release.version(), name);
+			if (!file.exists()) return;
+			File tempDir = extractParserToDirectory(language, release, name, archetype, file);
+			File jarFile = locateJarFileInParser(release, tempDir);
+			if (jarFile == null) return;
+			File destination = extractJar(jarFile);
+			modifyParserManifestAndCopy(destination, language, release, name, archetype);
+			createDigest(archetype.releaseParserJar(language.key(), release.version(), name), archetype.releaseParserJarDigest(language.key(), release.version(), name));
+			createDigest(archetype.releaseParserManifest(language.key(), release.version(), name), archetype.releaseParserManifestDigest(language.key(), release.version(), name));
+			removeDirectory(tempDir);
+		}
+		catch (Exception e) {
+			Logger.error(e);
+		}
 	}
 
 	@Nullable
@@ -159,6 +169,11 @@ public class ArtifactoryHelper {
 		} catch (IOException e) {
 			Logger.error(e);
 		}
+	}
+
+	private static void createDigest(File source, File destiny) throws Exception {
+		if (destiny.exists()) destiny.delete();
+		Files.writeString(destiny.toPath(), DigestHelper.sha1Of(source));
 	}
 
 }
