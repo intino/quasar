@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -36,7 +37,7 @@ public class ArtifactoryHelper {
 				return;
 			}
 			File manifestDestination = archetype.releaseDslManifest(language.key(), release.version());
-			Files.copy(manifest.toPath(), manifestDestination.toPath());
+			Files.copy(manifest.toPath(), manifestDestination.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			createDigest(jarFile, archetype.releaseDslJarDigest(language.key(), release.version()));
 			createDigest(manifestDestination, archetype.releaseDslManifestDigest(language.key(), release.version()));
 			removeDirectory(destination);
