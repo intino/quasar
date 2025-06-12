@@ -32,13 +32,14 @@ public class GetArtifactoryFileAction implements io.intino.alexandria.rest.Reque
 			throw new NotFound("Repository file not found");
 
 		String extension = fileExtension();
-		boolean isJar = extension.equals(".jar");
-		boolean isManifest = extension.equals(".pom");
+		boolean isJar = pathInfo().contains(".jar");
+		boolean isManifest = pathInfo().contains(".pom");
+		boolean isDigest = extension.equals(".sha1");
 
-		if (coordinates.artifactId().equals("graph")) return isJar ? new Resource(box.languageManager().loadGraph(language, release)) : emptyManifest();
+		if (coordinates.artifactId().equals("graph")) return isJar ? new Resource(box.languageManager().loadGraph(language, release)) : emptyFile();
 
 		boolean isDsl = coordinates.artifactId().equals(language.name());
-		return isDsl ? loadDsl(language, release, isManifest) : loadParser(language, release, coordinates.artifactId(), isManifest);
+		return isDsl ? loadDsl(language, release, isManifest, isDigest) : loadParser(language, release, coordinates.artifactId(), isManifest, isDigest);
 	}
 
 	private Language locateLanguage(GavCoordinates coordinates) {
@@ -47,18 +48,18 @@ public class GetArtifactoryFileAction implements io.intino.alexandria.rest.Reque
 		return language;
 	}
 
-	private Resource loadDsl(Language language, LanguageRelease release, boolean isManifest) {
+	private Resource loadDsl(Language language, LanguageRelease release, boolean isManifest, boolean isDigest) {
 		if (isManifest) {
-			File result = box.languageManager().loadDslManifest(language, release);
-			return result != null ? new Resource(result) : emptyManifest();
+			File result = isDigest ? box.languageManager().loadDslManifestDigest(language, release) : box.languageManager().loadDslManifest(language, release);
+			return result != null ? new Resource(result) : emptyFile();
 		}
-		return new Resource(box.languageManager().loadDsl(language, release));
+		return new Resource(isDigest ? box.languageManager().loadDslDigest(language, release) : box.languageManager().loadDsl(language, release));
 	}
 
-	private Resource loadParser(Language language, LanguageRelease release, String artifactId, boolean isManifest) {
+	private Resource loadParser(Language language, LanguageRelease release, String artifactId, boolean isManifest, boolean isDigest) {
 		String file = ArtifactoryHelper.parserNameFor(artifactId);
-		if (isManifest) return new Resource(box.languageManager().loadParserManifest(language, release, file));
-		return new Resource(box.languageManager().loadParser(language, release, file));
+		if (isManifest) return new Resource(isDigest ? box.languageManager().loadParserManifestDigest(language, release, file) : box.languageManager().loadParserManifest(language, release, file));
+		return new Resource(isDigest ? box.languageManager().loadParserDigest(language, release, file) : box.languageManager().loadParser(language, release, file));
 	}
 
 	private String fileExtension() {
@@ -76,7 +77,7 @@ public class GetArtifactoryFileAction implements io.intino.alexandria.rest.Reque
 		throw new BadRequest("Malformed request");
 	}
 
-	private static Resource emptyManifest() {
+	private static Resource emptyFile() {
 		return new Resource("pom.xml", new byte[0]);
 	}
 

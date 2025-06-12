@@ -89,9 +89,8 @@ public class LanguageExplorer extends AbstractLanguageExplorer<EditorBox> {
 	private void refreshReleaseTitle() {
 		releaseTitle.visible(tab != LanguageTab.About);
 		if (!releaseTitle.isVisible()) return;
-		titlePrefix.value(language.key().toLowerCase());
+		titlePrefix.value(translate(LanguageHelper.title(tab)).formatted(language.key().toLowerCase(), release));
 		refreshReleaseSelector();
-		titleSuffix.value(translate(tab.name().toLowerCase()));
 	}
 
 	private void refreshReleaseSelector() {
@@ -131,20 +130,20 @@ public class LanguageExplorer extends AbstractLanguageExplorer<EditorBox> {
 
 	private void refreshHelp() {
 		String content = box().languageManager().loadHelp(language, release);
-		releaseHelpStamp.content("<div class='help'>" + content + "</div>");
+		releaseHelpStamp.content("<div class='help'>" + (content != null ? content : "") + "</div>");
 		releaseHelpStamp.refresh();
 	}
 
 	private void refreshMetamodel() {
-		aboutBlock.metamodelBlock.visible(PermissionsHelper.canEdit(language, session(), box()));
-		if (!aboutBlock.metamodelBlock.isVisible()) return;
+		aboutBlock.aboutContent.metamodelBlock.visible(PermissionsHelper.canEdit(language, session(), box()));
+		if (!aboutBlock.aboutContent.metamodelBlock.isVisible()) return;
 		metamodelLink.address(path -> PathHelper.modelPath(box().modelManager().get(language.metamodel())));
 	}
 
 	private void refreshForge() {
 		String metamodel = language.metamodel();
-		aboutBlock.forgeBlock.visible(metamodel != null && PermissionsHelper.canEdit(language, session(), box()));
-		if (!aboutBlock.forgeBlock.isVisible()) return;
+		aboutBlock.aboutContent.forgeBlock.visible(metamodel != null && PermissionsHelper.canEdit(language, session(), box()));
+		if (!aboutBlock.aboutContent.forgeBlock.isVisible()) return;
 		forgeLink.site(PathHelper.forgeUrl(box().modelManager().get(metamodel), release, session()));
 	}
 

@@ -106,33 +106,33 @@ Template(layout=Vertical Flexible) languageExplorer as Relative(height=100%, wid
 				MaterialIconButton(title = "minimize", icon="ChevronRight") collapseExplorer as Action
 				Block(layout=Vertical Flexible, visible=false) simpleTitle > Text(format=h2) title
 				Block(layout=Horizontal Flexible, visible=false) releaseTitle
-					Text(format=h2 middleAirRight) titlePrefix
-					Block(layout=Horizontal EndJustified, format=middleAirRight) as Absolute(width=120px) > Selector(format=h2) releaseSelector as ComboBox(view=TextView)
-					Text(format=h2 middleAirRight) titleSuffix
+					Text(format=h2 smallAirRight) titlePrefix
+					Block(layout=Horizontal EndJustified) as Absolute(width=120px) > Selector(format=h2) releaseSelector as ComboBox(view=TextView)
 
 			Block(layout=Horizontal EndJustified, format=airRight)
 				TemplateStamp(template=modelsDialog, visible=false) examplesDialog
 
-		Block(format=doubleAirTop doubleLeftSpaced doubleRightSpaced doubleBottomSpaced) aboutBlock as Conditional
-			Block(format=doubleAirBottom, visible=false) metamodelBlock
-				Text(value="metamodel", format=h6 bold)
-				Link(title="open", format=middleAirRight) metamodelLink as Action Addressable(EditorElements.model)
-			Block(format=doubleAirBottom, visible=false) forgeBlock
-				Text(value="forge", format=h6 bold)
-				Link(title="open", format=middleAirRight) forgeLink as OpenSite(site=empty)
-			Block(format=doubleAirBottom)
-				Text(value="title", format=h6 bold)
-				Text(format=noHtmlStyle) aboutTitle as Code(Html)
-			Block(format=doubleAirBottom)
-				Text(value="what is it", format=h6 bold)
-				Text(format=noHtmlStyle) aboutDescription as Code(Html)
-			Block(format=doubleAirBottom)
-				Text(value="how to cite", format=h6 bold)
-				Text(format=noHtmlStyle) aboutCitation as Code(Html)
-				Link(title="Copy cite", format=middleAirTop, visible=false) aboutCitationLink as CopyToClipboard
-			Block(format=doubleAirBottom)
-				Text(value="copyright and license", format=h6 bold)
-				Text(format=noHtmlStyle) aboutLicense as Code(Html)
+		Block(layout=Vertical Flexible) aboutBlock as Conditional Relative(height=100%)
+			Block(layout=Vertical Flexible, format=doubleTopSpaced doubleLeftSpaced doubleRightSpaced doubleBottomSpaced) aboutContent as AutoSize Relative(width=100%, height=100%)
+				Block(format=doubleAirBottom, visible=false) metamodelBlock
+					Text(value="metamodel", format=h6 bold)
+					Link(title="open", format=middleAirRight) metamodelLink as Action Addressable(EditorElements.model)
+				Block(format=doubleAirBottom, visible=false) forgeBlock
+					Text(value="forge", format=h6 bold)
+					Link(title="open", format=middleAirRight) forgeLink as OpenSite(site=empty)
+				Block(format=doubleAirBottom)
+					Text(value="title", format=h6 bold)
+					Text(format=noHtmlStyle) aboutTitle as Code(Html)
+				Block(format=doubleAirBottom)
+					Text(value="what is it", format=h6 bold)
+					Text(format=noHtmlStyle) aboutDescription as Code(Html)
+				Block(format=doubleAirBottom)
+					Text(value="how to cite", format=h6 bold)
+					Text(format=noHtmlStyle) aboutCitation as Code(Html)
+					Link(title="Copy cite", format=middleAirTop, visible=false) aboutCitationLink as CopyToClipboard
+				Block(format=doubleAirBottom)
+					Text(value="copyright and license", format=h6 bold)
+					Text(format=noHtmlStyle) aboutLicense as Code(Html)
 
 		Block(layout=Vertical Flexible) versionsBlock as Conditional Relative(height=100%)
 			Block as AutoSize Relative(width=100%, height=100%) > HtmlViewer releaseHelpStamp
@@ -145,11 +145,12 @@ Template languageForgeTemplate as Relative(height=100%, width=100%)
 		Block(format=forgePanelBackground minResizablePanelWidth) as Relative(width=15%)
 			Block(layout=Vertical Flexible, format=doubleSpaced) as AutoSize Relative(height=100%)
 				Block(layout=Vertical Flexible) as Relative(height=100%)
-					Block(format=doubleAirBottom)
-						Image(format=forgeLogoStyle) logo as Absolute(width=200px)
-						Text(format=h4) languageName
-						Link(title="properties") infoLink as Action
-						Link(title="metamodel") metamodelLink as OpenSite(site=empty)
+					Block(layout=Horizontal Start, format=doubleAirBottom)
+						Block(layout=Vertical Flexible)
+							Text(format=h2 airRight) languageName
+							Link(title="properties") infoLink as Action
+							Link(title="metamodel") metamodelLink as OpenSite(site=empty)
+						Block(layout=Horizontal EndJustified) > Image(format=forgeLogoStyle, colorInvertedWithDarkMode=true) logo as Absolute(width=50px)
 					Block(layout=Horizontal Center, format=doubleAirTop middleAirLeft middleAirBottom)
 						Block(layout=Vertical Flexible) > Text(value="Releases", translate=true, format=h5 bold)
 						Block(layout=Horizontal EndJustified) > MaterialIconButton(title="refresh", icon="Refresh", size=Small) refreshVersions as Action
@@ -157,7 +158,7 @@ Template languageForgeTemplate as Relative(height=100%, width=100%)
 				Block(layout=Vertical EndJustified, visible=false) parentLanguageBlock
 					Block(format=relative)
 						Link(title="", format=fullSpaceLink) parentLanguageLink as Action Addressable(EditorElements.language)
-						Image parentLanguageImage as Absolute(width=70px)
+						Image(colorInvertedWithDarkMode=true) parentLanguageImage as Absolute(width=70px)
 					Text(format=metaForgeCredits) parentLanguageTitle
 		Block(layout=Vertical Flexible) as Relative(width=85%)
 			Selector viewSelector as Tabs(format=tabsStyle) Addressable(EditorElements.forge)

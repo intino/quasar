@@ -24,7 +24,9 @@ TARGETS:{editor}
     - releases(dsl) in "{dsl}/releases"
     - release(dsl, version) in "{dsl}/releases/{version}"
     - releaseDslJar(dsl, version) in "{dsl}/releases/{version}/dsl.jar"
+    - releaseDslJarDigest(dsl, version) in "{dsl}/releases/{version}/dsl.jar.sha1"
     - releaseDslManifest(dsl, version) in "{dsl}/releases/{version}/dsl.xml"
+    - releaseDslManifestDigest(dsl, version) in "{dsl}/releases/{version}/dsl.xml.sha1"
     - releaseHelp(dsl, version) in "{dsl}/releases/{version}/help.html"
     - releaseGraph(dsl, version) in "{dsl}/releases/{version}/graph.json"
     - releaseParsers(dsl, version) in "{dsl}/releases/{version}/parsers" with ".zip"
@@ -32,7 +34,9 @@ TARGETS:{editor}
     - releaseParserDir(dsl, version, name) in "{dsl}/releases/{version}/parsers/{name}"
     - releaseParserFile(dsl, version, name) in "{dsl}/releases/{version}/parsers/{name}.zip"
     - releaseParserJar(dsl, version, name) in "{dsl}/releases/{version}/parsers/{name}.jar"
+    - releaseParserJarDigest(dsl, version, name) in "{dsl}/releases/{version}/parsers/{name}.jar.sha1"
     - releaseParserManifest(dsl, version, name) in "{dsl}/releases/{version}/parsers/{name}.xml"
+    - releaseParserManifestDigest(dsl, version, name) in "{dsl}/releases/{version}/parsers/{name}.xml.sha1"
 
 + projects in "projects"
 
