@@ -22,12 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-
-import static java.util.Collections.emptyList;
 
 public class CreateLanguageReleaseCommand extends Command<CommandResult> {
 	public Language language;
@@ -59,6 +55,7 @@ public class CreateLanguageReleaseCommand extends Command<CommandResult> {
 			destination = box.archetype().tmp().builds(UUID.randomUUID().toString());
 			TarHelper.extract(resource.inputStream(), destination);
 			box.languageManager().saveDsl(language, version, LanguageHelper.dslOf(destination));
+			box.languageManager().saveDslManifest(language, version, LanguageHelper.dslManifestOf(destination));
 			box.languageManager().saveGraph(language, version, LanguageHelper.graphOf(destination));
 			box.languageManager().saveParsers(language, version, LanguageHelper.parsersOf(destination));
 			return result;

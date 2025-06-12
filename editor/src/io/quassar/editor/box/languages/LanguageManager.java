@@ -11,7 +11,9 @@ import systems.intino.datamarts.subjectstore.model.Subject;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
@@ -107,6 +109,10 @@ public class LanguageManager {
 
 	public void saveDsl(Language language, String release, File dsl) {
 		copy(dsl, archetype.languages().releaseDslJar(language.key(), release));
+	}
+
+	public void saveDslManifest(Language language, String release, File dsl) {
+		copy(dsl, archetype.languages().releaseDslManifest(language.key(), release));
 	}
 
 	public File loadDsl(GavCoordinates coordinates) {
@@ -273,7 +279,7 @@ public class LanguageManager {
 	private void copy(List<File> source, File destiny) {
 		try {
 			if (!destiny.exists()) destiny.mkdirs();
-			for (File file : source) Files.copy(file.toPath(), new File(destiny, file.getName()).toPath());
+			for (File file : source) Files.copy(file.toPath(), new File(destiny, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
 			Logger.error(e);
 		}
