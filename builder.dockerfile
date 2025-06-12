@@ -11,7 +11,7 @@ ENV MAVEN_HOME=${MAVEN_HOME}
 ENV PATH=${MAVEN_HOME}/bin:${PATH}
 RUN apt-get update && \
     apt-get install -y curl tar
-RUN curl -fsSL https://downloads.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz -o /tmp/maven.tar.gz
+RUN curl -fsSL https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz -o /tmp/maven.tar.gz
 RUN mkdir -p ${MAVEN_HOME}
 RUN tar -xzf /tmp/maven.tar.gz -C ${MAVEN_HOME} --strip-components=1 && \
     rm -f /tmp/maven.tar.gz && \

@@ -8,4 +8,8 @@ Artifact("io.quassar", "1.0.0") quassar-builder
 		Test("junit", "junit", "4.13.2")
 	Package(mode = ModulesAndLibrariesLinkedByManifest) as Runnable(mainClass = "io.quassar.builder.QuassarcRunner")
 		finalName = "builder"
+	Distribution
+		Artifactory("intino-maven")
+			Release("https://artifactory.intino.io/artifactory/release-libraries")
+			Snapshot("https://artifactory.intino.io/artifactory/snapshot-libraries")
 RunConfiguration local
