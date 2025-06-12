@@ -1,0 +1,27 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>dummy</groupId>
+	<artifactId>dependencies-downloader</artifactId>
+	<version>1.0.0</version>
+	<name>Dependencies Downloader</name>
+
+	
+  <repositories>
+    <repository>
+      <id>intino-releases</id>
+      <url>https://artifactory.intino.io/artifactory/releases</url>
+    </repository>
+  </repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>io.quassar</groupId>
+			<artifactId>quassar-builder</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+	</dependencies>
+</project>
