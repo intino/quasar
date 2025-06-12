@@ -48,7 +48,12 @@ public class PermissionsHelper {
 
 	public static boolean canEdit(Language language, UISession session, EditorBox box) {
 		if (language.isFoundational()) return false;
-		return hasPermissions(language, session, box);
+		if (!hasPermissions(language, session, box)) return false;
+		String username = session.user() != null ? session.user().username() : null;
+		String owner = box.languageManager().owner(language);
+		if (owner != null && owner.equals(username)) return true;
+		Model model = box.modelManager().get(language.metamodel());
+		return model != null && canEdit(model, Model.DraftRelease, session, box);
 	}
 
 	public static boolean canAddModel(Language language, UISession session, EditorBox box) {
