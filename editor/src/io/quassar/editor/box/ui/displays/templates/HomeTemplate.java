@@ -77,19 +77,21 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 		if (aboutPage.aboutStamp != null) aboutPage.aboutStamp.open();
 	}
 
-	public void openLanguage(String language, String tab, String view) {
+	public void openLanguage(String language, String tab) {
+		boolean openTab = current != null && current == Page.Language;
 		set(language, null, null);
 		openPage(Page.Language);
-		if (languagePage.languageStamp != null) languagePage.languageStamp.open(language, tab, view);
+		if (languagePage.languageStamp == null) return;
+		if (openTab) languagePage.languageStamp.openTab(tab);
+		else languagePage.languageStamp.open(language, tab);
 	}
 
-	private static final String New = "new";
-	public void openModel(String model, String release, String view, String file, String position) {
+	public void openModel(String model, String release, String tab, String view, String file, String position) {
 		Model modelInstance = box().modelManager().get(model);
 		Language language = modelInstance != null ? box().languageManager().get(modelInstance) : null;
 		set(language, release, modelInstance);
 		openPage(Page.Model);
-		if (modelPage.modelStamp != null) modelPage.modelStamp.open(model, release, view, file, position);
+		if (modelPage.modelStamp != null) modelPage.modelStamp.open(model, release, tab, view, file, position);
 	}
 
 	public void openStartingModel(String model) {
@@ -101,10 +103,7 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 	public void openTemplate(String languageKey, String version) {
 		Language language = box().languageManager().get(languageKey);
 		LanguageRelease release = language.release(version);
-
-
-
-		openModel(release.template(), release.version(), null, null, null);
+		openModel(release.template(), release.version(), null, null, null, null);
 	}
 
 	public void openHelp(String language, String version) {

@@ -21,11 +21,13 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
 		this.loading = React.createRef();
 		this.state = {
 		    info: { dslName: "meta", modelName: "meta", modelRelease: "Draft", fileAddress: "" },
+		    countFiles: 0,
 		    file: { name: "default.tara", uri: "default.tara", content: "", language: "tara" }
 		};
 	};
 
 	render() {
+	    if (this.state.countFiles == 0) return (<React.Fragment/>);
         return (
             <div style={{position:'relative',height:"100%",width:"100%"}}>
                 {this.renderEditor()}
@@ -174,7 +176,7 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
             fileMap[info.files[i].uri] = info.files[i];
             if (info.files[i].active) this.selectedFile = info.files[i];
         }
-        this.setState({info, files: fileMap });
+        this.setState({info, files: fileMap, countFiles: info.files.length });
     };
 
     refreshFile = (file) => {

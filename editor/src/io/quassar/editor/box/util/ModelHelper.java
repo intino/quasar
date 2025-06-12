@@ -1,6 +1,8 @@
 package io.quassar.editor.box.util;
 
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.models.File;
+import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.box.ui.types.VersionType;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
@@ -13,6 +15,11 @@ import java.util.regex.Pattern;
 public class ModelHelper {
 
 	public static final String FirstReleaseVersion = "1.0.0";
+
+	public static File mainFile(ModelContainer modelContainer) {
+		List<File> files = modelContainer.modelFiles();
+		return files.stream().filter(f -> f.uri().contains("main")).findFirst().orElse(files.isEmpty() ? null : files.getFirst());
+	}
 
 	public static boolean isM1Release(Model model, ModelRelease release) {
 		if (release == null) return false;

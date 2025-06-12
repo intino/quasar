@@ -11,6 +11,7 @@ import io.quassar.editor.box.schemas.IntinoFileBrowserItem;
 import io.quassar.editor.box.schemas.IntinoFileBrowserOperation;
 import io.quassar.editor.box.schemas.IntinoFileBrowserOperationShortcut;
 import io.quassar.editor.box.ui.displays.IntinoFileBrowser;
+import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.box.util.*;
 import io.quassar.editor.model.Model;
@@ -26,6 +27,7 @@ import java.util.function.Consumer;
 public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<EditorBox> {
 	private Model model;
 	private String release;
+	private LanguageTab tab;
 	private ModelView view;
 	private ModelContainer modelContainer;
 	private io.quassar.editor.box.models.File file;
@@ -34,7 +36,6 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 	private Consumer<io.quassar.editor.box.models.File> changeListener;
 	private Consumer<io.quassar.editor.box.models.File> removeListener;
 	private Resource uploadedFile;
-
 
 	private enum Operation { CopyFile, AddFile, AddFolder, EditFilename;}
 	public ResourcesBrowserTemplate(EditorBox box) {
@@ -47,6 +48,10 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 
 	public void release(String value) {
 		this.release = value;
+	}
+
+	public void tab(LanguageTab tab) {
+		this.tab = tab;
 	}
 
 	public void view(ModelView view) {
@@ -109,7 +114,7 @@ public class ResourcesBrowserTemplate extends AbstractResourcesBrowserTemplate<E
 		super.refresh();
 		if (model == null) return;
 		IntinoFileBrowser browser = fileBrowser.display();
-		browser.itemAddress(PathHelper.modelPath(model, release, view) + "&file=:file");
+		browser.itemAddress(PathHelper.modelPath(model, release, tab, view) + "&file=:file");
 		browser.rootItem(io.quassar.editor.box.models.File.ResourcesDirectory);
 		browser.items(IntinoFileBrowserHelper.fileBrowserItems(modelContainer.resourceFiles()), false, true);
 		browser.operations(operations());

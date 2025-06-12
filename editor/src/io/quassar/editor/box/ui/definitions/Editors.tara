@@ -116,7 +116,7 @@ Template modelSettingsEditor
 
 	Selector settingsTabSelector as Tabs(format=tabsStyle)
 		Text(value="General") generalOption as Option
-		Text(value="Collaborators") collaboratorsOption as Option
+		Text(value="Share") collaboratorsOption as Option
 
 	Block(layout=Vertical, format=doubleAirLeft) as Relative(width=60%)
 		Block(layout=Vertical Flexible, format=doubleTopSpaced) generalBlock as Relative(width=95%) Conditional(settingsTabSelector.generalOption)
@@ -146,7 +146,6 @@ Template modelSettingsEditor
 				Block(layout=Horizontal) > Button(title="Clone model...", highlight=Fill) cloneModel as Action Affirmed("Cloning the model will create a copy and open it. Do you want to proceed?")
 
 		Block(layout=Vertical Flexible, format=doubleTopSpaced) collaboratorsBlock as Relative(width=95%) Conditional(settingsTabSelector.collaboratorsOption)
-			Text(value="Users that will have access", translate=true, format=h5 middleAirBottom)
 			TemplateStamp(template=collaboratorsTemplate) collaboratorsStamp
 
 Template(layout=Horizontal Center, format=tag) tagEditor
@@ -186,3 +185,13 @@ Template(layout=Horizontal) languageExecutionLauncher
 		Divider
         Block(layout=Horizontal EndJustified)
         	Button(title="Close", size=Small) as CloseDialog(localDialog)
+
+Template(layout=Horizontal Center, format=autoHeight) modelsDialog as Relative(width=100%)
+	Button(title="New", size=Small, highlight=Outline, visible=false) addModelTrigger as Action
+	Block(layout=Horizontal Center Flexible, visible=false) catalogOperations
+		Block(layout=Horizontal Flexible EndJustified, format=airRight)
+			Link(title="most recent", format=airRight, visible=false) mostRecentLink
+			Text(value="most recent", format=airRight, visible=false) mostRecentText
+			Link(title="last modified", visible=false) lastModifiedLink
+			Text(value="last modified", visible=false) lastModifiedText
+		Block > SearchBox(collections=empty) searchBox

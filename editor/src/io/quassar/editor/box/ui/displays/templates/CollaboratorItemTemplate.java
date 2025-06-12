@@ -6,18 +6,18 @@ import io.quassar.editor.model.User;
 import java.util.function.Consumer;
 
 public class CollaboratorItemTemplate extends AbstractCollaboratorItemTemplate<EditorBox> {
-	private User user;
-	private Consumer<User> removeListener;
+	private String user;
+	private Consumer<String> removeListener;
 
 	public CollaboratorItemTemplate(EditorBox box) {
 		super(box);
 	}
 
-	public void user(User user) {
+	public void user(String user) {
 		this.user = user;
 	}
 
-	public void onRemove(Consumer<User> listener) {
+	public void onRemove(Consumer<String> listener) {
 		this.removeListener = listener;
 	}
 
@@ -30,7 +30,7 @@ public class CollaboratorItemTemplate extends AbstractCollaboratorItemTemplate<E
 	@Override
 	public void refresh() {
 		super.refresh();
-		name.value(user.name());
+		name.value(user);
 	}
 
 }

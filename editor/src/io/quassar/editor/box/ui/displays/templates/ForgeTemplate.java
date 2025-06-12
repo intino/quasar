@@ -2,8 +2,6 @@ package io.quassar.editor.box.ui.displays.templates;
 
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.ui.types.ForgeView;
-import io.quassar.editor.box.ui.types.LanguageView;
-import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.box.util.SessionHelper;
 import io.quassar.editor.model.Language;

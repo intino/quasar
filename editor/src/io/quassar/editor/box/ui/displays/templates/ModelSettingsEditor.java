@@ -131,7 +131,7 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<EditorBox> 
 		updateLanguageVersionListener.accept(model);
 	}
 
-	private void saveCollaborators(List<User> collaborators) {
+	private void saveCollaborators(List<String> collaborators) {
 		box().commands(ModelCommands.class).save(model, collaborators, username());
 	}
 

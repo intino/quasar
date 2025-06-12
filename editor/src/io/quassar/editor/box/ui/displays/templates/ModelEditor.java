@@ -1,6 +1,5 @@
 package io.quassar.editor.box.ui.displays.templates;
 
-import com.sun.net.httpserver.Authenticator;
 import io.intino.alexandria.MimeTypes;
 import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.displays.events.SelectionEvent;
@@ -14,11 +13,11 @@ import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.box.schemas.IntinoDslEditorFileContent;
 import io.quassar.editor.box.schemas.IntinoFileBrowserItem;
 import io.quassar.editor.box.ui.displays.IntinoDslEditor;
+import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.PathHelper;
-import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
@@ -36,6 +35,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 	private Model model;
 	private String release;
 	private ModelView selectedView;
+	private LanguageTab selectedTab;
 	private io.quassar.editor.box.models.File selectedFile;
 	private FilePosition selectedPosition;
 	private io.quassar.editor.box.models.File selectedNewFile;
@@ -60,6 +60,10 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		this.selectedView = view;
 	}
 
+	public void tab(LanguageTab tab) {
+		this.selectedTab = tab;
+	}
+
 	public void file(File file, FilePosition position) {
 		this.selectedFile = file;
 		this.selectedPosition = position;
@@ -74,7 +78,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		super.didMount();
 		if (model == null) return;
 		createFileEditor();
-		refresh();
+		refresh(true);
 	}
 
 	@Override
@@ -85,58 +89,68 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		initFileEditor();
 		initFileModifiedDialog();
 		initSettings();
-		tabSelector.onSelect(e -> hideFooterBlocks());
-		footerSelector.onSelect(e -> hideMainBlocks());
+		initExplorer();
 		helpDialog.onClose(e -> notifier.dispatch(PathHelper.modelPath(model, release)));
 		helpDialog.onOpen(e -> refreshHelpDialog());
 		console.onClose(e -> consoleBlock.hide());
 	}
 
+	private void initExplorer() {
+		languageExplorer.onExpand(e -> expandHome());
+		languageExplorer.onCollapse(e -> collapseHome());
+	}
+
 	private void initSettings() {
-		infoTrigger.onExecute(e -> openSettings());
-		settingsBlock.onInit(e -> initSettingsBlock());
-		settingsBlock.onShow(e -> refreshSettingsBlock());
+		infoTrigger.onExecute(e -> settingsDialog.open());
+		modelSettingsEditor.onSaveTitle(e -> refreshHeader());
+		modelSettingsEditor.onClone(e -> cloneModel());
+		modelSettingsEditor.onUpdateLanguageVersion(e -> updateLanguageVersion());
+		settingsDialog.onOpen(e -> refreshSettingsDialog());
 	}
 
-	private void initSettingsBlock() {
-		settingsStamp.onSaveTitle(e -> refreshHeader());
-		settingsStamp.onClone(e -> cloneModel());
-		settingsStamp.onUpdateLanguageVersion(e -> updateLanguageVersion());
-	}
-
-	private void refreshSettingsBlock() {
-		settingsStamp.model(model);
-		settingsStamp.release(release);
-		settingsStamp.refresh();
+	private void refreshSettingsDialog() {
+		modelSettingsEditor.model(model);
+		modelSettingsEditor.release(release);
+		modelSettingsEditor.refresh();
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
+		refresh(false);
+	}
+
+	private void refresh(boolean invalidate) {
 		refreshHeader();
 		languageNotLoadedBlock.visible(modelContainer == null);
-		refreshContent();
+		refreshContent(invalidate);
 		if (showHelp) helpDialog.open();
 	}
 
-	private void refreshContent() {
-		tabSelector.address(path -> PathHelper.modelViewPath(path, model, release));
-		footerSelector.address(path -> PathHelper.modelViewPath(path, model, release));
-		footerSelector.readonly(!PermissionsHelper.canEditSettings(model, release, session(), box()));
+	private void refreshContent(boolean invalidate) {
+		tabSelector.address(path -> PathHelper.modelViewPath(path, model, release, selectedTab));
 		contentBlock.visible(model != null && modelContainer != null);
-		modelEditionBlock.visible(selectedView != ModelView.Settings);
 		if (!contentBlock.isVisible()) return;
 		if (selectedFile != null) tabSelector.select(selectedFile.isResource() ? "resources" : "model");
-		else if (selectedView != null) {
-			if (selectedView == ModelView.Settings) footerSelector.select("settings");
-			else tabSelector.select(selectedView.name().toLowerCase());
-		}
+		else if (selectedView != null) tabSelector.select(selectedView.name().toLowerCase());
 		else if (tabSelector.selection().isEmpty()) tabSelector.select("model");
 		else tabSelector.select(tabSelector.selection().getFirst());
 		refreshFile();
+		refreshLanguageExplorer(invalidate);
+	}
+
+	private void refreshLanguageExplorer(boolean invalidate) {
+		Language language = box().languageManager().get(model.language());
+		languageExplorer.invalidateCache(invalidate);
+		languageExplorer.language(language);
+		languageExplorer.release(model.language().version());
+		languageExplorer.tab(selectedTab);
+		//languageExplorer.bindTo(examplesDialog);
+		languageExplorer.refresh();
 	}
 
 	private void initHeader() {
+		headerStamp.onOpenSettings(m -> settingsDialog.open());
 		headerStamp.onCheck(m -> check());
 		headerStamp.onClone(m -> cloneModel());
 		headerStamp.onDeploy((m, e) -> updateConsole(e));
@@ -158,6 +172,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 	private void refreshModelBrowserBlock() {
 		modelBrowserStamp.model(model);
 		modelBrowserStamp.release(release);
+		modelBrowserStamp.tab(selectedTab);
 		modelBrowserStamp.view(selectedView);
 		modelBrowserStamp.modelContainer(modelContainer);
 		modelBrowserStamp.file(selectedFile);
@@ -174,6 +189,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 	private void refreshResourcesBrowserBlock() {
 		resourcesBrowserStamp.model(model);
 		resourcesBrowserStamp.release(release);
+		resourcesBrowserStamp.tab(selectedTab);
 		resourcesBrowserStamp.view(selectedView);
 		resourcesBrowserStamp.modelContainer(modelContainer);
 		resourcesBrowserStamp.file(selectedFile);
@@ -244,7 +260,9 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		headerStamp.model(model);
 		headerStamp.release(release);
 		headerStamp.view(selectedView);
+		headerStamp.tab(selectedTab);
 		headerStamp.file(selectedFile);
+		headerStamp.position(selectedPosition);
 		headerStamp.refresh();
 	}
 
@@ -400,25 +418,16 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		return selectedFile;
 	}
 
-	private void openSettings() {
-		tabSelector.selection(Collections.emptyList());
-		footerSelector.select("settings");
-	}
-
 	private void updateLanguageVersion() {
-		notifier.redirect(PathHelper.modelUrl(model, release, selectedView, selectedFile, selectedPosition, session()));
+		notifier.redirect(PathHelper.modelUrl(model, release, selectedTab, selectedView, selectedFile, selectedPosition, session()));
 	}
 
-	private void hideMainBlocks() {
-		tabSelector.selection(Collections.emptyList());
-		modelEditionBlock.hide();
-		intinoDslEditor.clear();
+	private void expandHome() {
+		modelEditionBlock.refreshLayout(15, 55, 30);
 	}
 
-	private void hideFooterBlocks() {
-		modelEditionBlock.show();
-		footerSelector.selection(Collections.emptyList());
-		settingsBlock.hide();
+	private void collapseHome() {
+		modelEditionBlock.refreshLayout(15, 81, 4);
 	}
 
 }
