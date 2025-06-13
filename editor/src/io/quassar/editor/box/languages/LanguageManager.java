@@ -2,6 +2,7 @@ package io.quassar.editor.box.languages;
 
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
+import io.quassar.editor.box.util.ArchetypeHelper;
 import io.quassar.editor.box.util.ArtifactoryHelper;
 import io.quassar.editor.box.util.SubjectHelper;
 import io.quassar.editor.model.*;
@@ -109,10 +110,14 @@ public class LanguageManager {
 
 	public void saveDsl(Language language, String release, File dsl) {
 		copy(dsl, archetype.languages().releaseDslJar(language.key(), release));
+		LanguageRelease languageRelease = language.release(release);
+		ArtifactoryHelper.cleanDslCache(language, languageRelease, archetype.languages());
 	}
 
 	public void saveDslManifest(Language language, String release, File dsl) {
 		copy(dsl, archetype.languages().releaseDslManifest(language.key(), release));
+		LanguageRelease languageRelease = language.release(release);
+		ArtifactoryHelper.cleanDslCache(language, languageRelease, archetype.languages());
 	}
 
 	public File loadDsl(GavCoordinates coordinates) {
@@ -183,7 +188,9 @@ public class LanguageManager {
 	}
 
 	public void saveParsers(Language language, String release, List<File> parsers) {
+		LanguageRelease languageRelease = language.release(release);
 		copy(parsers, archetype.languages().releaseParsersDir(language.key(), release));
+		parsers.forEach(p -> ArtifactoryHelper.cleanParserDependencyCache(language, languageRelease, p.getName(), archetype.languages()));
 	}
 
 	public String loadHelp(Language language, String version) {
