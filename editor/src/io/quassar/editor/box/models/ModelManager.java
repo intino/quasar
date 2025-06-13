@@ -315,6 +315,7 @@ public class ModelManager {
 	}
 
 	public boolean existsModelsWithReleasesFor(Language language, String release) {
+		if (language == null || release == null) return false;
 		return modelsWithRelease(language, release).stream().noneMatch(m -> m.releases().size() <= 1);
 	}
 
