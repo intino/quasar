@@ -46,6 +46,18 @@ public class ArtifactoryHelper {
 		}
 	}
 
+	public static void cleanDslCache(Language language, LanguageRelease release, Archetype.Languages archetype) {
+		try {
+			File file = archetype.releaseDslJarDigest(language.key(), release.version());
+			if (file.exists()) file.delete();
+			file = archetype.releaseDslManifestDigest(language.key(), release.version());
+			if (file.exists()) file.delete();
+		}
+		catch (Exception e) {
+			Logger.error(e);
+		}
+	}
+
 	public static void prepareParserDependency(Language language, LanguageRelease release, String name, Archetype.Languages archetype) {
 		try {
 			File file = archetype.releaseParserFile(language.key(), release.version(), name);
@@ -58,6 +70,23 @@ public class ArtifactoryHelper {
 			createDigest(archetype.releaseParserJar(language.key(), release.version(), name), archetype.releaseParserJarDigest(language.key(), release.version(), name));
 			createDigest(archetype.releaseParserManifest(language.key(), release.version(), name), archetype.releaseParserManifestDigest(language.key(), release.version(), name));
 			removeDirectory(tempDir);
+		}
+		catch (Exception e) {
+			Logger.error(e);
+		}
+	}
+
+	public static void cleanParserDependencyCache(Language language, LanguageRelease release, String name, Archetype.Languages archetype) {
+		try {
+			name = name.replace(".zip", "");
+			File file = archetype.releaseParserJar(language.key(), release.version(), name);
+			if (file.exists()) file.delete();
+			file = archetype.releaseParserJarDigest(language.key(), release.version(), name);
+			if (file.exists()) file.delete();
+			file = archetype.releaseParserManifest(language.key(), release.version(), name);
+			if (file.exists()) file.delete();
+			file = archetype.releaseParserManifestDigest(language.key(), release.version(), name);
+			if (file.exists()) file.delete();
 		}
 		catch (Exception e) {
 			Logger.error(e);
