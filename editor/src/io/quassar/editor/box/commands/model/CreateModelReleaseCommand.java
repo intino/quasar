@@ -38,12 +38,12 @@ public class CreateModelReleaseCommand extends Command<CommandResult> {
 	}
 
 	private OperationResult replaceRelease() {
+		removeTemporalWorkspace();
 		OperationResult result = box.modelManager().replaceRelease(model, version);
 		Language language = box.languageManager().getWithMetamodel(model);
 		if (language == null) return result;
 		LanguageRelease release = language.release(version);
 		if (release == null) return result;
-		removeTemporalWorkspace();
 		BuildResult rebuildResult = rebuild(language, release);
 		return !rebuildResult.success() ? OperationResult.Error(rebuildResult.messages().stream().map(Message::content).collect(Collectors.joining("; "))) : result;
 	}
