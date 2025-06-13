@@ -326,7 +326,7 @@ Format("color:'#294575',fontSize:'22pt',marginLeft:'11px',marginTop:'-8px'", dar
 Format("minWidth:'300px'") minResizablePanelWidth
 Format("height:'48px',borderBottom:'1px solid #efefef',width:'100%'") languageExplorerHeader
 Format("height:'calc(100vh - 140px)'") collapsedBlockLink
-Format("position:'absolute',left:'0',top:'0',background:'#ffd375',zIndex:'1',margin:'4px 33%',padding:'0 20px',borderRadius:'6px'") banner
+Format("position:'absolute',left:'0',top:'0',background:'#e2effb',zIndex:'1',margin:'3px 33%',padding:'2px 20px',borderRadius:'6px',border:'1px solid #3376ff'") banner
 
 Format("padding:'15px 40px'") largeButton
 Format("position:'absolute',bottom:'0',left:'0',marginLeft:'6px',marginBottom:'7px'") userToolbar
