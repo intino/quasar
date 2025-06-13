@@ -58,6 +58,7 @@ public class LanguageExplorer extends AbstractLanguageExplorer<EditorBox> {
 		super.init();
 		initToolbar();
 		releaseSelector.onSelect(this::updateRelease);
+		aboutBlock.onInit(e -> initAbout());
 		aboutBlock.onShow(e -> refreshAbout());
 		versionsBlock.onShow(e -> refreshHelp());
 		examplesBlock.onShow(e -> refreshExamples());
@@ -117,6 +118,10 @@ public class LanguageExplorer extends AbstractLanguageExplorer<EditorBox> {
 		else aboutBlock.show();
 	}
 
+	private void initAbout() {
+		metamodelLink.onExecute(e -> notifier.redirect(PathHelper.modelUrl(box().modelManager().get(language.metamodel()), session())));
+	}
+
 	private void refreshAbout() {
 		refreshMetamodel();
 		refreshForge();
@@ -136,8 +141,6 @@ public class LanguageExplorer extends AbstractLanguageExplorer<EditorBox> {
 
 	private void refreshMetamodel() {
 		aboutBlock.aboutContent.metamodelBlock.visible(PermissionsHelper.canEdit(language, session(), box()));
-		if (!aboutBlock.aboutContent.metamodelBlock.isVisible()) return;
-		metamodelLink.address(path -> PathHelper.modelPath(box().modelManager().get(language.metamodel())));
 	}
 
 	private void refreshForge() {

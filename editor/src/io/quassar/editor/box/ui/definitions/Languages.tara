@@ -7,6 +7,8 @@ use Theme
 
 Template(layout=Horizontal Center, format=subHeaderStyle) languageHeaderTemplate
 	Block(layout=Horizontal Flexible)
+		Block(layout=Horizontal, visible=false) notLoggedBlock
+			Text(value="You are not logged in. Please log in to access available models.", format=h5 textCentered greyColor, translate=true)
 	Block(layout=Horizontal Center EndJustified)
 		TemplateStamp(template=languageToolbar) toolbar
 
@@ -116,7 +118,7 @@ Template(layout=Vertical Flexible) languageExplorer as Relative(height=100%, wid
 			Block(layout=Vertical Flexible, format=doubleTopSpaced doubleLeftSpaced doubleRightSpaced doubleBottomSpaced) aboutContent as AutoSize Relative(width=100%, height=100%)
 				Block(format=doubleAirBottom, visible=false) metamodelBlock
 					Text(value="metamodel", format=h6 bold)
-					Link(title="open", format=middleAirRight) metamodelLink as Action Addressable(EditorElements.model)
+					Link(title="open", format=middleAirRight) metamodelLink as Action
 				Block(format=doubleAirBottom, visible=false) forgeBlock
 					Text(value="forge", format=h6 bold)
 					Link(title="open", format=middleAirRight) forgeLink as OpenSite(site=empty)
