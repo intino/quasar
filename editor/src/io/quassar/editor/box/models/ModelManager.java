@@ -22,10 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.time.Instant;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -307,9 +304,10 @@ public class ModelManager {
 		return new WorkspaceReader(workspace(model, release), server(model, release)).content(uri);
 	}
 
-	public boolean hasModelsWith(Language language, ModelRelease modelRelease) {
+	public boolean existsModelsWithReleasesFor(Language language, ModelRelease modelRelease) {
 		if (language == null || modelRelease == null) return false;
-		return !subjectStore.query().isType(SubjectHelper.ModelType).where("dsl-name").equals(language.name()).where("dsl-version").equals(modelRelease.version()).where("usage").equals(Model.Usage.EndUser.name()).collect().isEmpty();
+		List<Subject> subjects = subjectStore.query().isType(SubjectHelper.ModelType).where("dsl-name").equals(language.name()).where("dsl-version").equals(modelRelease.version()).where("usage").equals(Model.Usage.EndUser.name()).collect();
+		return subjects.stream().map(this::get).filter(Objects::nonNull).noneMatch(m -> m.releases().isEmpty());
 	}
 
 	private IntinoLanguageServer server(Model model, String release) {

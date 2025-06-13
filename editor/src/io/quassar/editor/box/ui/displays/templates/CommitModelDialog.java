@@ -55,7 +55,7 @@ public class CommitModelDialog extends AbstractCommitModelDialog<EditorBox> {
 
 	private void refreshDialog() {
 		Language language = box().languageManager().getWithMetamodel(model);
-		boolean versionInUse = box().modelManager().hasModelsWith(language, model.lastRelease());
+		boolean versionInUse = box().modelManager().existsModelsWithReleasesFor(language, model.lastRelease());
 		boolean hasVersions = model.lastRelease() != null;
 		List<String> options = (versionInUse || !hasVersions ? Versions : AllVersions).stream().map(this::translate).toList();
 		VersionType type = versionInUse || !hasVersions ? VersionType.Revision : VersionType.SnapshotVersion;
