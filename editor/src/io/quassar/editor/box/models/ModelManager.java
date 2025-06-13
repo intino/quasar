@@ -307,7 +307,7 @@ public class ModelManager {
 	public boolean existsModelsWithReleasesFor(Language language, ModelRelease modelRelease) {
 		if (language == null || modelRelease == null) return false;
 		List<Subject> subjects = subjectStore.query().isType(SubjectHelper.ModelType).where("dsl-name").equals(language.name()).where("dsl-version").equals(modelRelease.version()).where("usage").equals(Model.Usage.EndUser.name()).collect();
-		return subjects.stream().map(this::get).filter(Objects::nonNull).noneMatch(m -> m.releases().isEmpty());
+		return subjects.stream().map(this::get).filter(Objects::nonNull).noneMatch(m -> m.releases().size() <= 1);
 	}
 
 	private IntinoLanguageServer server(Model model, String release) {
