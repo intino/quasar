@@ -58,6 +58,7 @@ public class LanguageServerManager {
 
 	public void remove(Model model, String release) {
 		servers.remove(key(model, release));
+		languageLoader.remove(model.language());
 	}
 
 	private String key(Model model, String release) {

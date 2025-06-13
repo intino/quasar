@@ -48,6 +48,7 @@ public class ArtifactoryHelper {
 
 	public static void cleanDslCache(Language language, LanguageRelease release, Archetype.Languages archetype) {
 		try {
+			if (release == null) return;
 			File file = archetype.releaseDslJarDigest(language.key(), release.version());
 			if (file.exists()) file.delete();
 			file = archetype.releaseDslManifestDigest(language.key(), release.version());
@@ -78,6 +79,7 @@ public class ArtifactoryHelper {
 
 	public static void cleanParserDependencyCache(Language language, LanguageRelease release, String name, Archetype.Languages archetype) {
 		try {
+			if (release == null) return;
 			name = name.replace(".zip", "");
 			File file = archetype.releaseParserJar(language.key(), release.version(), name);
 			if (file.exists()) file.delete();

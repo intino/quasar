@@ -80,6 +80,10 @@ Template modelsTemplate as Relative(height=100%, width=100%)
 
 Template modelTemplate as Relative(height=100%, width=100%)
 
+	Block(layout=Horizontal, visible=false, format=banner) languageChangedBlock
+		Text(value="The model's language has changed. Please reload the model to apply the changes.", format=airRight)
+		Button(title="Reload") reload as Action
+
 	Block(layout=Vertical Flexible CenterCenter, visible=false) notFoundBlock
 		Block(layout=Vertical Flexible, spacing=DP16, format=messageBlock) as Relative(height=100%, width=60%)
 			Block(layout=Vertical)
