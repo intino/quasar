@@ -30,6 +30,10 @@ public class LanguageLoader {
 		return language;
 	}
 
+	public void remove(GavCoordinates gav) {
+		languageMap.remove(gav);
+	}
+
 	private Language load(GavCoordinates gav, File jar) throws IOException {
 		try {
 			final ClassLoader classLoader = createClassLoader(jar);

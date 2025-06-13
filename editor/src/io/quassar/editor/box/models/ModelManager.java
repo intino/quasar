@@ -164,6 +164,10 @@ public class ModelManager {
 		serverManager.remove(model, Model.DraftRelease);
 	}
 
+	public void removeLanguageServer(Model model) {
+		serverManager.remove(model, Model.DraftRelease);
+	}
+
 	public void copyWorkSpace(Model template, Model model) {
 		new WorkspaceWriter(workspace(template, Model.DraftRelease), server(template, Model.DraftRelease)).clone(model, server(model, Model.DraftRelease));
 	}
@@ -304,10 +308,14 @@ public class ModelManager {
 		return new WorkspaceReader(workspace(model, release), server(model, release)).content(uri);
 	}
 
-	public boolean existsModelsWithReleasesFor(Language language, ModelRelease modelRelease) {
-		if (language == null || modelRelease == null) return false;
-		List<Subject> subjects = subjectStore.query().isType(SubjectHelper.ModelType).where("dsl-name").equals(language.name()).where("dsl-version").equals(modelRelease.version()).where("usage").equals(Model.Usage.EndUser.name()).collect();
-		return subjects.stream().map(this::get).filter(Objects::nonNull).noneMatch(m -> m.releases().size() <= 1);
+	public List<Model> modelsWithRelease(Language language, String release) {
+		if (language == null || release == null) return emptyList();
+		List<Subject> subjects = subjectStore.query().isType(SubjectHelper.ModelType).where("dsl-name").equals(language.name()).where("dsl-version").equals(release).where("usage").equals(Model.Usage.EndUser.name()).collect();
+		return subjects.stream().map(this::get).filter(Objects::nonNull).toList();
+	}
+
+	public boolean existsModelsWithReleasesFor(Language language, String release) {
+		return modelsWithRelease(language, release).stream().noneMatch(m -> m.releases().size() <= 1);
 	}
 
 	private IntinoLanguageServer server(Model model, String release) {

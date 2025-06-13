@@ -10,6 +10,7 @@ import io.quassar.editor.box.builder.BuildResult;
 import io.quassar.editor.box.builder.ModelBuilder;
 import io.quassar.editor.box.commands.Command;
 import io.quassar.editor.box.commands.Command.CommandResult;
+import io.quassar.editor.box.ui.displays.templates.ModelTemplate;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.TarHelper;
 import io.quassar.editor.box.util.WorkspaceHelper;
@@ -17,8 +18,7 @@ import io.quassar.editor.model.*;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CreateModelReleaseCommand extends Command<CommandResult> {
@@ -38,7 +38,7 @@ public class CreateModelReleaseCommand extends Command<CommandResult> {
 	}
 
 	private OperationResult replaceRelease() {
-		removeTemporalWorkspace();
+		cleanReleases();
 		OperationResult result = box.modelManager().replaceRelease(model, version);
 		Language language = box.languageManager().getWithMetamodel(model);
 		if (language == null) return result;
@@ -46,6 +46,22 @@ public class CreateModelReleaseCommand extends Command<CommandResult> {
 		if (release == null) return result;
 		BuildResult rebuildResult = rebuild(language, release);
 		return !rebuildResult.success() ? OperationResult.Error(rebuildResult.messages().stream().map(Message::content).collect(Collectors.joining("; "))) : result;
+	}
+
+	private void cleanReleases() {
+		removeTemporalWorkspace();
+		reloadServers();
+	}
+
+	private void reloadServers() {
+		Language language = box.languageManager().getWithMetamodel(model);
+		List<Model> models = box.modelManager().modelsWithRelease(language, version);
+		models.forEach(this::reloadServer);
+	}
+
+	private void reloadServer(Model model) {
+		box.modelManager().removeLanguageServer(model);
+		box.souls().stream().map(s -> s.displays(ModelTemplate.class).stream().toList()).flatMap(Collection::stream).filter(Objects::nonNull).forEach(t -> t.languageChanged(model.language()));
 	}
 
 	private void removeTemporalWorkspace() {

@@ -6,14 +6,12 @@ import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.box.util.PermissionsHelper;
-import io.quassar.editor.box.util.SessionHelper;
-import io.quassar.editor.box.util.WorkspaceHelper;
 import io.quassar.editor.model.FilePosition;
+import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Model;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static io.quassar.editor.box.models.File.ResourcesDirectory;
 
@@ -26,9 +24,18 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	private io.quassar.editor.box.models.File selectedFile;
 	private FilePosition selectedPosition;
 	private boolean showHelp = false;
+	private boolean isLanguageChangeBlockVisible = false;
 
 	public ModelTemplate(EditorBox box) {
 		super(box);
+	}
+
+	public void languageChanged(GavCoordinates language) {
+		if (model == null) return;
+		if (!model.language().equals(language)) return;
+		if (isLanguageChangeBlockVisible) return;
+		languageChangedBlock.show();
+		isLanguageChangeBlockVisible = true;
 	}
 
 	public void openStarting(String model) {
@@ -57,6 +64,12 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		this.selectedPosition = position != null ? FilePosition.from(position) : null;
 		this.showHelp = showHelp;
 		refresh();
+	}
+
+	@Override
+	public void init() {
+		super.init();
+		reload.onExecute(e -> notifier.redirect());
 	}
 
 	@Override
