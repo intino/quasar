@@ -24,6 +24,7 @@ public class LanguageHeaderTemplate extends AbstractLanguageHeaderTemplate<Edito
 	public void refresh() {
 		super.refresh();
 		if (language == null) return;
+		notLoggedBlock.visible(user() == null);
 		toolbar.language(language);
 		toolbar.tab(tab);
 		toolbar.refresh();
