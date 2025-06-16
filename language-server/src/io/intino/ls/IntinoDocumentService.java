@@ -12,6 +12,7 @@ import io.intino.ls.parsing.ParsingService;
 import io.intino.tara.Language;
 import io.intino.tara.Source;
 import io.intino.tara.Source.StringSource;
+import io.intino.tara.language.grammar.HighlightTaraLexer;
 import io.intino.tara.language.grammar.TaraLexer;
 import io.intino.tara.model.Element;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -173,7 +174,7 @@ public class IntinoDocumentService implements TextDocumentService {
 	private SemanticTokens semanticTokens(URI uri) throws IOException {
 		List<SemanticToken> tokens = new ArrayList<>();
 		try {
-			TaraLexer lexer = new TaraLexer(fromString(new String(workspaceManager.getDocumentText(uri).readAllBytes()), uri.getPath()));
+			var lexer = new HighlightTaraLexer(fromString(new String(workspaceManager.getDocumentText(uri).readAllBytes()), uri.getPath()));
 			lexer.reset();
 			CommonTokenStream tokenStream = new CommonTokenStream(lexer);
 			tokenStream.fill();
