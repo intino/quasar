@@ -7,10 +7,7 @@ import io.intino.tara.Language;
 import io.intino.tara.Source;
 import io.intino.tara.language.grammar.SyntaxException;
 import io.intino.tara.language.grammar.TaraGrammar;
-import io.intino.tara.model.Element;
-import io.intino.tara.model.ElementContainer;
-import io.intino.tara.model.Mogram;
-import io.intino.tara.model.PropertyDescription;
+import io.intino.tara.model.*;
 import io.intino.tara.processors.Resolver;
 import io.intino.tara.processors.model.Model;
 import io.intino.tara.processors.parser.antlr.ModelGenerator;
@@ -33,6 +30,7 @@ import java.util.function.Predicate;
 
 import static io.intino.ls.IntinoDocumentService.normalize;
 import static io.intino.ls.codeinsight.completion.TreeUtils.getMogramContainerOn;
+import static org.eclipse.lsp4j.CompletionItemKind.Keyword;
 
 public class CompletionService {
 	public static final String TARA_FAKE_TOKEN = "Tara_Fake_Token";
@@ -58,13 +56,17 @@ public class CompletionService {
 				}
 		);
 		map.put(ContextFilters.afterMogramIdentifier, (context, result) -> {
-					result.add(CompletionProvider.create("extends ", CompletionItemKind.Keyword));
-					result.add(CompletionProvider.create("is ", CompletionItemKind.Keyword));
-					result.add(CompletionProvider.create("as ", CompletionItemKind.Keyword));
+					if (!(context.elementOnPosition() instanceof Mogram m)) return;
+					Mogram container = (Mogram) m.container();
+					if (container.level() != Level.M1) {
+						result.add(CompletionProvider.create("extends ", Keyword));
+						result.add(CompletionProvider.create("as ", Keyword));
+					} else if (!container.applicableFacets().isEmpty())
+						result.add(CompletionProvider.create("is ", Keyword));
 				}
 		);
 		map.put(ContextFilters.inParameters, (context, result) -> {
-					if (context.elementOnPosition() instanceof Mogram m){
+					if (context.elementOnPosition() instanceof Mogram m) {
 						new Resolver(context.language()).resolve(m);
 						result.addAll(new CompletionUtils(context).collectSignatureParameters(m));
 					}
