@@ -9,7 +9,6 @@ import org.eclipse.lsp4j.CompletionItemKind;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static io.intino.ls.codeinsight.completion.CompletionService.TARA_FAKE_TOKEN;
 import static java.util.Collections.emptyList;
@@ -165,7 +164,7 @@ public class CompletionUtils {
 	}
 
 	private CompletionItem createCompletionItem(Constraint.Component constraint) {
-		CompletionItem item = new CompletionItem(constraint.type());
+		CompletionItem item = new CompletionItem(lastTypeOf(constraint.type()));
 		item.setKind(CompletionItemKind.Class);
 		item.setInsertText(lastTypeOf(constraint.type()) + " ");
 		return item;

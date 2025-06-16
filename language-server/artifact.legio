@@ -1,19 +1,18 @@
 dsl Legio
 
-Artifact("io.intino", "1.0.4") language-server
-
+Artifact("io.intino", "1.0.5") language-server
 	Imports
 		Compile("org.eclipse.lsp4j", "org.eclipse.lsp4j", "0.24.0")
         Compile("org.eclipse.lsp4j", "org.eclipse.lsp4j.jsonrpc", "0.24.0")
         Compile("io.intino.alexandria", "logger", "2.1.0")
         Compile("io.intino.tara", "language", "2.0.0")
         Compile("tara.dsl", "metta", "2.0.0")
-        Compile("commons-io","commons-io","2.18.0")
+        Compile("commons-io","commons-io","2.19.0")
         Compile("org.eclipse.jgit", "org.eclipse.jgit", "7.0.0.202409031743-r")
         Compile("org.eclipse.jgit", "org.eclipse.jgit.ssh.jsch", "6.8.0.202311291450-r")
 			Exclude("com.jcraft", "jsch")
-		Compile("com.github.mwiede", "jsch", "0.2.24")
-        Test("io.intino.alexandria", "ui-framework", "6.3.8")
+		Compile("com.github.mwiede", "jsch", "0.2.26")
+        Test("io.intino.alexandria", "ui-framework", "6.6.1")
 		Test("junit", "junit", "4.13.2")
 
 	Package(mode = ModulesAndLibrariesLinkedByManifest)
