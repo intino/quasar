@@ -48,6 +48,7 @@ public class IntinoSemanticTokens {
 		ANTLR_TOKEN_TYPES.put(REQUIRED, tokenTypes.indexOf(Decorator));
 		ANTLR_TOKEN_TYPES.put(FINAL, tokenTypes.indexOf(Decorator));
 		ANTLR_TOKEN_TYPES.put(LINE_COMMENT, tokenTypes.indexOf(Comment));
+		ANTLR_TOKEN_TYPES.put(BLOCK_COMMENT, tokenTypes.indexOf(Comment));
 		ANTLR_TOKEN_TYPES.put(IDENTIFIER, tokenTypes.indexOf(Class));
 		ANTLR_TOKEN_TYPES.put(SUB, tokenTypes.indexOf(Keyword));
 		ANTLR_TOKEN_TYPES.put(FACET, tokenTypes.indexOf(Keyword));
@@ -83,6 +84,7 @@ public class IntinoSemanticTokens {
 		ANTLR_TOKEN_TYPES.put(QUOTE_BEGIN, tokenTypes.indexOf(String));
 		ANTLR_TOKEN_TYPES.put(QUOTE_END, tokenTypes.indexOf(String));
 		ANTLR_TOKEN_TYPES.put(CHARACTER, tokenTypes.indexOf(String));
+		ANTLR_TOKEN_TYPES.put(STRING, tokenTypes.indexOf(String));
 	}
 
 	private final List<java.lang.String> metaIdentifiers;
