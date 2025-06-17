@@ -30,50 +30,16 @@ public class LanguageInfoTemplate extends AbstractLanguageInfoTemplate<EditorBox
 	@Override
 	public void init() {
 		super.init();
-		generalBlock.onInit(e -> initGeneralBlock());
-		generalBlock.onShow(e -> refreshGeneralBlock());
-		visibilityBlock.onInit(e -> initVisibilityBlock());
-		visibilityBlock.onShow(e -> refreshVisibilityBlock());
+		editorStamp.onChangeId(this::rename);
+		editorStamp.onChangeLogo(e -> save(LanguageProperty.Logo, e));
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
-		refreshView();
-	}
-
-	private void initGeneralBlock() {
-		editorStamp.onChangeId(this::rename);
-		editorStamp.onChangeLogo(e -> save(LanguageProperty.Logo, e));
-	}
-
-	private void refreshGeneralBlock() {
 		editorStamp.language(language);
 		editorStamp.refresh();
 		refreshProperties();
-	}
-
-	private void initVisibilityBlock() {
-		grantAccessField.onChange(e -> save(LanguageProperty.GrantAccess, grantAccessList()));
-		licenseField.onChange(e -> save(LanguageProperty.License, licenseField.value()));
-		visibilitySelector.onSelect(this::updateVisibility);
-	}
-
-	private void refreshVisibilityBlock() {
-		visibilitySelector.selection(language.isPrivate() ? "privateVisibilityOption" : "publicVisibilityOption");
-		visibilityBlock.publicVisibilityBlock.visible(language.isPublic());
-		grantAccessField.value(String.join("\n", language.grantAccessList()));
-		licenseField.value(language.license());
-	}
-
-	private void refreshView() {
-		hideViews();
-		viewSelector.select(0);
-	}
-
-	private void hideViews() {
-		if (generalBlock.isVisible()) generalBlock.hide();
-		else if (visibilityBlock.isVisible()) visibilityBlock.hide();
 	}
 
 	private void refreshProperties() {
@@ -82,23 +48,12 @@ public class LanguageInfoTemplate extends AbstractLanguageInfoTemplate<EditorBox
 		propertiesStamp.refresh();
 	}
 
-	private List<String> grantAccessList() {
-		return Arrays.stream(grantAccessField.value().split(";?\\n")).map(String::trim).filter(s -> !s.isEmpty()).toList();
-	}
-
 	private void rename(String newName) {
 		box().commands(LanguageCommands.class).rename(language, newName, username());
 	}
 
 	private void save(LanguageProperty property, Object value) {
 		box().commands(LanguageCommands.class).save(language, property, value, username());
-	}
-
-	private void updateVisibility(SelectionEvent event) {
-		List<String> selection = event.selection();
-		boolean isPrivate = selection.isEmpty() || selection.getFirst().equals("privateVisibilityOption");
-		box().commands(LanguageCommands.class).save(language, LanguageProperty.Visibility, isPrivate ? Visibility.Private : Visibility.Public, username());
-		refreshVisibilityBlock();
 	}
 
 }

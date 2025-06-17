@@ -6,9 +6,11 @@ import io.intino.alexandria.ui.model.datasource.PageDatasource;
 import io.intino.alexandria.ui.services.push.UISession;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.languages.LanguageManager;
+import io.quassar.editor.box.models.ModelManager;
 import io.quassar.editor.box.ui.types.LanguagesTab;
 import io.quassar.editor.box.util.DatasourceHelper;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.Model;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -72,7 +74,18 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 	}
 
 	private List<Language> sort(List<Language> languages, List<String> sortings) {
-		return languages.stream().sorted(Comparator.comparing(Language::name)).toList();
+		return languages.stream().sorted(comparator()).toList();
+	}
+
+	private Comparator<Language> comparator() {
+		ModelManager modelManager = box.modelManager();
+		return (o1, o2) -> {
+			List<Model> models1 = modelManager.models(o1, username());
+			List<Model> models2 = modelManager.models(o2, username());
+			int compare = Long.compare(models2.size(), models1.size());
+			if (compare == 0) return o1.name().compareTo(o2.name());
+			return compare;
+		};
 	}
 
 }

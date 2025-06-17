@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SubjectHelper {
+	public static final String CollectionType = "collection";
 	public static final String LanguageType = "dsl";
 	public static final String LanguageReleaseType = "release";
 	public static final String LanguageExecutionType = "execution";
@@ -15,12 +16,17 @@ public class SubjectHelper {
 	public static final String UserType = "user";
 	public static final String ModelReleaseType = "release";
 
+	public static final String CollectionPath = "%s.collection";
 	public static final String LanguagePath = "%s.dsl";
 	public static final String LanguageReleasePath = "%s.dsl/%s.release";
 	public static final String LanguageExecutionPath = "%s.dsl/%s.release/0001.execution";
 	public static final String ModelPath = "%s.model";
 	public static final String ModelReleasePath = "%s.model/%s.release";
 	public static final String UserPath = "%s.user";
+
+	public static String collectionPath(String name) {
+		return CollectionPath.formatted(name);
+	}
 
 	public static String languagePath(String name) {
 		return LanguagePath.formatted(name);

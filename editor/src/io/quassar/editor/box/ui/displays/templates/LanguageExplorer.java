@@ -6,6 +6,7 @@ import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.PermissionsHelper;
+import io.quassar.editor.box.util.SessionHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
 
@@ -68,11 +69,11 @@ public class LanguageExplorer extends AbstractLanguageExplorer<EditorBox> {
 	public void refresh() {
 		super.refresh();
 		if (!refreshRequired) return;
+		expanded = SessionHelper.isRightPanelExpanded(session());
 		refreshRequired = false;
 		refreshSimpleTitle();
 		refreshReleaseTitle();
-		if (!expanded) expand();
-		else refreshBlocks();
+		refreshBlocks();
 	}
 
 	private void initToolbar() {

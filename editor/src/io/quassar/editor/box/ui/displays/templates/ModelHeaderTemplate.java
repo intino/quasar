@@ -119,14 +119,14 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	}
 
 	private void refreshLanguageTrigger(Language language) {
-		languageTrigger.visible(language != null && !model.isTemplate() && !PathHelper.comesFromForge(session()));
+		languageTrigger.visible(language != null && !model.isTemplate() && !model.isExample()/* && !PathHelper.comesFromForge(session())*/);
 		if (!languageTrigger.isVisible() || language == null) return;
 		languageTrigger.title(translate("Goto %s").formatted(LanguageHelper.title(model.language())));
 		languageTrigger.address(path -> PathHelper.languagePath(path, language));
 	}
 
 	private void refreshCloseTrigger(Language language) {
-		closeTrigger.visible(language != null && model.isTemplate() || PathHelper.comesFromForge(session()));
+		closeTrigger.visible(language != null && (model.isTemplate() || model.isExample())/* && PathHelper.comesFromForge(session())*/);
 		if (!closeTrigger.isVisible()) return;
 		closeTrigger.title(translate(model.isTemplate() ? "Template" : "Example"));
 	}

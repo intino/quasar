@@ -30,6 +30,7 @@ public class LocalLanguageArtifactory implements LanguageArtifactory {
 	}
 
 	public String mainClass(GavCoordinates gav) {
-		return gav.groupId() + "." + Formatters.firstUpperCase(StringHelper.kebabCaseToCamelCase(gav.artifactId()));
+		String groupId = gav.groupId().equals(Language.FoundationalCollection) ? gav.groupId() : Language.QuassarCollection + "." + gav.groupId();
+		return groupId + "." + Formatters.firstUpperCase(StringHelper.kebabCaseToCamelCase(gav.artifactId()));
 	}
 }

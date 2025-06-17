@@ -24,6 +24,8 @@ public class LanguageHeaderTemplate extends AbstractLanguageHeaderTemplate<Edito
 	public void refresh() {
 		super.refresh();
 		if (language == null) return;
+		title.visible(user() != null);
+		if (title.isVisible()) title.value(translate("%s models").formatted(language.name()));
 		notLoggedBlock.visible(user() == null);
 		toolbar.language(language);
 		toolbar.tab(tab);

@@ -47,7 +47,7 @@ public class LanguageHelper {
 	public static String title(LanguageTab tab) {
 		if (tab == LanguageTab.Help) return "help %s";
 		else if (tab == LanguageTab.Examples) return "examples %s";
-		return "about %s %s";
+		return "about %s";
 	}
 
 	public static String title(GavCoordinates release) {

@@ -113,12 +113,12 @@ public class ModelBuilder {
 	private RunOperationContext context(String builder) {
 		return new RunOperationContext()
 				.imageURL(builder)
-				.generationPackage(destination.groupId() + "." + Formatters.normalizeLanguageName(destination.artifactId()).toLowerCase())
-				.languageGroup(language.group())
+				.generationPackage(Language.QuassarCollection + "." + destination.groupId() + "." + Formatters.normalizeLanguageName(destination.artifactId()).toLowerCase())
+				.languageGroup(language.isFoundational() ? language.collection() : Language.QuassarCollection + "." + language.collection())
 				.languageName(Formatters.normalizeLanguageName(language.name()))
 				.languageVersion(model.language().version())
 				.languagePath(languagePath.getAbsolutePath())
-				.projectGroup(destination.groupId())
+				.projectGroup(Language.QuassarCollection + "." + destination.groupId())
 				.projectName(Formatters.normalizeLanguageName(destination.artifactId()))
 				.projectVersion(destination.version());
 	}

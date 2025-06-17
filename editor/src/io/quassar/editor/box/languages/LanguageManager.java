@@ -2,8 +2,9 @@ package io.quassar.editor.box.languages;
 
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
-import io.quassar.editor.box.util.ArchetypeHelper;
 import io.quassar.editor.box.util.ArtifactoryHelper;
+import io.quassar.editor.box.util.LanguageHelper;
+import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.box.util.SubjectHelper;
 import io.quassar.editor.model.*;
 import org.apache.commons.io.FileUtils;
@@ -12,22 +13,24 @@ import systems.intino.datamarts.subjectstore.model.Subject;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 public class LanguageManager {
 	private final Archetype archetype;
 	private final SubjectStore subjectStore;
+	private final Function<String, Model> modelProvider;
 
-	public LanguageManager(Archetype archetype, SubjectStore store) {
+	public LanguageManager(Archetype archetype, SubjectStore store, Function<String, Model> modelProvider) {
 		this.archetype = archetype;
 		this.subjectStore = store;
+		this.modelProvider = modelProvider;
 	}
 
 	public List<Language> visibleLanguages(String owner) {
@@ -48,9 +51,9 @@ public class LanguageManager {
 		return subjectStore.query().isType(SubjectHelper.LanguageType).isRoot().collect().stream().map(this::get).toList();
 	}
 
-	public Language create(String group, String name, Model metamodel, Language.Level level, String title, String description) {
+	public Language create(Collection collection, String name, Model metamodel, Language.Level level, String title, String description) {
 		Language language = new Language(subjectStore.create(SubjectHelper.languagePath(name)));
-		language.group(group);
+		language.collection(collection.id());
 		language.name(name.toLowerCase());
 		language.level(level);
 		language.title(title);
@@ -219,9 +222,9 @@ public class LanguageManager {
 		return get(model) != null;
 	}
 
-	public boolean exists(String language) {
+	public boolean exists(String collection, String language) {
 		if (new File(archetype.languages().root(), language).exists()) return true;
-		return !subjectStore.query().isType(SubjectHelper.LanguageType).where("name").equals(language).collect().isEmpty();
+		return !subjectStore.query().isType(SubjectHelper.LanguageType).where("collection").equals(collection).where("name").equals(language).collect().isEmpty();
 	}
 
 	public Language getDefault() {
@@ -244,7 +247,7 @@ public class LanguageManager {
 
 	public Language get(String key) {
 		Language language = get(subjectStore.open(SubjectHelper.languagePath(key)));
-		if (language == null) language = get(subjectStore.query().isType(SubjectHelper.LanguageType).where("group").equals(Language.groupFrom(key)).where("name").equals(Language.nameFrom(key)).collect().stream().findFirst().orElse(null));
+		if (language == null) language = get(subjectStore.query().isType(SubjectHelper.LanguageType).where("collection").equals(Language.collectionFrom(key)).where("name").equals(Language.nameFrom(key)).collect().stream().findFirst().orElse(null));
 		return language;
 	}
 
@@ -261,13 +264,14 @@ public class LanguageManager {
 	}
 
 	public boolean hasAccess(Language language, String user) {
-		if (language.isPublic() && language.grantAccessList().isEmpty()) return true;
+		if (language.isPublic()) return true;
 		if (user == null) return false;
-		String owner = owner(language);
+		Model metamodel = language.metamodel() != null ? modelProvider.apply(language.metamodel()) : null;
+		String owner = metamodel != null ? metamodel.owner() : null;
 		if ((owner == null || owner.equals(User.Quassar)) && language.isFoundational()) return true;
 		if (owner != null && owner.equals(user)) return true;
-		List<String> patternList = language.grantAccessList();
-		return patternList.stream().anyMatch(p -> matches(p, user));
+		if (metamodel == null) return false;
+		return metamodel.collaborators().stream().anyMatch(c -> c.equals(user));
 	}
 
 	public String owner(Language language) {

@@ -3,17 +3,11 @@ package io.quassar.editor.box.ui.displays.templates;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.ui.types.LanguageTab;
-import io.quassar.editor.box.util.DisplayHelper;
-import io.quassar.editor.box.util.LanguageHelper;
-import io.quassar.editor.box.util.ModelHelper;
-import io.quassar.editor.box.util.PermissionsHelper;
+import io.quassar.editor.box.util.*;
 import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
-
-import java.util.List;
-import java.util.Set;
 
 public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 	private Language language;
@@ -32,6 +26,7 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 	}
 
 	public void openTab(String tab) {
+		if (SessionHelper.isRightPanelCollapsed(session())) expandHome();
 		this.tab = tab != null ? LanguageTab.from(tab) : LanguageTab.About;
 		refreshHeader();
 		refreshViews(false);
@@ -93,10 +88,12 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 
 	private void expandHome() {
 		mainBlock.mainContentBlock.refreshLayout(55, 45);
+		SessionHelper.registerRightPanelExpanded(session());
 	}
 
 	private void collapseHome() {
 		mainBlock.mainContentBlock.refreshLayout(95, 4);
+		SessionHelper.registerRightPanelCollapsed(session());
 	}
 
 	private void refreshMainBlock() {
@@ -115,9 +112,10 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 	private void refreshViews(boolean invalidate) {
 		languageExplorer.invalidateCache(invalidate);
 		languageExplorer.language(language);
-		languageExplorer.release(release != null ? release.version() : language.lastRelease().version());
+		languageExplorer.release(release != null ? release.version() : language.lastRelease() != null ? language.lastRelease().version() : null);
 		languageExplorer.tab(tab);
 		languageExplorer.refresh();
+		if (SessionHelper.isRightPanelCollapsed(session())) mainBlock.mainContentBlock.refreshLayout(95, 4);
 	}
 
 	private void refreshModels() {

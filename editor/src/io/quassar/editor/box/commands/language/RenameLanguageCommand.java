@@ -33,7 +33,7 @@ public class RenameLanguageCommand extends Command<Boolean> {
 			File currentFolder = box.archetype().languages().get(language.key());
 			File newFolder = box.archetype().languages().get(newId());
 			Files.move(currentFolder.toPath(), newFolder.toPath());
-			language.group(Language.groupFrom(newId()));
+			language.collection(Language.collectionFrom(newId()));
 			language.name(Language.nameFrom(newId()));
 			return true;
 		} catch (IOException e) {
@@ -44,7 +44,7 @@ public class RenameLanguageCommand extends Command<Boolean> {
 
 	private void updateModelsWithLanguage() {
 		List<Model> models = box.modelManager().models(language);
-		models.forEach(m -> m.language(new GavCoordinates(Language.groupFrom(newId()), language.name(), m.language().version())));
+		models.forEach(m -> m.language(new GavCoordinates(Language.collectionFrom(newId()), language.name(), m.language().version())));
 	}
 
 	private String newId() {

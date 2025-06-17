@@ -7,6 +7,7 @@ use Theme
 
 Template(layout=Horizontal Center, format=subHeaderStyle) languageHeaderTemplate
 	Block(layout=Horizontal Flexible)
+		Text(format=bold, visible=false) title
 		Block(layout=Horizontal, visible=false) notLoggedBlock
 			Text(value="You are not logged in. Please log in to access available models.", format=h5 textCentered greyColor, translate=true)
 	Block(layout=Horizontal Center EndJustified)
@@ -31,9 +32,12 @@ Template languagesTemplate as Relative(height=100%, width=100%)
 			List(itemClass="io.quassar.editor.model.Language", pageSize=20) languagesCatalog
 				noItemsMessage = ""
 				Mold
-					Item(height=100px) languageItem
+					Item(height=100px, format=relative) languageItem
+						Link(title="&nbsp;", format=fullSpaceLink, visible=false) logoLink as Action Addressable(EditorElements.language)
+						Link(title="&nbsp;", format=fullSpaceLink, visible=false) logoSelectorLink as Action
 						Block(layout=Horizontal Flexible, format=doubleBottomSpaced topSpaced bottomBordered)
-							Block(layout=Vertical Center) as Absolute(width=100px) > Image(colorInvertedWithDarkMode=true) logo as Absolute(width=60px)
+							Block(layout=Vertical Center) as Absolute(width=100px)
+								Image(colorInvertedWithDarkMode=true) logo as Absolute(width=60px)
 							Block(layout=Vertical Flexible)
 								Link(title="", format=h4 lowerCase, visible=false) name as Action Addressable(EditorElements.language)
 								Link(title="", format=h4 lowerCase, visible=false) nameSelector as Action
@@ -50,14 +54,17 @@ Template languagesLandingTemplate as Relative(height=100%, width=100%)
 			List(itemClass="io.quassar.editor.model.Language", pageSize=5) languagesLandingCatalog as Navigable(position=Bottom)
 				noItemsMessage = ""
 				Mold
-					Item(height=100px) LanguageLandingItem
+					Item(height=100px, format=relative) LanguageLandingItem
+						Link(title="&nbsp;", format=fullSpaceLink, visible=false) logoLink as Action Addressable(EditorElements.language)
+						Link(title="&nbsp;", format=fullSpaceLink, visible=false) logoSelectorLink as Action
 						Block(layout=Horizontal Flexible, format=doubleBottomSpaced topSpaced bottomBordered)
-							Block(layout=Vertical Center) as Absolute(width=100px) > Image(colorInvertedWithDarkMode=true) logo as Absolute(width=60px)
+							Block(layout=Vertical Center, format=relative) as Absolute(width=100px)
+								Image(colorInvertedWithDarkMode=true) logo as Absolute(width=60px)
 							Block(layout=Vertical Flexible)
 								Link(title="", format=h4 lowerCase, visible=false) name as Action Addressable(EditorElements.language)
 								Link(title="", format=h4 lowerCase, visible=false) nameSelector as Action
 								Text(format=h6 bold) title
-								Text description
+								Text(cropWithEllipsis=350Chars) description
 
 Template languageTemplate as Relative(height=100%, width=100%, offsetHeight=2px)
 	TemplateStamp(template=languageHeaderTemplate, visible=false) headerStamp
@@ -143,16 +150,19 @@ Template(layout=Vertical Flexible) languageExplorer as Relative(height=100%, wid
 			TemplateStamp(template=modelsTemplate) examplesStamp
 
 Template languageForgeTemplate as Relative(height=100%, width=100%)
-	Block(layout=Horizontal Flexible) as Relative(height=100%, width=100%) Resizable(minSize=15%)
-		Block(format=forgePanelBackground minResizablePanelWidth) as Relative(width=15%)
+	Block(layout=Horizontal Flexible) as Relative(height=100%, width=100%) Resizable(minSize=18%)
+		Block(format=forgePanelBackground minResizablePanelWidth) as Relative(width=18%)
 			Block(layout=Vertical Flexible, format=doubleSpaced) as AutoSize Relative(height=100%)
 				Block(layout=Vertical Flexible) as Relative(height=100%)
-					Block(layout=Horizontal Start, format=doubleAirBottom)
-						Block(layout=Vertical Flexible)
+					Block(layout=Horizontal Center, format=airBottom)
+						Block(layout=Horizontal Center Flexible)
+							Image(format=forgeLogoStyle, colorInvertedWithDarkMode=true) logo as Absolute(width=50px)
 							Text(format=h2 airRight) languageName
-							Link(title="properties") infoLink as Action
-							Link(title="metamodel") metamodelLink as OpenSite(site=empty)
-						Block(layout=Horizontal EndJustified) > Image(format=forgeLogoStyle, colorInvertedWithDarkMode=true) logo as Absolute(width=50px)
+						Block(layout=Horizontal EndJustified)
+							Link(title="remove", visible=false, format=h6) removeLanguage as Action Signed(signText="To confirm deletion, please type the full name of the DSL. Deleting this DSL will permanently remove all models created with it. This action cannot be undone.", mode=SimpleText)
+					Block(layout=Vertical Flexible)
+						Link(title="properties") infoLink as Action
+						Link(title="metamodel") metamodelLink as OpenSite(site=empty)
 					Block(layout=Horizontal Center, format=doubleAirTop middleAirLeft middleAirBottom)
 						Block(layout=Vertical Flexible) > Text(value="Releases", translate=true, format=h5 bold)
 						Block(layout=Horizontal EndJustified) > MaterialIconButton(title="refresh", icon="Refresh", size=Small) refreshVersions as Action
@@ -162,7 +172,7 @@ Template languageForgeTemplate as Relative(height=100%, width=100%)
 						Link(title="", format=fullSpaceLink) parentLanguageLink as Action Addressable(EditorElements.language)
 						Image(colorInvertedWithDarkMode=true) parentLanguageImage as Absolute(width=70px)
 					Text(format=metaForgeCredits) parentLanguageTitle
-		Block(layout=Vertical Flexible) as Relative(width=85%)
+		Block(layout=Vertical Flexible) as Relative(width=82%)
 			Selector viewSelector as Tabs(format=tabsStyle) Addressable(EditorElements.forge)
 				Text(value="Modeling") kit as Option
 				Text(value="Execution") execution as Option
@@ -173,37 +183,27 @@ Template languageForgeTemplate as Relative(height=100%, width=100%)
 					Block(layout=Vertical Flexible) executionBlock as Conditional(viewSelector.execution)
 						TemplateStamp(template=languageExecutionTemplate) executionStamp
 
-	Dialog(title="Properties") infoDialog as Relative(width=50%, height=70%)
+	TemplateStamp(template=releaseSelectorOption, visible=false)
+
+	Dialog(title="DSL Properties") infoDialog as Relative(width=60%, height=80%)
         Block as Relative(height=100%, offsetHeight=40px)
 			TemplateStamp(template=languageInfoTemplate) infoStamp
 		Divider
         Block(layout=Horizontal EndJustified)
             Button(title="Close", size=Small, format=airRight, highlight=Fill) as CloseDialog(infoDialog)
 
+Template(layout=Horizontal) releaseSelectorOption
+	Block(layout=Vertical Flexible, format=relative ) as HoverContainer
+		Block(layout=Vertical Flexible) > Text(mode=Uppercase) version
+		Block(hidden=IfNotHover, format=releaseRemoveLinkBlock) > Link(title="remove", format=releaseRemoveLink) remove as Action Signed(signText="To confirm deletion, please type the version of the release.", mode=SimpleText)
+
 Template(layout=Vertical Flexible) languageInfoTemplate
-	Selector viewSelector as Tabs(format=tabsStyle)
-		Text(value="General") general as Option
-		Text(value="Visibility") visibility as Option
 
 	Block(layout=Vertical Center) as AutoSize
-		Block(layout=Vertical Flexible, format=doubleTopSpaced) generalBlock as Relative(width=95%) Conditional(viewSelector.general)
+		Block(layout=Vertical Flexible, format=doubleTopSpaced) generalBlock as Relative(width=95%)
 			TemplateStamp(template=languageEditor) editorStamp
 			Block(format=doubleAirBottom)
 				TemplateStamp(template=languagePropertiesTemplate) propertiesStamp
-
-		Block(layout=Vertical Flexible, format=doubleTopSpaced) visibilityBlock as Relative(width=95%) Conditional(viewSelector.visibility)
-			Selector visibilitySelector as ComboBox
-				Text(value="Public") publicVisibilityOption as Option
-				Text(value="Private") privateVisibilityOption as Option
-
-			Block(visible=false, format=doubleAirBottom) publicVisibilityBlock
-				Block(format=doubleAirBottom doubleAirTop)
-					Text(value="Restrict access to only this email accounts", translate=true, format=h5 bold middleAirBottom)
-					Text(value="List of patterns separated by either semicolon or newline with access to this DSL", translate=true, format=message middleAirBottom)
-					Text grantAccessField as Editable Memo(height=5Rows)
-				Block(format=doubleAirBottom doubleAirTop)
-					Text(value="Copyright and license", translate=true, format=h5 bold middleAirBottom)
-					Text licenseField as Editable Memo(height=5Rows)
 
 Template(layout=Vertical Flexible) languagePropertiesTemplate
 	Block(format=doubleAirBottom)

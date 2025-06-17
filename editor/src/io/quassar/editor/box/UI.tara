@@ -33,7 +33,7 @@ Template homeTemplate as Relative(height=100%, width=100%)
 			Block(layout=Vertical Flexible) forgePage as Conditional > TemplateStamp(template=forgeTemplate) forgeStamp
 
 Template aboutTemplate as Relative(height=100%, width=100%)
-	Block(layout=Vertical Flexible, format=whiteBackground) bodyBlock as Relative(width=100%) AutoSize
+	Block(layout=Vertical Flexible, format=whiteBackground autoHeight doubleBottomSpaced) bodyBlock as Relative(width=100%) AutoSize
 		Block(layout=Vertical Flexible Center) contentBlock as Relative(width=80%)
 			Block(layout=Vertical Flexible, format=whiteBackground) as Relative(width=50%)
 				HtmlViewer aboutStamp
@@ -47,7 +47,7 @@ Template(layout=Horizontal Center, format=headerStyle) headerTemplate
 	Block(layout=Horizontal EndJustified)
 		MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
 		MaterialIconButton(title="Set light mode", format=airRight, icon="Brightness7", size=Small) as SetLightMode
-		Button(title="About", format=airRight whiteColor) as Action Addressable(EditorElements.about)
+		//Button(title="About", format=airRight whiteColor) as Action Addressable(EditorElements.about)
 		Button(title="Log in", format=airRight whiteColor, visible=false) login as Action
 
 		User(mode=OnlyPhoto, visible=false, format=relative veryLargeIconSize airRight smallAirTop) user

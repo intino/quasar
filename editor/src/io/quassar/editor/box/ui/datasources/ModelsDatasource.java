@@ -8,6 +8,7 @@ import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.models.ModelManager;
 import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.util.DatasourceHelper;
+import io.quassar.editor.box.util.SessionHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
@@ -38,7 +39,7 @@ public class ModelsDatasource extends PageDatasource<Model> {
 		this.tab = tab;
 	}
 
-	public enum Sorting { MostUsed, MostRecent }
+	public enum Sorting { MostRecent, LastModified}
 	public void sort(Sorting sorting) {
 		this.sorting = sorting;
 	}
@@ -105,8 +106,18 @@ public class ModelsDatasource extends PageDatasource<Model> {
 	}
 
 	private List<Model> sort(List<Model> models, List<String> sortings) {
-		if (sortings.contains("last modified")) return models.stream().sorted(lastModifiedComparator()).toList();
-		return models.stream().sorted(Comparator.comparing(Model::createDate)).toList();
+		String sorting = sortings.isEmpty() ? SessionHelper.modelsSorting(session).name() : sortings.getFirst();
+		if (sorting != null && sorting.equalsIgnoreCase(Sorting.LastModified.name())) return models.stream().sorted(lastModifiedComparator()).toList();
+		return models.stream().sorted(mostRecentComparator()).toList();
+	}
+
+	private Comparator<? super Model> mostRecentComparator() {
+		return (Comparator<Model>) (o1, o2) -> {
+			Instant instant1 = o1.createDate();
+			Instant instant2 = o2.createDate();
+			if (instant1 == null || instant2 == null) return -1;
+			return instant2.compareTo(instant1);
+		};
 	}
 
 	private Comparator<? super Model> lastModifiedComparator() {

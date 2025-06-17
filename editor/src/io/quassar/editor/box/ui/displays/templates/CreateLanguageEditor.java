@@ -4,6 +4,8 @@ import io.intino.alexandria.ui.displays.UserMessage;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.LanguageCommands;
 import io.quassar.editor.box.util.ModelHelper;
+import io.quassar.editor.box.util.PermissionsHelper;
+import io.quassar.editor.model.Collection;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
@@ -41,15 +43,21 @@ public class CreateLanguageEditor extends AbstractCreateLanguageEditor<EditorBox
 	@Override
 	public void refresh() {
 		super.refresh();
-		metamodelTitle.value("Create DSL");
+		metamodelTitle.value("Forge DSL");
+		editorStamp.refresh();
 		editorStamp.focus();
 	}
 
 	private void createLanguage() {
 		if (!editorStamp.check()) return;
 		create.readonly(true);
-		notifyUser("Creating language...", UserMessage.Type.Loading);
-		Language language = box().commands(LanguageCommands.class).create(editorStamp.languageId(), metamodel, Language.Level.L1, editorStamp.logo(), username());
+		notifyUser("Creating DSL...", UserMessage.Type.Loading);
+		Collection collection = editorStamp.collection();
+		if (!PermissionsHelper.canEdit(collection, session(), box())) {
+			notifyUser(translate("You don't have access to this collection. You must be the author to create DSLs within it."), UserMessage.Type.Error);
+			return;
+		}
+		Language language = box().commands(LanguageCommands.class).create(collection, editorStamp.languageName(), metamodel, Language.Level.L1, editorStamp.isPrivate(), editorStamp.logo(), username());
 		hideUserNotification();
 		create.readonly(false);
 		createListener.accept(language);

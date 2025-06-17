@@ -84,14 +84,14 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 		closing = false;
 		modelsDialogBox.title("Example Metta models");
 		modelsStamp.bindTo(modelsDialog);
-		modelsStamp.language(box().languageManager().get(Language.key(Language.QuassarGroup, Language.Metta)));
+		modelsStamp.language(box().languageManager().get(Language.key(Language.QuassarCollection, Language.Metta)));
 		modelsStamp.tab(LanguageTab.Examples);
 		modelsStamp.refresh();
 	}
 
 	private void refreshLanguagesDialog() {
 		closing = false;
-		languagesDialog.title(dialog == LandingDialog.StartModeling ? "Select the DSL to start modeling with" : "Explore DSLs of our community");
+		languagesDialog.title(dialog == LandingDialog.StartModeling ? "Start modeling with" : "Explore DSLs of our community");
 		languagesStamp.onSelect(dialog == LandingDialog.StartModeling ? this::startModeling : null);
 		languagesStamp.source(new LanguagesWithReleaseDatasource(box(), session()));
 		languagesStamp.refresh();
@@ -102,7 +102,7 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 	}
 
 	private void startBuilding() {
-		startBuilding(box().languageManager().get(Language.key(Language.QuassarGroup, Language.Metta)));
+		startBuilding(box().languageManager().get(Language.key(Language.QuassarCollection, Language.Metta)));
 	}
 
 	private void startBuilding(Language language) {

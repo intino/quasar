@@ -57,7 +57,7 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 			Logger.warn("Trying to create model from language " + language.name() + " with no releases");
 			return;
 		}
-		Model model = box().commands(ModelCommands.class).create(name, name, "", new GavCoordinates(language.group(), language.name(), language.lastRelease().version()), username(), username());
+		Model model = box().commands(ModelCommands.class).create(name, name, "", new GavCoordinates(language.collection(), language.name(), language.lastRelease().version()), username(), username());
 		notifier.redirect(PathHelper.modelUrl(model, session()));
 	}
 

@@ -2,9 +2,12 @@ package io.quassar.editor.box.util;
 
 import io.intino.alexandria.ui.services.push.UISession;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.model.Collection;
 import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
+
+import java.util.List;
 
 public class PermissionsHelper {
 
@@ -36,14 +39,22 @@ public class PermissionsHelper {
 		String username = session.user() != null ? session.user().username() : null;
 		String owner = box.languageManager().owner(language);
 		if (owner != null && owner.equals(username)) return true;
-		if (!box.modelManager().models(language, username).isEmpty()) return true;
-		return language.grantAccessList().stream().anyMatch(a -> a.equals(owner));
+		return !box.modelManager().models(language, username).isEmpty();
+	}
+
+	public static boolean hasPermissions(Collection collection, UISession session, EditorBox box) {
+		if (collection == null) return false;
+		return isOwnerOrCollaborator(collection, session, box);
 	}
 
 	public static boolean canRemove(Model model, UISession session, EditorBox box) {
 		if (!isOwnerOrCollaborator(model, session, box)) return false;
 		if (!box.languageManager().exists(model)) return false;
 		return !ModelHelper.isMetamodel(model, box);
+	}
+
+	public static boolean canEdit(Collection collection, UISession session, EditorBox box) {
+		return isOwnerOrCollaborator(collection, session, box);
 	}
 
 	public static boolean canEdit(Language language, UISession session, EditorBox box) {
@@ -64,7 +75,13 @@ public class PermissionsHelper {
 
 	public static boolean canRemove(Language language, UISession session, EditorBox box) {
 		if (!canEdit(language, session, box)) return false;
-		return box.modelManager().models(language.name()).isEmpty();
+		return language.releases().isEmpty();
+	}
+
+	public static boolean canRemove(Language language, String release, UISession session, EditorBox box) {
+		if (!canEdit(language, session, box)) return false;
+		List<Model> models = box.modelManager().modelsWithRelease(language, release).stream().filter(m -> !isOwnerOrCollaborator(m, session, box)).toList();
+		return models.isEmpty();
 	}
 
 	public static boolean canCheck(Model model, String version, UISession session, EditorBox box) {
@@ -106,6 +123,12 @@ public class PermissionsHelper {
 		Language language = box.languageManager().get(model.language());
 		Model metamodel = box.modelManager().get(language.metamodel());
 		return metamodel != null && isOwnerOrCollaborator(metamodel, session, box);
+	}
+
+	public static boolean isOwnerOrCollaborator(Collection collection, UISession session, EditorBox box) {
+		String username = session.user() != null ? session.user().username() : null;
+		if (collection.owner() != null && collection.owner().equals(username)) return true;
+		return collection.collaborators().stream().anyMatch(c -> c.equals(username));
 	}
 
 	public static boolean canEdit(Model model, String release, UISession session, EditorBox box) {

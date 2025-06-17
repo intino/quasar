@@ -10,10 +10,7 @@ import io.intino.builderservice.schemas.RegisterBuilder;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.commands.Commands;
 import io.quassar.editor.box.commands.CommandsFactory;
-import io.quassar.editor.box.languages.LanguageLoader;
-import io.quassar.editor.box.languages.LanguageManager;
-import io.quassar.editor.box.languages.LanguageServerManager;
-import io.quassar.editor.box.languages.LanguageServerWebSocketHandler;
+import io.quassar.editor.box.languages.*;
 import io.quassar.editor.box.languages.artifactories.LocalLanguageArtifactory;
 import io.quassar.editor.box.models.ModelManager;
 import io.quassar.editor.box.projects.ProjectManager;
@@ -39,6 +36,7 @@ public class EditorBox extends AbstractBox {
 	private SubjectStore subjectStore;
 	private AmidasOauthAccessor authService;
 	private LanguageLoader languageLoader;
+	private CollectionManager collectionManager;
 	private LanguageManager languageManager;
 	private ModelManager modelManager;
 	private UserManager userManager;
@@ -75,7 +73,8 @@ public class EditorBox extends AbstractBox {
 		utilities = new Utilities(archetype.configuration().editor().utilities());
 		commandsFactory = new CommandsFactory(this);
 		languageLoader = new LanguageLoader(new LocalLanguageArtifactory(archetype, this::modelWithLanguage));
-		languageManager = new LanguageManager(archetype, subjectStore);
+		collectionManager = new CollectionManager(archetype, subjectStore);
+		languageManager = new LanguageManager(archetype, subjectStore, id -> modelManager.get(id));
 		serverManager = new LanguageServerManager(languageLoader, this::workSpaceOf).onChangeWorkspace(this::notifyChangeWorkspace);
 		modelManager = new ModelManager(archetype, subjectStore, l -> languageManager.get(l), serverManager);
 		userManager = new UserManager(archetype, subjectStore);
@@ -121,6 +120,10 @@ public class EditorBox extends AbstractBox {
 
 	public Archetype archetype() {
 		return archetype;
+	}
+
+	public CollectionManager collectionManager() {
+		return collectionManager;
 	}
 
 	public LanguageManager languageManager() {

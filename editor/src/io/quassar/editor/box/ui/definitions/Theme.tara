@@ -24,6 +24,7 @@ Format("") subtitle2
 Format("fontSize:'13pt'") largeFontSize
 Format("fontSize:'16pt'") veryLargeFontSize
 Format("fontWeight:'bold'") bold
+Format("color:'black'", darkContent="color:'white'") blackColor
 Format("color:'#888'", darkContent="color:'#aaa'") greyColor
 Format("color:'#555'", darkContent="color:'#eee'") greyHardColor
 Format("color:'white'") whiteColor
@@ -55,7 +56,7 @@ Format("padding:'10px 30px',borderTop:'1px solid #aaa'") sliderFormat
 Format("background:'black',height:'42px'") headerStyle
 Format("background:'white',borderBottom:'3px solid #aaa'", darkContent="background:'inherit',borderBottom:'3px solid black'") forgeHeaderStyle
 Format("color:'white',position:'absolute',top:0,left:0,marginLeft:'180px',marginTop:'6px',textTransform:'uppercase',fontSize:'9pt'") headerSubtitle
-Format("color:'white',background:'#272C34'") footerStyle
+Format("color:'white',background:'#272C34',width:'100%',padding:'20px'") footerStyle
 Format("background:'white'", darkContent="background:'#1F1F1F'") whiteBackground
 Format("background:'white',border:'1px solid #dadce0',color:'#3c4043'") whiteButton
 Format("background:'white',color:'black',zIndex:'2'") searchBoxBackground
@@ -72,7 +73,7 @@ Format("opacity:'0.8',background:'white',padding:'20px',border:'4px solid black'
 Format("fontSize:'16pt',fontWeight:'bold',color:'black'", darkContent="color:'white'") landingSubSectionTitle
 Format("fontSize:'14pt',color:'black'", darkContent="color:'white'") landingSubSectionDescription
 Format("border:'2px solid white',background:'#196082'") landingSectionBordered
-Format("height:'700px',background:'white'", darkContent="background:'#2a3443'") landingCatalog
+Format("height:'790px',background:'white'", darkContent="background:'#2a3443'") landingCatalog
 Format("opacity:'0.8',color:'white',background:'#222',width:'100%',padding:'5px 10px',fontSize:'16pt'") landingSectionTitle
 Format("height:'64px',width:'64px',marginBottom:'10px',filter:'invert(100%)'", darkContent="filter:'none'") landingIcon
 Format("background:'transparent'") noBackground
@@ -224,12 +225,14 @@ Format("minWidth:'130px'") minExecutiveIndicatorWidth
 Format("width:'500px'") block
 Format("fontSize:'28pt',color:'white',fontWeight:'bold',paddingTop:'20px'") blockTitle
 Format("fontSize:'26pt',color:'white'") blockSubtitle
+Format("fontSize:'26pt'") blockSubtitleLink
 Format("fontSize:'16pt',color:'white',fontWeight:'bold'") blockHint
 Format("fontSize:'24pt',color:'white',marginTop:'20px'") blockLightSubtitle
 Format("fontSize:'16pt',color:'white',textAlign:'center'") blockDescription
 Format("fontStyle:'italic'") italic
 Format("border:'2px solid white',borderRadius:'20px',padding:'13px 30px',fontSize:'13pt',background:'#1b70c0',color:'white'") blockMainAction
 Format("border:'2px solid white',borderRadius:'20px',padding:'8px 22px',background:'#1b70c0',color:'white',minWidth:'100px'") blockKitAction
+Format("border:'2px solid white',borderRadius:'20px',padding:'8px 22px',background:'#1b70c0',color:'white',minWidth:'100px'") blockGenerateLogoAction
 Format("color:'white',fontSize:'12pt',fontWeight:'bold'") blockAction
 Format("color:'white',fontSize:'18pt',border:'2px solid white',background:'#404040',borderRadius:'12px',width:'45px',textAlign:'center'") stepBudge
 Format("color:'white',fontSize:'16pt',marginTop:'5px',fontWeight:'bold'") stepTitle
@@ -320,13 +323,15 @@ Format("margin:'0',borderRight:'1px solid #ddd'") leftTabPanel
 Format("borderRadius:'10px',border:'0',height:'100%'") panelDrawer
 Format("fontSize:'20pt'") dslFieldInput
 Format("position:'absolute',bottom:'0',zIndex:'1'") languageEditorLogoStyle
-Format("borderRadius:'5px',marginBottom:'5px'") forgeLogoStyle
+Format("borderRadius:'5px',marginRight:'10px'") forgeLogoStyle
 Format("background:'#dee2e9'", darkContent="background:'#212938'") forgePanelBackground
 Format("color:'#294575',fontSize:'22pt',marginLeft:'11px',marginTop:'-8px'", darkContent="color:'#8c95a3'") metaForgeCredits
 Format("minWidth:'300px'") minResizablePanelWidth
 Format("height:'48px',borderBottom:'1px solid #efefef',width:'100%'") languageExplorerHeader
 Format("height:'calc(100vh - 140px)'") collapsedBlockLink
-Format("position:'absolute',left:'0',top:'0',background:'#e2effb',zIndex:'1',margin:'3px 33%',padding:'2px 20px',borderRadius:'6px',border:'1px solid #3376ff'") banner
+Format("position:'absolute',left:'0',top:'0',background:'#e2effb',zIndex:'1',margin:'7px 33%',padding:'10px 20px',borderRadius:'6px',border:'1px solid #3376ff'") banner
+Format("position:'absolute',top:'0',right:'0'") releaseRemoveLinkBlock
+Format("color:'black',zIndex:'100',position:'absolute',right:'0'", darkContent="color:'white'") releaseRemoveLink
 
 Format("padding:'15px 40px'") largeButton
 Format("position:'absolute',bottom:'0',left:'0',marginLeft:'6px',marginBottom:'7px'") userToolbar

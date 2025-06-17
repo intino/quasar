@@ -1,9 +1,40 @@
 package io.quassar.editor.box.util;
 
 import io.intino.alexandria.ui.services.push.UISession;
+import io.quassar.editor.box.ui.datasources.ModelsDatasource;
 import io.quassar.editor.box.ui.types.*;
 
 public class SessionHelper {
+
+	public static void registerModelsSorting(UISession session, ModelsDatasource.Sorting sorting) {
+		session.add("models-sorting", sorting.name());
+	}
+
+	public static ModelsDatasource.Sorting modelsSorting(UISession session) {
+		String value = session.preference("models-sorting");
+		return value != null ? ModelsDatasource.Sorting.valueOf(value) : ModelsDatasource.Sorting.MostRecent;
+	}
+
+	public static boolean isModelsSortingByMostRecent(UISession session) {
+		return modelsSorting(session) == ModelsDatasource.Sorting.MostRecent;
+	}
+
+	public static void registerRightPanelExpanded(UISession session) {
+		registerRightPanelState(session, true);
+	}
+
+	public static void registerRightPanelCollapsed(UISession session) {
+		registerRightPanelState(session, false);
+	}
+
+	public static boolean isRightPanelCollapsed(UISession session) {
+		return !isRightPanelExpanded(session);
+	}
+
+	public static boolean isRightPanelExpanded(UISession session) {
+		String preference = session.preference("right-panel-state");
+		return preference == null || preference.equalsIgnoreCase("expanded");
+	}
 
 	public static void register(UISession session, LanguagesTab tab) {
 		if (tab == null) return;
@@ -43,6 +74,10 @@ public class SessionHelper {
 	public static ForgeView forgeView(UISession session) {
 		String result = session.preference("forge-view");
 		return result != null && !result.isEmpty() ? ForgeView.from(result) : ForgeView.Kit;
+	}
+
+	private static void registerRightPanelState(UISession session, boolean expanded) {
+		session.add("right-panel-state", expanded ? "expanded" : "collapsed");
 	}
 
 }

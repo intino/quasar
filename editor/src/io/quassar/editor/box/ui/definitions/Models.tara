@@ -81,7 +81,7 @@ Template modelsTemplate as Relative(height=100%, width=100%)
 Template modelTemplate as Relative(height=100%, width=100%)
 
 	Block(layout=Horizontal, visible=false, format=banner) languageChangedBlock
-		Text(value="The model's language has changed. Please reload the model to apply the changes.", format=airRight)
+		Text(value="The DSL associated with this model has changed. Please reload this model to check if it remains compatible.", format=airRight)
 		Button(title="Reload") reload as Action
 
 	Block(layout=Vertical Flexible CenterCenter, visible=false) notFoundBlock
@@ -164,7 +164,7 @@ Template modelEditor as Relative(height=100%, width=100%)
 		Block(layout=Horizontal EndJustified)
 			Button(title="Close", size=Small, highlight=Fill) as CloseDialog(helpDialog)
 
-	Dialog(title="Settings") settingsDialog as Relative(width=60%, height=80%)
+	Dialog(title="Model settings") settingsDialog as Relative(width=60%, height=80%)
         Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
 			TemplateStamp(template=modelSettingsEditor) modelSettingsEditor
 		Divider

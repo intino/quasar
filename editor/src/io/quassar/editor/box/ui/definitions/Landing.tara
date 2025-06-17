@@ -8,7 +8,7 @@ use Theme
 
 Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, height=100%)
 
-	Block(layout=Vertical Center, format=doubleBottomSpaced) content as Relative(width=100%, height=100%)
+	Block(layout=Vertical Center) content as Relative(width=100%, height=100%)
 
 		Block(layout=Vertical, format=landingSlogan)
 			Text(value="Domain Specific Languages to model the universe", translate=true, format=landingSloganText)
@@ -53,6 +53,9 @@ Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, heigh
 						Text(value="2", format=stepBudge)
 						Text(value="Build and share", format=stepTitle)
 						Text(value="Make your DSL available to other users", format=stepDescription)
+
+		Block(layout=Vertical Center, format=landingSection) as Relative(width=60%)
+			Link(title="What is Quassar", format=blockSubtitleLink bold tripleAirBottom tripleAirTop) as Action Addressable(EditorElements.about)
 
 		Block(layout=Vertical, format=landingSection) as Relative(width=60%)
 			Text(value="Featured DSLs", translate=true, format=landingSectionTitle)
@@ -99,6 +102,9 @@ Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, heigh
 		Block(layout=Horizontal Center, format=doubleAirTop doubleAirBottom)
 			Button(title="Create your DSL", format=blockMainAction doubleAirLeft doubleAirRight) exploreLanguage as Action
 			Button(title="Create your DSL", format=blockMainAction, visible=false) exploreLanguageLogin as Action
+
+		Block(layout=Vertical CenterCenter, format=footerStyle tripleAirTop)
+			Text(value="© 2025 Monentia. All rights reserved")
 
 	Dialog(title="") modelsDialogBox as Relative(height=80%, width=60%)
         Block(layout=Horizontal) as Relative(height=100%, offsetHeight=40px)
