@@ -57,11 +57,10 @@ public class CompletionService {
 		);
 		map.put(ContextFilters.afterMogramIdentifier, (context, result) -> {
 					if (!(context.elementOnPosition() instanceof Mogram m)) return;
-					Mogram container = (Mogram) m.container();
-					if (container.level() != Level.M1) {
+					if (m.level() != Level.M1) {
 						result.add(CompletionProvider.create("extends ", Keyword));
 						result.add(CompletionProvider.create("as ", Keyword));
-					} else if (!container.applicableFacets().isEmpty())
+					} else if (!m.applicableFacets().isEmpty())
 						result.add(CompletionProvider.create("is ", Keyword));
 				}
 		);
