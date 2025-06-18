@@ -50,7 +50,7 @@ public class CreateCollectionDialog extends AbstractCreateCollectionDialog<Edito
 			return;
 		}
 		dialog.close();
-		io.quassar.editor.model.Collection collection = box().commands(CollectionCommands.class).create(nameField.value(), username());
+		io.quassar.editor.model.Collection collection = box().commands(CollectionCommands.class).create(nameField.value(), Collection.SubscriptionPlan.Professional, username());
 		createListener.accept(collection);
 	}
 

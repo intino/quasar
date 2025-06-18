@@ -53,6 +53,11 @@ public class LanguageLogoDialog extends AbstractLanguageLogoDialog<EditorBox> {
 		openDialogTrigger.readonly(value);
 	}
 
+	public void generateDefaultLogo() {
+		generateLogo();
+		saveLogo();
+	}
+
 	@Override
 	public void init() {
 		super.init();
@@ -81,14 +86,6 @@ public class LanguageLogoDialog extends AbstractLanguageLogoDialog<EditorBox> {
 		languageId.value(idProvider.apply(true));
 	}
 
-	private void generateLogo() {
-		File destiny = logoFile();
-		if (destiny.exists()) destiny.delete();
-		selectedLogo = destiny;
-		LanguageHelper.generateLogo(nameProvider.apply(true), destiny);
-		logoPreview.value(destiny);
-	}
-
 	private void changeLogo(ChangeEvent event) {
 		try {
 			File tmpFile = logoFile();
@@ -114,6 +111,14 @@ public class LanguageLogoDialog extends AbstractLanguageLogoDialog<EditorBox> {
 		logo = logoFile().exists() ? logoFile() : language != null ? box().languageManager().loadLogo(language) : null;
 		selectedLogo = logo;
 		this.logo.value(logo);
+	}
+
+	private void generateLogo() {
+		File destiny = logoFile();
+		if (destiny.exists()) destiny.delete();
+		selectedLogo = destiny;
+		LanguageHelper.generateLogo(nameProvider.apply(true), destiny);
+		logoPreview.value(destiny);
 	}
 
 }

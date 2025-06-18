@@ -18,6 +18,11 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	}
 
 	@Override
+	public void dispatchCollection(Soul soul, String collection) {
+		soul.currentLayer(HomeTemplate.class).openCollection(collection);
+	}
+
+	@Override
 	public void dispatchLanguage(Soul soul, String language, String tab) {
 		SessionHelper.register(soul.session(), LanguageTab.from(tab));
 		soul.currentLayer(HomeTemplate.class).openLanguage(language, tab);

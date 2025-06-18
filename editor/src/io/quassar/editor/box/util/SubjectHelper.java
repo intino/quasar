@@ -15,8 +15,10 @@ public class SubjectHelper {
 	public static final String ModelType = "model";
 	public static final String UserType = "user";
 	public static final String ModelReleaseType = "release";
+	public static final String LicenseType = "license";
 
 	public static final String CollectionPath = "%s.collection";
+	public static final String CollectionLicensePath = "%s.collection/%s.license";
 	public static final String LanguagePath = "%s.dsl";
 	public static final String LanguageReleasePath = "%s.dsl/%s.release";
 	public static final String LanguageExecutionPath = "%s.dsl/%s.release/0001.execution";
@@ -28,24 +30,32 @@ public class SubjectHelper {
 		return CollectionPath.formatted(name);
 	}
 
-	public static String languagePath(String name) {
-		return LanguagePath.formatted(name);
+	public static String pathOf(Collection collection) {
+		return CollectionPath.formatted(collection.name());
+	}
+
+	public static String pathOf(Collection collection, String license) {
+		return CollectionLicensePath.formatted(collection.name(), license);
+	}
+
+	public static String languagePath(String id) {
+		return LanguagePath.formatted(id);
 	}
 
 	public static String pathOf(Language language) {
-		return LanguagePath.formatted(language.name());
+		return LanguagePath.formatted(language.id());
 	}
 
 	public static String pathOf(Language language, LanguageRelease release) {
-		return LanguageReleasePath.formatted(language.name(), release.version());
+		return LanguageReleasePath.formatted(language.id(), release.version());
 	}
 
 	public static String executionPathOf(Language language, LanguageRelease release) {
-		return LanguageExecutionPath.formatted(language.name(), release.version());
+		return LanguageExecutionPath.formatted(language.id(), release.version());
 	}
 
 	public static String pathOf(Language language, String version) {
-		return LanguageReleasePath.formatted(language.name(), version);
+		return LanguageReleasePath.formatted(language.id(), version);
 	}
 
 	public static String modelPath(String id) {

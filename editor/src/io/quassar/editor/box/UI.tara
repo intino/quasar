@@ -1,5 +1,6 @@
 dsl Konos
 
+use Collections
 use Forge
 use Landing
 use Editors
@@ -12,6 +13,7 @@ Service EditorElements as UI(port = "{port}", title = "{title}", favicon = "/ima
 
 	Resource(path = "/") home as Page(homeTemplate) Main > Parameter dialog
 	Resource(path = "/about") about as Page(homeTemplate)
+	Resource(path = "/collections/:collection") collection as Page(homeTemplate)
 	Resource(path = "/models/:language") language as Page(homeTemplate) > Parameter tab
 	Resource(path = "/models/:language/new") languageNew as Page(homeTemplate)
 	Resource(path = "/models/:language/help") languageReleaseHelp as Page(homeTemplate) > Parameter version
@@ -28,6 +30,7 @@ Template homeTemplate as Relative(height=100%, width=100%)
 			Block(layout=Vertical Flexible CenterCenter) loading > Spinner(format=secondary)
 			Block(layout=Vertical Flexible) landingPage as Conditional > TemplateStamp(template=landingTemplate) landingStamp
 			Block(layout=Vertical Flexible) aboutPage as Conditional > TemplateStamp(template=aboutTemplate) aboutStamp
+			Block(layout=Vertical Flexible) collectionPage as Conditional > TemplateStamp(template=collectionTemplate) collectionStamp
 			Block(layout=Vertical Flexible) languagePage as Conditional > TemplateStamp(template=languageTemplate) languageStamp
 			Block(layout=Vertical Flexible) modelPage as Conditional > TemplateStamp(template=modelTemplate) modelStamp
 			Block(layout=Vertical Flexible) forgePage as Conditional > TemplateStamp(template=forgeTemplate) forgeStamp
@@ -51,8 +54,32 @@ Template(layout=Horizontal Center, format=headerStyle) headerTemplate
 		Button(title="Log in", format=airRight whiteColor, visible=false) login as Action
 
 		User(mode=OnlyPhoto, visible=false, format=relative veryLargeIconSize airRight smallAirTop) user
+			Block(format=spaced) > TemplateStamp(template=userHomeTemplate) userHomeStamp
 //			Selector userLinksSelector as ListBox
 //				Block(visible=false) myProjectsOption as Option > Link(title="Projects") myProjects as Action Addressable(EditorElements.home)
+
+Template userHomeTemplate
+
+	Block(format=doubleAirBottom)
+		Text(value="My licenses", translate=true, format=h5)
+		Text(format=middleAirBottom bold) licenseTimeMessage
+		TemplateStamp(template=licenseItemTemplate) licenses as Multiple(noItemsMessage="No licenses are currently assigned to you")
+		Block(format=middleAirTop) > TemplateStamp(template=addLicenseEditor) addLicenseEditor
+
+	Block(format=doubleAirBottom, visible=false) myCollectionsBlock
+		Text(value="My collections", translate=true, format=h5)
+		TemplateStamp(template=collectionItemTemplate) collections as Multiple(noItemsMessage="You are not currently managing any collections")
+
+Template(format=middleAirTop middleAirBottom greyLightBackground middleSpaced middleRounded) licenseItemTemplate
+	Block(layout=Horizontal Center) as HoverContainer
+		Block(layout=Vertical Flexible)
+			Block(layout=Horizontal) > Text(value=" ") bullet; Text title
+			Text(format=greyColor) expirationInfo
+		Block(layout=Horizontal EndJustified, format=middleAirRight, hidden=IfNotHover)
+			Link(title="renew", visible=false) renew as Action
+
+Template collectionItemTemplate
+	Link(title="") collectionLink as Action Addressable(EditorElements.collection)
 
 Template(layout=Vertical Flexible, format=radialBackground) loginTemplate as Relative(height=100%, width=100%)
 

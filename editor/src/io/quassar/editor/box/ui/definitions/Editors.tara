@@ -262,3 +262,20 @@ Template(layout=Horizontal Center, format=autoHeight) modelsDialog as Relative(w
 			Link(title="last modified", visible=false) lastModifiedLink
 			Text(value="last modified", visible=false) lastModifiedText
 		Block > SearchBox(collections=empty) searchBox
+
+Template addLicenseEditor
+	Text licenseField as Editable(placeholder="Paste license here")
+
+	Dialog(title="License added") successDialog
+        Block(format=overflowAuto relative) as Relative(height=100%, offsetHeight=40px)
+        	Text(value="Success! The license has been added to your license list", format=airBottom)
+		Divider
+        Block(layout=Horizontal EndJustified)
+        	Button(title="Close", size=Small, format=airRight) as CloseDialog(successDialog)
+
+	Dialog(title="License error") failureDialog
+        Block(format=overflowAuto relative) as Relative(height=100%, offsetHeight=40px)
+        	Text(value="Failure! The license code is invalid or has already been used", format=airBottom) failureMessage
+		Divider
+        Block(layout=Horizontal EndJustified)
+        	Button(title="Close", size=Small, format=airRight) as CloseDialog(failureDialog)

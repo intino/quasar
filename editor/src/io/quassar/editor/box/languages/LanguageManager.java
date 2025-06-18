@@ -3,8 +3,6 @@ package io.quassar.editor.box.languages;
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.util.ArtifactoryHelper;
-import io.quassar.editor.box.util.LanguageHelper;
-import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.box.util.SubjectHelper;
 import io.quassar.editor.model.*;
 import org.apache.commons.io.FileUtils;
@@ -16,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,12 +33,13 @@ public class LanguageManager {
 	}
 
 	public List<Language> visibleLanguages(String owner) {
-		Set<Language> result = new HashSet<>(quassarLanguages());
+		Set<Language> result = new HashSet<>(foundationalLanguages());
 		result.addAll(privateLanguages(owner));
+		result.addAll(licensedLanguages(owner));
 		return result.stream().filter(l -> !l.name().equals(Language.Metta)).distinct().toList();
 	}
 
-	public List<Language> quassarLanguages() {
+	public List<Language> foundationalLanguages() {
 		return languages().stream().filter(Language::isFoundational).toList();
 	}
 
@@ -47,12 +47,22 @@ public class LanguageManager {
 		return languages().stream().filter(l -> hasAccess(l, owner)).toList();
 	}
 
+	public List<Language> licensedLanguages(String owner) {
+		if (owner == null) return Collections.emptyList();
+		String[] collections = subjectStore.query().isType(SubjectHelper.LicenseType).where("user").equals(owner).collect().stream().map(s -> s.parent().name()).distinct().toArray(String[]::new);
+		return subjectStore.query().isType(SubjectHelper.LanguageType).where("collection").contains(collections).stream().map(this::get).toList();
+	}
+
 	public List<Language> languages() {
 		return subjectStore.query().isType(SubjectHelper.LanguageType).isRoot().collect().stream().map(this::get).toList();
 	}
 
+	public List<Language> languages(Collection collection) {
+		return subjectStore.query().isType(SubjectHelper.LanguageType).isRoot().where("collection").equals(collection.name()).collect().stream().map(this::get).toList();
+	}
+
 	public Language create(Collection collection, String name, Model metamodel, Language.Level level, String title, String description) {
-		Language language = new Language(subjectStore.create(SubjectHelper.languagePath(name)));
+		Language language = new Language(subjectStore.create(SubjectHelper.languagePath(Language.key(collection.id(), name))));
 		language.collection(collection.id());
 		language.name(name.toLowerCase());
 		language.level(level);
@@ -223,7 +233,9 @@ public class LanguageManager {
 	}
 
 	public boolean exists(String collection, String language) {
+		if (language == null) return false;
 		if (new File(archetype.languages().root(), language).exists()) return true;
+		if (new File(archetype.languages().root(), Language.key(collection, language)).exists()) return true;
 		return !subjectStore.query().isType(SubjectHelper.LanguageType).where("collection").equals(collection).where("name").equals(language).collect().isEmpty();
 	}
 
@@ -242,12 +254,14 @@ public class LanguageManager {
 	}
 
 	public Language get(GavCoordinates gav) {
-		return get(gav.artifactId());
+		Language language = get(Language.key(gav.groupId(), gav.artifactId()));
+		if (language == null) language = get(gav.artifactId());
+		return language;
 	}
 
-	public Language get(String key) {
-		Language language = get(subjectStore.open(SubjectHelper.languagePath(key)));
-		if (language == null) language = get(subjectStore.query().isType(SubjectHelper.LanguageType).where("collection").equals(Language.collectionFrom(key)).where("name").equals(Language.nameFrom(key)).collect().stream().findFirst().orElse(null));
+	public Language get(String id) {
+		Language language = get(subjectStore.open(SubjectHelper.languagePath(id)));
+		if (language == null) language = get(subjectStore.query().isType(SubjectHelper.LanguageType).where("collection").equals(Language.collectionFrom(id)).where("name").equals(Language.nameFrom(id)).collect().stream().findFirst().orElse(null));
 		return language;
 	}
 

@@ -8,14 +8,14 @@ Template(layout=Vertical Flexible) collaboratorsTemplate
 		Text(value="Add people", translate=true, format=h5 middleAirBottom)
 		Text(value="Add a list of emails separated by either semicolon or newline", translate=true, format=message middleAirBottom)
 		Text peopleField as Editable Memo(height=8Rows)
-		Block(layout=Horizontal) > Button(title="Invite", highlight=Fill, format=middleAirTop) invite as Action
+		Block(layout=Horizontal) > Button(title="Invite", highlight=Fill, format=middleAirTop) invite as Action Readonly
 
 	Block(format=doubleAirTop)
 		Text(value="Owner", translate=true, format=h5 middleAirBottom)
 		Text ownerField
 
 	Block(format=doubleAirTop doubleAirBottom)
-		Text(value="Collaborators", translate=true, format=h5 middleAirBottom)
+		Text(value="Collaborators", translate=true, format=h5 middleAirBottom) collaboratorsTitle
 		TemplateStamp(template=collaboratorItemTemplate) collaborators as Multiple(noItemsMessage="No collaborators have been defined for this model yet.")
 
 Template collaboratorItemTemplate

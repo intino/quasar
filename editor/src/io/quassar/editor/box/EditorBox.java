@@ -77,7 +77,7 @@ public class EditorBox extends AbstractBox {
 		languageManager = new LanguageManager(archetype, subjectStore, id -> modelManager.get(id));
 		serverManager = new LanguageServerManager(languageLoader, this::workSpaceOf).onChangeWorkspace(this::notifyChangeWorkspace);
 		modelManager = new ModelManager(archetype, subjectStore, l -> languageManager.get(l), serverManager);
-		userManager = new UserManager(archetype, subjectStore);
+		userManager = new UserManager(archetype, subjectStore, Integer.parseInt(configuration.newUserLicenseTime()));
 		projectManager = new ProjectManager(archetype);
 		builderAccessor = new QuassarBuilderServiceAccessor(url(configuration.builderServiceUrl()));
 		setupServiceBuilder();
@@ -92,7 +92,7 @@ public class EditorBox extends AbstractBox {
 	}
 
 	private Model modelWithLanguage(String id) {
-		String metamodel = languageManager.get(Language.nameFrom(id)).metamodel();
+		String metamodel = languageManager.get(id).metamodel();
 		return metamodel != null ? modelManager.get(metamodel) : null;
 	}
 

@@ -12,12 +12,13 @@ import java.util.stream.Stream;
 public class Language extends SubjectWrapper {
 
 	public static final String FileExtension = ".tara";
-	public static final String FoundationalCollection = "tara.dsl";
-	public static final String QuassarCollection = "io.quassar";
+	public static final String QuassarCollection = "quassar";
+	public static final String QuassarGroup = "io.quassar";
+	public static final String TaraGroup = "tara.dsl";
 	public static final String Metta = "metta";
 
 	public static String key(String collection, String name) {
-		if (collection == null || collection.isEmpty() || collection.equalsIgnoreCase(Language.QuassarCollection) || collection.equalsIgnoreCase(Language.FoundationalCollection)) return name;
+		if (collection == null || collection.isEmpty() || collection.equalsIgnoreCase(Language.QuassarCollection)) return name;
 		return collection + "." + name;
 	}
 
@@ -45,16 +46,19 @@ public class Language extends SubjectWrapper {
 
 	public String collection() {
 		String collection = getOrEmpty("collection");
-		return !collection.isEmpty() ? collection : Language.QuassarCollection;
+		return !collection.isEmpty() ? collection : Language.QuassarGroup;
 	}
 
 	public void collection(String value) {
 		set("collection", value);
 	}
 
+	public static boolean isFoundational(String collection) {
+		return collection != null && collection.equals(Language.QuassarCollection);
+	}
+
 	public boolean isFoundational() {
-		String collection = collection();
-		return collection != null && collection.equals(Language.FoundationalCollection);
+		return isFoundational(collection());
 	}
 
 	public String name() {
@@ -82,7 +86,8 @@ public class Language extends SubjectWrapper {
 	}
 
 	public GavCoordinates parent() {
-		return new GavCoordinates(Language.QuassarCollection + "." + getOrEmpty("parent-collection"), getOrEmpty("parent-name"), getOrEmpty("parent-version"));
+		String packagePrefix = Language.isFoundational(getOrEmpty("parent-collection")) ? "" : Language.QuassarGroup + ".";
+		return new GavCoordinates(packagePrefix + getOrEmpty("parent-collection"), getOrEmpty("parent-name"), getOrEmpty("parent-version"));
 	}
 
 	public void parent(GavCoordinates value) {

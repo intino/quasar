@@ -45,4 +45,14 @@ public class User extends SubjectWrapper {
 		putList("member-team", values);
 	}
 
+	public static final int DefaultLicenseTime = -999999999;
+	public int licenseTime() {
+		String time = get("license-time");
+		return time != null ? Integer.parseInt(time) : DefaultLicenseTime;
+	}
+
+	public void licenseTime(int value) {
+		set("license-time", String.valueOf(value));
+	}
+
 }

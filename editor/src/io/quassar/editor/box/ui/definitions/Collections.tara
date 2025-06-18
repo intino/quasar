@@ -1,0 +1,84 @@
+dsl Konos
+
+use Users
+use Languages
+use Editors
+use Models
+use UI
+use Theme
+
+Template(layout=Horizontal Center, format=subHeaderStyle) collectionHeaderTemplate
+	Block(layout=Horizontal Flexible)
+		Text(format=bold h5) title
+		Block(layout=Horizontal, visible=false) notLoggedBlock
+			Text(value="You are not logged in. Please log in to access available models.", format=h5 textCentered greyColor, translate=true)
+	Block(layout=Horizontal Center EndJustified)
+
+Template collectionTemplate as Relative(height=100%, width=100%, offsetHeight=2px)
+	TemplateStamp(template=collectionHeaderTemplate, visible=false) headerStamp
+
+	Block(layout=Vertical Flexible, format=whiteBackground) bodyBlock as Relative(width=100%)
+
+		Block(layout=Vertical Flexible CenterCenter, visible=false) notFoundBlock
+			Block(layout=Vertical Flexible, spacing=DP16, format=messageBlock) as Relative(height=100%, width=60%)
+				Block(layout=Vertical)
+					Text(value="Not found", format=h2 airTop textCentered greyHardColor, translate=true)
+					Text(value="Sorry, we can't find the collection you are visiting", format=h5 textCentered greyColor, translate=true)
+					Block(layout=Horizontal) > Button(title="home", format=airTop, highlight=Outline) as Action Addressable(EditorElements.home)
+
+		Block(layout=Vertical Flexible) mainBlock as Relative(width=100%) Conditional
+
+			Block(layout=Horizontal Flexible, format=whiteBackground) mainContentBlock as Relative(width=100%, height=100%) Resizable(minSize=4%)
+
+				Block(layout=Vertical Flexible, format=doubleLeftSpaced doubleRightSpaced bottomSpaced topSpaced) propertiesBlock as Relative(width=30%)
+					Block(layout=Horizontal, format=doubleAirBottom)
+						Block(layout=Vertical Flexible)
+							Text(mode=Uppercase, format=bold) subscriptionPlan as Highlighted(textColor="white", backgroundColor="transparent")
+						Block(layout=Horizontal EndJustified)
+							Link(title="remove", visible=false, format=h6) remove as Action Signed(signText="To confirm deletion, please type the name of the collection. This action cannot be undone.", mode=SimpleText)
+					Block(format=doubleAirBottom)
+						Text(value="DSLs", format=h5)
+						Block as Absolute(height=120px) > TemplateStamp(template=languagesCollectionTemplate) languagesCatalog
+					Block(format=doubleAirBottom)
+						TemplateStamp(template=collaboratorsTemplate) collaboratorsStamp
+
+				Block(layout=Vertical Flexible) homeBlock as Relative(width=70%)
+					Text(value="Licenses", format=h5 spaced)
+					TemplateStamp(template=licensesTemplate) licensesStamp
+
+Template licensesTemplate as Relative(height=100%, width=100%)
+	Link(title=" ") copyTrigger as CopyToClipboard
+
+	Block(layout=Horizontal Center, format=airLeft)
+		Block(layout=Horizontal Flexible)
+			Button(title="Add...", size=Small, highlight=Outline, visible=false) addLicensesTrigger as OpenDialog(addLicensesDialog) Readonly
+		Block(layout=Horizontal EndJustified)
+			Text(visible=false, format=middleAirTop middleAirBottom) searchBox as Editable(placeholder="Search...")
+
+	Text(value="There are no licenses in this collection", visible=false) noItemsMessage
+
+	Block(layout=Vertical Flexible) bodyBlock as Relative(width=100%) AutoSize
+		Block(layout=Vertical Flexible Center) contentBlock as Relative(width=100%)
+    	    Grid(itemClass="io.quassar.editor.model.License", scrollingMark=false) licensesGrid
+    	        noItemsMessage = ""
+    	        pageSize = 30
+    	        Column(label="Code", type=Text, sortable=true) code
+    	        Column(label="Creation date", type=Date, sortable=true, pattern="YYYY-MM-dd HH:mm:ss") creationDate
+    	        Column(label="Duration (months)", type=Number, sortable=true) duration
+    	        Column(label="Status", type=Text, sortable=true) status
+    	        Column(label="Assigned user", type=Text, sortable=true) user
+    	        Column(label="Assignment date", type=Date, sortable=true, pattern="YYYY-MM-dd HH:mm:ss") assignmentDate
+    	        Column(label="Expiration date", type=Date, sortable=true, pattern="YYYY-MM-dd HH:mm:ss") expirationDate
+
+    Dialog(title="Add licenses") addLicensesDialog
+        Block(layout=Vertical) as Relative(height=100%, offsetHeight=40px)
+        	Block(format=airBottom)
+    			Text(format=bold) message
+    			Text(format=greyColor) hint
+    		Block(format=airBottom) as Absolute(width=300px)
+    			Number(suffix="licenses", min=1, value=1, format=airBottom h5) countField as Editable Labeled("Count licenses to add")
+    			Number(suffix="Months", min=1, value=1, format=airBottom h5) durationField as Editable Labeled("Duration for licenses")
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addLicensesDialog)
+            Button(title="Add", size=Small, highlight=Fill) addLicenses as Action

@@ -44,7 +44,9 @@ public class GetArtifactoryFileAction implements io.intino.alexandria.rest.Reque
 
 	private Language locateLanguage(GavCoordinates coordinates) {
 		Language language = box.languageManager().get(coordinates);
-		if (language == null) language = box.languageManager().get(Language.nameFrom(coordinates.groupId()));
+		if (language == null) language = box.languageManager().get(Language.key(Language.collectionFrom(coordinates.groupId().replace(Language.QuassarGroup + ".", "")), Language.nameFrom(coordinates.groupId().replace(Language.QuassarGroup, ""))));
+		if (language == null) language = box.languageManager().get(Language.key(Language.nameFrom(coordinates.groupId().replace(Language.QuassarGroup + ".", "")), coordinates.artifactId()));
+		if (language == null) language = box.languageManager().get(Language.nameFrom(coordinates.groupId().replace(Language.QuassarGroup + ".", "")));
 		return language;
 	}
 

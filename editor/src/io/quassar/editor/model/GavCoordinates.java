@@ -18,7 +18,7 @@ public record GavCoordinates(String groupId, String artifactId, String version) 
 	}
 
 	public String languageId() {
-		return Language.key(groupId, artifactId);
+		return Language.key(groupId.replace(Language.QuassarGroup + ".", ""), artifactId);
 	}
 
 	public boolean matches(Language language) {

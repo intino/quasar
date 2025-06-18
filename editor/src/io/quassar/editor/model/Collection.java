@@ -1,9 +1,11 @@
 package io.quassar.editor.model;
 
+import io.quassar.editor.box.util.SubjectHelper;
 import systems.intino.datamarts.subjectstore.model.Subject;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Collection extends SubjectWrapper {
 
@@ -63,6 +65,37 @@ public class Collection extends SubjectWrapper {
 
 	public void add(String collaborator) {
 		put("collaborator", collaborator);
+	}
+
+	public enum SubscriptionPlan { Professional, Enterprise }
+	public SubscriptionPlan subscriptionPlan() {
+		String name = get("subscription-plan");
+		return name != null ? SubscriptionPlan.valueOf(name) : SubscriptionPlan.Professional;
+	}
+
+	public void subscriptionPlan(SubscriptionPlan value) {
+		set("subscription-plan", value.name());
+	}
+
+	public List<License> licenses() {
+		Stream<Subject> result = subject.children().collect().stream().filter(s -> s.is(SubjectHelper.LicenseType));
+		return result.map(this::licenseOf).toList();
+	}
+
+	public License license(String code) {
+		return licenses().stream().filter(r -> r.code().equals(code)).findFirst().orElse(null);
+	}
+
+	public License anyLicense(String username) {
+		return licenses().stream().filter(r -> username.equals(r.user())).findFirst().orElse(null);
+	}
+
+	public License activeLicense(String username) {
+		return licenses().stream().filter(r -> username.equals(r.user()) && !r.isExpired()).findFirst().orElse(null);
+	}
+
+	private License licenseOf(Subject subject) {
+		return new License(subject);
 	}
 
 }

@@ -1,12 +1,9 @@
 package io.quassar.editor.box.commands;
 
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.box.commands.Command.CommandResult;
-import io.quassar.editor.box.commands.collection.CreateCollectionCommand;
-import io.quassar.editor.box.commands.language.*;
+import io.quassar.editor.box.commands.collection.*;
 import io.quassar.editor.model.*;
 
-import java.io.File;
 import java.util.List;
 
 public class CollectionCommands extends Commands {
@@ -15,10 +12,37 @@ public class CollectionCommands extends Commands {
 		super(box);
 	}
 
-	public Collection create(String name, String username) {
+	public Collection create(String name, Collection.SubscriptionPlan plan, String username) {
 		CreateCollectionCommand command = setup(new CreateCollectionCommand(box), username);
 		command.name = name;
+		command.plan = plan;
 		return command.execute();
 	}
 
+	public boolean addLicenses(Collection collection, double count, double duration, String username) {
+		AddLicensesCommand command = setup(new AddLicensesCommand(box), username);
+		command.collection = collection;
+		command.count = Double.valueOf(count).intValue();
+		command.duration = Double.valueOf(duration).intValue();
+		return command.execute();
+	}
+
+	public AssignLicenseCommand.AssignResult assignLicense(String license, String username) {
+		AssignLicenseCommand command = setup(new AssignLicenseCommand(box), username);
+		command.license = license;
+		return command.execute();
+	}
+
+	public void save(Collection collection, List<String> collaborators, String username) {
+		SaveCollectionCollaboratorsCommand command = setup(new SaveCollectionCollaboratorsCommand(box), username);
+		command.collection = collection;
+		command.collaborators = collaborators;
+		command.execute();
+	}
+
+	public boolean remove(Collection collection, String username) {
+		RemoveCollectionCommand command = setup(new RemoveCollectionCommand(box), username);
+		command.collection = collection;
+		return command.execute();
+	}
 }

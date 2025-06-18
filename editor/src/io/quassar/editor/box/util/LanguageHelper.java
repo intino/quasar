@@ -16,6 +16,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import static java.util.Collections.emptyList;
 
@@ -117,4 +118,7 @@ public class LanguageHelper {
 		return result;
 	}
 
+	public static String label(Language language, Function<String, String> translator) {
+		return translator.apply("%s by %s").formatted(language.name().toLowerCase(), language.collection());
+	}
 }

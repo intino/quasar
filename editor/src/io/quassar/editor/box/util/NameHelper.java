@@ -11,7 +11,7 @@ public class NameHelper {
 		return name.matches("^[a-zA-Z0-9_-]*$");
 	}
 
-	private static final List<String> ReservedCollectionNames = List.of("collection", "quassar", "monentia");
+	private static final List<String> ReservedCollectionNames = List.of("collection", "quassar");
 	public static boolean reservedCollectionName(String name) {
 		return ReservedCollectionNames.contains(name.toLowerCase());
 	}

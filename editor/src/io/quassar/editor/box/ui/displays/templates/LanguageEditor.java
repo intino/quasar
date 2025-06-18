@@ -7,6 +7,7 @@ import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.DisplayHelper.CheckResult;
 import io.quassar.editor.model.Collection;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.Model;
 
 import java.io.File;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.function.Consumer;
 
 public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 	private Language language;
+	private Model metamodel;
 	private Consumer<Boolean> checkIdListener;
 	private Consumer<String> changeIdListener;
 	private Consumer<File> changeLogoListener;
@@ -25,6 +27,10 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 
 	public void language(Language language) {
 		this.language = language;
+	}
+
+	public void metamodel(Model metamodel) {
+		this.metamodel = metamodel;
 	}
 
 	public void onCheckId(Consumer<Boolean> listener) {
@@ -69,6 +75,8 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 		if (collectionSelector.selection().isEmpty()) { message.value(translate("Collection is required")); return false; }
 		CheckResult result = DisplayHelper.checkLanguageName(nameField.value(), this::translate);
 		if (!result.success()) { message.value(result.message()); return false; }
+		result = DisplayHelper.checkLanguageInUse(collectionSelector.selection().getFirst(), nameField.value(), this::translate, box());
+		if (!result.success()) { message.value(result.message()); return false; }
 		return true;
 	}
 
@@ -89,7 +97,7 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 	public void refresh() {
 		super.refresh();
 		refreshCollectionSelector();
-		nameField.value(language != null ? language.name() : null);
+		nameField.value(language != null ? language.name() : metamodelTitle());
 		nameField.readonly(language != null);
 		privateField.state(language == null || language.isPrivate() ? ToggleEvent.State.On : ToggleEvent.State.Off);
 		languageLogoDialog.language(language);
@@ -97,18 +105,27 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 		languageLogoDialog.languageNameProvider(e -> nameField.value());
 		languageLogoDialog.readonly(nameField.value() == null || nameField.value().isEmpty());
 		languageLogoDialog.refresh();
+		refreshState();
+		if (language == null && nameField.value() != null && !nameField.value().isEmpty()) languageLogoDialog.generateDefaultLogo();
+	}
+
+	private String metamodelTitle() {
+		String result = metamodel.title().contains(".") ? metamodel.title().substring(metamodel.title().lastIndexOf(".")+1) : metamodel.title();
+		return result.toLowerCase();
 	}
 
 	private void refreshState() {
 		boolean sameName = language == null || language.name().equals(nameField.value());
 		boolean validCollection = !collectionSelector.selection().isEmpty();
+		boolean sameCollection = language == null || (validCollection && language.collection().equals(collectionSelector.selection().getFirst()));
 		boolean validName = sameName && DisplayHelper.checkLanguageName(nameField.value(), this::translate).success() && (language != null || !collectionSelector.selection().isEmpty());
-		refreshMessage();
+		boolean inUse = isInUse();
+		refreshMessage(validCollection && (language == null || !sameCollection || !sameName));
 		if (!sameName) message.value(translate("DSL can't change its name once created"));
-		validNameIcon.visible(validName);
-		invalidNameIcon.visible(!validName);
+		validNameIcon.visible(!inUse && validName);
+		invalidNameIcon.visible(inUse || !validName);
 		languageLogoDialog.readonly(nameField.value() == null || nameField.value().isEmpty());
-		if (checkIdListener != null) checkIdListener.accept(validCollection && validName);
+		if (checkIdListener != null) checkIdListener.accept(!inUse);
 	}
 
 	private void changeId() {
@@ -117,12 +134,14 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 		refresh();
 	}
 
-	private void refreshMessage() {
+	private void refreshMessage(boolean checkInUse) {
 		message.value(null);
 		if (collectionSelector.selection().isEmpty()) { message.value("Collection is required"); return; }
 		if (nameField.value() == null || nameField.value().isEmpty()) return;
 		CheckResult result = DisplayHelper.checkLanguageName(nameField.value(), this::translate);
 		if (!result.success()) { message.value(result.message()); return; }
+		result = checkInUse ? DisplayHelper.checkLanguageInUse(collectionSelector.selection().getFirst(), nameField.value(), this::translate, box()) : new CheckResult(true, null);
+		if (!result.success()) { message.value(result.message()); }
 	}
 
 	private void updateLogo(File file) {
@@ -138,12 +157,29 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 	private void updateCollection(Collection collection) {
 		this.selectedCollection = collection.name();
 		refreshCollectionSelector();
+		refreshState();
 	}
 
 	private void updateCollection() {
-		if (language != null) change.launch();
+		boolean inUse = isInUse();
+		if (!sameLanguage() && !inUse && language != null) change.launch();
 		this.selectedCollection = !collectionSelector.selection().isEmpty() ? collectionSelector.selection().getFirst() : null;
 		refreshCollectionSelector();
+		refreshState();
+	}
+
+	private boolean sameLanguage() {
+		boolean sameName = language != null && language.name().equals(nameField.value());
+		boolean validCollection = !collectionSelector.selection().isEmpty();
+		boolean sameCollection = language != null && validCollection && language.collection().equals(collectionSelector.selection().getFirst());
+		return sameCollection && sameName;
+	}
+
+	private boolean isInUse() {
+		boolean sameName = language == null || language.name().equals(nameField.value());
+		boolean validCollection = !collectionSelector.selection().isEmpty();
+		boolean sameCollection = language == null || (validCollection && language.collection().equals(collectionSelector.selection().getFirst()));
+		return validCollection && (language == null || !sameCollection || !sameName) && !DisplayHelper.checkLanguageInUse(collectionSelector.selection().getFirst(), nameField.value(), this::translate, box()).success();
 	}
 
 	private void refreshCollectionSelector() {

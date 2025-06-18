@@ -44,6 +44,7 @@ public class CreateLanguageEditor extends AbstractCreateLanguageEditor<EditorBox
 	public void refresh() {
 		super.refresh();
 		metamodelTitle.value("Forge DSL");
+		editorStamp.metamodel(metamodel);
 		editorStamp.refresh();
 		editorStamp.focus();
 	}

@@ -174,7 +174,8 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 		notifyUser(translate("Removing language..."), UserMessage.Type.Loading);
 		box().commands(LanguageCommands.class).remove(language, username());
 		notifyUser(translate("Language removed"), UserMessage.Type.Success);
-		notifier.redirect();
+		Model model = box().modelManager().get(language.metamodel());
+		notifier.redirect(PathHelper.modelUrl(model, session()));
 	}
 
 }

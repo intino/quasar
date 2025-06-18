@@ -27,7 +27,7 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 	}
 
 	public enum Page {
-		Landing, About, Language, Model, Forge;
+		Landing, About, Collection, Language, Model, Forge;
 
 		public static Page from(String key) {
 			return Arrays.stream(values()).filter(v -> v.name().equalsIgnoreCase(key)).findFirst().orElse(null);
@@ -75,6 +75,12 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 		set((String) null, null, null);
 		openPage(Page.About);
 		if (aboutPage.aboutStamp != null) aboutPage.aboutStamp.open();
+	}
+
+	public void openCollection(String collection) {
+		openPage(Page.Collection);
+		if (collectionPage.collectionStamp == null) return;
+		collectionPage.collectionStamp.open(collection);
 	}
 
 	public void openLanguage(String language, String tab) {
@@ -138,6 +144,7 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 	private void hidePages() {
 		if (landingPage.isVisible()) landingPage.hide();
 		if (aboutPage.isVisible()) aboutPage.hide();
+		if (collectionPage.isVisible()) collectionPage.hide();
 		if (languagePage.isVisible()) languagePage.hide();
 		if (modelPage.isVisible()) modelPage.hide();
 		if (forgePage.isVisible()) forgePage.hide();
@@ -146,6 +153,7 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 	private BlockConditional<?, ?> blockOf(Page page) {
 		if (page == Page.Landing) return landingPage;
 		if (page == Page.About) return aboutPage;
+		if (page == Page.Collection) return collectionPage;
 		if (page == Page.Language) return languagePage;
 		if (page == Page.Model) return modelPage;
 		if (page == Page.Forge) return forgePage;

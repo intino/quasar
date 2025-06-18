@@ -22,6 +22,8 @@ import static java.util.stream.Collectors.toList;
 public class LanguagesDatasource extends PageDatasource<Language> {
 	protected final EditorBox box;
 	protected final UISession session;
+	private String condition;
+	private List<Filter> filters;
 
 	public LanguagesDatasource(EditorBox box, UISession session) {
 		this.box = box;
@@ -30,6 +32,7 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 
 	@Override
 	public List<Language> items(int start, int count, String condition, List<Filter> filters, List<String> sortings) {
+		saveParameters(condition, filters);
 		List<Language> result = sort(load(condition, filters), sortings);
 		int from = Math.min(start, result.size());
 		int end = Math.min(start + count, result.size());
@@ -39,6 +42,10 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 	@Override
 	public long itemCount(String condition, List<Filter> filters) {
 		return load(condition, filters).size();
+	}
+
+	public long itemCount() {
+		return itemCount(condition, filters);
 	}
 
 	@Override
@@ -86,6 +93,11 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 			if (compare == 0) return o1.name().compareTo(o2.name());
 			return compare;
 		};
+	}
+
+	private void saveParameters(String condition, List<Filter> filters) {
+		this.condition = condition;
+		this.filters = filters;
 	}
 
 }

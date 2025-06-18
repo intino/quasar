@@ -27,7 +27,7 @@ public class CreateLanguageCommand extends Command<Language> {
 	public Language execute() {
 		Language language = box.languageManager().create(collection, name, metamodel, level, "", "");
 		language.isPrivate(isPrivate);
-		metamodel.title(name.toUpperCase());
+		metamodel.title(Language.key(collection.name().toUpperCase(), name.toUpperCase()));
 		box.languageManager().saveLogo(language, logo(language));
 		return language;
 	}

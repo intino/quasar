@@ -121,12 +121,12 @@ Template modelEditor as Relative(height=100%, width=100%)
 							Block(layout=Horizontal Center) resources as Option > MaterialIcon(icon="AccountTreeOutlined", title="Resources", format=airRight); Text(value="Resources", translate=true)
 
 		Block(layout=Horizontal Flexible) modelEditionBlock as Resizable(minSize=4%)
-			Block(layout=Horizontal Flexible) as Relative(width=15%)
+			Block(layout=Horizontal Flexible) as Relative(width=14%)
 				Block(layout=Vertical Flexible, format=whiteBackground) browserBlock as Relative(width=100%, height=100%)
 					Block(layout=Vertical Flexible) modelBrowserBlock as Conditional(tabSelectorBlock.tabSelectorDrawer.views.mainView.tabSelector.model) Relative(height=100%, width=100%) > TemplateStamp(template=modelBrowserTemplate) modelBrowserStamp
 					Block(layout=Vertical Flexible) resourcesBrowserBlock as Conditional(tabSelectorBlock.tabSelectorDrawer.views.mainView.tabSelector.resources) Relative(height=100%, width=100%) > TemplateStamp(template=resourcesBrowserTemplate) resourcesBrowserStamp
 
-			Block(layout=Vertical Flexible) as Relative(width=55%)
+			Block(layout=Vertical Flexible) as Relative(width=50%)
 				Block(layout=Horizontal, format=leftBordered headerPanel greyLightBackground leftSpaced rightSpaced)
 					Block(layout=Horizontal Flexible)
 						Text(value="", format=h6, translate=true) filename
@@ -143,7 +143,7 @@ Template modelEditor as Relative(height=100%, width=100%)
 							DisplayStamp(display=intinoDslEditor, format=fullHeight) intinoDslEditor
 					Block(visible=false) consoleBlock as Relative(height=40%) > TemplateStamp(template=consoleTemplate) console
 
-			Block(layout=Vertical Flexible) as Relative(width=30%)
+			Block(layout=Vertical Flexible) as Relative(width=36%)
 				TemplateStamp(template=languageExplorer) languageExplorer
 
 	Dialog(title="File modified") fileModifiedDialog as Absolute(width=500px, height=180px)

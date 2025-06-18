@@ -35,10 +35,10 @@ public class LanguageToolbar extends AbstractLanguageToolbar<EditorBox> {
 	private void refreshAbout() {
 		aboutText.visible(tab == LanguageTab.About);
 		aboutLink.visible(tab != LanguageTab.About);
-		if (aboutText.isVisible()) aboutText.value(language.name());
+		if (aboutText.isVisible()) aboutText.value(translate("about"));
 		if (aboutLink.isVisible()) {
 			aboutLink.address(a -> PathHelper.languagePath(a, language, LanguageTab.About));
-			aboutLink.title(language.name());
+			aboutLink.title(translate("about"));
 		}
 	}
 

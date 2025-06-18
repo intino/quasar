@@ -2,10 +2,7 @@ package io.quassar.editor.box.util;
 
 import io.intino.alexandria.ui.services.push.UISession;
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.model.Collection;
-import io.quassar.editor.model.GavCoordinates;
-import io.quassar.editor.model.Language;
-import io.quassar.editor.model.Model;
+import io.quassar.editor.model.*;
 
 import java.util.List;
 
@@ -39,12 +36,21 @@ public class PermissionsHelper {
 		String username = session.user() != null ? session.user().username() : null;
 		String owner = box.languageManager().owner(language);
 		if (owner != null && owner.equals(username)) return true;
+		if (hasPermissions(box.collectionManager().get(language.collection()), session, box)) return true;
 		return !box.modelManager().models(language, username).isEmpty();
 	}
 
 	public static boolean hasPermissions(Collection collection, UISession session, EditorBox box) {
 		if (collection == null) return false;
-		return isOwnerOrCollaborator(collection, session, box);
+		if (isOwnerOrCollaborator(collection, session, box)) return true;
+		String username = session.user() != null ? session.user().username() : null;
+		if (username == null) return false;
+		return collection.anyLicense(username) != null;
+	}
+
+	public static boolean canRemove(Collection collection, UISession session, EditorBox box) {
+		if (!isOwnerOrCollaborator(collection, session, box)) return false;
+		return box.languageManager().languages(collection).isEmpty();
 	}
 
 	public static boolean canRemove(Model model, UISession session, EditorBox box) {
@@ -70,7 +76,10 @@ public class PermissionsHelper {
 	public static boolean canAddModel(Language language, UISession session, EditorBox box) {
 		if (session.user() == null) return false;
 		if (language.releases().isEmpty()) return false;
-		return box.languageManager().hasAccess(language, session.user().username());
+		if (box.languageManager().hasAccess(language, session.user().username())) return true;
+		Collection collection = box.collectionManager().get(language.collection());
+		if (!hasPermissions(collection, session, box)) return false;
+		return hasValidLicense(collection, session, box);
 	}
 
 	public static boolean canRemove(Language language, UISession session, EditorBox box) {
@@ -134,7 +143,20 @@ public class PermissionsHelper {
 	public static boolean canEdit(Model model, String release, UISession session, EditorBox box) {
 		if (!hasPermissions(model, session, box)) return false;
 		if (model.isExample()) return isOwnerOrCollaborator(model, session, box);
+		if (!hasValidLicense(model.language(), session, box)) return false;
 		return model.isDraft(release);
+	}
+
+	public static boolean hasValidLicense(Collection collection, UISession session, EditorBox box) {
+		String username = session.user() != null ? session.user().username() : null;
+		if (username == null) return false;
+		return collection.activeLicense(username) != null;
+	}
+
+	public static boolean hasValidLicense(GavCoordinates lang, UISession session, EditorBox box) {
+		Language language = box.languageManager().get(lang);
+		if (language.isFoundational()) return true;
+		return hasValidLicense(box.collectionManager().get(language.collection()), session, box);
 	}
 
 	public static boolean canEditSettings(Model model, String release, UISession session, EditorBox box) {
@@ -157,5 +179,21 @@ public class PermissionsHelper {
 
 	public static boolean canEditTitle(Model model, EditorBox box) {
 		return !model.isTemplate() && box.languageManager().getWithMetamodel(model) == null;
+	}
+
+	public static boolean canInvite(Collection collection, UISession session, EditorBox box) {
+		return collection.collaborators().size() < Integer.parseInt(box.configuration().collectionCollaboratorsCount());
+	}
+
+	public static boolean hasCredit(String username, int monthsCount, EditorBox box) {
+		return UserHelper.licenseTime(username, box) >= monthsCount;
+	}
+
+	public static boolean hasCredit(int monthsCount, UISession session, EditorBox box) {
+		return hasCredit(session.user() != null ? session.user().username() : null, monthsCount, box);
+	}
+
+	public static boolean canAddLicenses(Collection collection, UISession session, EditorBox box) {
+		return collection.subscriptionPlan() == Collection.SubscriptionPlan.Professional;
 	}
 }

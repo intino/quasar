@@ -59,7 +59,7 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 		startModelingLogin.visible(user() == null);
 		startModeling.visible(user() != null);
 		if (startModeling.isVisible()) startModeling.address(path -> PathHelper.landingPath(path, LandingDialog.StartModeling));
-		Language language = box().languageManager().get(Language.Metta);
+		Language language = box().languageManager().get(Language.key(Language.QuassarCollection, Language.Metta));
 		List<Model> models = box().modelManager().models(language);
 		startBuilding.address(path -> PathHelper.languagePath(path, language, LanguageTab.Examples));
 		startBuilding.visible(user() != null);
@@ -102,7 +102,7 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 	}
 
 	private void startBuilding() {
-		startBuilding(box().languageManager().get(Language.key(Language.QuassarCollection, Language.Metta)));
+		startBuilding(box().languageManager().get(Language.key(Language.QuassarGroup, Language.Metta)));
 	}
 
 	private void startBuilding(Language language) {

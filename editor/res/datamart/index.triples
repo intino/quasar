@@ -1,4 +1,4 @@
-metta.dsl	collection	tara.dsl
+metta.dsl	collection	quassar
 metta.dsl	name	metta
 metta.dsl	level	L3
 metta.dsl	title	A meta DSLs for defining domain metamodels and generating custom DSLs

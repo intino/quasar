@@ -7,7 +7,7 @@ use Theme
 
 Template(layout=Horizontal Center, format=subHeaderStyle) languageHeaderTemplate
 	Block(layout=Horizontal Flexible)
-		Text(format=bold, visible=false) title
+		Text(format=bold h5, visible=false) title
 		Block(layout=Horizontal, visible=false) notLoggedBlock
 			Text(value="You are not logged in. Please log in to access available models.", format=h5 textCentered greyColor, translate=true)
 	Block(layout=Horizontal Center EndJustified)
@@ -65,6 +65,26 @@ Template languagesLandingTemplate as Relative(height=100%, width=100%)
 								Link(title="", format=h4 lowerCase, visible=false) nameSelector as Action
 								Text(format=h6 bold) title
 								Text(cropWithEllipsis=350Chars) description
+
+Template languagesCollectionTemplate as Relative(height=100%, width=100%)
+
+	Block(layout=Horizontal Center)
+		Text(visible=false, format=middleAirTop middleAirBottom) searchBox as Editable(placeholder="Search...")
+
+	Text(value="There are no DSLs assigned to this collection", visible=false) noItemsMessage
+
+	Block(layout=Vertical Flexible) bodyBlock as Relative(width=100%) AutoSize
+		Block(layout=Vertical Flexible Center) contentBlock as Relative(width=100%)
+			Magazine(itemClass="io.quassar.editor.model.Language", pageSize=20) languagesCollectionCatalog
+				noItemsMessage = ""
+				Mold
+					Item(height=10px, format=relative) languageCollectionItem
+						Link(title="&nbsp;", format=fullSpaceLink) logoLink as Action Addressable(EditorElements.language)
+						Block(layout=Horizontal Flexible, format=middleTopSpaced middleBottomSpaced)
+							Block(layout=Vertical Center, format=relative)
+								Image(colorInvertedWithDarkMode=true) logo as Absolute(width=20px)
+							Block(layout=Vertical Flexible, format=collectionItemLink)
+								Link(title="", format=h4 lowerCase) name as Action Addressable(EditorElements.language)
 
 Template languageTemplate as Relative(height=100%, width=100%, offsetHeight=2px)
 	TemplateStamp(template=languageHeaderTemplate, visible=false) headerStamp

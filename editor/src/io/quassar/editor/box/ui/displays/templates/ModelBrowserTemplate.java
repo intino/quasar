@@ -236,7 +236,6 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 	}
 
 	private String withExtension(String name) {
-		if (file != null && file.isDirectory()) return name;
 		String extension = Language.FileExtension;
 		return name.endsWith(extension) ? name : name + extension;
 	}

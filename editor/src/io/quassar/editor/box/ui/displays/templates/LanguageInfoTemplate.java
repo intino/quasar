@@ -1,5 +1,6 @@
 package io.quassar.editor.box.ui.displays.templates;
 
+import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.displays.events.SelectionEvent;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.LanguageCommands;
@@ -38,6 +39,7 @@ public class LanguageInfoTemplate extends AbstractLanguageInfoTemplate<EditorBox
 	public void refresh() {
 		super.refresh();
 		editorStamp.language(language);
+		editorStamp.metamodel(box().modelManager().get(language.metamodel()));
 		editorStamp.refresh();
 		refreshProperties();
 	}
@@ -49,6 +51,10 @@ public class LanguageInfoTemplate extends AbstractLanguageInfoTemplate<EditorBox
 	}
 
 	private void rename(String newName) {
+		if (box().languageManager().exists(Language.collectionFrom(newName), Language.nameFrom(newName))) {
+			notifyUser("Could not rename language. Already exists a language in selected collection", UserMessage.Type.Error);
+			return;
+		}
 		box().commands(LanguageCommands.class).rename(language, newName, username());
 	}
 
