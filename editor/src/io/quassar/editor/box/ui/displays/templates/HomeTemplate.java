@@ -9,10 +9,7 @@ import io.quassar.editor.box.commands.UserCommands;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.PermissionsHelper;
-import io.quassar.editor.model.GavCoordinates;
-import io.quassar.editor.model.Language;
-import io.quassar.editor.model.LanguageRelease;
-import io.quassar.editor.model.Model;
+import io.quassar.editor.model.*;
 
 import java.util.Arrays;
 
@@ -27,7 +24,7 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 	}
 
 	public enum Page {
-		Landing, About, Language, Model, Forge;
+		Landing, About, Collection, Language, Model, Forge;
 
 		public static Page from(String key) {
 			return Arrays.stream(values()).filter(v -> v.name().equalsIgnoreCase(key)).findFirst().orElse(null);
@@ -47,6 +44,11 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 			notifier.redirect(PathHelper.languageUrl(languageId, session()));
 			return;
 		}
+		if (!PermissionsHelper.isEnterprise(language, session(), box())) {
+			Logger.warn("You don't hava an enterprise subscription for language %s".formatted(language.name()));
+			notifier.redirect(PathHelper.loginUrl(session()));
+			return;
+		}
 		if (!PermissionsHelper.canAddModel(language, session(), box())) {
 			session().add("callback", session().browser().requestUrl());
 			notifier.redirect(PathHelper.loginUrl(session()));
@@ -57,7 +59,7 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 			Logger.warn("Trying to create model from language " + language.name() + " with no releases");
 			return;
 		}
-		Model model = box().commands(ModelCommands.class).create(name, name, "", new GavCoordinates(language.group(), language.name(), language.lastRelease().version()), username(), username());
+		Model model = box().commands(ModelCommands.class).create(name, name, "", new GavCoordinates(language.collection(), language.name(), language.lastRelease().version()), username(), username());
 		notifier.redirect(PathHelper.modelUrl(model, session()));
 	}
 
@@ -75,6 +77,12 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 		set((String) null, null, null);
 		openPage(Page.About);
 		if (aboutPage.aboutStamp != null) aboutPage.aboutStamp.open();
+	}
+
+	public void openCollection(String collection) {
+		openPage(Page.Collection);
+		if (collectionPage.collectionStamp == null) return;
+		collectionPage.collectionStamp.open(collection);
 	}
 
 	public void openLanguage(String language, String tab) {
@@ -138,6 +146,7 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 	private void hidePages() {
 		if (landingPage.isVisible()) landingPage.hide();
 		if (aboutPage.isVisible()) aboutPage.hide();
+		if (collectionPage.isVisible()) collectionPage.hide();
 		if (languagePage.isVisible()) languagePage.hide();
 		if (modelPage.isVisible()) modelPage.hide();
 		if (forgePage.isVisible()) forgePage.hide();
@@ -146,6 +155,7 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 	private BlockConditional<?, ?> blockOf(Page page) {
 		if (page == Page.Landing) return landingPage;
 		if (page == Page.About) return aboutPage;
+		if (page == Page.Collection) return collectionPage;
 		if (page == Page.Language) return languagePage;
 		if (page == Page.Model) return modelPage;
 		if (page == Page.Forge) return forgePage;

@@ -155,22 +155,76 @@ Template(layout=Horizontal Center, format=tag) tagEditor
 Template(layout=Vertical) createLanguageEditor
 	Block(format=whiteBackground bordered doubleSpaced)
 		Text(format=h4) metamodelTitle
-		Text(value="There is no DSL associated with this model. Please specify the name you want to assign to it.", format=description doubleAirBottom)
+		Text(value="You are about to create a new DSL associated with %s. To ensure uniqueness and proper organization, please provide the following details.", format=description doubleAirBottom)
 		TemplateStamp(template=languageEditor) editorStamp
 	Block(layout=Horizontal StartJustified, format=airTop)
 		Block(layout=Horizontal EndJustified) > Button(title="Create", highlight=Fill) create as Action Readonly
 
-Template(layout=Horizontal) languageEditor as Relative(width=100%, height=100%)
-	Block(layout=Vertical Flexible, format=doubleAirRight airTop)
-		Text(value="DSL", translate=true, format=h5 middleAirBottom)
-		Block(format=relative)
-			Text(format=dslFieldInput, mode=Lowercase) idField as Editable
-			MaterialIcon(icon="Check", color="green", format=veryLargeIconSize rightIconField, visible=false) validIdIcon
-			MaterialIcon(icon="Clear", color="red", format=veryLargeIconSize rightIconField, visible=false) invalidIdIcon
-		Link(title="Change", visible=false) changeId as Action Readonly Signed(signText="The DSL name is about to be changed. This operation will affect all generated models. To confirm, please re-enter the new DSL name.", mode=SimplePassword)
-	Block(format=doubleAirLeft relative) as Absolute(width=170px)
-		Image logoField as Editable Absolute(height=150px, width=150px)
-		Link(title="Generate", format=languageEditorLogoStyle) generateLogo as Action Readonly
+Template languageEditor as Relative(width=100%, height=100%)
+	Link(title=" ") change as Action Affirmed("The DSL properties is about to be changed. This operation will affect all generated models.")
+
+	Block(layout=Horizontal Center)
+		Block(layout=Horizontal)
+			Block(layout=Vertical, format=doubleAirRight airTop)
+				Text(value="Collection", translate=true, format=h5 airRight)
+				Block(layout=Horizontal Center)
+					Block as Absolute(width=300px) > Selector(format=dslFieldInput) collectionSelector as ComboBox(placeholder="Select collection")
+					MaterialIconButton(title="Help", icon="Help") as OpenPopover(popover=collectionPopover, triggerEvent=MouseOver)
+					Block(format=doubleSpaced) collectionPopover as Popover Absolute(width=300px)
+						Text(value="The collection acts as a namespace for your DSLs. It prevents naming conflicts between users and helps organize DSLs by ownership.")
+				Block(format=smallAirTop) > TemplateStamp(template=createCollectionDialog) createCollectionDialog
+
+			Block(layout=Vertical, format=doubleAirRight airTop)
+				Text(value="Name", translate=true, format=h5 middleAirBottom)
+				Block(layout=Horizontal)
+					Block(format=relative)
+						Text(format=dslFieldInput, mode=Lowercase) nameField as Editable Readonly
+						MaterialIcon(icon="Check", color="green", format=veryLargeIconSize rightIconField, visible=false) validNameIcon
+						MaterialIcon(icon="Clear", color="red", format=veryLargeIconSize rightIconField, visible=false) invalidNameIcon
+					MaterialIconButton(title="Help", icon="Help") as OpenPopover(popover=namePopover, triggerEvent=MouseOver)
+					Block(format=doubleSpaced) namePopover as Popover Absolute(width=300px)
+						Text(value="The name identifies your DSL within the selected domain. It must be unique inside that domain.")
+
+			Block(layout=Vertical, format=doubleAirRight airTop)
+				Text(value="Private", translate=true, format=h5 middleAirBottom)
+				Block(layout=Horizontal)
+					Switch(title="") privateField
+					MaterialIconButton(title="Help", icon="Help") as OpenPopover(popover=privatePopover, triggerEvent=MouseOver)
+					Block(format=doubleSpaced) privatePopover as Popover Absolute(width=300px)
+						Text(value="Only users with access to selected collection can use this DSL.")
+
+		Block(layout=Vertical, format=doubleAirRight airTop)
+			TemplateStamp(template=languageLogoDialog) languageLogoDialog
+
+	Block(format=airTop doubleAirBottom)
+		Text(format=redColor) message
+
+Template(layout=Horizontal Center) languageLogoDialog
+	Image(format=forgeLogoStyle airRight, colorInvertedWithDarkMode=true) logo as Absolute(width=50px, height=50px)
+	Link(title="change") openDialogTrigger as OpenDialog(dialog) Readonly
+
+	Dialog(title="Change logo") dialog as Absolute(width=800px, height=500px)
+        Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
+        	Block(layout=Horizontal CenterCenter, format=airBottom airLeft)
+        		Image(format=forgeLogoStyle airRight, colorInvertedWithDarkMode=true) logoPreview as Absolute(width=50px, height=50px)
+        		Text languageId
+        	Block(layout=Horizontal, format=doubleAirTop)
+        		Block(layout=Vertical CenterCenter, format=rightBordered) as Relative(width=50%)
+					Block as Absolute(height=165px)
+						Image(format=forgeLogoStyle, colorInvertedWithDarkMode=true) logoField as Editable Absolute(width=150px, height=150px)
+					Text(value="Upload an image in PNG format", translate=true)
+					Text(value="Transparent background", translate=true)
+					Text(value="Black foreground elements only", translate=true)
+					Text(value="Recommended size: 100x100 pixels", translate=true)
+					Text(value="Square and centered for best display", translate=true)
+        		Block(layout=Vertical CenterCenter, format=doubleLeftSpaced doubleRightSpaced) as Relative(width=50%)
+        			Block as Absolute(height=98px)
+						Button(title="generate", format=blockGenerateLogoAction) generateLogo as Action
+					Text(value="Automatically create an icon matching the DSL name and domain style", format=airTop, translate=true)
+		Divider
+        Block(layout=Horizontal EndJustified)
+        	Button(title="Cancel", size=Small, format=airRight) as CloseDialog(dialog)
+        	Button(title="Change", size=Small, highlight=Fill) changeLogo as Action
 
 Template(layout=Horizontal) languageExecutionLauncher
 	Link(title=" ") siteLauncher as OpenSite(site=empty, target=Blank)
@@ -186,6 +240,19 @@ Template(layout=Horizontal) languageExecutionLauncher
         Block(layout=Horizontal EndJustified)
         	Button(title="Close", size=Small) as CloseDialog(localDialog)
 
+Template createCollectionDialog as Relative(width=100%)
+	Link(title="Create new") as OpenDialog(dialog)
+
+	Dialog(title="Create collection") dialog as Absolute(width=400px, height=200px)
+        Block(format=overflowAuto relative) as Relative(height=100%, offsetHeight=40px)
+			Text(format=dslFieldInput, mode=Lowercase) nameField as Editable
+			MaterialIcon(icon="Check", color="green", format=veryLargeIconSize rightIconField, visible=false) validIcon
+			MaterialIcon(icon="Clear", color="red", format=veryLargeIconSize rightIconField, visible=false) invalidIcon
+		Divider
+        Block(layout=Horizontal EndJustified)
+        	Button(title="Close", size=Small, format=airRight) as CloseDialog(dialog)
+        	Button(title="Create", size=Small, highlight=Fill) create as Action
+
 Template(layout=Horizontal Center, format=autoHeight) modelsDialog as Relative(width=100%)
 	Button(title="New", size=Small, highlight=Outline, visible=false) addModelTrigger as Action
 	Block(layout=Horizontal Center Flexible, visible=false) catalogOperations
@@ -195,3 +262,37 @@ Template(layout=Horizontal Center, format=autoHeight) modelsDialog as Relative(w
 			Link(title="last modified", visible=false) lastModifiedLink
 			Text(value="last modified", visible=false) lastModifiedText
 		Block > SearchBox(collections=empty) searchBox
+
+	TemplateStamp(template=licenseDialog) licenseDialog
+
+Template addLicenseEditor
+	Text licenseField as Editable(placeholder="Paste license here")
+
+	Dialog(title="License error") failureDialog
+        Block(format=overflowAuto relative) as Relative(height=100%, offsetHeight=40px)
+        	Text(value="Failure! The license code is invalid or has already been used", format=airBottom) failureMessage
+		Divider
+        Block(layout=Horizontal EndJustified)
+        	Button(title="Close", size=Small, highlight=Fill) as CloseDialog(failureDialog)
+
+Template licenseDialog
+
+	Dialog(title="License required") dialog
+        Block(format=overflowAuto relative) as Relative(height=100%, offsetHeight=40px)
+        	Block(format=doubleAirBottom) > Text message
+		Divider
+        Block(layout=Horizontal EndJustified)
+        	Button(title="Close", size=Small, format=airRight) as CloseDialog(dialog)
+        	Button(title="Renew", size=Small, highlight=Fill, visible=false) renew as Action
+
+	TemplateStamp(template=renewLicenseDialog) renewDialog
+
+Template renewLicenseDialog
+
+	Dialog(title="renew license") dialog
+        Block(format=overflowAuto relative) as Relative(height=100%, offsetHeight=40px)
+        	Block(format=doubleAirBottom) > Text message
+		Divider
+        Block(layout=Horizontal EndJustified)
+        	Button(title="Cancel", size=Small, format=airRight) as CloseDialog(dialog)
+        	Button(title="Rewew", size=Small, highlight=Fill) renew as Action Affirmed("Confirm license renewal to continue") Readonly

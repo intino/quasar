@@ -36,7 +36,7 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 	private Consumer<File> changeListener;
 	private Consumer<File> removeListener;
 
-	private enum Operation { CopyFile, AddFile, AddFolder, EditFilename }
+	private enum Operation {CopyFile, AddFile, AddFolder, EditFilename}
 
 	public ModelBrowserTemplate(EditorBox box) {
 		super(box);
@@ -134,10 +134,10 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 	private List<IntinoFileBrowserOperation> operations() {
 		if (model == null) return Collections.emptyList();
 		return List.of(
-			new IntinoFileBrowserOperation().name("Add model file...").shortcut(new IntinoFileBrowserOperationShortcut().ctrlKey(true).key("N")).enabled(PermissionsHelper.canEdit(model, release, session(), box())),
-			new IntinoFileBrowserOperation().name("Add folder...").shortcut(new IntinoFileBrowserOperationShortcut().shiftKey(true).ctrlKey(true).key("N")).enabled(PermissionsHelper.canEdit(model, release, session(), box())),
-			new IntinoFileBrowserOperation().name("Rename...").shortcut(new IntinoFileBrowserOperationShortcut().ctrlKey(true).key("R")).enabled(file != null && PermissionsHelper.canEdit(model, release, session(), box())),
-			new IntinoFileBrowserOperation().name("Remove").shortcut(new IntinoFileBrowserOperationShortcut().ctrlKey(true).key("Backspace")).enabled(file != null && PermissionsHelper.canEdit(model, release, session(), box()))
+				new IntinoFileBrowserOperation().name("Add model file...").shortcut(new IntinoFileBrowserOperationShortcut().ctrlKey(true).key("N")).enabled(PermissionsHelper.canEdit(model, release, session(), box())),
+				new IntinoFileBrowserOperation().name("Add folder...").shortcut(new IntinoFileBrowserOperationShortcut().shiftKey(true).ctrlKey(true).key("N")).enabled(PermissionsHelper.canEdit(model, release, session(), box())),
+				new IntinoFileBrowserOperation().name("Rename...").shortcut(new IntinoFileBrowserOperationShortcut().ctrlKey(true).key("R")).enabled(file != null && PermissionsHelper.canEdit(model, release, session(), box())),
+				new IntinoFileBrowserOperation().name("Remove").shortcut(new IntinoFileBrowserOperationShortcut().ctrlKey(true).key("Backspace")).enabled(file != null && PermissionsHelper.canEdit(model, release, session(), box()))
 		);
 	}
 
@@ -184,13 +184,14 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 		try {
 			Resource value = event.value();
 			if (value == null) return;
-			if (ModelHelper.isZip(value.name())) box().commands(ModelCommands.class).addZip(model, ModelView.Model, value.stream(), file, username());
-			else changeListener.accept(box().commands(ModelCommands.class).createFile(model, withExtension(value.name()), value.stream(), file, username()));
+			if (ModelHelper.isZip(value.name()))
+				box().commands(ModelCommands.class).addZip(model, ModelView.Model, value.stream(), file, username());
+			else
+				changeListener.accept(box().commands(ModelCommands.class).createFile(model, withExtension(value.name()), value.stream(), file, username()));
 			refresh();
 		} catch (IOException e) {
 			Logger.error(e);
-		}
-		finally {
+		} finally {
 			addFileField.value((URL) null);
 		}
 	}
@@ -204,7 +205,7 @@ public class ModelBrowserTemplate extends AbstractModelBrowserTemplate<EditorBox
 	}
 
 	private void rename() {
-		changeListener.accept(box().commands(ModelCommands.class).rename(model, withExtension(fileField.value() ), file, username()));
+		changeListener.accept(box().commands(ModelCommands.class).rename(model, withExtension(fileField.value()), file, username()));
 	}
 
 	private void addFolder() {

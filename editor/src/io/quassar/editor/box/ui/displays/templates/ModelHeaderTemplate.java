@@ -119,14 +119,14 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	}
 
 	private void refreshLanguageTrigger(Language language) {
-		languageTrigger.visible(language != null && !model.isTemplate() && !PathHelper.comesFromForge(session()));
+		languageTrigger.visible(language != null && !model.isTemplate() && !model.isExample()/* && !PathHelper.comesFromForge(session())*/);
 		if (!languageTrigger.isVisible() || language == null) return;
 		languageTrigger.title(translate("Goto %s").formatted(LanguageHelper.title(model.language())));
 		languageTrigger.address(path -> PathHelper.languagePath(path, language));
 	}
 
 	private void refreshCloseTrigger(Language language) {
-		closeTrigger.visible(language != null && model.isTemplate() || PathHelper.comesFromForge(session()));
+		closeTrigger.visible(language != null && (model.isTemplate() || model.isExample())/* && PathHelper.comesFromForge(session())*/);
 		if (!closeTrigger.isVisible()) return;
 		closeTrigger.title(translate(model.isTemplate() ? "Template" : "Example"));
 	}
@@ -134,14 +134,15 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	private void refreshToolbar() {
 		Language language = box().languageManager().get(model);
 		Language forgedLanguage = box().languageManager().getWithMetamodel(model);
-		settingsTrigger.visible(PermissionsHelper.canEditSettings(model, release, session(), box()));
+		boolean hasValidLicense = PermissionsHelper.hasValidLicense(model.language(), session(), box());
+		settingsTrigger.visible(PermissionsHelper.canEditSettings(model, release, session(), box()) && hasValidLicense);
 		editTrigger.highlight(step == Step.Edit ? Actionable.Highlight.Fill : Actionable.Highlight.Outline);
-		editTrigger.visible(!model.isTemplate() && !model.isExample());
+		editTrigger.visible(!model.isTemplate() && !model.isExample() && hasValidLicense);
 		checkTrigger.readonly(!PermissionsHelper.canCheck(model, release, session(), box()));
-		checkTrigger.visible(PermissionsHelper.isOwnerOrCollaborator(model, session(), box()));
+		checkTrigger.visible(PermissionsHelper.isOwnerOrCollaborator(model, session(), box()) && hasValidLicense);
 		checkTrigger.highlight(step == Step.Check && !model.isTemplate() && !model.isExample() ? Actionable.Highlight.Fill : Actionable.Highlight.Outline);
 		checkTrigger.title(model.isTemplate() || model.isExample() ? translate("Check") : translate("2. Check"));
-		commitTrigger.visible(!model.isTemplate() && !model.isExample());
+		commitTrigger.visible(!model.isTemplate() && !model.isExample() && hasValidLicense);
 		commitTrigger.readonly(step == Step.Edit || !PermissionsHelper.canCommit(model, release, session(), box()));
 		commitTrigger.highlight(step == Step.Commit ? Actionable.Highlight.Fill : Actionable.Highlight.Outline);
 		forgeTrigger.visible(!model.isTemplate() && release != null && model.language().artifactId().equals(Language.Metta));

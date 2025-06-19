@@ -18,6 +18,7 @@ public class CommandsFactory {
 
 	private void buildCommands() {
 		builder.put(ModelCommands.class, ModelCommands::new);
+		builder.put(CollectionCommands.class, CollectionCommands::new);
 		builder.put(LanguageCommands.class, LanguageCommands::new);
 		builder.put(UserCommands.class, UserCommands::new);
 	}

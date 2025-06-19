@@ -49,7 +49,7 @@ public class CreateLanguageReleaseCommand extends Command<CommandResult> {
 	private BuildResult build(Model metamodel) {
 		File destination = null;
 		try {
-			BuildResult result = new ModelBuilder(metamodel, new GavCoordinates(language.group(), language.name(), version), box).build(author);
+			BuildResult result = new ModelBuilder(metamodel, Model.DraftRelease, new GavCoordinates(language.collection(), language.name(), version), box).build(author);
 			if (!result.success()) return result;
 			Resource resource = result.zipArtifacts();
 			destination = box.archetype().tmp().builds(UUID.randomUUID().toString());

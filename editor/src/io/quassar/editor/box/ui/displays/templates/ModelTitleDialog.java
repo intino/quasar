@@ -4,6 +4,7 @@ import io.intino.alexandria.ui.displays.UserMessage;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.util.DisplayHelper;
+import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.model.Model;
 
 import java.util.List;
@@ -49,7 +50,7 @@ public class ModelTitleDialog extends AbstractModelTitleDialog<EditorBox> {
 	}
 
 	private void refreshDialog() {
-		typeSelector.visible(!model.isExample());
+		typeSelector.visible(!model.isExample() && ModelHelper.isM1(model));
 		if (!typeSelector.isVisible()) {
 			simpleTitleBlock.show();
 			return;

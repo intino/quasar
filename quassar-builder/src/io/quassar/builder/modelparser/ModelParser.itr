@@ -53,7 +53,7 @@ rule type(modelparser)
 		}
 
     	public static $outDsl+firstUpperCase~Graph load(List<File> $outDsl~Files) {
-    		io.intino.magritte.io.model.Stash[] stashes = new StashBuilder($outDsl~Files, "$outDslCoors", "accessor", System.out).build();
+    		io.intino.magritte.io.model.Stash[] stashes = new StashBuilder($outDsl~Files, "$outDslCoors", "parser", java.io.PrintStream.nullOutputStream()).build();
     		return stashes == null ? null: $outDsl+firstUpperCase~Graph.load(stashes);
     	}
 

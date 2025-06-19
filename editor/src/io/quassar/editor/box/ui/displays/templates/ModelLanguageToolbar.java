@@ -60,10 +60,10 @@ public class ModelLanguageToolbar extends AbstractModelLanguageToolbar<EditorBox
 	private void refreshAbout(Language language) {
 		aboutText.visible(tab == LanguageTab.About);
 		aboutLink.visible(tab != LanguageTab.About);
-		if (aboutText.isVisible()) aboutText.value(model.language().artifactId());
+		if (aboutText.isVisible()) aboutText.value(translate("about"));
 		if (aboutLink.isVisible()) {
 			aboutLink.address(a -> PathHelper.modelPath(a, model, release, LanguageTab.About, view, file, filePosition));
-			aboutLink.title(model.language().artifactId());
+			aboutLink.title(translate("about"));
 		}
 	}
 

@@ -92,7 +92,10 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
             wordBasedSuggestions: 'off',
             theme: "vs-dark",
             readOnly: this.state.info.readonly,
-            domReadOnly: this.state.info.readonly
+            domReadOnly: this.state.info.readonly,
+            insertSpaces: false, tabSize: 4,
+            scrollBeyondLastLine: false,
+            detectIndentation: false,
         });
         this.editor.addCommand(CtrlCmd | KeyS, this.handleSave.bind(this));
         this.editor.onDidChangeCursorPosition(e => refreshFooter(e));
@@ -136,7 +139,7 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
         const handleChange = this.handleChange.bind(this);
         const model = monaco.editor.createModel(file.content, file.language.toLowerCase(), monaco.Uri.parse(file.uri));
         model.onDidChangeContent(event => handleChange(file, this.editor.getValue()));
-        model.updateOptions({ insertSpaces: false, tabSize: 4 });
+        //model.updateOptions({ insertSpaces: false, tabSize: 4 });
         this.editor.setModel(model);
         window.setTimeout(e => this.editor.focus(), 10);
     };

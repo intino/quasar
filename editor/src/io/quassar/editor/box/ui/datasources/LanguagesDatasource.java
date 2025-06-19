@@ -6,9 +6,11 @@ import io.intino.alexandria.ui.model.datasource.PageDatasource;
 import io.intino.alexandria.ui.services.push.UISession;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.languages.LanguageManager;
+import io.quassar.editor.box.models.ModelManager;
 import io.quassar.editor.box.ui.types.LanguagesTab;
 import io.quassar.editor.box.util.DatasourceHelper;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.Model;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,6 +22,8 @@ import static java.util.stream.Collectors.toList;
 public class LanguagesDatasource extends PageDatasource<Language> {
 	protected final EditorBox box;
 	protected final UISession session;
+	private String condition;
+	private List<Filter> filters;
 
 	public LanguagesDatasource(EditorBox box, UISession session) {
 		this.box = box;
@@ -28,6 +32,7 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 
 	@Override
 	public List<Language> items(int start, int count, String condition, List<Filter> filters, List<String> sortings) {
+		saveParameters(condition, filters);
 		List<Language> result = sort(load(condition, filters), sortings);
 		int from = Math.min(start, result.size());
 		int end = Math.min(start + count, result.size());
@@ -37,6 +42,10 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 	@Override
 	public long itemCount(String condition, List<Filter> filters) {
 		return load(condition, filters).size();
+	}
+
+	public long itemCount() {
+		return itemCount(condition, filters);
 	}
 
 	@Override
@@ -72,7 +81,23 @@ public class LanguagesDatasource extends PageDatasource<Language> {
 	}
 
 	private List<Language> sort(List<Language> languages, List<String> sortings) {
-		return languages.stream().sorted(Comparator.comparing(Language::name)).toList();
+		return languages.stream().sorted(comparator()).toList();
+	}
+
+	private Comparator<Language> comparator() {
+		ModelManager modelManager = box.modelManager();
+		return (o1, o2) -> {
+			List<Model> models1 = modelManager.models(o1, username());
+			List<Model> models2 = modelManager.models(o2, username());
+			int compare = Long.compare(models2.size(), models1.size());
+			if (compare == 0) return o1.name().compareTo(o2.name());
+			return compare;
+		};
+	}
+
+	private void saveParameters(String condition, List<Filter> filters) {
+		this.condition = condition;
+		this.filters = filters;
 	}
 
 }

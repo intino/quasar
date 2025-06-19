@@ -109,7 +109,8 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<EditorBox> 
 	}
 
 	private void refreshCollaboratorsBlock() {
-		collaboratorsStamp.model(model);
+		collaboratorsStamp.owner(model.owner());
+		collaboratorsStamp.collaborators(model.collaborators());
 		collaboratorsStamp.refresh();
 	}
 

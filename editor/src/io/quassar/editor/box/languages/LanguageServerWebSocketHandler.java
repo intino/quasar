@@ -50,6 +50,7 @@ public class LanguageServerWebSocketHandler implements AlexandriaWebSocket {
 				server.connect(serverLauncher.getRemoteProxy());
 				serverLauncher.startListening();
 			}
+		} catch (IOException ignored) {
 		} catch (Exception e) {
 			Logger.error(e);
 		}
@@ -93,6 +94,9 @@ public class LanguageServerWebSocketHandler implements AlexandriaWebSocket {
 
 	private void notificationThread(Session session) {
 		try {
+			if (!session.isOpen()) return;
+			if (!serverInputMap.containsKey(session)) return;
+			if (serverInputMap.get(session).available() < 0) return;
 			int bytesRead;
 			byte[] buffer = new byte[8096];
 			while ((bytesRead = serverInputMap.get(session).read(buffer)) != -1) {
@@ -103,8 +107,7 @@ public class LanguageServerWebSocketHandler implements AlexandriaWebSocket {
 					session.getRemote().sendString(message.trim());
 				}
 			}
-		} catch (IOException ignored) {
-		} catch (Throwable e) {
+		} catch (IOException e) {
 			Logger.error(e);
 		}
 	}

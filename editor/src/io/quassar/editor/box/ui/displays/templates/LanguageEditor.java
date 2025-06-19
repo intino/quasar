@@ -1,25 +1,25 @@
 package io.quassar.editor.box.ui.displays.templates;
 
-import io.intino.alexandria.Resource;
-import io.intino.alexandria.logger.Logger;
-import io.intino.alexandria.ui.displays.events.ChangeEvent;
+import io.intino.alexandria.ui.displays.events.actionable.ToggleEvent;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.commands.LanguageCommands;
 import io.quassar.editor.box.util.DisplayHelper;
-import io.quassar.editor.box.util.LanguageHelper;
+import io.quassar.editor.box.util.DisplayHelper.CheckResult;
+import io.quassar.editor.model.Collection;
 import io.quassar.editor.model.Language;
-import org.jetbrains.annotations.NotNull;
+import io.quassar.editor.model.Model;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 	private Language language;
-	private boolean logoExists;
+	private Model metamodel;
 	private Consumer<Boolean> checkIdListener;
 	private Consumer<String> changeIdListener;
 	private Consumer<File> changeLogoListener;
+	private String selectedCollection = null;
 
 	public LanguageEditor(EditorBox box) {
 		super(box);
@@ -27,6 +27,11 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 
 	public void language(Language language) {
 		this.language = language;
+		this.selectedCollection = null;
+	}
+
+	public void metamodel(Model metamodel) {
+		this.metamodel = metamodel;
 	}
 
 	public void onCheckId(Consumer<Boolean> listener) {
@@ -41,90 +46,156 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 		this.changeLogoListener = listener;
 	}
 
-	public String languageId() {
-		return idField.value();
+	public String languageCollection() {
+		return collectionSelector.selection().getFirst();
+	}
+
+	public Collection collection() {
+		List<String> selection = collectionSelector.selection();
+		return !selection.isEmpty() ? box().collectionManager().get(selection.getFirst()) : null;
+	}
+
+	public String languageName() {
+		return nameField.value();
+	}
+
+	public boolean isPrivate() {
+		return privateField.state() == ToggleEvent.State.On;
 	}
 
 	public File logo() {
-		if (!logoExists) return null;
-		File tmpFile = new File(box().archetype().tmp().root(), id() + "-logo.png");
-		return tmpFile.exists() ? tmpFile : (language != null ? box().languageManager().loadLogo(language) : null);
+		return languageLogoDialog.logo();
 	}
 
 	public void focus() {
-		idField.focus();
+		nameField.focus();
 	}
 
 	public boolean check() {
-		return DisplayHelper.checkLanguageId(idField, this::translate, box()) && DisplayHelper.checkLanguageInUse(idField, this::translate, box());
+		message.value(null);
+		if (collectionSelector.selection().isEmpty()) { message.value(translate("Collection is required")); return false; }
+		CheckResult result = DisplayHelper.checkLanguageName(nameField.value(), this::translate);
+		if (!result.success()) { message.value(result.message()); return false; }
+		result = DisplayHelper.checkLanguageInUse(collectionSelector.selection().getFirst(), nameField.value(), this::translate, box());
+		if (!result.success()) { message.value(result.message()); return false; }
+		return true;
 	}
 
 	@Override
 	public void init() {
 		super.init();
-		idField.onEnterPress(e -> changeName());
-		idField.onChange(e -> refreshState());
-		changeId.onExecute(e -> changeName());
-		changeId.signChecker((sign, reason) -> sign.equals(idField.value()));
-		logoField.onChange(this::updateLogo);
-		generateLogo.onExecute(e -> generateLogo());
+		createCollectionDialog.onCreate(this::updateCollection);
+		nameField.onEnterPress(e -> changeId());
+		nameField.onChange(e -> refreshState());
+		change.onCancelAffirmed(e -> collectionSelector.selection(language.collection()));
+		change.onExecute(e -> changeId());
+		languageLogoDialog.onChangeLogo(this::updateLogo);
+		collectionSelector.onSelect(e -> updateCollection());
+		privateField.onToggle(e -> updateAccess());
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
-		File logo = language != null ? box().languageManager().loadLogo(language) : null;
-		logoExists = logo != null && logo.exists();
-		idField.value(language != null ? language.key() : null);
-		logoField.value(logoExists ? logo : null);
-		changeId.visible(language != null);
-		generateLogo.readonly(language == null);
-		if (changeId.isVisible()) changeId.readonly(true);
+		refreshCollectionSelector();
+		nameField.value(language != null ? language.name() : metamodelTitle());
+		nameField.readonly(language != null);
+		privateField.state(language == null || language.isPrivate() ? ToggleEvent.State.On : ToggleEvent.State.Off);
+		languageLogoDialog.language(language);
+		languageLogoDialog.languageIdProvider(e -> languageId());
+		languageLogoDialog.languageNameProvider(e -> nameField.value());
+		languageLogoDialog.readonly(nameField.value() == null || nameField.value().isEmpty());
+		languageLogoDialog.refresh();
+		refreshState();
+		if (language == null && nameField.value() != null && !nameField.value().isEmpty()) languageLogoDialog.generateDefaultLogo();
+	}
+
+	private String metamodelTitle() {
+		String result = metamodel.title().contains(".") ? metamodel.title().substring(metamodel.title().lastIndexOf(".")+1) : metamodel.title();
+		return result.toLowerCase();
 	}
 
 	private void refreshState() {
-		boolean sameName = language == null || Language.nameFrom(idField.value()).equals(language.name());
-		boolean valid = sameName && DisplayHelper.checkLanguageId(idField, this::translate, box()) && (language != null || DisplayHelper.checkLanguageInUse(idField, this::translate, box()));
-		if (!sameName) idField.error(translate("DSL can't change its name part (%s) once created").formatted(language.name()));
-		boolean emptyId = idField.value() == null || idField.value().isEmpty();
-		validIdIcon.visible(valid && !emptyId);
-		invalidIdIcon.visible(!valid && !emptyId);
-		generateLogo.readonly(emptyId);
-		changeId.readonly(!valid);
-		if (checkIdListener != null) checkIdListener.accept(valid);
+		boolean sameName = language == null || language.name().equals(nameField.value());
+		boolean validCollection = !collectionSelector.selection().isEmpty();
+		boolean sameCollection = language == null || (validCollection && language.collection().equals(collectionSelector.selection().getFirst()));
+		boolean validName = sameName && DisplayHelper.checkLanguageName(nameField.value(), this::translate).success() && (language != null || !collectionSelector.selection().isEmpty());
+		boolean inUse = isInUse();
+		refreshMessage(validCollection && (language == null || !sameCollection || !sameName));
+		if (!sameName) message.value(translate("DSL can't change its name once created"));
+		validNameIcon.visible(!inUse && validName);
+		invalidNameIcon.visible(inUse || !validName);
+		languageLogoDialog.readonly(nameField.value() == null || nameField.value().isEmpty());
+		if (checkIdListener != null) checkIdListener.accept(!inUse);
 	}
 
-	private void generateLogo() {
-		File destiny = logoFile();
-		if (destiny.exists()) destiny.delete();
-		LanguageHelper.generateLogo(Language.nameFrom(idField.value()), destiny);
-		if (changeLogoListener != null) changeLogoListener.accept(destiny);
-		logoField.value(language != null ? box().languageManager().loadLogo(language) : destiny);
-	}
-
-	private void updateLogo(ChangeEvent event) {
-		try {
-			File tmpFile = logoFile();
-			if (tmpFile.exists()) tmpFile.delete();
-			Resource value = event.value();
-			logoExists = value != null;
-			if (value != null) Files.write(tmpFile.toPath(), value.bytes());
-			if (changeLogoListener != null) changeLogoListener.accept(value != null ? logo() : null);
-			logoField.value(value != null ? (language != null ? box().languageManager().loadLogo(language) : tmpFile) : null);
-		} catch (IOException e) {
-			Logger.error(e);
-		}
-	}
-
-	@NotNull
-	private File logoFile() {
-		return new File(box().archetype().tmp().root(), id() + "-logo.png");
-	}
-
-	private void changeName() {
+	private void changeId() {
 		if (changeIdListener == null) return;
-		changeIdListener.accept(idField.value());
+		changeIdListener.accept(languageId());
 		refresh();
+	}
+
+	private void refreshMessage(boolean checkInUse) {
+		message.value(null);
+		if (collectionSelector.selection().isEmpty()) { message.value("Collection is required"); return; }
+		if (nameField.value() == null || nameField.value().isEmpty()) return;
+		CheckResult result = DisplayHelper.checkLanguageName(nameField.value(), this::translate);
+		if (!result.success()) { message.value(result.message()); return; }
+		result = checkInUse ? DisplayHelper.checkLanguageInUse(collectionSelector.selection().getFirst(), nameField.value(), this::translate, box()) : new CheckResult(true, null);
+		if (!result.success()) { message.value(result.message()); }
+	}
+
+	private void updateLogo(File file) {
+		if (changeLogoListener != null) changeLogoListener.accept(file);
+	}
+
+	private String languageId() {
+		String collection = collectionSelector.selection().getFirst();
+		if (collection == null) return null;
+		return Language.key(collection, nameField.value());
+	}
+
+	private void updateCollection(Collection collection) {
+		this.selectedCollection = collection.name();
+		refreshCollectionSelector();
+		refreshState();
+	}
+
+	private void updateCollection() {
+		boolean inUse = isInUse();
+		if (!sameLanguage() && !inUse && language != null) change.launch();
+		this.selectedCollection = !collectionSelector.selection().isEmpty() ? collectionSelector.selection().getFirst() : null;
+		refreshCollectionSelector();
+		refreshState();
+	}
+
+	private boolean sameLanguage() {
+		boolean sameName = language != null && language.name().equals(nameField.value());
+		boolean validCollection = !collectionSelector.selection().isEmpty();
+		boolean sameCollection = language != null && validCollection && language.collection().equals(collectionSelector.selection().getFirst());
+		return sameCollection && sameName;
+	}
+
+	private boolean isInUse() {
+		boolean sameName = language == null || language.name().equals(nameField.value());
+		boolean validCollection = !collectionSelector.selection().isEmpty();
+		boolean sameCollection = language == null || (validCollection && language.collection().equals(collectionSelector.selection().getFirst()));
+		return validCollection && (language == null || !sameCollection || !sameName) && !DisplayHelper.checkLanguageInUse(collectionSelector.selection().getFirst(), nameField.value(), this::translate, box()).success();
+	}
+
+	private void refreshCollectionSelector() {
+		List<String> options = box().collectionManager().collections(username()).stream().map(Collection::name).toList();
+		collectionSelector.clear();
+		collectionSelector.addAll(options);
+		if (selectedCollection != null) collectionSelector.selection(selectedCollection);
+		else if (language != null) collectionSelector.selection(language.collection());
+		else if (!options.isEmpty()) collectionSelector.selection(options.getFirst());
+	}
+
+	private void updateAccess() {
+		if (language == null) return;
+		if (privateField.state() == ToggleEvent.State.On) box().commands(LanguageCommands.class).makePrivate(language, username());
+		else box().commands(LanguageCommands.class).makePublic(language, username());
 	}
 
 }

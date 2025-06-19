@@ -10,7 +10,7 @@ public record GavCoordinates(String groupId, String artifactId, String version) 
 	}
 
 	public static GavCoordinates fromString(Language language, LanguageRelease release) {
-		return new GavCoordinates(language.group(), language.name(), release.version());
+		return new GavCoordinates(language.collection(), language.name(), release.version());
 	}
 
 	public boolean isEmpty() {
@@ -18,11 +18,11 @@ public record GavCoordinates(String groupId, String artifactId, String version) 
 	}
 
 	public String languageId() {
-		return Language.key(groupId, artifactId);
+		return Language.key(groupId.replace(Language.QuassarGroup + ".", ""), artifactId);
 	}
 
 	public boolean matches(Language language) {
-		return language.group().equals(groupId) && language.name().equals(artifactId);
+		return language.collection().equals(groupId) && language.name().equals(artifactId);
 	}
 
 	@Override

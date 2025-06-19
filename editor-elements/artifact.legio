@@ -1,9 +1,9 @@
 dsl Legio
 
-Artifact(groupId = "io.quassar", version = "1.0.46") editor-elements
+Artifact(groupId = "io.quassar", version = "1.1.0") editor-elements
 
 	WebImports
-		WebArtifact("io.intino.alexandria", "ui-framework-elements", "6.5.19") alexandria-ui-elements
+		WebArtifact("io.intino.alexandria", "ui-framework-elements", "6.6.2") alexandria-ui-elements
 		WebComponent("react-complex-tree", "^2.4.4")
 		WebComponent("@react-oauth/google", "^0.12.2")
 		WebComponent("react-simple-wysiwyg", "^3.2.2")

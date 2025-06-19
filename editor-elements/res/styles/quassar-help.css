@@ -22,7 +22,7 @@
 
 .help div, .help a, .help p, .help dl, .help dt, .help dd,
 .rsw-editor div, .rsw-editor a, .rsw-editor p, .rsw-editor dl, .rsw-editor dt, .rsw-editor dd {
-    font-size: 1rem;
+    font-size: 10pt;
 }
 
 .help .main-content, .rsw-editor .main-content {
@@ -39,20 +39,48 @@
 }
 
 .help h1, .rsw-editor h1 {
-  font-size: 2.5rem;
+  font-size: 32pt;
   margin-top: 0;
   margin-bottom: 1.2rem;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 .help h2, .rsw-editor h2 {
-  font-size: 2rem;
+  font-size: 20pt;
   margin-bottom: 1rem;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .help h3, .rsw-editor h3 {
-  font-size: 1.5rem;
+  font-size: 15pt;
+}
+
+.help h4, .rsw-editor h4 {
+  font-size: 14pt;
+  font-weight: bold;
+}
+
+.help h5, .rsw-editor h5 {
+  font-size: 12pt;
+}
+
+.help h6, .rsw-editor h6 {
+  font-size: 12pt;
+  line-height: 17pt;
+}
+
+.help h6, .rsw-editor h6 {
+  font-size: 11pt;
+  line-height: 17pt;
+}
+
+.help .tip, .rsw-editor .tip {
+  font-size: 10pt;
+  color: #555;
+}
+
+.dark .help .tip, .rsw-editor.dark .tip {
+  color: #aaa;
 }
 
 .help h3.concept-title, .rsw-editor h3.concept-title {
@@ -88,7 +116,7 @@ background-color: #2d2d2d;
 
 .help li, .rsw-editor li {
   margin-bottom: 0.5rem;
-  font-size: 1rem;
+  font-size: 10pt;
 }
 
 .help table, .rsw-editor table {
@@ -159,7 +187,7 @@ background-color: #2d2d2d;
 
 .help pre.syntax-block code, .rsw-editor pre.syntax-block code {
   background-color: #eff;
-  font-size: 0.75rem !important;
+  font-size: 10pt !important;
 }
 
 .dark .help pre.syntax-block code, .rsw-editor.dark pre.syntax-block code {

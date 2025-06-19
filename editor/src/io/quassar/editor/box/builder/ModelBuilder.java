@@ -39,13 +39,13 @@ public class ModelBuilder {
 	private static final String CheckOperation = "Check";
 	private static final String BuildOperation = "Build";
 
-	public ModelBuilder(Model model, GavCoordinates destination, EditorBox box) throws IOException {
+	public ModelBuilder(Model model, String release, GavCoordinates destination, EditorBox box) throws IOException {
 		this.model = model;
 		this.destination = destination;
 		this.language = box.languageManager().get(model.language());
 		this.languagePath = box.languageManager().loadDsl(model.language());
 		this.quassarBuilder = box.configuration().quassarBuilder();
-		this.manager = new FileDocumentManager(box.modelManager().workspace(model, Model.DraftRelease).root());
+		this.manager = new FileDocumentManager(box.modelManager().workspace(model, release).root());
 		this.accessor = box.builderAccessor();
 	}
 
@@ -113,12 +113,12 @@ public class ModelBuilder {
 	private RunOperationContext context(String builder) {
 		return new RunOperationContext()
 				.imageURL(builder)
-				.generationPackage(destination.groupId() + "." + Formatters.normalizeLanguageName(destination.artifactId()).toLowerCase())
-				.languageGroup(language.group())
+				.generationPackage(Language.QuassarGroup + "." + destination.groupId() + "." + Formatters.normalizeLanguageName(destination.artifactId()).toLowerCase())
+				.languageGroup(language.isFoundational() ? Language.TaraGroup : Language.QuassarGroup + "." + language.collection())
 				.languageName(Formatters.normalizeLanguageName(language.name()))
 				.languageVersion(model.language().version())
 				.languagePath(languagePath.getAbsolutePath())
-				.projectGroup(destination.groupId())
+				.projectGroup(Language.QuassarGroup + "." + destination.groupId())
 				.projectName(Formatters.normalizeLanguageName(destination.artifactId()))
 				.projectVersion(destination.version());
 	}

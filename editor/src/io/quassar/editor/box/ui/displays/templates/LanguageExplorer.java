@@ -6,6 +6,7 @@ import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.PermissionsHelper;
+import io.quassar.editor.box.util.SessionHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
 
@@ -36,7 +37,7 @@ public class LanguageExplorer extends AbstractLanguageExplorer<EditorBox> {
 	}
 
 	public void release(String release) {
-		this.refreshRequired = refreshRequired || !release.equals(this.release);
+		this.refreshRequired = refreshRequired || release == null || !release.equals(this.release);
 		this.release = release;
 	}
 
@@ -68,11 +69,11 @@ public class LanguageExplorer extends AbstractLanguageExplorer<EditorBox> {
 	public void refresh() {
 		super.refresh();
 		if (!refreshRequired) return;
+		expanded = SessionHelper.isRightPanelExpanded(session());
 		refreshRequired = false;
 		refreshSimpleTitle();
 		refreshReleaseTitle();
-		if (!expanded) expand();
-		else refreshBlocks();
+		refreshBlocks();
 	}
 
 	private void initToolbar() {
@@ -84,13 +85,13 @@ public class LanguageExplorer extends AbstractLanguageExplorer<EditorBox> {
 	private void refreshSimpleTitle() {
 		simpleTitle.visible(tab == LanguageTab.About);
 		if (!simpleTitle.isVisible()) return;
-		title.value(translate(LanguageHelper.title(tab)).formatted(language.key().toLowerCase(), release));
+		title.value(translate(LanguageHelper.title(tab)).formatted(language.name().toLowerCase(), release, release != null ? release : ""));
 	}
 
 	private void refreshReleaseTitle() {
 		releaseTitle.visible(tab != LanguageTab.About);
 		if (!releaseTitle.isVisible()) return;
-		titlePrefix.value(translate(LanguageHelper.title(tab)).formatted(language.key().toLowerCase(), release));
+		titlePrefix.value(translate(LanguageHelper.title(tab)).formatted(language.name().toLowerCase(), release != null ? release : ""));
 		refreshReleaseSelector();
 	}
 

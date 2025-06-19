@@ -47,7 +47,7 @@ public class HeaderTemplate extends AbstractHeaderTemplate<EditorBox> {
 	}
 
 	private void refreshUser() {
-		//userLinksSelector.hide(myProjectsOption);
+		userHomeStamp.refresh();
 	}
 
 }
