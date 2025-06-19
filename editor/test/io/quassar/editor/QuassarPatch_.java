@@ -24,25 +24,43 @@ import java.util.*;
 
 public class QuassarPatch_ {
 
-	private static final Map<String, Set<String>> Collections = new HashMap<>() {{
+	private static final Map<String, Set<String>> CollectionsPro = new HashMap<>() {{
 		put("monentia", Set.of("picota", "anaga"));
 		put("monet", Set.of("visora", "garaxia", "woven", "orfeo"));
 		put("misc", Set.of("xxx", "yyy", "uuu"));
 		put("ulpgc", Set.of("flogo"));
 	}};
 
-	private static final Map<String, String> CollectionOwners = new HashMap<>() {{
+	private static final Map<String, Set<String>> Collections = new HashMap<>() {{
+		put("monentia", Set.of("picota"));
+		put("monet", Set.of("visora", "garaxia", "woven"));
+		put("misc", Set.of("exampledsl"));
+	}};
+
+	private static final Map<String, String> CollectionOwnersPro = new HashMap<>() {{
 		put("monentia", "josejuanhernandez@gmail.com");
 		put("monet", "josejuanhernandez@gmail.com");
 		put("misc", "josejuanhernandez@gmail.com");
 		put("ulpgc", "josejuanhernandez@gmail.com");
 	}};
 
-	private static final Map<String, List<String>> CollectionCollaborators = new HashMap<>() {{
+	private static final Map<String, String> CollectionOwners = new HashMap<>() {{
+		put("monentia", "mcaballero");
+		put("monet", "mcaballero");
+		put("misc", "mcaballero");
+	}};
+
+	private static final Map<String, List<String>> CollectionCollaboratorsPro = new HashMap<>() {{
 		put("monentia", List.of("mcaballero@gmail.com", "octavioroncal11@gmail.com", "naitsirc98@gmail.com"));
 		put("monet", List.of("mcaballero@gmail.com"));
 		put("misc", List.of("mcaballero@gmail.com", "octavioroncal11@gmail.com"));
 		put("ulpgc", List.of("mcaballero@gmail.com"));
+	}};
+
+	private static final Map<String, List<String>> CollectionCollaborators = new HashMap<>() {{
+		put("monentia", List.of("oroncal"));
+		put("monet", List.of("oroncal"));
+		put("misc", List.of("oroncal"));
 	}};
 
 	public static void main(String[] args) throws IOException {
