@@ -39,13 +39,13 @@ public class ModelBuilder {
 	private static final String CheckOperation = "Check";
 	private static final String BuildOperation = "Build";
 
-	public ModelBuilder(Model model, GavCoordinates destination, EditorBox box) throws IOException {
+	public ModelBuilder(Model model, String release, GavCoordinates destination, EditorBox box) throws IOException {
 		this.model = model;
 		this.destination = destination;
 		this.language = box.languageManager().get(model.language());
 		this.languagePath = box.languageManager().loadDsl(model.language());
 		this.quassarBuilder = box.configuration().quassarBuilder();
-		this.manager = new FileDocumentManager(box.modelManager().workspace(model, Model.DraftRelease).root());
+		this.manager = new FileDocumentManager(box.modelManager().workspace(model, release).root());
 		this.accessor = box.builderAccessor();
 	}
 

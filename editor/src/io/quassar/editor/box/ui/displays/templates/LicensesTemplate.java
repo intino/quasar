@@ -11,6 +11,7 @@ import io.intino.alexandria.ui.model.datasource.grid.GridValue;
 import io.quassar.editor.box.commands.CollectionCommands;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.ui.datasources.LicensesDatasource;
+import io.quassar.editor.box.util.Formatters;
 import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.box.util.UserHelper;
 import io.quassar.editor.model.Collection;
@@ -75,8 +76,9 @@ public class LicensesTemplate extends AbstractLicensesTemplate<EditorBox> {
 
 	private void refreshLicensesDialog() {
 		int licenseTime = UserHelper.licenseTime(session(), box());
-		message.value(translate("You have %s months of license time available").formatted(licenseTime));
-		hint.value(translate("This can be used as one %s-month license or split into multiple shorter licenses (e.g., %s one-month licenses).").formatted(licenseTime, licenseTime));
+		String licenseTimeFormatted = Formatters.formattedNumber(licenseTime, language());
+		message.value(translate("You have %s months of license time available").formatted(licenseTimeFormatted));
+		hint.value(translate("This can be used as one %s-month license or split into multiple shorter licenses (e.g., %s one-month licenses).").formatted(licenseTimeFormatted, licenseTimeFormatted));
 	}
 
 	private void addLicenses() {

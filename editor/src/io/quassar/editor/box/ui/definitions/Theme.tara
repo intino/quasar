@@ -330,7 +330,7 @@ Format("color:'#294575',fontSize:'22pt',marginLeft:'11px',marginTop:'-8px'", dar
 Format("minWidth:'300px'") minResizablePanelWidth
 Format("height:'48px',borderBottom:'1px solid #efefef',width:'100%'") languageExplorerHeader
 Format("height:'calc(100vh - 140px)'") collapsedBlockLink
-Format("position:'absolute',left:'0',top:'0',background:'#e2effb',zIndex:'1',margin:'7px 33%',padding:'10px 20px',borderRadius:'6px',border:'1px solid #3376ff'") banner
+Format("position:'absolute',left:'0',top:'0',background:'#e2effb',zIndex:'1',margin:'7px 33%',padding:'10px 20px',borderRadius:'6px',border:'1px solid #3376ff'", darkContent="backgroundColor:'black'") banner
 Format("position:'absolute',top:'0',right:'0'") releaseRemoveLinkBlock
 Format("color:'black',zIndex:'100',position:'absolute',right:'0'", darkContent="color:'white'") releaseRemoveLink
 Format("marginLeft:'10px',marginTop:'-3px'") collectionItemLink

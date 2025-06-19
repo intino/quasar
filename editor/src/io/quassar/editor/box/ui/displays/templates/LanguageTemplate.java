@@ -97,6 +97,9 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 	}
 
 	private void refreshMainBlock() {
+		licenseExpiredBanner.language(language);
+		licenseExpiredBanner.hint("This language is read-only. Editing is disabled");
+		licenseExpiredBanner.refresh();
 		refreshViews(true);
 		refreshModels();
 	}

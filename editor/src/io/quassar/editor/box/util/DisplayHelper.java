@@ -9,6 +9,7 @@ import io.intino.alexandria.ui.services.push.User;
 import io.intino.builderservice.schemas.Message;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.builder.CheckResult;
+import io.quassar.editor.model.License;
 
 import java.io.*;
 import java.util.function.Function;
@@ -83,6 +84,13 @@ public class DisplayHelper {
 				return content;
 			}
 		};
+	}
+
+	public static String expirationInfo(License license, Function<String, String> translator, String language) {
+		if (license == null) return translator.apply("a valid license is required");
+		if (license.expireDate() == null) return translator.apply("perpetual license");
+		if (license.isExpired()) return translator.apply("expired since %s").formatted(Formatters.date(license.expireDate(), language, translator));
+		return translator.apply("valid until %s").formatted(Formatters.date(license.expireDate(), language, translator));
 	}
 
 }

@@ -1,6 +1,7 @@
 package io.quassar.editor.box.ui.displays.templates;
 
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.util.Formatters;
 import io.quassar.editor.box.util.UserHelper;
 import io.quassar.editor.model.Collection;
 import io.quassar.editor.model.License;
@@ -8,8 +9,6 @@ import io.quassar.editor.model.License;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static org.apache.commons.lang3.BooleanUtils.forEach;
 
 public class UserHomeTemplate extends AbstractUserHomeTemplate<EditorBox> {
 
@@ -21,12 +20,12 @@ public class UserHomeTemplate extends AbstractUserHomeTemplate<EditorBox> {
 	public void init() {
 		super.init();
 		addLicenseEditor.onAdd(e -> refreshLicenses());
+		renewLicenseDialog.onRenew(e -> refreshLicenses());
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
-		licenseTimeMessage.value(translate("You have %s months of license time available").formatted(UserHelper.licenseTime(session(), box())));
 		refreshLicenses();
 		refreshCollections();
 	}
@@ -58,7 +57,8 @@ public class UserHomeTemplate extends AbstractUserHomeTemplate<EditorBox> {
 	}
 
 	private void openRenewDialog(License license) {
-		voy por aqui
+		renewLicenseDialog.license(license);
+		renewLicenseDialog.open();
 	}
 
 }

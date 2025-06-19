@@ -1,7 +1,9 @@
 package io.quassar.editor.box.ui.displays.templates;
 
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.Formatters;
+import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.License;
 
 import java.util.Set;
@@ -34,13 +36,8 @@ public class LicenseItemTemplate extends AbstractLicenseItemTemplate<EditorBox> 
 		super.refresh();
 		bullet.formats(Set.of(license.isExpired() ? "inactiveBullet" : "activeBullet"));
 		title.value(license.code() + " - " + license.collection().name());
-		renew.visible(license.isExpired());
-		expirationInfo.value(expirationInfo());
+		renew.visible(PermissionsHelper.canRenew(license, session(), box()));
+		expirationInfo.value(DisplayHelper.expirationInfo(license, this::translate, language()));
 	}
 
-	private String expirationInfo() {
-		if (license.expireDate() == null) return translate("perpetual license");
-		if (license.isExpired()) return translate("expired since %s").formatted(Formatters.date(license.expireDate(), language(), this::translate));
-		return translate("valid until %s").formatted(Formatters.date(license.expireDate(), language(), this::translate));
-	}
 }

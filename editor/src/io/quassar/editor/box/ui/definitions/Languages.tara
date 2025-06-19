@@ -87,6 +87,7 @@ Template languagesCollectionTemplate as Relative(height=100%, width=100%)
 								Link(title="", format=h4 lowerCase) name as Action Addressable(EditorElements.language)
 
 Template languageTemplate as Relative(height=100%, width=100%, offsetHeight=2px)
+	TemplateStamp(template=licenseExpiredBanner) licenseExpiredBanner
 	TemplateStamp(template=languageHeaderTemplate, visible=false) headerStamp
 
 	Block(layout=Vertical Flexible, format=whiteBackground) bodyBlock as Relative(width=100%)

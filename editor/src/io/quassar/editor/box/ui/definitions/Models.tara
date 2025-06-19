@@ -79,6 +79,7 @@ Template modelsTemplate as Relative(height=100%, width=100%)
 				TemplateStamp(template=modelViewer) embeddedModelPreview
 
 Template modelTemplate as Relative(height=100%, width=100%)
+	TemplateStamp(template=licenseExpiredBanner) licenseExpiredBanner
 
 	Block(layout=Horizontal, visible=false, format=banner) languageChangedBlock
 		Text(value="The DSL associated with this model has changed. Please reload this model to check if it remains compatible.", format=airRight)
@@ -133,6 +134,7 @@ Template modelEditor as Relative(height=100%, width=100%)
 						Block(layout=Horizontal, visible=false, format=airLeft) fileModifiedMessage > Text(value="modified", translate=true, format=airRight redColor bold)
 						Block(layout=Horizontal, visible=false, format=airLeft) fileSavedMessage > Text(value="saved", translate=true, format=airRight greenColor bold)
 					Block(layout=Horizontal EndJustified)
+						Button(title="shortcuts") as OpenDialog(dialog=editorHelpDialog)
 				Block(layout=Vertical Flexible) as Resizable Relative(height=100%)
 					Block(layout=Vertical Flexible) as Relative(height=60%)
 						Block(layout=Vertical Flexible CenterCenter, format=whiteBackground) fileNotSelectedBlock
@@ -163,6 +165,13 @@ Template modelEditor as Relative(height=100%, width=100%)
 		Divider
 		Block(layout=Horizontal EndJustified)
 			Button(title="Close", size=Small, highlight=Fill) as CloseDialog(helpDialog)
+
+	Dialog(title="Shortcuts") editorHelpDialog as Relative(width=60%, height=80%)
+        Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
+        	DisplayStamp(display=editorHelpDisplay, format=fullHeight) editorHelpStamp
+		Divider
+		Block(layout=Horizontal EndJustified)
+			Button(title="Close", size=Small, highlight=Fill) as CloseDialog(editorHelpDialog)
 
 	Dialog(title="Model settings") settingsDialog as Relative(width=60%, height=80%)
         Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
@@ -336,3 +345,5 @@ Template(layout=Horizontal Center, format=middleAirBottom) consoleEntryTemplate
 	Text(format=airRight) location
 	Text content
 
+Display editorHelpDisplay
+	Notification refresh

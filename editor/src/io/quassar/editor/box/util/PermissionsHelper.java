@@ -33,10 +33,9 @@ public class PermissionsHelper {
 		if (language == null) return false;
 		if (language.isPublic()) return true;
 		if (language.isFoundational()) return true;
-		String username = session.user() != null ? session.user().username() : null;
-		String owner = box.languageManager().owner(language);
-		if (owner != null && owner.equals(username)) return true;
+		if (isOwnerOrCollaborator(language, session, box)) return true;
 		if (hasPermissions(box.collectionManager().get(language.collection()), session, box)) return true;
+		String username = session.user() != null ? session.user().username() : null;
 		return !box.modelManager().models(language, username).isEmpty();
 	}
 
@@ -78,8 +77,7 @@ public class PermissionsHelper {
 		if (language.releases().isEmpty()) return false;
 		if (box.languageManager().hasAccess(language, session.user().username())) return true;
 		Collection collection = box.collectionManager().get(language.collection());
-		if (!hasPermissions(collection, session, box)) return false;
-		return hasValidLicense(collection, session, box);
+		return hasPermissions(collection, session, box);
 	}
 
 	public static boolean canRemove(Language language, UISession session, EditorBox box) {
@@ -134,6 +132,13 @@ public class PermissionsHelper {
 		return metamodel != null && isOwnerOrCollaborator(metamodel, session, box);
 	}
 
+	public static boolean isOwnerOrCollaborator(Language language, UISession session, EditorBox box) {
+		String username = session.user() != null ? session.user().username() : null;
+		String owner = box.languageManager().owner(language);
+		if (owner != null && owner.equals(username)) return true;
+		return isOwnerOrCollaborator(box.modelManager().get(language.metamodel()), session, box);
+	}
+
 	public static boolean isOwnerOrCollaborator(Collection collection, UISession session, EditorBox box) {
 		String username = session.user() != null ? session.user().username() : null;
 		if (collection.owner() != null && collection.owner().equals(username)) return true;
@@ -150,13 +155,17 @@ public class PermissionsHelper {
 	public static boolean hasValidLicense(Collection collection, UISession session, EditorBox box) {
 		String username = session.user() != null ? session.user().username() : null;
 		if (username == null) return false;
+		if (isOwnerOrCollaborator(collection, session, box)) return true;
 		return collection.activeLicense(username) != null;
 	}
 
-	public static boolean hasValidLicense(GavCoordinates lang, UISession session, EditorBox box) {
-		Language language = box.languageManager().get(lang);
+	public static boolean hasValidLicense(Language language, UISession session, EditorBox box) {
 		if (language.isFoundational()) return true;
 		return hasValidLicense(box.collectionManager().get(language.collection()), session, box);
+	}
+
+	public static boolean hasValidLicense(GavCoordinates language, UISession session, EditorBox box) {
+		return hasValidLicense(box.languageManager().get(language), session, box);
 	}
 
 	public static boolean canEditSettings(Model model, String release, UISession session, EditorBox box) {
@@ -185,15 +194,25 @@ public class PermissionsHelper {
 		return collection.collaborators().size() < Integer.parseInt(box.configuration().collectionCollaboratorsCount());
 	}
 
-	public static boolean hasCredit(String username, int monthsCount, EditorBox box) {
+	public static boolean hasCredit(int monthsCount, String username, EditorBox box) {
 		return UserHelper.licenseTime(username, box) >= monthsCount;
 	}
 
 	public static boolean hasCredit(int monthsCount, UISession session, EditorBox box) {
-		return hasCredit(session.user() != null ? session.user().username() : null, monthsCount, box);
+		return hasCredit(monthsCount, session.user() != null ? session.user().username() : null, box);
 	}
 
 	public static boolean canAddLicenses(Collection collection, UISession session, EditorBox box) {
 		return collection.subscriptionPlan() == Collection.SubscriptionPlan.Professional;
+	}
+
+	public static boolean canRenew(License license, UISession session, EditorBox box) {
+		return license.isExpired();
+	}
+
+	public static boolean isEnterprise(Language language, UISession session, EditorBox box) {
+		if (language.isFoundational()) return true;
+		Collection collection = box.collectionManager().get(language.collection());
+		return collection.subscriptionPlan() == Collection.SubscriptionPlan.Enterprise;
 	}
 }

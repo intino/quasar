@@ -61,16 +61,17 @@ Template(layout=Horizontal Center, format=headerStyle) headerTemplate
 Template userHomeTemplate
 
 	Block(format=doubleAirBottom)
-		Text(value="My licenses", translate=true, format=h5)
-		Text(format=middleAirBottom bold) licenseTimeMessage
-		TemplateStamp(template=licenseItemTemplate) licenses as Multiple(noItemsMessage="No licenses are currently assigned to you")
-		Block(format=middleAirTop) > TemplateStamp(template=addLicenseEditor) addLicenseEditor
+		Text(value="My licenses", translate=true, format=h5 smallAirBottom)
+		TemplateStamp(template=licenseItemTemplate) licenses as Multiple(noItemsMessage="You currently have no licenses")
+		Block > TemplateStamp(template=addLicenseEditor) addLicenseEditor
 
 	Block(format=doubleAirBottom, visible=false) myCollectionsBlock
 		Text(value="My collections", translate=true, format=h5)
 		TemplateStamp(template=collectionItemTemplate) collections as Multiple(noItemsMessage="You are not currently managing any collections")
 
-Template(format=middleAirTop middleAirBottom greyLightBackground middleSpaced middleRounded) licenseItemTemplate
+	TemplateStamp(template=renewLicenseDialog) renewLicenseDialog
+
+Template(format=middleAirBottom greyLightBackground middleSpaced middleRounded) licenseItemTemplate
 	Block(layout=Horizontal Center) as HoverContainer
 		Block(layout=Vertical Flexible)
 			Block(layout=Horizontal) > Text(value=" ") bullet; Text title
@@ -111,6 +112,16 @@ Template(layout=Vertical Flexible, format=radialBackground) loginTemplate as Rel
 Template(layout=Horizontal Flexible Center) loginSelectorOption
 	Block(layout=Vertical Flexible) > Text username
 	Block(layout=Horizontal EndJustified) > MaterialIconButton(title="Remove", icon="Clear", size=Small) removeUser as Action
+
+Template(layout=Vertical) licenseExpiredBanner
+	Block(visible=false, format=banner) content
+		Block(layout=Vertical Flexible)
+			Block(layout=Horizontal) > Text(value=" ") bullet; Text title
+			Text(format=greyColor) expirationInfo
+			Text(format=airRight) expirationMessage
+		Block(layout=Horizontal, format=middleAirTop) > Button(title="Renew", size=Small, highlight=Outline) renewLicense as Action
+
+	TemplateStamp(template=renewLicenseDialog) renewLicenseDialog
 
 Display googleLoginDisplay
 	Notification refresh as Text

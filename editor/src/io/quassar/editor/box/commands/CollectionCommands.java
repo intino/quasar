@@ -33,6 +33,13 @@ public class CollectionCommands extends Commands {
 		return command.execute();
 	}
 
+	public RenewLicenseCommand.RenewResult renew(License license, int duration, String username) {
+		RenewLicenseCommand command = setup(new RenewLicenseCommand(box), username);
+		command.license = license;
+		command.duration = duration;
+		return command.execute();
+	}
+
 	public void save(Collection collection, List<String> collaborators, String username) {
 		SaveCollectionCollaboratorsCommand command = setup(new SaveCollectionCollaboratorsCommand(box), username);
 		command.collection = collection;

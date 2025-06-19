@@ -49,8 +49,9 @@ public class LanguageManager {
 
 	public List<Language> licensedLanguages(String owner) {
 		if (owner == null) return Collections.emptyList();
-		String[] collections = subjectStore.query().isType(SubjectHelper.LicenseType).where("user").equals(owner).collect().stream().map(s -> s.parent().name()).distinct().toArray(String[]::new);
-		return subjectStore.query().isType(SubjectHelper.LanguageType).where("collection").contains(collections).stream().map(this::get).toList();
+		List<String> collections = subjectStore.query().isType(SubjectHelper.LicenseType).where("user").equals(owner).collect().stream().map(s -> s.parent().name()).distinct().toList();
+		if (collections.isEmpty()) return Collections.emptyList();
+		return subjectStore.query().isType(SubjectHelper.LanguageType).where("collection").satisfy(v -> collections.stream().anyMatch(v::equals)).stream().map(this::get).toList();
 	}
 
 	public List<Language> languages() {

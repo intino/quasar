@@ -263,19 +263,36 @@ Template(layout=Horizontal Center, format=autoHeight) modelsDialog as Relative(w
 			Text(value="last modified", visible=false) lastModifiedText
 		Block > SearchBox(collections=empty) searchBox
 
+	TemplateStamp(template=licenseDialog) licenseDialog
+
 Template addLicenseEditor
 	Text licenseField as Editable(placeholder="Paste license here")
-
-	Dialog(title="License added") successDialog
-        Block(format=overflowAuto relative) as Relative(height=100%, offsetHeight=40px)
-        	Text(value="Success! The license has been added to your license list", format=airBottom)
-		Divider
-        Block(layout=Horizontal EndJustified)
-        	Button(title="Close", size=Small, format=airRight) as CloseDialog(successDialog)
 
 	Dialog(title="License error") failureDialog
         Block(format=overflowAuto relative) as Relative(height=100%, offsetHeight=40px)
         	Text(value="Failure! The license code is invalid or has already been used", format=airBottom) failureMessage
 		Divider
         Block(layout=Horizontal EndJustified)
-        	Button(title="Close", size=Small, format=airRight) as CloseDialog(failureDialog)
+        	Button(title="Close", size=Small, highlight=Fill) as CloseDialog(failureDialog)
+
+Template licenseDialog
+
+	Dialog(title="License required") dialog
+        Block(format=overflowAuto relative) as Relative(height=100%, offsetHeight=40px)
+        	Block(format=doubleAirBottom) > Text message
+		Divider
+        Block(layout=Horizontal EndJustified)
+        	Button(title="Close", size=Small, format=airRight) as CloseDialog(dialog)
+        	Button(title="Renew", size=Small, highlight=Fill, visible=false) renew as Action
+
+	TemplateStamp(template=renewLicenseDialog) renewDialog
+
+Template renewLicenseDialog
+
+	Dialog(title="renew license") dialog
+        Block(format=overflowAuto relative) as Relative(height=100%, offsetHeight=40px)
+        	Block(format=doubleAirBottom) > Text message
+		Divider
+        Block(layout=Horizontal EndJustified)
+        	Button(title="Cancel", size=Small, format=airRight) as CloseDialog(dialog)
+        	Button(title="Rewew", size=Small, highlight=Fill) renew as Action Affirmed("Confirm license renewal to continue") Readonly

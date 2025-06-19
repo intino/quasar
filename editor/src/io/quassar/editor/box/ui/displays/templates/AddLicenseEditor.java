@@ -36,14 +36,11 @@ public class AddLicenseEditor extends AbstractAddLicenseEditor<EditorBox> {
 
 	private void assign() {
 		String value = licenseField.value();
-		licenseField.value(null);
 		if (value == null || value.length() < LicenseGenerator.size()) return;
+		licenseField.value(null);
 		assignResult = box().commands(CollectionCommands.class).assignLicense(value, username());
 		if (!assignResult.success()) failureDialog.open();
-		else {
-			successDialog.open();
-			addListener.accept(assignResult.license());
-		}
+		else addListener.accept(assignResult.license());
 	}
 
 	private void refreshFailureDialog() {

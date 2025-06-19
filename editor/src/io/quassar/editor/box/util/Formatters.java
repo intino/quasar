@@ -1,5 +1,6 @@
 package io.quassar.editor.box.util;
 
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
@@ -9,6 +10,14 @@ import java.util.function.Function;
 public class Formatters {
 
 	private static final String DayFormat = "yyyy/MM/dd";
+
+	public static String formattedNumber(long value, String language) {
+		return formattedNumber(value, Locale.forLanguageTag(language));
+	}
+
+	public static String formattedNumber(long value, Locale locale) {
+		return NumberFormat.getNumberInstance(locale).format(value);
+	}
 
 	public static String firstLowerCase(String value) {
 		return value != null ? value.substring(0, 1).toLowerCase() + value.substring(1) : null;

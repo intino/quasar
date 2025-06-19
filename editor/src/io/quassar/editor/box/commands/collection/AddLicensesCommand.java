@@ -21,10 +21,11 @@ public class AddLicensesCommand extends Command<Boolean> {
 
 	@Override
 	public Boolean execute() {
-		if (!PermissionsHelper.hasCredit(author, count*duration, box)) return false;
+		if (!PermissionsHelper.hasCredit(count*duration, author, box)) return false;
 		IntStream.range(0, count).forEach(i -> box.collectionManager().createLicense(collection, LicenseGenerator.generate(), duration));
 		User user = UserHelper.user(author, box);
-		user.licenseTime(user.licenseTime() == User.DefaultLicenseTime ? count*duration : user.licenseTime() - count*duration);
+		int licenseTime = UserHelper.licenseTime(author, box);
+		user.licenseTime(licenseTime - count*duration);
 		return true;
 	}
 

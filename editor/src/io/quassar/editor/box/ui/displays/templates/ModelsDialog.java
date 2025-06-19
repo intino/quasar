@@ -36,14 +36,16 @@ public class ModelsDialog extends AbstractModelsDialog<EditorBox> {
 		addModelTrigger.onExecute(e -> notifyAddModel());
 		mostRecentLink.onExecute(e -> updateSorting(ModelsDatasource.Sorting.MostRecent));
 		lastModifiedLink.onExecute(e -> updateSorting(ModelsDatasource.Sorting.LastModified));
+		licenseDialog.onRenew(e -> notifyAddModel());
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
 		refreshSorting(SessionHelper.modelsSorting(session()));
-		searchBox.condition(null);
+		searchBox.condition("");
 		addModelTrigger.visible(addModelListener != null && PermissionsHelper.canAddModel(language, session(), box()));
+		if (addModelTrigger.isVisible()) addModelTrigger.readonly(!PermissionsHelper.hasValidLicense(language, session(), box()));
 		catalogOperations.visible(countItemsProvider.apply(language) > DisplayHelper.MinItemsCount);
 	}
 
@@ -57,7 +59,16 @@ public class ModelsDialog extends AbstractModelsDialog<EditorBox> {
 	}
 
 	private void notifyAddModel() {
+		if (!PermissionsHelper.hasValidLicense(language, session(), box())) {
+			openLicenseDialog();
+			return;
+		}
 		addModelListener.accept(true);
+	}
+
+	private void openLicenseDialog() {
+		licenseDialog.license(box().collectionManager().anyLicense(language.collection(), username()));
+		licenseDialog.open();
 	}
 
 	private void updateSorting(ModelsDatasource.Sorting sorting) {

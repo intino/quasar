@@ -28,6 +28,12 @@ public class CollectionManager {
 		return subjectStore.query().isType(SubjectHelper.LicenseType).where("user").equals(owner).collect().stream().map(this::getLicense).toList();
 	}
 
+	public License anyLicense(String collection, String owner) {
+		Subject subject = subjectStore.open(SubjectHelper.collectionPath(collection));
+		if (subject.isNull()) return null;
+		return subject.children().where("user").equals(owner).stream().map(this::getLicense).findFirst().orElse(null);
+	}
+
 	public List<License> licenses(String owner) {
 		return anyLicenses(owner).stream().filter(l -> !l.isExpired()).toList();
 	}

@@ -8,6 +8,7 @@ import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.GavCoordinates;
+import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
 import java.util.Comparator;
@@ -82,6 +83,9 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	private void refreshContent() {
 		contentBlock.visible(PermissionsHelper.hasPermissions(model, session(), box()));
 		if (!contentBlock.isVisible()) return;
+		licenseExpiredBanner.language(model.language());
+		licenseExpiredBanner.hint("This model is read-only. Editing is disabled");
+		licenseExpiredBanner.refresh();
 		modelEditor.model(model, release);
 		modelEditor.view(view());
 		modelEditor.tab(selectedTab);

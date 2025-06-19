@@ -27,6 +27,7 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 
 	public void language(Language language) {
 		this.language = language;
+		this.selectedCollection = null;
 	}
 
 	public void metamodel(Model metamodel) {

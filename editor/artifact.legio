@@ -48,6 +48,7 @@ Artifact(groupId = "io.quassar", version = "1.0.46") editor
 	Parameter("quassar-builder", "quassar625/io.quassar.quassar-builder:1.0.0")
 	Parameter("google-client-id", "quassar625/io.quassar.quassar-builder:1.0.0")
 	Parameter("new-user-license-time")
+	Parameter("renew-license-time-duration")
 	Parameter("collection-collaborators-count")
 
 RunConfiguration local
@@ -63,6 +64,7 @@ RunConfiguration local
 	Argument("language-repository", "/Users/mcaballero/.m2")
 	Argument("builder-service-url", "http://localhost:9002")
 	Argument("new-user-license-time", "60")
+	Argument("renew-license-time-duration", "12")
 	Argument("collection-collaborators-count", "4")
 
 RunConfiguration dev
@@ -75,6 +77,9 @@ RunConfiguration dev
 	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
 	Argument("language-repository", "/home/intino/.m2")
 	Argument("builder-service-url", "http://localhost:9002")
+	Argument("new-user-license-time", "60")
+	Argument("renew-license-time-duration", "12")
+	Argument("collection-collaborators-count", "4")
 
 RunConfiguration pro
 	Argument("port", "8080")
@@ -87,6 +92,7 @@ RunConfiguration pro
 	Argument("language-repository", "/home/intino/.m2")
 	Argument("builder-service-url", "http://localhost:9002")
 	Argument("new-user-license-time", "60")
+	Argument("renew-license-time-duration", "12")
 	Argument("collection-collaborators-count", "4")
 
 Server(type=Dev) deploy-quassar-dev

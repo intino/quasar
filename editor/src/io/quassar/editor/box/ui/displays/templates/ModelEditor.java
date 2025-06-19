@@ -1,9 +1,12 @@
 package io.quassar.editor.box.ui.displays.templates;
 
 import io.intino.alexandria.MimeTypes;
+import io.intino.alexandria.logger.Logger;
+import io.intino.alexandria.schemas.HtmlViewerOperation;
 import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.displays.events.SelectionEvent;
 import io.intino.alexandria.ui.utils.DelayerUtil;
+import io.intino.alexandria.ui.utils.IOUtils;
 import io.intino.builderservice.schemas.Message;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command;
@@ -12,6 +15,7 @@ import io.quassar.editor.box.models.File;
 import io.quassar.editor.box.models.ModelContainer;
 import io.quassar.editor.box.schemas.IntinoDslEditorFileContent;
 import io.quassar.editor.box.schemas.IntinoFileBrowserItem;
+import io.quassar.editor.box.ui.displays.EditorHelpDisplay;
 import io.quassar.editor.box.ui.displays.IntinoDslEditor;
 import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.ui.types.ModelView;
@@ -23,6 +27,8 @@ import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -92,6 +98,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		initExplorer();
 		helpDialog.onClose(e -> notifier.dispatch(PathHelper.modelPath(model, release)));
 		helpDialog.onOpen(e -> refreshHelpDialog());
+		editorHelpDialog.onOpen(e -> refreshEditorHelpDialog());
 		console.onClose(e -> consoleBlock.hide());
 	}
 
@@ -391,6 +398,12 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 		helpDialog.title("%s help".formatted(LanguageHelper.title(model.language())));
 		helpStamp.content("<div class='help'>" + help + "</div>");
 		helpStamp.refresh();
+	}
+
+	private void refreshEditorHelpDialog() {
+		EditorHelpDisplay display = new EditorHelpDisplay(box());
+		editorHelpStamp.display(display);
+		editorHelpStamp.refresh();
 	}
 
 	private URL urlOf(String url) {

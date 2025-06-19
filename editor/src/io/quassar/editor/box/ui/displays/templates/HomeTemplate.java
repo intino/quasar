@@ -9,10 +9,7 @@ import io.quassar.editor.box.commands.UserCommands;
 import io.quassar.editor.box.util.ModelHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.PermissionsHelper;
-import io.quassar.editor.model.GavCoordinates;
-import io.quassar.editor.model.Language;
-import io.quassar.editor.model.LanguageRelease;
-import io.quassar.editor.model.Model;
+import io.quassar.editor.model.*;
 
 import java.util.Arrays;
 
@@ -45,6 +42,11 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 		if (language == null) {
 			Logger.warn("Trying to create model from not recognized language");
 			notifier.redirect(PathHelper.languageUrl(languageId, session()));
+			return;
+		}
+		if (!PermissionsHelper.isEnterprise(language, session(), box())) {
+			Logger.warn("You don't hava an enterprise subscription for language %s".formatted(language.name()));
+			notifier.redirect(PathHelper.loginUrl(session()));
 			return;
 		}
 		if (!PermissionsHelper.canAddModel(language, session(), box())) {
