@@ -10,6 +10,7 @@ import io.intino.alexandria.ui.model.datasource.grid.GridItem;
 import io.intino.alexandria.ui.model.datasource.grid.GridValue;
 import io.quassar.editor.box.commands.CollectionCommands;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.commands.UserCommands;
 import io.quassar.editor.box.ui.datasources.LicensesDatasource;
 import io.quassar.editor.box.util.Formatters;
 import io.quassar.editor.box.util.PermissionsHelper;
@@ -38,10 +39,15 @@ public class LicensesTemplate extends AbstractLicensesTemplate<EditorBox> {
 		licensesGrid.itemResolver(itemResolver());
 		licensesGrid.onSortColumn(this::sort);
 		licensesGrid.column("duration").formatter(value -> String.valueOf(value.asNumber().intValue()));
-		addLicensesDialog.onOpen(e -> refreshLicensesDialog());
+		addLicensesDialog.onOpen(e -> {
+			countField.value(1);
+			durationField.value(1);
+			refreshLicensesDialog();
+		});
 		addLicenses.onExecute(e -> addLicenses());
 		countField.onChange(e -> addLicenses.readonly(!hasCredit()));
 		durationField.onChange(e -> addLicenses.readonly(!hasCredit()));
+		buyMore.onExecute(e -> buyMore());
 	}
 
 	@Override
@@ -49,7 +55,7 @@ public class LicensesTemplate extends AbstractLicensesTemplate<EditorBox> {
 		super.refresh();
 		licensesGrid.source(new LicensesDatasource(box(), session(), collection));
 		addLicensesTrigger.visible(PermissionsHelper.canAddLicenses(collection, session(), box()));
-		addLicensesTrigger.readonly(!hasCredit());
+		addLicensesTrigger.readonly(false);
 	}
 
 	private Grid.ItemResolver<License> itemResolver() {
@@ -77,8 +83,14 @@ public class LicensesTemplate extends AbstractLicensesTemplate<EditorBox> {
 	private void refreshLicensesDialog() {
 		int licenseTime = UserHelper.licenseTime(session(), box());
 		String licenseTimeFormatted = Formatters.formattedNumber(licenseTime, language());
-		message.value(translate("You have %s months of license time available").formatted(licenseTimeFormatted));
-		hint.value(translate("This can be used as one %s-month license or split into multiple shorter licenses (e.g., %s one-month licenses).").formatted(licenseTimeFormatted, licenseTimeFormatted));
+		if (licenseTime <= 0) message.value("You have no license time remaining. Please purchase additional months to continue");
+		else message.value(translate("You have %s months of license time available").formatted(licenseTimeFormatted));
+		buyMore.visible(licenseTime <= 0);
+		hint.visible(licenseTime > 0);
+		if (hint.isVisible()) hint.value(translate("This can be used as one %s-month license or split into multiple shorter licenses (e.g., %s one-month licenses).").formatted(licenseTimeFormatted, licenseTimeFormatted));
+		countField.readonly(licenseTime <= 0);
+		durationField.readonly(licenseTime <= 0);
+		addLicenses.readonly(licenseTime <= 0);
 	}
 
 	private void addLicenses() {
@@ -113,6 +125,11 @@ public class LicensesTemplate extends AbstractLicensesTemplate<EditorBox> {
 		GridColumn<License> column = event.column();
 		SortColumnEvent.Mode mode = event.mode();
 		licensesGrid.sortings(mode != SortColumnEvent.Mode.None ? List.of(column.name() + "=" + (mode == SortColumnEvent.Mode.Ascendant ? "A" : "D")) : Collections.emptyList());
+	}
+
+	private void buyMore() {
+		box().commands(UserCommands.class).buy(Integer.parseInt(box().configuration().newUserLicenseTime()), username());
+		refreshLicensesDialog();
 	}
 
 }

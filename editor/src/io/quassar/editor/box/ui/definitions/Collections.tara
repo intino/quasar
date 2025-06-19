@@ -51,7 +51,7 @@ Template licensesTemplate as Relative(height=100%, width=100%)
 
 	Block(layout=Horizontal Center, format=airLeft)
 		Block(layout=Horizontal Flexible)
-			Button(title="Add...", size=Small, highlight=Outline, visible=false) addLicensesTrigger as OpenDialog(addLicensesDialog) Readonly
+			Button(title="Add...", size=Small, highlight=Outline, visible=false) addLicensesTrigger as OpenDialog(addLicensesDialog)
 		Block(layout=Horizontal EndJustified)
 			Text(visible=false, format=middleAirTop middleAirBottom) searchBox as Editable(placeholder="Search...")
 
@@ -73,8 +73,9 @@ Template licensesTemplate as Relative(height=100%, width=100%)
     Dialog(title="Add licenses") addLicensesDialog
         Block(layout=Vertical) as Relative(height=100%, offsetHeight=40px)
         	Block(format=airBottom)
-    			Text(format=bold) message
-    			Text(format=greyColor) hint
+				Text(format=bold) message
+				Link(title="buy more", visible=false) buyMore as Action
+    			Text(format=greyColor, visible=false) hint
     		Block(format=airBottom) as Absolute(width=300px)
     			Number(suffix="licenses", min=1, value=1, format=airBottom h5) countField as Editable Labeled("Count licenses to add")
     			Number(suffix="Months", min=1, value=1, format=airBottom h5) durationField as Editable Labeled("Duration for licenses")
