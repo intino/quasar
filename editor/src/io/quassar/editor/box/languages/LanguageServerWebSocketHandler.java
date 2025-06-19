@@ -108,7 +108,7 @@ public class LanguageServerWebSocketHandler implements AlexandriaWebSocket {
 				}
 			}
 		} catch (IOException e) {
-			Logger.error(e);
+			if (session.isOpen()) Logger.error(e);
 		}
 	}
 }
