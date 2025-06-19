@@ -39,7 +39,7 @@ public class LicenseExpiredBanner extends AbstractLicenseExpiredBanner<EditorBox
 	@Override
 	public void refresh() {
 		super.refresh();
-		content.visible(!PermissionsHelper.hasValidLicense(language, session(), box()));
+		content.visible(user() != null && !PermissionsHelper.hasValidLicense(language, session(), box()));
 		if (!content.isVisible()) return;
 		License license = license();
 		bullet.formats(Set.of(license == null || license.isExpired() ? "inactiveBullet" : "activeBullet"));

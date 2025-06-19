@@ -35,8 +35,7 @@ public class RenameLanguageCommand extends Command<Boolean> {
 			File currentFolder = box.archetype().languages().get(language.key());
 			File newFolder = box.archetype().languages().get(newId());
 			Files.move(currentFolder.toPath(), newFolder.toPath());
-			language.collection(Language.collectionFrom(newId()));
-			language.name(Language.nameFrom(newId()));
+			box.languageManager().rename(language, newId());
 			return true;
 		} catch (IOException e) {
 			Logger.error(e);

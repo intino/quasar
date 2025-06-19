@@ -43,29 +43,23 @@ public class ModelManager {
 	}
 
 	public List<Model> models(Language language, String owner) {
-		Map<String, Subject> ownerSubjects = mapOf(with(subjectStore.query().isType(SubjectHelper.ModelType), "dsl-collection", language.collection()).where("dsl-name").equals(language.name()).where("owner").equals(owner).where("visibility").equals(Visibility.Private.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
-		Map<String, Subject> contributorSubjects = mapOf(with(subjectStore.query().isType(SubjectHelper.ModelType),"dsl-collection", language.collection()).where("dsl-name").equals(language.name()).where("collaborator").equals(owner).where("visibility").equals(Visibility.Private.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
-		Map<String, Subject> quassarSubjects = mapOf(with(subjectStore.query().isType(SubjectHelper.ModelType), "dsl-collection", language.collection()).where("dsl-name").equals(language.name()).where("visibility").equals(Visibility.Public.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> ownerSubjects = mapOf(with(subjectStore.query().isType(SubjectHelper.ModelType), "dsl-collection", language.collection()).where("dsl-name").equals(language.name()).where("owner").equals(owner).where("usage").equals(Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> contributorSubjects = mapOf(with(subjectStore.query().isType(SubjectHelper.ModelType),"dsl-collection", language.collection()).where("dsl-name").equals(language.name()).where("collaborator").equals(owner).where("usage").equals(Model.Usage.EndUser.name()).collect());
 		ownerSubjects.putAll(contributorSubjects);
-		ownerSubjects.putAll(quassarSubjects);
 		return ownerSubjects.values().stream().map(this::get).toList();
 	}
 
 	public List<Model> models(Language language) {
 		Map<String, Subject> ownerSubjects = mapOf(with(subjectStore.query().isType(SubjectHelper.ModelType),"dsl-collection", language.collection()).where("dsl-name").equals(language.name()).collect());
 		Map<String, Subject> contributorSubjects = mapOf(with(subjectStore.query().isType(SubjectHelper.ModelType),"dsl-collection", language.collection()).where("dsl-name").equals(language.name()).collect());
-		Map<String, Subject> quassarSubjects = mapOf(with(subjectStore.query().isType(SubjectHelper.ModelType),"dsl-collection", language.collection()).where("dsl-name").equals(language.name()).collect());
 		ownerSubjects.putAll(contributorSubjects);
-		ownerSubjects.putAll(quassarSubjects);
 		return ownerSubjects.values().stream().map(this::get).toList();
 	}
 
 	public List<Model> models(String owner) {
-		Map<String, Subject> ownerSubjects = mapOf(subjectStore.query().isType(SubjectHelper.ModelType).where("owner").equals(owner).where("visibility").equals(Visibility.Private.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
-		Map<String, Subject> contributorSubjects = mapOf(subjectStore.query().isType(SubjectHelper.ModelType).where("collaborator").equals(owner).where("visibility").equals(Visibility.Private.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
-		Map<String, Subject> quassarSubjects = mapOf(subjectStore.query().isType(SubjectHelper.ModelType).where("visibility").equals(Visibility.Public.name()).where("usage").equals(Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> ownerSubjects = mapOf(subjectStore.query().isType(SubjectHelper.ModelType).where("owner").equals(owner).where("usage").equals(Model.Usage.EndUser.name()).collect());
+		Map<String, Subject> contributorSubjects = mapOf(subjectStore.query().isType(SubjectHelper.ModelType).where("collaborator").equals(owner).where("usage").equals(Model.Usage.EndUser.name()).collect());
 		ownerSubjects.putAll(contributorSubjects);
-		ownerSubjects.putAll(quassarSubjects);
 		return ownerSubjects.values().stream().map(this::get).toList();
 	}
 
