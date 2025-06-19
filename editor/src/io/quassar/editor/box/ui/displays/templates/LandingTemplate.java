@@ -102,7 +102,7 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 	}
 
 	private void startBuilding() {
-		startBuilding(box().languageManager().get(Language.key(Language.QuassarGroup, Language.Metta)));
+		startBuilding(box().languageManager().get(Language.key(Language.QuassarCollection, Language.Metta)));
 	}
 
 	private void startBuilding(Language language) {
