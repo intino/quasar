@@ -49,7 +49,9 @@ public class LanguageManager {
 
 	public List<Language> licensedLanguages(String owner) {
 		if (owner == null) return Collections.emptyList();
-		List<String> collections = subjectStore.query().isType(SubjectHelper.LicenseType).where("user").equals(owner).collect().stream().map(s -> s.parent().name()).distinct().toList();
+		Set<String> collections = new HashSet<>(subjectStore.query().isType(SubjectHelper.LicenseType).where("user").equals(owner).collect().stream().map(s -> s.parent().name()).distinct().toList());
+		collections.addAll(subjectStore.query().isType(SubjectHelper.CollectionType).where("owner").equals(owner).collect().stream().map(Subject::name).toList());
+		collections.addAll(subjectStore.query().isType(SubjectHelper.CollectionType).where("collaborator").equals(owner).collect().stream().map(Subject::name).toList());
 		if (collections.isEmpty()) return Collections.emptyList();
 		return subjectStore.query().isType(SubjectHelper.LanguageType).where("collection").satisfy(v -> collections.stream().anyMatch(v::equals)).stream().map(this::get).toList();
 	}
@@ -264,6 +266,12 @@ public class LanguageManager {
 		Language language = get(subjectStore.open(SubjectHelper.languagePath(id)));
 		if (language == null) language = get(subjectStore.query().isType(SubjectHelper.LanguageType).where("collection").equals(Language.collectionFrom(id)).where("name").equals(Language.nameFrom(id)).collect().stream().findFirst().orElse(null));
 		return language;
+	}
+
+	public void rename(Language language, String newId) {
+		language.collection(Language.collectionFrom(newId));
+		language.name(Language.nameFrom(newId));
+		subjectStore.open(SubjectHelper.pathOf(language)).rename(newId);
 	}
 
 	public void remove(Language language) {

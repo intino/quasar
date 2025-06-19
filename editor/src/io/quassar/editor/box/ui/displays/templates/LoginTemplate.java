@@ -30,6 +30,7 @@ public class LoginTemplate extends AbstractLoginTemplate<EditorBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
+		homeLink.site(PathHelper.homeUrl(session()));
 		refreshGoogleLoginBlock();
 		refreshLocalLoginBlock();
 	}

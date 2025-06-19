@@ -86,7 +86,7 @@ Template(layout=Vertical Flexible, format=radialBackground) loginTemplate as Rel
 
 	Block(layout=Vertical CenterCenter, format=centered) content as Relative(width=80%)
 		Block(layout=Horizontal, format=relative)
-			Link(title="", format=fullSpaceLink) homeLink as Action
+			Link(title="", format=fullSpaceLink) homeLink as OpenSite(site=empty)
 			Image(value="/images/logo-expanded.png", format=airLeft airRight doubleAirBottom, mobileReduceFactor=75%) as Absolute(width=180px, height=41px)
 		Block
 			Block(layout=Vertical Center) as Absolute(width=400px)
