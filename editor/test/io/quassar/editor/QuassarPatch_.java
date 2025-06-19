@@ -39,9 +39,9 @@ public class QuassarPatch_ {
 	}};
 
 	private static final Map<String, List<String>> CollectionCollaborators = new HashMap<>() {{
-		put("monentia", List.of("mcaballero@gmail.com"));
+		put("monentia", List.of("mcaballero@gmail.com", "octavioroncal11@gmail.com", "naitsirc98@gmail.com"));
 		put("monet", List.of("mcaballero@gmail.com"));
-		put("misc", List.of("mcaballero@gmail.com"));
+		put("misc", List.of("mcaballero@gmail.com", "octavioroncal11@gmail.com"));
 		put("ulpgc", List.of("mcaballero@gmail.com"));
 	}};
 
