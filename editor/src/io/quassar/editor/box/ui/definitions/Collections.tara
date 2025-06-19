@@ -9,7 +9,7 @@ use Theme
 
 Template(layout=Horizontal Center, format=subHeaderStyle) collectionHeaderTemplate
 	Block(layout=Horizontal Flexible)
-		Text(format=bold h5) title
+		Text(format=bold h5 airLeft) title
 		Block(layout=Horizontal, visible=false) notLoggedBlock
 			Text(value="You are not logged in. Please log in to access available models.", format=h5 textCentered greyColor, translate=true)
 	Block(layout=Horizontal Center EndJustified)
