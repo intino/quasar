@@ -218,6 +218,11 @@ public class ModelManager {
 		}
 	}
 
+	public void renameRelease(Model model, ModelRelease release, String newVersion) {
+		ModelRelease newRelease = new ModelRelease(subjectStore.open(SubjectHelper.pathOf(model, release.version())).rename(newVersion));
+		newRelease.version(newVersion);
+	}
+
 	public OperationResult removeRelease(Model model, String release) {
 		try {
 			Subject subject = subjectStore.open(SubjectHelper.pathOf(model, release));

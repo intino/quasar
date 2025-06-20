@@ -87,6 +87,11 @@ public class LanguageManager {
 		return release;
 	}
 
+	public void renameRelease(Language language, LanguageRelease release, String newVersion) {
+		LanguageRelease newRelease = new LanguageRelease(subjectStore.open(SubjectHelper.pathOf(language, release.version())).rename(newVersion));
+		newRelease.version(newVersion);
+	}
+
 	public void removeRelease(Language language, LanguageRelease release) {
 		try {
 			Subject subject = subjectStore.create(SubjectHelper.pathOf(language, release.version()));
