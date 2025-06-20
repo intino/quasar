@@ -8,7 +8,6 @@ import io.intino.builderservice.schemas.Message;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.builder.BuildResult;
 import io.quassar.editor.box.builder.ModelBuilder;
-import io.quassar.editor.box.commands.language.CreateLanguageReleaseCommand;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.TarHelper;
 import io.quassar.editor.model.*;
@@ -22,7 +21,7 @@ import java.nio.file.Files;
 import java.time.Instant;
 import java.util.*;
 
-public class QuassarPatch_ {
+public class QuassarPatch {
 
 	private static final Map<String, Set<String>> CollectionsPro = new HashMap<>() {{
 		put("monentia", Set.of("picota", "anaga"));

@@ -66,7 +66,7 @@ Template(layout=Horizontal) modelTitleDialog
     		Text(mode=Uppercase) addField as Editable
 		Divider
         Block(layout=Horizontal EndJustified)
-            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(dialog)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addDialog)
             Button(title="Add", size=Small, highlight=Fill) add as Action
 
 Template(layout=Horizontal) commitModelDialog
