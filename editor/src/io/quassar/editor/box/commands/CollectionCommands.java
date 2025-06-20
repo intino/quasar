@@ -27,6 +27,13 @@ public class CollectionCommands extends Commands {
 		return command.execute();
 	}
 
+	public boolean revokeLicense(Collection collection, License license, String username) {
+		RevokeLicenseCommand command = setup(new RevokeLicenseCommand(box), username);
+		command.collection = collection;
+		command.license = license;
+		return command.execute();
+	}
+
 	public AssignLicenseCommand.AssignResult assignLicense(String license, String username) {
 		AssignLicenseCommand command = setup(new AssignLicenseCommand(box), username);
 		command.license = license;

@@ -36,7 +36,7 @@ public class LicenseItemTemplate extends AbstractLicenseItemTemplate<EditorBox> 
 		super.refresh();
 		bullet.formats(Set.of(license.isExpired() ? "inactiveBullet" : "activeBullet"));
 		title.value(license.code() + " - " + license.collection().name());
-		renew.visible(PermissionsHelper.canRenew(license, session(), box()));
+		renew.visible(renewListener != null && PermissionsHelper.canRenew(license, session(), box()));
 		expirationInfo.value(DisplayHelper.expirationInfo(license, this::translate, language()));
 	}
 

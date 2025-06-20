@@ -172,7 +172,7 @@ Template(layout=Vertical Flexible) languageExplorer as Relative(height=100%, wid
 			TemplateStamp(template=modelsTemplate) examplesStamp
 
 Template languageForgeTemplate as Relative(height=100%, width=100%)
-	Block(layout=Horizontal Flexible) as Relative(height=100%, width=100%) Resizable(minSize=18%)
+	Block(layout=Horizontal Flexible) as Relative(height=100%, width=100%) Resizable(minSize=25%)
 		Block(format=forgePanelBackground minResizablePanelWidth) as Relative(width=18%)
 			Block(layout=Vertical Flexible, format=doubleSpaced) as AutoSize Relative(height=100%)
 				Block(layout=Vertical Flexible) as Relative(height=100%)
@@ -194,7 +194,7 @@ Template languageForgeTemplate as Relative(height=100%, width=100%)
 						Link(title="", format=fullSpaceLink) parentLanguageLink as Action Addressable(EditorElements.language)
 						Image(colorInvertedWithDarkMode=true) parentLanguageImage as Absolute(width=70px)
 					Text(format=metaForgeCredits) parentLanguageTitle
-		Block(layout=Vertical Flexible) as Relative(width=82%)
+		Block(layout=Vertical Flexible) as Relative(width=75%)
 			Selector viewSelector as Tabs(format=tabsStyle) Addressable(EditorElements.forge)
 				Text(value="Modeling") kit as Option
 				Text(value="Execution") execution as Option

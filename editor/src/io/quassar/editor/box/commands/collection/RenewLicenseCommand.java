@@ -25,6 +25,7 @@ public class RenewLicenseCommand extends Command<RenewResult> {
 	@Override
 	public RenewResult execute() {
 		if (!PermissionsHelper.hasCredit(duration, author, box)) return new RenewResult(false, "You don't have enough credit to renew this license", null);
+		if (license.status() == License.Status.Revoked) return new RenewResult(false, "This license have been revoked. Contact collection owner", null);
 		if (license.status() != License.Status.Assigned) return new RenewResult(false, "This license is not assigned yet", null);
 		license.assignDate(Instant.now());
 		license.duration(duration);
