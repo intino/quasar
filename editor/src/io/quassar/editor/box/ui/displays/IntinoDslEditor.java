@@ -135,7 +135,7 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 	private IntinoDslEditorSetup info() {
 		IntinoDslEditorSetup result = new IntinoDslEditorSetup();
 		result.dslName(model.language().artifactId());
-		result.modelName(model.name());
+		result.modelName(model.id());
 		result.modelRelease(release);
 		result.readonly(!PermissionsHelper.canEdit(model, release, session(), box()));
 		result.fileAddress(PathHelper.modelPath(model, release, tab, view, ":file"));
