@@ -4,6 +4,7 @@ import io.intino.alexandria.logger.Logger;
 import io.intino.alexandria.ui.displays.components.BlockConditional;
 import io.intino.alexandria.ui.services.push.User;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.commands.CollectionCommands;
 import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.commands.UserCommands;
 import io.quassar.editor.box.util.ModelHelper;
@@ -11,7 +12,9 @@ import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 	private Page current;
@@ -54,9 +57,25 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 			notifier.redirect(PathHelper.loginUrl(session()));
 			return;
 		}
+		Collection collection = box().collectionManager().get(language.collection());
+		if (!PermissionsHelper.hasCredit(1, collection, box())) {
+			session().add("callback", session().browser().requestUrl());
+			notifier.redirect(PathHelper.loginUrl(session()));
+			return;
+		}
+		List<License> licenses = new ArrayList<>(collection.licenses(username()));
+		if (licenses.isEmpty()) licenses.add(box().commands(CollectionCommands.class).addLicense(collection, Integer.parseInt(box().configuration().enterpriseLicenseTimeDuration()), username()));
+		if (licenses.stream().allMatch(License::isExpired)) {
+			Logger.warn("Trying to create model with language %s where %s have an expired license".formatted(language.key(), username()));
+			session().add("callback", session().browser().requestUrl());
+			notifier.redirect(PathHelper.languageUrl(language, session()));
+			return;
+		}
 		String name = ModelHelper.proposeName();
 		if (language.lastRelease() == null) {
 			Logger.warn("Trying to create model from language " + language.name() + " with no releases");
+			session().add("callback", session().browser().requestUrl());
+			notifier.redirect(PathHelper.languageUrl(language, session()));
 			return;
 		}
 		Model model = box().commands(ModelCommands.class).create(name, name, "", new GavCoordinates(language.collection(), language.name(), language.lastRelease().version()), username(), username());

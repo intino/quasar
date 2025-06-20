@@ -24,9 +24,7 @@ public class AssignLicenseCommand extends Command<AssignResult> {
 		if (license.status() == License.Status.Assigned) return new AssignResult(false, "This license code has already been used", null);
 		License currentLicense = license.collection().validLicense(author);
 		if (currentLicense != null) return new AssignResult(false, "You already have an active license for collection %s", currentLicense);
-		license.status(License.Status.Assigned);
-		license.assignDate(Instant.now());
-		license.user(author);
+		box.collectionManager().assign(license, author);
 		return new AssignResult(true, null, license);
 	}
 
