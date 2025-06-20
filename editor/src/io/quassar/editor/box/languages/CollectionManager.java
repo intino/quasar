@@ -77,6 +77,12 @@ public class CollectionManager {
 		return subject != null ? getLicense(subject) : null;
 	}
 
+	public void assign(License license, String user) {
+		license.status(License.Status.Assigned);
+		license.assignDate(Instant.now());
+		license.user(user);
+	}
+
 	private Collection get(Subject subject) {
 		if (subject == null || subject.isNull()) return null;
 		return new Collection(subject);

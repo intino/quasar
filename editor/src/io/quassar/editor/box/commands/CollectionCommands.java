@@ -19,10 +19,17 @@ public class CollectionCommands extends Commands {
 		return command.execute();
 	}
 
-	public boolean addLicenses(Collection collection, double count, double duration, String username) {
+	public List<License> addLicenses(Collection collection, double count, double duration, String username) {
 		AddLicensesCommand command = setup(new AddLicensesCommand(box), username);
 		command.collection = collection;
 		command.count = Double.valueOf(count).intValue();
+		command.duration = Double.valueOf(duration).intValue();
+		return command.execute();
+	}
+
+	public License addLicense(Collection collection, int duration, String username) {
+		AddLicenseCommand command = setup(new AddLicenseCommand(box), username);
+		command.collection = collection;
 		command.duration = Double.valueOf(duration).intValue();
 		return command.execute();
 	}
@@ -59,4 +66,5 @@ public class CollectionCommands extends Commands {
 		command.collection = collection;
 		return command.execute();
 	}
+
 }

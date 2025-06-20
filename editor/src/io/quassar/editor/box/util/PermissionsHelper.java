@@ -202,8 +202,12 @@ public class PermissionsHelper {
 		return hasCredit(monthsCount, session.user() != null ? session.user().username() : null, box);
 	}
 
+	public static boolean hasCredit(int monthsCount, Collection collection, EditorBox box) {
+		return true;
+	}
+
 	public static boolean canAddLicenses(Collection collection, UISession session, EditorBox box) {
-		return collection.subscriptionPlan() == Collection.SubscriptionPlan.Professional;
+		return true;
 	}
 
 	public static boolean canRevokeLicenses(Collection collection, UISession session, EditorBox box) {
@@ -216,7 +220,11 @@ public class PermissionsHelper {
 
 	public static boolean isEnterprise(Language language, UISession session, EditorBox box) {
 		if (language.isFoundational()) return true;
-		Collection collection = box.collectionManager().get(language.collection());
+		return isEnterprise(box.collectionManager().get(language.collection()), session, box);
+	}
+
+	public static boolean isEnterprise(Collection collection, UISession session, EditorBox box) {
+		if (collection == null) return false;
 		return collection.subscriptionPlan() == Collection.SubscriptionPlan.Enterprise;
 	}
 }

@@ -1,6 +1,6 @@
 dsl Legio
 
-Artifact(groupId = "io.quassar", version = "1.1.8") editor
+Artifact(groupId = "io.quassar", version = "1.1.9") editor
 	Dsl("Konos", "13.5.1") > Builder(generationPackage = "box")
 	Archetype("io.quassar", "editor-archetype", "1.0.2")
 
@@ -22,7 +22,7 @@ Artifact(groupId = "io.quassar", version = "1.1.8") editor
 		Compile("org.xerial", "sqlite-jdbc", "3.49.1.0")
 		Compile("com.google.api-client", "google-api-client", "2.8.0")
 
-		Web("io.quassar", "editor-elements", "1.1.8")
+		Web("io.quassar", "editor-elements", "1.1.9")
 
 		Test("junit", "junit", "4.13")
 
@@ -48,6 +48,7 @@ Artifact(groupId = "io.quassar", version = "1.1.8") editor
 	Parameter("quassar-builder", "quassar625/io.quassar.quassar-builder:1.0.0")
 	Parameter("google-client-id", "quassar625/io.quassar.quassar-builder:1.0.0")
 	Parameter("new-user-license-time")
+	Parameter("enterprise-license-time-duration")
 	Parameter("renew-license-time-duration")
 	Parameter("collection-collaborators-count")
 
@@ -64,6 +65,7 @@ RunConfiguration local
 	Argument("language-repository", "/Users/mcaballero/.m2")
 	Argument("builder-service-url", "http://localhost:9002")
 	Argument("new-user-license-time", "60")
+	Argument("enterprise-license-time-duration", "1")
 	Argument("renew-license-time-duration", "12")
 	Argument("collection-collaborators-count", "4")
 
@@ -78,6 +80,7 @@ RunConfiguration dev
 	Argument("language-repository", "/home/intino/.m2")
 	Argument("builder-service-url", "http://localhost:9002")
 	Argument("new-user-license-time", "60")
+	Argument("enterprise-license-time-duration", "1")
 	Argument("renew-license-time-duration", "12")
 	Argument("collection-collaborators-count", "4")
 
@@ -92,6 +95,7 @@ RunConfiguration pro
 	Argument("language-repository", "/home/intino/.m2")
 	Argument("builder-service-url", "http://localhost:9002")
 	Argument("new-user-license-time", "60")
+	Argument("enterprise-license-time-duration", "1")
 	Argument("renew-license-time-duration", "12")
 	Argument("collection-collaborators-count", "4")
 

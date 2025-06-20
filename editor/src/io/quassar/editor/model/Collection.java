@@ -82,6 +82,11 @@ public class Collection extends SubjectWrapper {
 		return result.map(this::licenseOf).toList();
 	}
 
+	public List<License> licenses(String username) {
+		Stream<Subject> result = subject.children().collect().stream().filter(s -> s.is(SubjectHelper.LicenseType));
+		return result.map(this::licenseOf).filter(l -> username.equals(l.user())).toList();
+	}
+
 	public License license(String code) {
 		return licenses().stream().filter(r -> r.code().equals(code)).findFirst().orElse(null);
 	}
