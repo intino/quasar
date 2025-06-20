@@ -138,11 +138,10 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<EditorBox> 
 
 	private void removeModel() {
 		notifyUser(translate("Removing model..."), UserMessage.Type.Loading);
-		String language = model.language().artifactId();
 		box().commands(ModelCommands.class).remove(model, username());
 		hideUserNotification();
 		if (model.isExample()) doClose();
-		else notifier.dispatch(PathHelper.languagePath(language));
+		else notifier.dispatch(PathHelper.languagePath(model.language().languageId()));
 	}
 
 	private void doClose() {
