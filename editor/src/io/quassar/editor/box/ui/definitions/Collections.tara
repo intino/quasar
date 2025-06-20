@@ -52,6 +52,7 @@ Template licensesTemplate as Relative(height=100%, width=100%)
 	Block(layout=Horizontal Center, format=airLeft)
 		Block(layout=Horizontal Flexible)
 			Button(title="Add...", size=Small, highlight=Outline, visible=false) addLicensesTrigger as OpenDialog(addLicensesDialog)
+			Button(title="Revoke...", size=Small, highlight=Outline, format=airLeft, visible=false) revokeLicenseTrigger as OpenDialog(revokeLicenseDialog)
 		Block(layout=Horizontal EndJustified)
 			Text(visible=false, format=middleAirTop middleAirBottom) searchBox as Editable(placeholder="Search...")
 
@@ -83,3 +84,15 @@ Template licensesTemplate as Relative(height=100%, width=100%)
         Block(layout=Horizontal EndJustified)
             Button(title="Cancel", size=Small, format=airRight) as CloseDialog(addLicensesDialog)
             Button(title="Add", size=Small, highlight=Fill) addLicenses as Action
+
+    Dialog(title="Revoke license") revokeLicenseDialog
+        Block(layout=Vertical) as Relative(height=100%, offsetHeight=40px)
+        	Block(format=doubleAirBottom)
+				Text(value="To proceed with revocation, please provide the license code you wish to revoke", format=bold)
+				Text revokeField as Editable(placeholder="Enter license code")
+				Block(format=airTop, visible=false) licenseBlock
+					TemplateStamp(template=licenseItemTemplate) licenseStamp
+		Divider
+        Block(layout=Horizontal EndJustified)
+            Button(title="Cancel", size=Small, format=airRight) as CloseDialog(revokeLicenseDialog)
+            Button(title="Revoke", size=Small, highlight=Fill) revoke as Action

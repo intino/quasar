@@ -90,7 +90,11 @@ public class Collection extends SubjectWrapper {
 		return licenses().stream().filter(r -> username.equals(r.user())).findFirst().orElse(null);
 	}
 
-	public License activeLicense(String username) {
+	public List<License> validLicenses() {
+		return licenses().stream().filter(r -> !r.isExpired()).toList();
+	}
+
+	public License validLicense(String username) {
 		return licenses().stream().filter(r -> username.equals(r.user()) && !r.isExpired()).findFirst().orElse(null);
 	}
 

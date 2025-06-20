@@ -156,7 +156,7 @@ public class PermissionsHelper {
 		String username = session.user() != null ? session.user().username() : null;
 		if (username == null) return false;
 		if (isOwnerOrCollaborator(collection, session, box)) return true;
-		return collection.activeLicense(username) != null;
+		return collection.validLicense(username) != null;
 	}
 
 	public static boolean hasValidLicense(Language language, UISession session, EditorBox box) {
@@ -204,6 +204,10 @@ public class PermissionsHelper {
 
 	public static boolean canAddLicenses(Collection collection, UISession session, EditorBox box) {
 		return collection.subscriptionPlan() == Collection.SubscriptionPlan.Professional;
+	}
+
+	public static boolean canRevokeLicenses(Collection collection, UISession session, EditorBox box) {
+		return !collection.validLicenses().isEmpty();
 	}
 
 	public static boolean canRenew(License license, UISession session, EditorBox box) {

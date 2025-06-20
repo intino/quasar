@@ -4,7 +4,6 @@ import systems.intino.datamarts.subjectstore.model.Subject;
 
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 
 public class License extends SubjectWrapper {
 
@@ -32,7 +31,7 @@ public class License extends SubjectWrapper {
 		return new Collection(subject.parent());
 	}
 
-	public enum Status { Created, Assigned }
+	public enum Status { Created, Assigned, Revoked }
 	public Status status() {
 		return Status.valueOf(get("status"));
 	}
@@ -73,6 +72,7 @@ public class License extends SubjectWrapper {
 	}
 
 	public boolean isExpired() {
+		if (status() == Status.Revoked) return true;
 		Instant expireDate = expireDate();
 		return expireDate == null || expireDate.isBefore(Instant.now());
 	}
