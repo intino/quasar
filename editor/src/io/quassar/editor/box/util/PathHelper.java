@@ -12,7 +12,11 @@ public class PathHelper {
 	}
 
 	public static String aboutUrl(UISession session) {
-		return session.browser().baseUrl() + "/about";
+		return session.browser().baseUrl() + aboutPath();
+	}
+
+	public static String aboutPath() {
+		return "/about";
 	}
 
 	public static String homePath() {
