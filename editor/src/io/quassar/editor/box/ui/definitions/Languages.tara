@@ -110,7 +110,7 @@ Template languageTemplate as Relative(height=100%, width=100%, offsetHeight=2px)
 		Block(layout=Vertical Flexible) mainBlock as Relative(width=100%) Conditional
 
 			Block(layout=Horizontal, format=absolute doubleAirLeft airTop, visible=false) notLoggedBlock
-				Text(value="You are not logged in. Please log in to access available models.", format=h5 textCentered greyColor, translate=true)
+				Text(value="You are not logged in. Please log in to access your models.", format=h5 textCentered greyColor, translate=true)
 
 			Block(layout=Horizontal Flexible, format=whiteBackground) mainContentBlock as Relative(width=100%, height=100%) Resizable(minSize=4%)
 

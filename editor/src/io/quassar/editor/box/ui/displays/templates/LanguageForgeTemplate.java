@@ -84,6 +84,7 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 	}
 
 	private void refreshInfoDialog() {
+		infoStamp.onRename(this::reload);
 		infoStamp.language(language);
 		infoStamp.release(release);
 		infoStamp.refresh();
@@ -176,6 +177,10 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 		notifyUser(translate("Language removed"), UserMessage.Type.Success);
 		Model model = box().modelManager().get(language.metamodel());
 		notifier.redirect(PathHelper.modelUrl(model, session()));
+	}
+
+	private void reload(Language newLanguage) {
+		this.language = newLanguage;
 	}
 
 }

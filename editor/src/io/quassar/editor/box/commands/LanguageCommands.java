@@ -41,7 +41,7 @@ public class LanguageCommands extends Commands {
 		command.execute();
 	}
 
-	public boolean rename(Language language, String newName, String username) {
+	public Language rename(Language language, String newName, String username) {
 		RenameLanguageCommand command = setup(new RenameLanguageCommand(box), username);
 		command.language = language;
 		command.newId = newName;
