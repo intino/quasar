@@ -59,7 +59,6 @@ public class LanguageExplorer extends AbstractLanguageExplorer<EditorBox> {
 		super.init();
 		initToolbar();
 		releaseSelector.onSelect(this::updateRelease);
-		aboutBlock.onInit(e -> initAbout());
 		aboutBlock.onShow(e -> refreshAbout());
 		versionsBlock.onShow(e -> refreshHelp());
 		examplesBlock.onShow(e -> refreshExamples());
@@ -111,6 +110,7 @@ public class LanguageExplorer extends AbstractLanguageExplorer<EditorBox> {
 	private void refreshExpandedBlock() {
 		expandedBlock.visible(expanded);
 		if(!expandedBlock.isVisible()) return;
+		refreshForge();
 		aboutBlock.hide();
 		versionsBlock.hide();
 		examplesBlock.hide();
@@ -119,13 +119,7 @@ public class LanguageExplorer extends AbstractLanguageExplorer<EditorBox> {
 		else aboutBlock.show();
 	}
 
-	private void initAbout() {
-		metamodelLink.onExecute(e -> notifier.redirect(PathHelper.modelUrl(box().modelManager().get(language.metamodel()), session())));
-	}
-
 	private void refreshAbout() {
-		refreshMetamodel();
-		refreshForge();
 		aboutTitle.value(valueOrDefault(language.title()));
 		aboutDescription.value(valueOrDefault(language.description()).replace("\n", "<br/>"));
 		aboutCitation.value(valueOrDefault(language.citation()).replace("\n", "<br/>"));
@@ -140,14 +134,10 @@ public class LanguageExplorer extends AbstractLanguageExplorer<EditorBox> {
 		releaseHelpStamp.refresh();
 	}
 
-	private void refreshMetamodel() {
-		aboutBlock.aboutContent.metamodelBlock.visible(PermissionsHelper.canEdit(language, session(), box()));
-	}
-
 	private void refreshForge() {
 		String metamodel = language.metamodel();
-		aboutBlock.aboutContent.forgeBlock.visible(metamodel != null && PermissionsHelper.canEdit(language, session(), box()));
-		if (!aboutBlock.aboutContent.forgeBlock.isVisible()) return;
+		forgeLink.visible(metamodel != null && PermissionsHelper.canEdit(language, session(), box()));
+		if (!forgeLink.isVisible()) return;
 		forgeLink.site(PathHelper.forgeUrl(box().modelManager().get(metamodel), release, session()));
 	}
 

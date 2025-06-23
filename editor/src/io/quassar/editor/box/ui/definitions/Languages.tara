@@ -140,17 +140,12 @@ Template(layout=Vertical Flexible) languageExplorer as Relative(height=100%, wid
 					Text(format=h2 smallAirRight) titlePrefix
 					Block(layout=Horizontal EndJustified) as Absolute(width=120px) > Selector(format=h2) releaseSelector as ComboBox(view=TextView)
 
-			Block(layout=Horizontal EndJustified, format=airRight)
+			Block(layout=Horizontal EndJustified)
 				TemplateStamp(template=modelsDialog, visible=false) examplesDialog
+				IconButton(title="", icon="/images/circle-up.png", darkIcon="/images/circle-up-dark.png", darkColor="#9399ff", visible=false) forgeLink as OpenSite(site=empty, target=Blank)
 
 		Block(layout=Vertical Flexible) aboutBlock as Conditional Relative(height=100%)
 			Block(layout=Vertical Flexible, format=doubleTopSpaced doubleLeftSpaced doubleRightSpaced doubleBottomSpaced) aboutContent as AutoSize Relative(width=100%, height=100%)
-				Block(format=doubleAirBottom, visible=false) metamodelBlock
-					Text(value="metamodel", format=h6 bold)
-					Link(title="open", format=middleAirRight) metamodelLink as Action
-				Block(format=doubleAirBottom, visible=false) forgeBlock
-					Text(value="forge", format=h6 bold)
-					Link(title="open", format=middleAirRight) forgeLink as OpenSite(site=empty)
 				Block(format=doubleAirBottom)
 					Text(value="title", format=h6 bold)
 					Text(format=noHtmlStyle) aboutTitle as Code(Html)

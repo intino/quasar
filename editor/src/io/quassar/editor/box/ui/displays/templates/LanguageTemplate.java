@@ -34,7 +34,7 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 
 	public void openHelp(String language, String version) {
 		this.language = box().languageManager().get(language);
-		this.release = this.language.release(version);
+		this.release = this.language != null ? this.language.release(version) : null;
 		refresh();
 	}
 
