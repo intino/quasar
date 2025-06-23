@@ -46,6 +46,9 @@ Template(layout=Horizontal Center, format=headerStyle) headerTemplate
 	Block(layout=Horizontal Center Flexible, format=middleAirTop middleAirBottom middleAirLeft) languageView
 		Link(title="", format=logoLink) as Action Addressable(EditorElements.home)
 		Image(value="/images/logo-expanded-dark.png", format=airLeft, mobileReduceFactor=75%) as Absolute(width=130px, height=30px)
+		Block(layout=Horizontal Center, visible=false) languageBlock
+			Text(value=" ", format=whiteColor h3 headerBullet airLeft airRight middleAirTop)
+			Text(value="", format=whiteColor h3) languageText
 
 	Block(layout=Horizontal EndJustified)
 		MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode

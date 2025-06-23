@@ -132,6 +132,7 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 	private void changeId() {
 		if (changeIdListener == null) return;
 		changeIdListener.accept(languageId());
+		language = box().languageManager().get(languageId());
 		refresh();
 	}
 

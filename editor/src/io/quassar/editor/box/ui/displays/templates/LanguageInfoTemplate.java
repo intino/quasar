@@ -11,10 +11,12 @@ import io.quassar.editor.model.Visibility;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class LanguageInfoTemplate extends AbstractLanguageInfoTemplate<EditorBox> {
 	private Language language;
 	private String release;
+	private Consumer<Language> renameListener;
 
 	public LanguageInfoTemplate(EditorBox box) {
 		super(box);
@@ -26,6 +28,10 @@ public class LanguageInfoTemplate extends AbstractLanguageInfoTemplate<EditorBox
 
 	public void release(String release) {
 		this.release = release;
+	}
+
+	public void onRename(Consumer<Language> listener) {
+		this.renameListener = listener;
 	}
 
 	@Override
@@ -55,7 +61,8 @@ public class LanguageInfoTemplate extends AbstractLanguageInfoTemplate<EditorBox
 			notifyUser("Could not rename language. Already exists a language in selected collection", UserMessage.Type.Error);
 			return;
 		}
-		box().commands(LanguageCommands.class).rename(language, newName, username());
+		language = box().commands(LanguageCommands.class).rename(language, newName, username());
+		renameListener.accept(language);
 	}
 
 	private void save(LanguageProperty property, Object value) {

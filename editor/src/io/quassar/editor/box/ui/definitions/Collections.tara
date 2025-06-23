@@ -11,7 +11,7 @@ Template(layout=Horizontal Center, format=subHeaderStyle) collectionHeaderTempla
 	Block(layout=Horizontal Flexible)
 		Text(format=bold h5 airLeft) title
 		Block(layout=Horizontal, visible=false) notLoggedBlock
-			Text(value="You are not logged in. Please log in to access available models.", format=h5 textCentered greyColor, translate=true)
+			Text(value="You are not logged in. Please log in to access your models.", format=h5 textCentered greyColor, translate=true)
 	Block(layout=Horizontal Center EndJustified)
 
 Template collectionTemplate as Relative(height=100%, width=100%, offsetHeight=2px)

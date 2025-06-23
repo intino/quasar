@@ -336,6 +336,7 @@ Format("color:'black',zIndex:'100',position:'absolute',right:'0'", darkContent="
 Format("marginLeft:'10px',marginTop:'-3px'") collectionItemLink
 Format("height:'10px',width:'10px',borderRadius:'10px',marginRight:'4px',background:'#94c220'") activeBullet
 Format("height:'10px',width:'10px',borderRadius:'10px',marginRight:'4px',background:'grey'") inactiveBullet
+Format("height:'10px',width:'10px',borderRadius:'10px',background:'white'") headerBullet
 
 Format("padding:'15px 40px'") largeButton
 Format("position:'absolute',bottom:'0',left:'0',marginLeft:'6px',marginBottom:'7px'") userToolbar

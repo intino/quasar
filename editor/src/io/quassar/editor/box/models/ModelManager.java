@@ -50,8 +50,12 @@ public class ModelManager {
 	}
 
 	public List<Model> models(Language language) {
-		Map<String, Subject> ownerSubjects = mapOf(with(subjectStore.query().isType(SubjectHelper.ModelType),"dsl-collection", language.collection()).where("dsl-name").equals(language.name()).collect());
-		Map<String, Subject> contributorSubjects = mapOf(with(subjectStore.query().isType(SubjectHelper.ModelType),"dsl-collection", language.collection()).where("dsl-name").equals(language.name()).collect());
+		return models(language.collection(), language.name());
+	}
+
+	public List<Model> models(String collection, String language) {
+		Map<String, Subject> ownerSubjects = mapOf(with(subjectStore.query().isType(SubjectHelper.ModelType),"dsl-collection", collection).where("dsl-name").equals(language).collect());
+		Map<String, Subject> contributorSubjects = mapOf(with(subjectStore.query().isType(SubjectHelper.ModelType),"dsl-collection", collection).where("dsl-name").equals(language).collect());
 		ownerSubjects.putAll(contributorSubjects);
 		return ownerSubjects.values().stream().map(this::get).toList();
 	}
