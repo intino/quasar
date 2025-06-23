@@ -55,7 +55,7 @@ Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, heigh
 						Text(value="Make your DSL available to other users", format=stepDescription)
 
 		Block(layout=Vertical Center, format=landingSection) as Relative(width=60%)
-			Link(title="What is Quassar", format=blockSubtitleLink bold tripleAirBottom tripleAirTop) as Action Addressable(EditorElements.about)
+			Link(title="What is Quassar", format=blockSubtitleLink bold tripleAirBottom tripleAirTop) aboutLink as Action Addressable(EditorElements.about)
 
 		Block(layout=Vertical, format=landingSection) as Relative(width=60%)
 			Text(value="Featured DSLs", translate=true, format=landingSectionTitle)
