@@ -41,7 +41,10 @@ public class CompletionService {
 			if (!(context.ruleOnPosition() instanceof TaraGrammar.MetaidentifierContext)) return;
 			final CompletionUtils completionUtils = new CompletionUtils(context);
 			Element element = context.elementOnPosition();
-			if (element instanceof Mogram m) result.addAll(completionUtils.collectAllowedFacets(m));
+			if (element instanceof Mogram m) {
+				new Resolver(context.language()).resolve(m);
+				result.addAll(completionUtils.collectAllowedFacets(m));
+			}
 		});
 		map.put(ContextFilters.afterNewLineInBody, new BodyCompletionProvider());
 		map.put(ContextFilters.afterAs, new AnnotationCompletionProvider());

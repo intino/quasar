@@ -43,7 +43,7 @@ class ContextFilters {
 	private static class AfterNewLineInBodyFilter implements Predicate<CompletionContext> {
 		@Override
 		public boolean test(CompletionContext context) {
-			return context.ruleOnPosition() != null &&
+			return context.ruleOnPosition() != null && !(context.ruleOnPosition().getParent() instanceof TaraGrammar.FacetContext) &&
 					inBody(context.ruleOnPosition()) && afterNewLine(context.ruleOnPosition());
 		}
 
