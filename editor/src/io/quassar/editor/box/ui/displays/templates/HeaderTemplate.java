@@ -7,6 +7,8 @@ import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
+import java.nio.file.Path;
+
 public class HeaderTemplate extends AbstractHeaderTemplate<EditorBox> {
 	private Language language;
 	private String release;
@@ -51,7 +53,10 @@ public class HeaderTemplate extends AbstractHeaderTemplate<EditorBox> {
 	private void refreshLanguageBlock() {
 		languageBlock.visible(language != null);
 		if (!languageBlock.isVisible()) return;
-		languageText.value(LanguageHelper.label(language, this::translate));
+		languageLink.title(LanguageHelper.label(language, this::translate));
+		Model metamodel = !language.isFoundational() ? box().modelManager().get(language.metamodel()) : null;
+		languageLink.readonly(metamodel == null);
+		if (metamodel != null) languageLink.address(path -> PathHelper.modelPath(metamodel));
 	}
 
 	private void refreshUser() {

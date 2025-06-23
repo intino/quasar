@@ -129,8 +129,8 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 
 	public void openTemplate(String languageKey, String version) {
 		Language language = box().languageManager().get(languageKey);
-		LanguageRelease release = language.release(version);
-		openModel(release.template(), release.version(), null, null, null, null);
+		LanguageRelease release = language != null ? language.release(version) : null;
+		openModel(release != null ? release.template() : null, release != null ? release.version() : null, null, null, null, null);
 	}
 
 	public void openHelp(String language, String version) {

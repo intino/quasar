@@ -119,6 +119,7 @@ public class LanguageHelper {
 	}
 
 	public static String label(Language language, Function<String, String> translator) {
+		if (language.isFoundational()) return language.name();
 		return translator.apply("%s by %s").formatted(language.name().toLowerCase(), language.collection());
 	}
 }
