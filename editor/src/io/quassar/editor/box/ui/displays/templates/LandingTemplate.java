@@ -67,6 +67,7 @@ public class LandingTemplate extends AbstractLandingTemplate<EditorBox> {
 		//exploreLanguage.address(path -> PathHelper.languagePath(path, language, username() == null || models.isEmpty() ? LanguageTab.Examples : LanguageTab.Models));
 		exploreLanguage.visible(user() != null);
 		exploreLanguageLogin.visible(user() == null);
+		aboutLink.address(path -> PathHelper.aboutUrl(session()));
 	}
 
 	private void refreshLanguagesCatalog() {
