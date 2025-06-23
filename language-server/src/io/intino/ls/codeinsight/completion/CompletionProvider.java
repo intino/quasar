@@ -8,6 +8,9 @@ import java.util.List;
 public interface CompletionProvider {
 	void addCompletions(CompletionContext context, List<CompletionItem> result);
 
+	static CompletionItem createKeyword(String text) {
+		return create(text, CompletionItemKind.Keyword);
+	}
 	static CompletionItem create(String text, CompletionItemKind kind) {
 		CompletionItem item = new CompletionItem();
 		item.setLabel(text);

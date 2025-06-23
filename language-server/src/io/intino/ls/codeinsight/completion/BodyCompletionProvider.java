@@ -16,7 +16,7 @@ public class BodyCompletionProvider implements CompletionProvider {
 	@Override
 	public void addCompletions(CompletionContext context, List<CompletionItem> result) {
 		if (!(context.ruleOnPosition() instanceof TaraGrammar.MetaidentifierContext)) return;
-		if (!(context.elementOnPosition() instanceof Mogram m)) return;
+		if (!(context.mogramOnPosition() instanceof Mogram m)) return;
 		final CompletionUtils utils = new CompletionUtils(context);
 		ElementContainer container = (ElementContainer) m.container();
 		new Resolver(context.language()).resolve(container);

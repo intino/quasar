@@ -124,7 +124,7 @@ class ContextFilters {
 	private static class InParameters implements Predicate<CompletionContext> {
 		@Override
 		public boolean test(CompletionContext context) {
-			return acceptableParent(context.elementOnPosition(), context.ruleOnPosition()) &&
+			return acceptableParent(context.mogramOnPosition(), context.ruleOnPosition()) &&
 					parameter(context.ruleOnPosition()) &&
 					TreeUtils.getMogramContainerOf(context.ruleOnPosition()) != null;
 		}

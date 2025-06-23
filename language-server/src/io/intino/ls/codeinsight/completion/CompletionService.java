@@ -7,7 +7,11 @@ import io.intino.tara.Language;
 import io.intino.tara.Source;
 import io.intino.tara.language.grammar.SyntaxException;
 import io.intino.tara.language.grammar.TaraGrammar;
+import io.intino.tara.language.grammar.TaraGrammar.PropertyDescriptiveContext;
+import io.intino.tara.language.grammar.TaraGrammar.SignaturePropertyContext;
+import io.intino.tara.language.grammar.TaraGrammar.StringValueContext;
 import io.intino.tara.model.*;
+import io.intino.tara.model.rules.property.WordRule;
 import io.intino.tara.processors.Resolver;
 import io.intino.tara.processors.model.Model;
 import io.intino.tara.processors.parser.antlr.ModelGenerator;
@@ -29,7 +33,10 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 import static io.intino.ls.IntinoDocumentService.normalize;
+import static io.intino.ls.codeinsight.completion.CompletionProvider.create;
+import static io.intino.ls.codeinsight.completion.CompletionProvider.createKeyword;
 import static io.intino.ls.codeinsight.completion.TreeUtils.getMogramContainerOn;
+import static io.intino.tara.model.Primitive.*;
 import static org.eclipse.lsp4j.CompletionItemKind.Keyword;
 
 public class CompletionService {
@@ -40,7 +47,7 @@ public class CompletionService {
 		map.put(ContextFilters.afterIs, (context, result) -> {
 			if (!(context.ruleOnPosition() instanceof TaraGrammar.MetaidentifierContext)) return;
 			final CompletionUtils completionUtils = new CompletionUtils(context);
-			Element element = context.elementOnPosition();
+			Element element = context.mogramOnPosition();
 			if (element instanceof Mogram m) {
 				new Resolver(context.language()).resolve(m);
 				result.addAll(completionUtils.collectAllowedFacets(m));
@@ -49,7 +56,7 @@ public class CompletionService {
 		map.put(ContextFilters.afterNewLineInBody, new BodyCompletionProvider());
 		map.put(ContextFilters.afterAs, new AnnotationCompletionProvider());
 		map.put(ContextFilters.afterNewLine, (context, result) -> {
-					Element element = context.elementOnPosition();
+					Element element = context.mogramOnPosition();
 					if (element instanceof Mogram m && ((Mogram) element).types().get(0).equals(TARA_FAKE_TOKEN))
 						element = m.container();
 					if (element instanceof ElementContainer ec) {
@@ -58,17 +65,32 @@ public class CompletionService {
 					}
 				}
 		);
+		map.put(ContextFilters.afterEquals, (context, result) -> {
+					Element valued = context.elementOnPosition();
+					ParserRuleContext rule = context.ruleOnPosition();
+					if (valued == null) return;
+					new Resolver(context.language()).resolve(context.mogramOnPosition());
+					if (valued instanceof Valued p && WORD.equals(p.type())) {
+						if (p.rule(WordRule.class) != null)
+							(p.rule(WordRule.class)).words().forEach(w -> result.add(create(w, CompletionItemKind.Enum)));
+					} else if (valued instanceof PropertyDescription pd) {
+						if (REFERENCE.equals(pd.type()) && !(rule.getParent() instanceof StringValueContext))
+							result.add(createKeyword("empty"));
+						else if (BOOLEAN.equals(pd.type()))
+							result.addAll(List.of(createKeyword("true"), createKeyword("false")));
+					}
+				}
+		);
 		map.put(ContextFilters.afterMogramIdentifier, (context, result) -> {
-					if (!(context.elementOnPosition() instanceof Mogram m)) return;
-					if (m.level() != Level.M1) {
-						result.add(CompletionProvider.create("extends ", Keyword));
-						result.add(CompletionProvider.create("as ", Keyword));
-					} else if (!m.applicableFacets().isEmpty())
-						result.add(CompletionProvider.create("is ", Keyword));
+					if (!(context.mogramOnPosition() instanceof Mogram m)) return;
+					if (m.level() != Level.M1)
+						result.addAll(List.of(create("extends ", Keyword), create("as ", Keyword)));
+					else if (!m.applicableFacets().isEmpty())
+						result.add(create("is ", Keyword));
 				}
 		);
 		map.put(ContextFilters.inParameters, (context, result) -> {
-					if (context.elementOnPosition() instanceof Mogram m) {
+					if (context.mogramOnPosition() instanceof Mogram m) {
 						new Resolver(context.language()).resolve(m);
 						result.addAll(new CompletionUtils(context).collectSignatureParameters(m));
 					}
@@ -98,13 +120,34 @@ public class CompletionService {
 			Model model = convert(source, tree);
 			Token token = TreeUtils.findToken(tokens, position.getLine(), params.getPosition().getCharacter());
 			ParserRuleContext ctx = token == null ? null : TreeUtils.findNodeContainingToken(tree, token);
-			return new CompletionContext(uri, language, params.getPosition(), getMogramContainerOn(model, params.getPosition()),
+			Mogram container = getMogramContainerOn(model, params.getPosition());
+			return new CompletionContext(uri, language, params.getPosition(), container, elementOnPosition(container, ctx, params.getPosition()),
 					token, ctx, params.getContext().getTriggerCharacter());
 		} catch (SyntaxException e) {
 			Logger.error(e);
 			return null;
 		}
 	}
+
+	private static Element elementOnPosition(Mogram container, ParserRuleContext ctx, Position position) {
+		if (container == null) return null;
+		for (Element element : container.elements())
+			if (element.textRange().startLine() == position.getLine()) return element;
+		SignaturePropertyContext sigProperty = (SignaturePropertyContext) TreeUtils.contextOf(ctx, SignaturePropertyContext.class);
+		if (sigProperty != null) return container.parameters().stream().filter(pd -> {
+			if (sigProperty.IDENTIFIER() != null && pd.name().equals(sigProperty.IDENTIFIER().getText()))
+				return true;
+			return false;
+		}).findFirst().orElse(null);
+		PropertyDescriptiveContext description = (PropertyDescriptiveContext) TreeUtils.contextOf(ctx, PropertyDescriptiveContext.class);
+		if (description != null) return container.parameters().stream().filter(pd -> {
+			if (description.IDENTIFIER() != null && pd.name().equals(description.IDENTIFIER().getText()))
+				return true;
+			return false;
+		}).findFirst().orElse(null);
+		return null;
+	}
+
 
 	public static Model convert(Source.StringSource source, TaraGrammar.RootContext rootContext) throws SyntaxException {
 		try {
