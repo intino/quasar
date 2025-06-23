@@ -19,6 +19,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
@@ -53,6 +54,11 @@ public class CompletionService {
 				result.addAll(completionUtils.collectAllowedFacets(m));
 			}
 		});
+		map.put(ContextFilters.afterDef, (context, result) -> {
+					for (Primitive primitive : Primitive.getPrimitives())
+						result.add(create(primitive.getName().toLowerCase(), CompletionItemKind.Property));
+				}
+		);
 		map.put(ContextFilters.afterNewLineInBody, new BodyCompletionProvider());
 		map.put(ContextFilters.afterAs, new AnnotationCompletionProvider());
 		map.put(ContextFilters.afterNewLine, (context, result) -> {

@@ -16,6 +16,7 @@ import static io.intino.tara.language.grammar.TaraGrammar.IDENTIFIER;
 class ContextFilters {
 	public static final Predicate<CompletionContext> afterIs = new AfterIsFilter().and(new InFacetFilter());
 	public static final Predicate<CompletionContext> afterAs = new AfterElementTypeFitFilter(TaraGrammar.AS);
+	public static final Predicate<CompletionContext> afterDef = new AfterElementTypeFitFilter(TaraGrammar.DEF);
 	public static final Predicate<CompletionContext> afterNewLineInBody = new AfterNewLineInBodyFilter();
 	public static final Predicate<CompletionContext> afterNewLine = new AfterNewLineRootFilter();
 	public static final Predicate<CompletionContext> afterEquals = new AfterEqualsFilter();
