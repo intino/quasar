@@ -15,10 +15,12 @@ import java.util.List;
 public class UserManager {
 	private final Archetype archetype;
 	private final SubjectStore subjectStore;
+	private final int newUserLicenseTime;
 
-	public UserManager(Archetype archetype, SubjectStore store) {
+	public UserManager(Archetype archetype, SubjectStore store, int newUserLicenseTime) {
 		this.archetype = archetype;
 		this.subjectStore = store;
+		this.newUserLicenseTime = newUserLicenseTime;
 	}
 
 	public List<User> users() {
@@ -39,6 +41,7 @@ public class UserManager {
 		User user = new User(subjectStore.create(SubjectHelper.userPath(id)));
 		user.id(id);
 		user.name(name);
+		user.licenseTime(newUserLicenseTime);
 		return user;
 	}
 

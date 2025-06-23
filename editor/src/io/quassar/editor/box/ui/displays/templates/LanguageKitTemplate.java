@@ -1,6 +1,7 @@
 package io.quassar.editor.box.ui.displays.templates;
 
 import io.intino.alexandria.ui.displays.UserMessage;
+import io.intino.alexandria.ui.utils.DelayerUtil;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command.CommandResult;
 import io.quassar.editor.box.commands.LanguageCommands;
@@ -52,6 +53,7 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 		createTemplate.onExecute(e -> createTemplate());
 		helpDialog.onOpen(e -> refreshHelpDialog());
 		examplesDialog.onOpen(e -> refreshExamplesDialog());
+		modelsCatalog.onBeforeOpenModel(e -> DelayerUtil.execute(this, e1 -> examplesDialog.close(), 1000));
 		modelsCatalog.onCreateModel(e -> createModel());
 		startModeling.onExecute(e -> startModeling());
 	}
@@ -118,7 +120,7 @@ public class LanguageKitTemplate extends AbstractLanguageKitTemplate<EditorBox> 
 
 	private Model createModel() {
 		Model result = box().commands(ModelCommands.class).createExample(language, release(), username());
-		refreshExamples();
+		DelayerUtil.execute(this, e1 -> examplesDialog.close(), 1000);
 		return result;
 	}
 

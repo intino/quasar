@@ -6,6 +6,7 @@ import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.PermissionsHelper;
+import io.quassar.editor.box.util.SessionHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
 
@@ -36,7 +37,7 @@ public class LanguageExplorer extends AbstractLanguageExplorer<EditorBox> {
 	}
 
 	public void release(String release) {
-		this.refreshRequired = refreshRequired || !release.equals(this.release);
+		this.refreshRequired = refreshRequired || release == null || !release.equals(this.release);
 		this.release = release;
 	}
 
@@ -58,7 +59,6 @@ public class LanguageExplorer extends AbstractLanguageExplorer<EditorBox> {
 		super.init();
 		initToolbar();
 		releaseSelector.onSelect(this::updateRelease);
-		aboutBlock.onInit(e -> initAbout());
 		aboutBlock.onShow(e -> refreshAbout());
 		versionsBlock.onShow(e -> refreshHelp());
 		examplesBlock.onShow(e -> refreshExamples());
@@ -68,11 +68,11 @@ public class LanguageExplorer extends AbstractLanguageExplorer<EditorBox> {
 	public void refresh() {
 		super.refresh();
 		if (!refreshRequired) return;
+		expanded = SessionHelper.isRightPanelExpanded(session());
 		refreshRequired = false;
 		refreshSimpleTitle();
 		refreshReleaseTitle();
-		if (!expanded) expand();
-		else refreshBlocks();
+		refreshBlocks();
 	}
 
 	private void initToolbar() {
@@ -84,13 +84,13 @@ public class LanguageExplorer extends AbstractLanguageExplorer<EditorBox> {
 	private void refreshSimpleTitle() {
 		simpleTitle.visible(tab == LanguageTab.About);
 		if (!simpleTitle.isVisible()) return;
-		title.value(translate(LanguageHelper.title(tab)).formatted(language.key().toLowerCase(), release));
+		title.value(translate(LanguageHelper.title(tab)).formatted(language.name().toLowerCase(), release, release != null ? release : ""));
 	}
 
 	private void refreshReleaseTitle() {
 		releaseTitle.visible(tab != LanguageTab.About);
 		if (!releaseTitle.isVisible()) return;
-		titlePrefix.value(translate(LanguageHelper.title(tab)).formatted(language.key().toLowerCase(), release));
+		titlePrefix.value(translate(LanguageHelper.title(tab)).formatted(language.name().toLowerCase(), release != null ? release : ""));
 		refreshReleaseSelector();
 	}
 
@@ -110,6 +110,7 @@ public class LanguageExplorer extends AbstractLanguageExplorer<EditorBox> {
 	private void refreshExpandedBlock() {
 		expandedBlock.visible(expanded);
 		if(!expandedBlock.isVisible()) return;
+		refreshForge();
 		aboutBlock.hide();
 		versionsBlock.hide();
 		examplesBlock.hide();
@@ -118,13 +119,7 @@ public class LanguageExplorer extends AbstractLanguageExplorer<EditorBox> {
 		else aboutBlock.show();
 	}
 
-	private void initAbout() {
-		metamodelLink.onExecute(e -> notifier.redirect(PathHelper.modelUrl(box().modelManager().get(language.metamodel()), session())));
-	}
-
 	private void refreshAbout() {
-		refreshMetamodel();
-		refreshForge();
 		aboutTitle.value(valueOrDefault(language.title()));
 		aboutDescription.value(valueOrDefault(language.description()).replace("\n", "<br/>"));
 		aboutCitation.value(valueOrDefault(language.citation()).replace("\n", "<br/>"));
@@ -139,14 +134,10 @@ public class LanguageExplorer extends AbstractLanguageExplorer<EditorBox> {
 		releaseHelpStamp.refresh();
 	}
 
-	private void refreshMetamodel() {
-		aboutBlock.aboutContent.metamodelBlock.visible(PermissionsHelper.canEdit(language, session(), box()));
-	}
-
 	private void refreshForge() {
 		String metamodel = language.metamodel();
-		aboutBlock.aboutContent.forgeBlock.visible(metamodel != null && PermissionsHelper.canEdit(language, session(), box()));
-		if (!aboutBlock.aboutContent.forgeBlock.isVisible()) return;
+		forgeLink.visible(metamodel != null && PermissionsHelper.canEdit(language, session(), box()));
+		if (!forgeLink.isVisible()) return;
 		forgeLink.site(PathHelper.forgeUrl(box().modelManager().get(metamodel), release, session()));
 	}
 

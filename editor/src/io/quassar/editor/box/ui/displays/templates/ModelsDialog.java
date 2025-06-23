@@ -2,12 +2,12 @@ package io.quassar.editor.box.ui.displays.templates;
 
 import io.intino.alexandria.ui.displays.components.Collection;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.ui.datasources.ModelsDatasource;
 import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.PermissionsHelper;
+import io.quassar.editor.box.util.SessionHelper;
 import io.quassar.editor.model.Language;
-import io.quassar.editor.model.Model;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -34,16 +34,18 @@ public class ModelsDialog extends AbstractModelsDialog<EditorBox> {
 	public void init() {
 		super.init();
 		addModelTrigger.onExecute(e -> notifyAddModel());
-		mostRecentLink.onExecute(e -> updateSorting("most recent"));
-		lastModifiedLink.onExecute(e -> updateSorting("last modified"));
+		mostRecentLink.onExecute(e -> updateSorting(ModelsDatasource.Sorting.MostRecent));
+		lastModifiedLink.onExecute(e -> updateSorting(ModelsDatasource.Sorting.LastModified));
+		licenseDialog.onRenew(e -> notifyAddModel());
 	}
 
 	@Override
 	public void refresh() {
 		super.refresh();
-		refreshSorting("most recent");
-		searchBox.condition(null);
+		refreshSorting(SessionHelper.modelsSorting(session()));
+		searchBox.condition("");
 		addModelTrigger.visible(addModelListener != null && PermissionsHelper.canAddModel(language, session(), box()));
+		if (addModelTrigger.isVisible()) addModelTrigger.readonly(!PermissionsHelper.hasValidLicense(language, session(), box()));
 		catalogOperations.visible(countItemsProvider.apply(language) > DisplayHelper.MinItemsCount);
 	}
 
@@ -57,19 +59,29 @@ public class ModelsDialog extends AbstractModelsDialog<EditorBox> {
 	}
 
 	private void notifyAddModel() {
+		if (!PermissionsHelper.hasValidLicense(language, session(), box())) {
+			openLicenseDialog();
+			return;
+		}
 		addModelListener.accept(true);
 	}
 
-	private void updateSorting(String sorting) {
-		collection.sortings(List.of(sorting));
+	private void openLicenseDialog() {
+		licenseDialog.license(box().collectionManager().anyLicense(language.collection(), username()));
+		licenseDialog.open();
+	}
+
+	private void updateSorting(ModelsDatasource.Sorting sorting) {
+		SessionHelper.registerModelsSorting(session(), sorting);
+		collection.sortings(List.of(sorting.name()));
 		refreshSorting(sorting);
 	}
 
-	private void refreshSorting(String sorting) {
-		mostRecentLink.visible(!sorting.equals("most recent"));
-		mostRecentText.visible(sorting.equals("most recent"));
-		lastModifiedLink.visible(!sorting.equals("last modified"));
-		lastModifiedText.visible(sorting.equals("last modified"));
+	private void refreshSorting(ModelsDatasource.Sorting sorting) {
+		mostRecentLink.visible(sorting != ModelsDatasource.Sorting.MostRecent);
+		mostRecentText.visible(sorting == ModelsDatasource.Sorting.MostRecent);
+		lastModifiedLink.visible(sorting != ModelsDatasource.Sorting.LastModified);
+		lastModifiedText.visible(sorting == ModelsDatasource.Sorting.LastModified);
 	}
 
 }

@@ -8,6 +8,7 @@ import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.GavCoordinates;
+import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
 import java.util.Comparator;
@@ -57,7 +58,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	public void open(String model, String release, String tab, String view, String file, String position, boolean showHelp) {
 		this.model = box().modelManager().get(model);
 		this.release = release != null ? release : Model.DraftRelease;
-		this.selectedTab = tab != null ? LanguageTab.from(tab) : LanguageTab.About;
+		this.selectedTab = tab != null ? LanguageTab.from(tab) : LanguageTab.Help;
 		this.selectedView = view != null ? ModelView.from(view) : ModelView.Model;
 		this.modelContainer = this.model != null ? box().modelManager().modelContainer(this.model, this.release) : null;
 		this.selectedFile = file != null && modelContainer != null ? modelContainer.file(file) : null;
@@ -82,6 +83,9 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	private void refreshContent() {
 		contentBlock.visible(PermissionsHelper.hasPermissions(model, session(), box()));
 		if (!contentBlock.isVisible()) return;
+		licenseExpiredBanner.language(model.language());
+		licenseExpiredBanner.hint("This model is read-only. Editing is disabled");
+		licenseExpiredBanner.refresh();
 		modelEditor.model(model, release);
 		modelEditor.view(view());
 		modelEditor.tab(selectedTab);

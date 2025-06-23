@@ -1,11 +1,16 @@
 package io.quassar.editor.box.ui.displays.templates;
 
+import io.intino.alexandria.ui.displays.Display;
 import io.intino.alexandria.ui.displays.UserMessage;
+import io.intino.alexandria.ui.displays.components.selector.SelectorOption;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command.CommandResult;
+import io.quassar.editor.box.commands.LanguageCommands;
 import io.quassar.editor.box.ui.types.ForgeView;
+import io.quassar.editor.box.util.DisplayHelper;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.PathHelper;
+import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
@@ -43,6 +48,8 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 		executionBlock.onInit(e -> initExecutionBlock());
 		executionBlock.onShow(e -> refreshExecutionBlock());
 		viewSelector.select(0);
+		removeLanguage.signChecker((sign, reason) -> language.key().equals(sign));
+		removeLanguage.onExecute(e -> removeLanguage());
 		versionSelector.onSelect(e -> updateVersion());
 		refreshVersions.onExecute(e -> refreshVersions());
 	}
@@ -54,6 +61,7 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 		refreshVersions();
 		refreshFooter();
 		refreshView();
+		refreshVersions.launch();
 	}
 
 	private void showInfoBlock() {
@@ -76,6 +84,7 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 	}
 
 	private void refreshInfoDialog() {
+		infoStamp.onRename(this::reload);
 		infoStamp.language(language);
 		infoStamp.release(release);
 		infoStamp.refresh();
@@ -104,17 +113,37 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 	private void refreshProperties() {
 		Model metamodel = box().modelManager().get(language.metamodel());
 		logo.value(LanguageHelper.logo(language, box()));
-		languageName.value(language.name().toLowerCase());
+		languageName.value(language.key().toLowerCase());
 		metamodelLink.site(PathHelper.modelUrl(metamodel, release, session()));
+		removeLanguage.visible(PermissionsHelper.canRemove(language, session(), box()));
 	}
 
 	private void refreshVersions() {
 		Model metamodel = box().modelManager().get(language.metamodel());
 		List<String> releases = box().modelManager().releases(metamodel).reversed();
+		versionSelector.visible(false);
 		versionSelector.address(path -> PathHelper.forgeReleasePath(path, metamodel.id(), viewSelector.selection().getFirst()));
 		versionSelector.clear();
-		versionSelector.addAll(releases);
-		if (release != null) versionSelector.selection(release);
+		releases.forEach(r -> versionSelector.add((SelectorOption) createReleaseOption(r)));
+		if (release != null) versionSelector.selection(releaseOptionOf(release));
+		versionSelector.visible(true);
+		versionSelector.children().stream().filter(d -> d instanceof ReleaseSelectorOption).forEach(Display::refresh);
+		versionSelector.refresh();
+	}
+
+	private String releaseOptionOf(String release) {
+		return versionSelector.children().stream().filter(d -> d instanceof ReleaseSelectorOption && d.name().equals(release)).map(Display::name).findFirst().orElse(null);
+	}
+
+	private String selectedRelease() {
+		String id = !versionSelector.selection().isEmpty() ? versionSelector.selection().getFirst() : null;
+		if (id == null) return null;
+		ReleaseSelectorOption option = versionSelector.children().stream().filter(d -> d instanceof ReleaseSelectorOption && d.name().equals(id)).map(d -> ((ReleaseSelectorOption) d)).findFirst().orElse(null);
+		return option != null ? option.release() : null;
+	}
+
+	private ReleaseSelectorOption createReleaseOption(String release) {
+		return new ReleaseSelectorOption(box()).language(language).release(release).onRemove(this::removeRelease);
 	}
 
 	private void refreshFooter() {
@@ -135,6 +164,23 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 	private void versionCreated(CommandResult result) {
 		if (!result.success()) notifyUser(translate("Could not create version"), UserMessage.Type.Error);
 		refresh();
+	}
+
+	private void removeRelease(String release) {
+		box().commands(LanguageCommands.class).remove(language, release, username());
+		refresh();
+	}
+
+	private void removeLanguage() {
+		notifyUser(translate("Removing language..."), UserMessage.Type.Loading);
+		box().commands(LanguageCommands.class).remove(language, username());
+		notifyUser(translate("Language removed"), UserMessage.Type.Success);
+		Model model = box().modelManager().get(language.metamodel());
+		notifier.redirect(PathHelper.modelUrl(model, session()));
+	}
+
+	private void reload(Language newLanguage) {
+		this.language = newLanguage;
 	}
 
 }

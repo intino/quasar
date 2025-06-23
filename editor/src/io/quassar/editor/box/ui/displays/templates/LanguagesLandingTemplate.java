@@ -3,6 +3,7 @@ package io.quassar.editor.box.ui.displays.templates;
 import io.intino.alexandria.ui.displays.events.AddCollectionItemEvent;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.ui.datasources.LanguagesDatasource;
+import io.quassar.editor.box.ui.displays.items.LanguageItem;
 import io.quassar.editor.box.ui.displays.items.LanguageLandingItem;
 import io.quassar.editor.box.ui.types.LanguagesTab;
 import io.quassar.editor.box.util.DisplayHelper;
@@ -64,23 +65,37 @@ public class LanguagesLandingTemplate extends AbstractLanguagesLandingTemplate<E
 		Language language = event.item();
 		LanguageLandingItem item = event.component();
 		item.logo.value(LanguageHelper.logo(language, box()));
+		refreshLogo(language, item);
+		refreshLogoSelector(language, item);
 		refreshName(language, item);
 		refreshNameSelector(language, item);
 		item.title.value(language.title());
 		item.description.value(language.description());
 	}
 
+	private void refreshLogo(Language language, LanguageLandingItem item) {
+		item.logoLink.visible(selectListener == null);
+		if (!item.logoLink.isVisible()) return;
+		item.logoLink.address(path -> PathHelper.languagePath(path, language));
+	}
+
 	private void refreshName(Language language, LanguageLandingItem item) {
 		item.name.visible(selectListener == null);
 		if (!item.name.isVisible()) return;
-		item.name.title(language.key());
+		item.name.title(LanguageHelper.label(language, this::translate));
 		item.name.address(path -> PathHelper.languagePath(path, language));
+	}
+
+	private void refreshLogoSelector(Language language, LanguageLandingItem item) {
+		item.logoSelectorLink.visible(selectListener != null);
+		if (!item.logoSelectorLink.isVisible()) return;
+		item.logoSelectorLink.onExecute(e -> notifySelect(language));
 	}
 
 	private void refreshNameSelector(Language language, LanguageLandingItem item) {
 		item.nameSelector.visible(selectListener != null);
 		if (!item.nameSelector.isVisible()) return;
-		item.nameSelector.title(language.key());
+		item.nameSelector.title(LanguageHelper.label(language, this::translate));
 		item.nameSelector.onExecute(e -> notifySelect(language));
 	}
 

@@ -12,16 +12,17 @@ import java.util.stream.Stream;
 public class Language extends SubjectWrapper {
 
 	public static final String FileExtension = ".tara";
-	public static final String FoundationalGroup = "tara.dsl";
+	public static final String QuassarCollection = "quassar";
 	public static final String QuassarGroup = "io.quassar";
+	public static final String TaraGroup = "tara.dsl";
 	public static final String Metta = "metta";
 
-	public static String key(String group, String name) {
-		if (group == null || group.isEmpty() || group.equalsIgnoreCase(Language.QuassarGroup) || group.equalsIgnoreCase(Language.FoundationalGroup)) return name;
-		return group + "." + name;
+	public static String key(String collection, String name) {
+		if (collection == null || collection.isEmpty() || collection.equalsIgnoreCase(Language.QuassarCollection)) return name;
+		return collection + "." + name;
 	}
 
-	public static String groupFrom(String id) {
+	public static String collectionFrom(String id) {
 		return id.contains(".") ? id.substring(0, id.indexOf(".")) : "";
 	}
 
@@ -34,7 +35,7 @@ public class Language extends SubjectWrapper {
 	}
 
 	public String key() {
-		return key(group(), name());
+		return key(collection(), name());
 	}
 
 	public enum Level { L1, L2, L3 }
@@ -43,18 +44,21 @@ public class Language extends SubjectWrapper {
 		super(subject);
 	}
 
-	public String group() {
-		String group = getOrEmpty("group");
-		return !group.isEmpty() ? group : Language.QuassarGroup;
+	public String collection() {
+		String collection = getOrEmpty("collection");
+		return !collection.isEmpty() ? collection : Language.QuassarGroup;
 	}
 
-	public void group(String group) {
-		set("group", group);
+	public void collection(String value) {
+		set("collection", value);
+	}
+
+	public static boolean isFoundational(String collection) {
+		return collection != null && collection.equals(Language.QuassarCollection);
 	}
 
 	public boolean isFoundational() {
-		String group = group();
-		return group != null && group.equals(Language.FoundationalGroup);
+		return isFoundational(collection());
 	}
 
 	public String name() {
@@ -82,11 +86,12 @@ public class Language extends SubjectWrapper {
 	}
 
 	public GavCoordinates parent() {
-		return new GavCoordinates(getOrEmpty("parent-group"), getOrEmpty("parent-name"), getOrEmpty("parent-version"));
+		String packagePrefix = Language.isFoundational(getOrEmpty("parent-collection")) ? "" : Language.QuassarGroup + ".";
+		return new GavCoordinates(packagePrefix + getOrEmpty("parent-collection"), getOrEmpty("parent-name"), getOrEmpty("parent-version"));
 	}
 
 	public void parent(GavCoordinates value) {
-		set("parent-group", value.groupId());
+		set("parent-collection", value.groupId());
 		set("parent-name", value.artifactId());
 		set("parent-version", value.version());
 	}
@@ -105,14 +110,6 @@ public class Language extends SubjectWrapper {
 
 	public void description(String value) {
 		set("description", value);
-	}
-
-	public List<String> grantAccessList() {
-		return getList("access");
-	}
-
-	public void grantAccessList(List<String> values) {
-		putList("access", values);
 	}
 
 	public String citation() {

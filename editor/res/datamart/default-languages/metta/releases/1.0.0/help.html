@@ -1,325 +1,590 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>External Builder API Manual for Metta</title>
-    <style>
-        h1 { font-size: 25pt }
-        h2 { font-size: 20pt }
-        h3 { font-size: 15pt }
-        h4 { font-size: 14pt; font-weight: 400 }
-        h5 { font-size: 12pt }
-        h6 { line-height: 17pt; font-size: 12pt }
-        p, li { font-size: 11pt }
-        a { text-decoration: none; color: #9399ff }
-        pre {
-            white-space: break-spaces; 
-            word-wrap: break-word;
-        }
-    </style>
-</head>
-<body>
+  <header>
+    <p class="document-subtitle">The Quassar foundational DSL for generating DSLs</p>
+  </header>
 
-<h1>External Builder API Manual for Metta</h1>
+  <nav class="toc">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#introduction">Introduction</a></li>
+      <li><a href="#core-concepts">Core Concepts</a></li>
+      <li><a href="#getting-started">Getting Started</a></li>
+      <li><a href="#dsl-reference">DSL Reference</a></li>
+      <li><a href="#use-cases">Use Cases</a></li>
+      <li><a href="#syntax-sugar">Syntax Sugar</a></li>
+      <li><a href="#best-practices">Best Practices</a></li>
+      <li><a href="#appendices">Appendices</a></li>
+    </ol>
+  </nav>
 
-<h2>Introduction</h2>
-<p>
-    This document outlines the communication protocol that Quassar's platform expects from external builders, along with an example Dockerfile specification and the usage of the Java library that supports the protocol. The goal is to provide a comprehensive guide for developers who wish to integrate their Docker images with Quassar.
+  <main>
+
+<!-- INTRODUCTION -->
+<section id="introduction" class="section">
+  <h2 class="section-title">Introduction</h2>
+
+  <p><strong>Metta</strong> is a foundational Domain-Specific Language (DSL) within the Quassar environment, designed to enable the creation of new DSLs through the declarative definition of metamodels. Its goal is to let developers design custom modeling languages tailored to specific domains — without having to write parsers or grammar rules by hand.</p>
+
+  <p>Instead of describing DSLs through low-level grammars such as EBNF or parser generators, Metta focuses on defining the structure of a language itself. A metamodel written in Metta specifies the essential building blocks of a DSL — including concepts, properties, components, facets, and semantic rules. These elements capture the organization of the domain and define how its parts relate to one another, forming the blueprint from which the DSL is automatically generated.</p>
+
+  <p>A typical metamodel includes concepts, properties, optional facets, composition relationships, and formal constraints. Once the metamodel is defined, it is transformed automatically into a working DSL. This is done through a specialization process over a shared base language called <strong>Tara</strong>. Tara provides the common syntax and grammar, while Metta injects domain-specific vocabulary and semantic rules. The result is a concrete DSL that can be used to model real-world instances using a consistent, expressive, and safe syntax.</p>
+
+  <p>The DSL produced from Metta can be used for configuration, simulation, validation, or code generation. It preserves the structure and logic defined in the metamodel, ensuring that models are aligned with the domain’s semantics from the start.</p>
+
+  <p>Metta is especially suited for domains with layered abstractions, such as smart cities, digital twins, industrial systems, and autonomous agents. It addresses the common pain points in DSL development — fragmentation, inconsistency, and duplication — by offering a single, reusable foundation from which reliable domain languages can be systematically derived.</p>
+</section>
+
+<!-- CORE CONCEPTS -->
+<section id="core-concepts" class="section">
+  <h2 class="section-title">Core Concepts</h2>
+  <p>Metta is centered around a set of semantic constructs that enable the structured definition of DSLs. This approach allows developers to generate new DSLs automatically, with consistent structure and semantics, tailored precisely to the needs of any domain.
 </p>
+  <ul>
+    <li><strong>Concept</strong>: A category that groups entities sharing the same structure and defining properties. Concepts are derived from metaconcepts and serve as templates for instantiating specific elements in lower levels of abstraction.</li>
+    <li><strong>Facet</strong>: An optional dimension that can be assigned to concepts or entities to enrich them with additional properties or behaviors. Facets support polymorphism and modularity, allowing cross-cutting features to be modeled cleanly.</li>
+    <li><strong>Property</strong>: A descriptive feature of a metaconcept or concept. Properties define the internal structure of elements and may include constraints on type, value ranges, or units of measurement.</li>
+    <li><strong>Relationship</strong>: A semantic link between elements, such as generalization/specialization, composition, or abstraction/concretization. These define how concepts and entities are structured and interrelated within the domain.</li>
+    <li><strong>Semantic Rule</strong>: A formal constraint that governs the validity of models. These include rules about instantiation, property immutability, required facets, component cardinality, and more. Semantic rules ensure that the model aligns with the logic of the domain.</li>
+  </ul>
+</section>
 
-<h2>Table of Contents</h2>
-<ol>
-    <li><a href="#overview">Overview</a></li>
-    <li><a href="#communication-protocol">Communication Protocol</a></li>
-    <li><a href="#dockerfile-specification">Dockerfile Specification</a></li>
-    <li><a href="#using-the-java-library">Using the Java Library</a></li>
-    <li><a href="#examples">Examples</a></li>
-    <li><a href="#faqs">FAQs</a></li>
-    <li><a href="#contact">Contact</a></li>
-</ol>
 
-<h2 id="overview">Overview</h2>
-<p>
-    Quassar is an online development platform that allows domain modeling with minimal code using a Domain-Specific Modeling Language (DSML). The models created can be compiled to generate executable code in various programming languages. This code can be included as a library in another project or executed directly on the platform.
-</p>
-<p>
-    External builders are responsible for transforming these models into executable code. To integrate with Quassar, builders must meet specific requirements and be packaged as Docker images, which are then published on Docker Hub or an Artifactory.
-</p>
-<p>
-    This manual details how external builders should communicate with Quassar and provides detailed examples of how to create a compliant builder.
-</p>
+<!-- GETTING STARTED -->
+<section id="getting-started" class="section">
+  <h2 class="section-title">Getting Started</h2>
+  <p>This section introduces <em>brico</em>, a DSL for modeling smart buildings. It walks you through a minimal working example, showing how to define your domain in Metta and then instantiate it using the brico language.</p>
 
-<h2 id="communication-protocol">Communication Protocol</h2>
+  <h3>Step 1: Define the domain with Metta</h3>
+  <p>We start by describing the abstract structure of a building system: a campus is composed of buildings, which contain floors, rooms, and sensors. Each element includes its own properties and constraints.</p>
+  <pre><code class="language-metta">Concept Campus
+    def string manager
+    def string location
+    Concept:{1..*} Building
+        def string address
+        def integer yearBuilt
+        has Sensor
+        Concept:{1..*} Floor
+            def integer level
+            Concept:{1..*} Room
+                def integer area
+                has Sensor
 
-<h3>Communication Flow</h3>
-<p>The builder must follow this communication flow when interacting with the Quassar platform:</p>
-<ol>
-    <li><strong>Process Initiation:</strong> Quassar sends a request to the builder with the model information to be compiled.</li>
-    <li><strong>Request Handling:</strong> The builder receives the request in the specified JSON format.</li>
-    <li><strong>Compilation Execution:</strong> The builder processes the provided information, compiles the model, and generates the executable code.</li>
-    <li><strong>Response:</strong> Once the builder completes the compilation process, it sends back a response with the results, including the compilation output and, if successful, the generated code or an equivalent artifact.</li>
-</ol>
+Concept Sensor is component
+    facet Type
+        sub Temperature
+        sub Humidity
+        sub CO2
+  </code></pre>
 
-<h3>Request Format</h3>
-<p>The input file for the External Builder API consists of key-value pairs, where each property is described by its name on one line and its corresponding value on the next. For certain properties like <code>def.file</code>, the value may span multiple lines, with each line representing a separate entry. At the end of this, a double break line is expected.</p>
+  <h3>Step 2: Validate the metamodel</h3>
+  <p>Run the check operation to ensure the model has no structural or semantic errors. Any issues must be fixed before continuing.</p>
 
-<p>Below is an example of the file structure and the corresponding description of each parameter.</p>
+  <h3>Step 3: Commit the version</h3>
+  <p>Once validated, use the commit operation to save the metamodel as version 1.0.0. Future changes will ask whether to register a major, minor, or patch update, and the version number will be updated accordingly.</p>
 
-<h3>Parameter Descriptions</h3>
+  <h3>Step 4: Forge the DSL</h3>
+  <p>Use the forge operation to create the DSL based on your metamodel. You’ll be taken to the DSL’s forge interface, where you can configure:</p>
+  <ul>
+    <li>Name: brico</li>
+    <li>Logo: auto-generated, editable</li>
+    <li>Title: Brico — DSL for modeling smart building structures</li>
+    <li>Description: A language for defining campuses, buildings, rooms, and sensors</li>
+    <li>How to cite: Editable text</li>
+    <li>License: Defaults to MIT (can be changed)</li>
+  </ul>
 
-<h4>def.file</h4>
+  <h4>Step 4.1 (optional): Create a model template</h4>
+  <p>In the Kit tab, define a starter structure or files that will appear when someone creates a new model with brico.</p>
+
+  <h4>Step 4.2 (optional): Add examples</h4>
+  <p>Also in the Kit tab, you can include example models to help users get started faster.</p>
+
+  <h4>Step 4.3 (optional): Write documentation</h4>
+  <p>In the Help tab, you can write the reference guide for your DSL, explaining concepts, syntax, and examples.</p>
+
+  <h4>Step 4.4: Define the execution environment</h4>
+  <p>To enable execution, simulation, or transformation of models, use the Execution Environment tab. This environment is built using the automatically generated parser library.</p>
+
+  <p>The parser lets you load and work with models programmatically. You can download it or add it as a Maven dependency. It’s the foundation for anything you want to build on top of your DSL — from code generators to runtime engines.</p>
+
+  <h3>Step 5: Start modeling</h3>
+  <p>Once the DSL is forged, you can use the start modeling operation to create and edit actual models using brico.</p>
+
+  <p>Here is an example of a concrete model:</p>
+  <pre><code class="language-brico">Campus North
+  manager = "Alice Rivera"
+  location = "North Zone"
+
+  Building Alpha
+    address = "123 Innovation Blvd"
+    yearBuilt = 2012
+
+    Floor(level = 1)
+      Room(area = 35)
+        Sensor is Temperature
+        Sensor is CO2
+      Room
+        area = 28
+        Sensor is Humidity
+
+    Floor(level = 2)
+      Room
+        area = 42
+        Sensor is Temperature
+
+  Building(address = "125 Innovation Blvd", yearBuilt = 2015) Beta 
+    Floor(level = 0) > Room(area = 30) > Sensor is CO2</code></pre>
+
+  <blockquote class="tip">
+    Tip: This example is ready to copy and modify. You can rename buildings, change sensor types, or adjust the structure as needed.
+  </blockquote>
+</section>
+
+<!-- DSL REFERENCE -->
+<section id="dsl-reference" class="section">
+  <h2 class="section-title">DSL Reference</h2>
+  <p>This section provides detailed, structured reference for each top-level construct in the DSL.</p>
+
+  <!-- ============ BLOCK FOR A PROPERTY CONCEPT ============ -->
+<h3 class="concept-title">Properties and Relationships</h3>
+
+<h4>Syntax</h4>
+<pre class="syntax-block"><code>property ::= "def" type IDENTIFIER [ "=" literal ]
+
+type ::= [ primitiveType ":" identifer | "word" ":"" "{" wordlist "}" | IDENTIFIER ][ "[" "]" 
+
+primitiveType ::= "string" | "integer" | "boolean" | "double" | "long" | "instant"
+
+wordList ::= stringLiteral { "," stringLiteral }
+
+literal ::= scalarLiteral | listLiteral
+
+scalarLiteral  ::= stringLiteral | integerLiteral | booleanLiteral | doubleLiteral
+
+listLiteral ::= "[" scalarLiteral { "," scalarLiteral } "]"
+</code></pre>
+
+<h4>Examples</h4>
+
+<div class="example-block">
+  <p class="example-label">Primitive Properties</p>
+  <p class="example-description">
+    This example defines a Room concept using several primitive properties. The property name is a string that identifies the room. The property area is an integer representing the surface in square meters. The property hasWindow is a boolean with a default value of true, indicating whether the room has natural light. Finally, ceilingHeight is a double with a unit of measurement in centimeters (cm), and a default value of 300.
+  </p>
+  <pre><code>Concept Room
+  def string name
+  def integer area 
+  def boolean hasWindow = true
+  def double:cm ceilingHeight = 300
+</code></pre>
+</div>
+
+<div class="example-block">
+  <p class="example-label">Word Properties</p>
+  <p class="example-description">
+    This concept uses multiple enumerated properties to define categorical characteristics. Each property restricts the valid values to a predefined list.
+  </p>
+  <pre><code>Concept Device
+  def word:{Online, Offline, Maintenance} status = Online
+  def word:{Low, Medium, High} batteryLevel
+  def word:{Sensor, Actuator} type = empty
+</code></pre>
+</div>
+
+<div class="example-block">
+  <p class="example-label">List Properties</p>
+  <p class="example-description">
+    This example defines two properties. tags is a list of strings used to label or categorize an element (e.g., "public", "featured"). status is an enumerated property restricted to three valid values, ensuring consistent classification across instances.
+  </p>
+  <pre><code>def string[] tags = ["public", "featured"]
+def word:{Active, Inactive, Pending} status</code></pre>
+</div>
+
+<div class="example-block">
+  <p class="example-label">Relational Property</p>
+  <p class="example-description">
+    This example shows how to define a property that links an object to another instance in the model. Here, an Incident is associated with a specific Building< using a reference-type property.
+  </p>
+  <pre><code>Concept Incident
+  def string description
+  def instant timestamp
+  def Building building
+</code></pre>
+</div>
+
+<h4>Rules and Notes</h4>
 <ul>
-    <li><strong>Description:</strong> A multi-line property listing file paths to the DSL files to be the input of the builder. Each line contains a path to a model file.</li>
-    <li><strong>Example:</strong>
-        <pre>/konos/src/io/intino/konos/dsl/ui/UI.tara<br>/konos/src/io/intino/konos/dsl/DataHub.tara</pre>
+  <li>Supported types include primitives, lists of primitives, and constrained enumerated sets using <code>word:{...}</code>.</li>
+  <li>Default values are optional and must conform to the type (a literal or a list).</li>
+  <li>List values use square brackets and blank-separated literals, e.g., <code>["a" "b" "c"]</code>.</li>
+  <li>Each property name must be unique within its concept or metaconcept scope.</li>
+  <li>Semantic metadata such as immutability, measurement units, or cardinality must be declared separately via constraints.</li>
+</ul>
+
+<blockquote class="tip">
+  <strong>Tip:</strong> Use <code>[]</code> to declare list-based properties, and <code>word:{...}</code> when you need a fixed set of valid values.
+</blockquote>
+
+<!-- ============ BLOCK FOR A DSL CONCEPT ============ -->
+<h3 class="concept-title">Concept</h3>
+
+<h4>Syntax</h4>
+<pre class="syntax-block"><code>concept ::= "Concept" [ cardinality ][ IDENTIFIER ][ extension ][ modifierList ]
+                    { INDENT conceptBody }
+
+conceptBody ::= property
+                  | composition
+                  | specialization
+                  | facet
+
+composition ::= "has" [cardinality] IDENTIFIER | concept
+
+extension ::= "extends" IDENTIFIER
+
+specialization ::= "sub" IDENTIFIER [ modifierList ]
+                   { INDENT conceptBody }
+
+facet ::= "facet" IDENTIFIER
+                   { INDENT conceptBody }
+
+cardinality ::= "{" min ".." max "}"
+
+modifierList ::= "is" modifier { modifier }
+
+modifier ::= "final" | "component" | "abstract" | "required"
+
+IDENTIFIER ::= ? valid identifier name ?
+INDENT ::= ? newline and indentation ?</code></pre>
+
+<h4>Examples</h4>
+
+<div class="example-block">
+  <p class="example-label">Basic Concept</p>
+  <p class="example-description">
+    This example defines a basic concept called Sensor, marked as a component, meaning it is designed to be included inside other concepts rather than instantiated independently. It has two string properties: id, which uniquely identifies the sensor within the system, and manufacturer, which records the name of the company or entity that produced the device. This concept can be reused across different models where sensing elements are required, such as in buildings, vehicles, or environments.
+  </p>
+  <pre><code>Concept Sensor is component
+    def string id
+    def string manufacturer</code></pre>
+</div>
+
+<div class="example-block">
+  <p class="example-label">Concept including component</p>
+  <p class="example-description">
+    This example defines a concept named Floor, which includes a nested concept called Room. Inside Room, there is a composition reference to Sensor using the has keyword. This illustrates the two main ways to express composition in Metta. The first is structural composition, where a concept is declared inside another — as Room is declared inside Floor. The second is referential composition, where one concept includes another via has — as Room includes Sensor. The referenced concept (Sensor) is typically marked with is component to indicate that it is meant to be embedded rather than used independently.
+  </p>
+  <pre><code>Concept Floor
+  def integer level
+  Concept Room
+    def integer area
+    has Sensor</code></pre>
+</div>
+
+
+<div class="example-block">
+  <p class="example-label">Concept with Cardinality and Modifier</p>
+  <p class="example-description">
+    This example defines a concept named Building. The cardinality declaration {1..*} indicates that at least one instance of Building must exist wherever it is used (e.g., within a parent concept like Campus). The concept is also marked as abstract, which means it cannot be instantiated directly. Instead, it is intended to be specialized by other concepts (e.g., ResidentialBuilding, OfficeBuilding) that inherit its structure and extend it. This is useful for enforcing a shared base structure while requiring domain-specific variants.
+  </p>
+  <pre><code>Concept:{1..*} Building is abstract
+  def string address
+  def integer yearBuilt</code></pre>
+</div>
+
+<div class="example-block">
+  <p class="example-label">Facet Declaration</p>
+  <p class="example-description">
+    Defines a facet that can be applied to Room entities to indicate emergency access availability.
+  </p>
+  <pre><code>Concept Room
+    facet EmergencyAccess
+        def boolean enabled = false</code></pre>
+</div>
+
+<h4>Rules and Notes</h4>
+<ul>
+  <li>Concept is used to declare domain abstractions and their structure.</li>
+  <li>A concept may contain properties, components, nested sub-concepts, and facet declarations.</li>
+  <li>Cardinality can be used to enforce how many instances of a sub-concept or component are expected.</li>
+  <li>Concept names must be unique within the same context. Nested concepts are scoped locally.</li>
+  <li>Facet declarations inside a concept define optional extensions applicable to other concepts or entities.</li>
+</ul>
+
+<blockquote class="tip">
+  <strong>Tip:</strong> Use concept nesting to structure complex domains hierarchically and reuse concepts via <code>has</code> or <code>facet</code>.
+</blockquote>
+
+</section>
+
+<!-- USE CASES -->
+<section id="use-cases" class="section">
+  <h2 class="section-title">Use Cases</h2>
+  <p>Below are practical examples showing how metamodels written in Metta give rise to usable DSLs, and how those DSLs are then used to describe concrete scenarios.</p>
+
+  <h3>Smart Campus</h4>
+  <p>
+    This metamodel defines a campus composed of buildings, which contain floors and rooms. Each room may include sensors of various types. Once committed and forged, it produces a DSL (e.g., <em>brico</em>) that users can apply to model real environments such as a university or office complex.
+  </p>
+
+  <p><strong>Metamodel</strong></p>
+  <pre><code class="language-metta">Concept Campus
+  def string manager
+  def string location
+  Concept:{1..*} Building
+    def string address
+    def integer yearBuilt
+    has Sensor
+    Concept:{1..*} Floor
+      def integer level
+      Concept:{1..*} Room
+        def integer area
+        has Sensor
+
+Concept Sensor is component
+  facet Type
+    sub Temperature
+    sub Humidity
+    sub CO2
+</code></pre>
+
+  <p><strong>Model</strong></p>
+  <pre><code class="language-brico">Campus North
+  manager = "Alice Rivera"
+  location = "North Zone"
+
+  Building Alpha
+    address = "123 Innovation Blvd"
+    yearBuilt = 2012
+
+    Floor(level = 1)
+      Room(area = 35)
+        Sensor is Temperature
+        Sensor is CO2
+      Room(area = 28)
+        Sensor is Humidity
+
+    Floor(level = 2)
+      Room(area = 42)
+        Sensor is Temperature
+</code></pre>
+
+
+<h3>Patient Monitoring</h3>
+<p>
+  This metamodel defines a hospital system with patients, rooms, and vital signs. Patients are associated with rooms and include vital signs as components. Each vital sign facet declares a threshold and expects a measured value that may be used for alerts or clinical analysis.
+</p>
+
+<p><strong>Metamodel</strong></p>
+<pre><code class="language-metta">Concept Hospital
+  def string name
+  Concept:{1..*} Room
+    def integer number
+
+Concept Patient
+  def string fullName
+  def integer age
+  def Room room
+  has VitalSign
+
+Concept VitalSign is component
+  facet Type
+    sub Temperature
+      def double:°C value
+      def double:°C threshold = 38.0
+    sub HeartRate
+      def integer:bpm value
+      def integer:bpm threshold = 100
+    sub SpO2
+      def integer:% value
+      def integer:% threshold = 90
+</code></pre>
+
+<p><strong>Model</strong></p>
+<pre><code class="language-clinic">Hospital General
+  name = "St. Mary Hospital"
+  Room(number = 101) R101
+  Room(number = 102) R102
+
+Patient
+  fullName = "Laura Gómez"
+  age = 46
+  room = General.R101
+  VitalSign is Temperature
+    value = 37.4
+  VitalSign is SpO2
+    value = 92
+
+Patient
+  fullName = "Tomás Ibáñez"
+  age = 72
+  room = General.R101
+  VitalSign is HeartRate(value = 108)
+
+Patient
+  fullName = "Lina Ruiz"
+  age = 35
+  room = General.R102
+  VitalSign is Temperature(value = 39.1)
+  VitalSign is HeartRate(value = 95)
+    
+</code></pre>
+
+</section>
+
+<!-- SYNTAX SUGAR -->
+<section id="syntax-sugar" class="section">
+  <h2 class="section-title">Syntax Sugar</h2>
+  <p>To keep models concise and readable, DSLs generated from Metta support a few syntax shortcuts. These are syntactic sugars that make writing models faster without changing their meaning.</p>
+
+  <h4>1. Property values can be written in the constructor or in the body</h4>
+  <p>You can assign values to properties either inside the constructor or as indented assignments in the body. Both styles are equivalent and can be mixed as needed.</p>
+
+  <pre><code class="language-example">Person pau
+  age = 35
+
+Person(age = 35) pau
+
+Person(35) pau
+</code></pre>
+
+  <p>In the last form, the value is assigned positionally, according to the order of properties in the concept definition.</p>
+
+  <h4>2. Single child blocks can be shortened with <code>></code></h4>
+  <p>When a block contains exactly one indented element, you can replace the block with a single-line version using the <code>&gt;</code> symbol. This keeps the model clean when nesting is minimal.</p>
+
+  <pre><code class="language-example">Concept Person
+  def int age
+
+Person > age = 35
+
+Person
+  age = 35
+</code></pre>
+
+  <p>Both forms are equivalent. The <code>&gt;</code> is especially useful when a concept includes just one property, component, or nested element.</p>
+
+  <h4>3. Instance names are optional</h4>
+  <p>In most cases, you can omit the name of an instance if it's not needed for reference. This makes the model cleaner when working with anonymous or throwaway objects.</p>
+
+  <pre><code class="language-example">Room
+  number = 101
+
+Patient
+  fullName = "Laura Gómez"
+  age = 46
+</code></pre>
+
+  <p>If needed, you can still assign a name for later reference:</p>
+
+  <pre><code class="language-example">Patient laura
+  fullName = "Laura Gómez"
+  age = 46
+</code></pre>
+
+  <blockquote class="tip">
+    Tip: These shortcuts improve fluency, but you can always fall back to the full form for clarity or consistency.
+  </blockquote>
+</section>
+
+<!-- BEST PRACTICES -->
+<section id="best-practices" class="section">
+  <h2 class="section-title">Best Practices</h2>
+  <p>To get the most out of Metta and build DSLs that are maintainable, expressive, and reusable, it's important to follow a few design principles when creating your metamodels.</p>
+
+  <ul>
+    <li>
+      Focus on the domain, not the implementation.<br>
+      Capture the core concepts, structure, and logic of your domain. Avoid including technical details like data formats, algorithms, or user interfaces in the metamodel.
     </li>
-</ul>
 
-<h4>project</h4>
-<ul>
-    <li><strong>Description:</strong> The name of the project.</li>
-    <li><strong>Example:</strong> <code>projectName</code></li>
-</ul>
-
-<h4>module</h4>
-<ul>
-    <li><strong>Description:</strong> The module name within the project.</li>
-    <li><strong>Example:</strong> <code>moduleName</code></li>
-</ul>
-
-<h4>project.path</h4>
-<ul>
-    <li><strong>Description:</strong> The absolute path to the project root.</li>
-    <li><strong>Example:</strong> <code>/Users/lorenipsum/projectName</code></li>
-</ul>
-
-<h4>module.path</h4>
-<ul>
-    <li><strong>Description:</strong> The absolute path to the module within the project.</li>
-    <li><strong>Example:</strong> <code>/Users/lorenipsun/moduleName</code></li>
-</ul>
-
-<h4>outputpath</h4>
-<ul>
-    <li><strong>Description:</strong> The path where the generated output files should be placed.</li>
-    <li><strong>Example:</strong> <code>/Users/lorenipsun/moduleName/gen</code></li>
-</ul>
-
-<h4>final_outputpath</h4>
-<ul>
-    <li><strong>Description:</strong> The final output path for production builds.</li>
-    <li><strong>Example:</strong> <code>/Users/lorenipsun/moduleName/out</code></li>
-</ul>
-
-<h4>res.path</h4>
-<ul>
-    <li><strong>Description:</strong> The path to the resource directory for the module.</li>
-    <li><strong>Example:</strong> <code>/Users/lorenipsun/moduleName/res</code></li>
-</ul>
-
-<h4>src.path</h4>
-<ul>
-    <li><strong>Description:</strong> The source code directory path for the module.</li>
-    <li><strong>Example:</strong> <code>/Users/lorenipsun/moduleName/src</code></li>
-</ul>
-
-<h4>repository.path</h4>
-<ul>
-    <li><strong>Description:</strong> The local repository path, typically for load dsls and save generated.</li>
-    <li><strong>Example:</strong> <code>/Users/lorenipsun/.m2/repository</code></li>
-</ul>
-
-<h4>encoding</h4>
-<ul>
-    <li><strong>Description:</strong> The character encoding used for file reading and writing.</li>
-    <li><strong>Example:</strong> <code>UTF-8</code></li>
-</ul>
-
-<h4>compilation.mode</h4>
-<ul>
-    <li><strong>Description:</strong> The operation of compilation, typically <code>Build</code> for production builds.</li>
-    <li><strong>Example:</strong> <code>Build</code></li>
-</ul>
-
-<h4>dsl</h4>
-<ul>
-    <li><strong>Description:</strong> The DSL and version will be used.</li>
-    <li><strong>Example:</strong> <code>Metta:2.0.0</code></li>
-</ul>
-
-<h4>generation.package</h4>
-<ul>
-    <li><strong>Description:</strong> The package name where generated files will be placed.</li>
-    <li><strong>Example:</strong> <code>com.example.dsl</code></li>
-</ul>
-
-<h4>out.dsl</h4>
-<ul>
-    <li><strong>Description:</strong> The DSL output name.</li>
-    <li><strong>Example:</strong> <code>lorenipsum</code></li>
-</ul>
-
-<h4>out.dsl.builder.groupId</h4>
-<ul>
-    <li><strong>Description:</strong> The <code>groupId</code> of the DSL builder.</li>
-    <li><strong>Example:</strong> <code>io.intino</code></li>
-</ul>
-
-<h4>out.dsl.builder.artifactId</h4>
-<ul>
-    <li><strong>Description:</strong> The <code>artifactId</code> of the DSL builder.</li>
-    <li><strong>Example:</strong> <code>konos</code></li>
-</ul>
-
-<h4>out.dsl.builder.version</h4>
-<ul>
-    <li><strong>Description:</strong> The version of the DSL builder.</li>
-    <li><strong>Example:</strong> <code>13.0.0</code></li>
-</ul>
-
-<h4>out.dsl.runtime.groupId</h4>
-<ul>
-    <li><strong>Description:</strong> The <code>groupId</code> of the runtime environment for the DSL.</li>
-    <li><strong>Example:</strong> <code>io.intino.magritte</code></li>
-</ul>
-
-<h4>out.dsl.runtime.artifactId</h4>
-<ul>
-    <li><strong>Description:</strong> The <code>artifactId</code> of the runtime environment for the DSL.</li>
-    <li><strong>Example:</strong> <code>framework</code></li>
-</ul>
-
-<h4>out.dsl.runtime.version</h4>
-<ul>
-    <li><strong>Description:</strong> The version of the runtime environment for the DSL.</li>
-    <li><strong>Example:</strong> <code>5.2.1</code></li>
-</ul>
-
-<h3>Error Handling</h3>
-<p>The builder should return clear and precise error messages. Errors should relate to issues with the compilation process or internal builder failures. Example error response:</p>
-
-<h2 id="dockerfile-specification">Dockerfile Specification</h2>
-
-<p>To integrate an external builder with Quassar, a Docker image must be created that meets the following requirements:</p>
-
-<ol>
-    <li>Base Image: The image should be based on a stable version of Java, as the support library is currently available in Java.</li>
-    <li>Dependency Installation: Ensure that the Dockerfile installs all necessary dependencies for compiling the model.</li>
-    <li>Expose Port: If the builder interacts with the platform via an HTTP API, the corresponding port should be exposed.</li>
-    <li>Entry Command: The container’s entry command should be the execution of the compiler that will process the models received from Quassar.</li>
-</ol>
-
-<h3>Example dockerfile</h3>
-<p>The Dockerfile of the example creates a Docker image based on the slim version of OpenJDK 21. The image is configured to run a builder (indicated by the labels) and is designed to handle build operations. Below is a breakdown of the Dockerfile:</p>
-
-<pre>
-FROM openjdk:21-jdk-slim
-LABEL maintainer="octavio.roncal &lt;octavioroncal@siani.es&gt;"
-LABEL version="1.3.0"
-LABEL description="Loren Ipsum compiler"
-LABEL operations="Build"
-LABEL targets="Java"
-COPY out/build/builder/builder.jar /root/app/
-COPY out/build/builder/lib /root/app/lib
-COPY docker/run-builder.sh /root/app/
-WORKDIR /root/app
-RUN chmod +x /root/app/run-builder.sh
-ENTRYPOINT ["/root/app/run-builder.sh"]
-</pre>
-
-<h3>Dockerfile Breakdown</h3>
-<ul>
-    <li><strong>Base Image:</strong> openjdk:21-jdk-slim: This is a lightweight version of the Java Development Kit (JDK) 21. It provides the necessary Java environment for running the builder.</li>
-    <li><strong>Labels:</strong>
-        <ul>
-            <li>LABEL maintainer="octavio.roncal &lt;octavioroncal@siani.es&gt;": Specifies the maintainer of the Docker image.</li>
-            <li>LABEL version="1.3.0": Denotes the version of the Docker image (1.3.0).</li>
-            <li>LABEL description="Loren Ipsum compiler": Describes the purpose of the image as a "Loren Ipsum compiler".</li>
-            <li>LABEL operations="Build": Indicates the type of operations this image performs (Build). This label is mandatory.</li>
-            <li>LABEL targets="Java": Specifies the target language for this builder (Java). This label is mandatory.</li>
-        </ul>
+    <li>
+      Keep concepts focused and cohesive.<br>
+      Each concept should represent a single, well-defined idea. If it grows too broad, consider splitting it or using facets to modularize optional features.
     </li>
-    <li><strong>Copying Files:</strong>
-        <ul>
-            <li>COPY out/build/builder/builder.jar /root/app/: Copies the builder.jar file, which contains the main executable, into the /root/app/ directory.</li>
-            <li>COPY out/build/builder/lib /root/app/lib: Copies the lib directory containing additional dependencies into /root/app/lib.</li>
-            <li>COPY docker/run-builder.sh /root/app/: Copies the run-builder.sh script into /root/app/.</li>
-        </ul>
+
+    <li>
+      Use facets for reusable or optional traits.<br>
+      When a property or behavior is relevant across multiple concepts, define it as a facet instead of duplicating the same fields.
     </li>
-    <li><strong>Working Directory:</strong> WORKDIR /root/app: Sets the working directory inside the container to /root/app, where all subsequent commands and execution will take place.</li>
-    <li><strong>Permissions:</strong> RUN chmod +x /root/app/run-builder.sh: Makes the run-builder.sh script executable by adding execution permissions (+x).</li>
-    <li><strong>Entry Point:</strong> ENTRYPOINT ["/root/app/run-builder.sh"]: Configures the container to execute the run-builder.sh script when it starts, making it the default command for the container.</li>
-</ul>
 
-<h3>run-builder.sh Script</h3>
-<p>The run-builder.sh script is a simple Bash script that runs the builder.jar and directs the output to a log file:</p>
+    <li>
+      Prefer composition over inheritance.<br>
+      Use has relationships to represent structure and avoid deep hierarchies. This keeps your models modular and easier to evolve.
+    </li>
 
-<pre>
-java -jar /root/app/builder.jar /root/project/args.txt > /root/project/output.log 2>&1
-</pre>
+    <li>
+      Declare constraints explicitly.<br>
+      Use formal rules like instantiation lock, component lock, or immutability to express your design intent clearly. Don't rely only on naming or documentation.
+    </li>
 
-<h3>Labels operations and targets</h3>
-<p>The operations and targets labels are mandatory for the Docker image:</p>
-<ul>
-    <li><strong>operations:</strong> Defines the operations that the builder can perform. In this case, it is set to "Build", indicating that the builder will compile or build the provided project.</li>
-    <li><strong>targets:</strong> Specifies the target language of generated code. In this case, "Java" is the target, meaning that this builder is set up to generate Java classes from the model.</li>
-</ul>
+    <li>
+      Use clear and domain-specific names.<br>
+      Avoid generic terms like item, object, or thing. Choose names that reflect how people in the domain actually speak.
+    </li>
 
-<p>As part of the communication protocol, the Quassar building platform will place the argument file at the path <code>/root/project/args.txt</code> inside the container. This file contains all the necessary input and configuration parameters required by the builder to execute the compilation process. The builder must read from this file to initiate the build process. Additionally, all output from the build process, including both standard output and error messages, should be logged into the file <code>/root/project/output.log</code>. This ensures that any relevant information, including error diagnostics and build status, is captured for review.</p>
+    <li>
+      Provide thoughtful defaults and enumerations.<br>
+      When possible, define sensible default values. If you use enumerations (word:{...}), make sure the list of options is complete and unambiguous.
+    </li>
 
-<p>This Dockerfile uses OpenJDK 21 and Maven to build the project and generate the executable. Make sure to adjust it based on your specific needs.</p>
+    <li>
+      Begin at the metaconcept level.<br>
+      Start by identifying the core types of concepts your DSL will need. This helps organize the model and makes the language easier to generate and extend.
+    </li>
 
-<h2 id="using-the-java-library">Using the Java Library</h2>
+    <li>
+      Validate early and iterate often.<br>
+      Don't wait until the model is finished to test it. Generate and test DSL examples as you go to verify that your structure behaves as expected.
+    </li>
+  </ul>
 
-<p>Quassar provides a Java library that facilitates interaction with the platform through the External Builder API. Below is an explanation of how to integrate it into your project.</p>
+  <blockquote class="tip">
+    Tip: You don't need to design the perfect model on day one. With Metta, you can evolve your language safely as your understanding of the domain deepens.
+  </blockquote>
+</section>
 
-<h3>Installation</h3>
-<p>You can add the library dependency to your <code>pom.xml</code> (if you’re using Maven):</p>
+<!-- APPENDICES -->
+<section id="appendices" class="section">
+  <h2 class="section-title">Appendices</h2>
 
-<pre>
-&lt;dependency&gt;
-    &lt;groupId&gt;io.quassar&lt;/groupId&gt;
-    &lt;artifactId&gt;quassar-builder-sdk&lt;/artifactId&gt;
-    &lt;version&gt;1.0.0&lt;/version&gt;
-&lt;/dependency&gt;
-</pre>
+<h3>Glossary</h3>
+<dl>
+  <dt>Concept</dt>
+  <dd>A structural abstraction that defines a category of elements in the domain, including its properties, subcomponents, and internal logic.</dd>
 
-<h3>Builder Initialization</h3>
-<p>To initialize the builder and connect it to the platform, follow these steps:</p>
+  <dt>Property</dt>
+  <dd>A named attribute defined with def, which describes characteristics of a concept or metaconcept. Properties can be scalar, enumerated, or lists, and may have default values and constraints.</dd>
 
-<pre>
-import com.quassar.sdk.QuassarBuilder;
+  <dt>Facet</dt>
+  <dd>An optional extension that adds additional properties or behavior to a concept or entity. Facets are reusable and can be applied across different concepts.</dd>
 
-public class BuilderApp {
-    public static void main(String[] args) {
-        QuassarBuilder builder = new QuassarBuilder();
-        builder.start();
-    }
-}
-</pre>
+  <dt>Component</dt>
+  <dd>A relationship defined with has that indicates one concept is composed of another. Components form hierarchical structures between domain elements.</dd>
 
-<h3>Key Methods</h3>
-<p>The library provides the following key methods for interaction:</p>
-<ul>
-    <li><strong>start():</strong> Starts the builder and listens for compilation requests.</li>
-    <li><strong>compileModel(ModelData modelData):</strong> Takes model data and compiles it into executable code.</li>
-    <li><strong>sendResult(Result result):</strong> Sends the compilation result back to Quassar.</li>
-</ul>
+  <dt>Cardinality</dt>
+  <dd>A constraint indicating the number of allowed instances for a concept or component (e.g. {1..*}).</dd>
 
-<h3>Example Usage</h3>
-<p>...</p>
+  <dt>Modifier</dt>
+  <dd>Semantic annotations added with is that restrict or influence behavior, such as final, immutable, or component lock.</dd>
 
-<h2 id="faqs">FAQs</h2>
+  <dt>Literal</dt>
+  <dd>A concrete value used to assign defaults to properties. Supported types include strings, integers, booleans, doubles, and lists of literals.</dd>
 
-<h3>What is a builder in Quassar?</h3>
-<p>A builder is a component responsible for taking a domain model and transforming it into executable code or a ready-to-use artifact.</p>
+  <dt>Tara</dt>
+  <dd>The mother language that provides the common grammar, base syntax, and foundational semantics shared by all DSLs generated from Metta.</dd>
 
-<h3>How does the builder communicate with Quassar?</h3>
-<p>The builder uses an API that communicates with Quassar via JSON-formatted requests and responses.</p>
+  <dt>Specialization</dt>
+  <dd>The process by which a DSL is derived from Tara using a domain-specific metamodel defined in Metta. Each specialization produces a new, tailored DSL.</dd>
+</dl>
 
-<h2 id="contact">Contact</h2>
-<p>For more information, questions, or support, contact our team at <a href="mailto:support@quassar.io">support@quassar.io</a>.</p>
+  <h3>Resources</h3>
+  <ul>
+    <li><a href="https://quassar.io/docs" target="_blank">Quassar Documentation</a></li>
+    <li><a href="https://quassar.io/support" target="_blank">Support & Community</a></li>
+  </ul>
+</section>
 
-</body>
-</html>
+  </main>
+
+  <footer>
+    <p>© 2025 metta. All rights reserved.</p>
+  </footer>

@@ -1,23 +1,30 @@
 package io.quassar.editor.box.ui.displays.templates;
 
 import io.quassar.editor.box.EditorBox;
-import io.quassar.editor.model.Model;
 
 import java.util.*;
 import java.util.function.Consumer;
 
 public class CollaboratorsTemplate extends AbstractCollaboratorsTemplate<EditorBox> {
-	private Model model;
-	private Consumer<List<String>> changeListener;
+	private String owner;
 	private Set<String> collaboratorSet = new HashSet<>();
+	private Consumer<List<String>> changeListener;
+	private boolean readonly = false;
 
 	public CollaboratorsTemplate(EditorBox box) {
 		super(box);
 	}
 
-	public void model(Model model) {
-		this.model = model;
-		this.collaboratorSet = new HashSet<>(model.collaborators());
+	public void owner(String owner) {
+		this.owner = owner;
+	}
+
+	public void collaborators(List<String> collaborators) {
+		this.collaboratorSet = new HashSet<>(collaborators);
+	}
+
+	public void readonly(boolean value) {
+		this.readonly = value;
 	}
 
 	public void onChange(Consumer<List<String>> listener) {
@@ -33,8 +40,9 @@ public class CollaboratorsTemplate extends AbstractCollaboratorsTemplate<EditorB
 	@Override
 	public void refresh() {
 		super.refresh();
+		invite.readonly(readonly);
 		peopleField.value(null);
-		ownerField.value(model.owner());
+		ownerField.value(owner);
 		collaborators.clear();
 		collaboratorSet.forEach(u -> fill(u, collaborators.add()));
 	}

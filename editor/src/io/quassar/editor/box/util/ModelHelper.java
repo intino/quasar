@@ -21,13 +21,17 @@ public class ModelHelper {
 		return files.stream().filter(f -> f.uri().contains("main")).findFirst().orElse(files.isEmpty() ? null : files.getFirst());
 	}
 
+	public static boolean isM1(Model model) {
+		return !model.isTemplate() && !model.language().artifactId().equals(Language.Metta);
+	}
+
 	public static boolean isM1Release(Model model, ModelRelease release) {
 		if (release == null) return false;
 		return isM1Release(model, release.version());
 	}
 
 	public static boolean isM1Release(Model model, String release) {
-		return !model.isTemplate() && release != null && !model.language().artifactId().equals(Language.Metta);
+		return isM1(model) && release != null;
 	}
 
 	public static String label(Model model, String language, EditorBox box) {

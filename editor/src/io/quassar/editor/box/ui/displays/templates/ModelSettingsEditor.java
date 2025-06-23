@@ -109,7 +109,8 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<EditorBox> 
 	}
 
 	private void refreshCollaboratorsBlock() {
-		collaboratorsStamp.model(model);
+		collaboratorsStamp.owner(model.owner());
+		collaboratorsStamp.collaborators(model.collaborators());
 		collaboratorsStamp.refresh();
 	}
 
@@ -136,12 +137,12 @@ public class ModelSettingsEditor extends AbstractModelSettingsEditor<EditorBox> 
 	}
 
 	private void removeModel() {
+		String languageId = model.language().languageId();
 		notifyUser(translate("Removing model..."), UserMessage.Type.Loading);
-		String language = model.language().artifactId();
 		box().commands(ModelCommands.class).remove(model, username());
 		hideUserNotification();
 		if (model.isExample()) doClose();
-		else notifier.dispatch(PathHelper.languagePath(language));
+		else notifier.dispatch(PathHelper.languagePath(languageId));
 	}
 
 	private void doClose() {

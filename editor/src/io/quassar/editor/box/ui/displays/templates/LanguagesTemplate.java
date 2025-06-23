@@ -70,23 +70,37 @@ public class LanguagesTemplate extends AbstractLanguagesTemplate<EditorBox> {
 		Language language = event.item();
 		LanguageItem item = event.component();
 		item.logo.value(LanguageHelper.logo(language, box()));
+		refreshLogo(language, item);
+		refreshLogoSelector(language, item);
 		refreshName(language, item);
 		refreshNameSelector(language, item);
 		item.title.value(language.title());
 		item.description.value(language.description());
 	}
 
+	private void refreshLogo(Language language, LanguageItem item) {
+		item.logoLink.visible(selectListener == null);
+		if (!item.logoLink.isVisible()) return;
+		item.logoLink.address(path -> PathHelper.languagePath(path, language));
+	}
+
 	private void refreshName(Language language, LanguageItem item) {
 		item.name.visible(selectListener == null);
 		if (!item.name.isVisible()) return;
-		item.name.title(language.key().toLowerCase());
+		item.name.title(LanguageHelper.label(language, this::translate));
 		item.name.address(path -> PathHelper.languagePath(path, language));
+	}
+
+	private void refreshLogoSelector(Language language, LanguageItem item) {
+		item.logoSelectorLink.visible(selectListener != null);
+		if (!item.logoSelectorLink.isVisible()) return;
+		item.logoSelectorLink.onExecute(e -> notifySelect(language));
 	}
 
 	private void refreshNameSelector(Language language, LanguageItem item) {
 		item.nameSelector.visible(selectListener != null);
 		if (!item.nameSelector.isVisible()) return;
-		item.nameSelector.title(language.key().toLowerCase());
+		item.nameSelector.title(LanguageHelper.label(language, this::translate));
 		item.nameSelector.onExecute(e -> notifySelect(language));
 	}
 

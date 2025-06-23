@@ -19,6 +19,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.util.*;
+import java.util.Collection;
 import java.util.stream.Collectors;
 
 public class CreateModelReleaseCommand extends Command<CommandResult> {
@@ -87,7 +88,7 @@ public class CreateModelReleaseCommand extends Command<CommandResult> {
 	private BuildResult rebuild(Language language, LanguageRelease release) {
 		File destination = null;
 		try {
-			BuildResult result = new ModelBuilder(model, new GavCoordinates(language.group(), language.name(), release.version()), box).build(author);
+			BuildResult result = new ModelBuilder(model, Model.DraftRelease, new GavCoordinates(language.collection(), language.name(), release.version()), box).build(author);
 			if (!result.success()) return result;
 			Resource resource = result.zipArtifacts();
 			destination = box.archetype().tmp().builds(UUID.randomUUID().toString());

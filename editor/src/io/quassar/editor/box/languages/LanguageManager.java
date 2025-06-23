@@ -2,7 +2,6 @@ package io.quassar.editor.box.languages;
 
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
-import io.quassar.editor.box.util.ArchetypeHelper;
 import io.quassar.editor.box.util.ArtifactoryHelper;
 import io.quassar.editor.box.util.SubjectHelper;
 import io.quassar.editor.model.*;
@@ -12,31 +11,35 @@ import systems.intino.datamarts.subjectstore.model.Subject;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 public class LanguageManager {
 	private final Archetype archetype;
 	private final SubjectStore subjectStore;
+	private final Function<String, Model> modelProvider;
 
-	public LanguageManager(Archetype archetype, SubjectStore store) {
+	public LanguageManager(Archetype archetype, SubjectStore store, Function<String, Model> modelProvider) {
 		this.archetype = archetype;
 		this.subjectStore = store;
+		this.modelProvider = modelProvider;
 	}
 
 	public List<Language> visibleLanguages(String owner) {
-		Set<Language> result = new HashSet<>(quassarLanguages());
+		Set<Language> result = new HashSet<>(foundationalLanguages());
 		result.addAll(privateLanguages(owner));
+		result.addAll(licensedLanguages(owner));
 		return result.stream().filter(l -> !l.name().equals(Language.Metta)).distinct().toList();
 	}
 
-	public List<Language> quassarLanguages() {
+	public List<Language> foundationalLanguages() {
 		return languages().stream().filter(Language::isFoundational).toList();
 	}
 
@@ -44,13 +47,26 @@ public class LanguageManager {
 		return languages().stream().filter(l -> hasAccess(l, owner)).toList();
 	}
 
+	public List<Language> licensedLanguages(String owner) {
+		if (owner == null) return Collections.emptyList();
+		Set<String> collections = new HashSet<>(subjectStore.query().isType(SubjectHelper.LicenseType).where("user").equals(owner).collect().stream().map(s -> s.parent().name()).distinct().toList());
+		collections.addAll(subjectStore.query().isType(SubjectHelper.CollectionType).where("owner").equals(owner).collect().stream().map(Subject::name).toList());
+		collections.addAll(subjectStore.query().isType(SubjectHelper.CollectionType).where("collaborator").equals(owner).collect().stream().map(Subject::name).toList());
+		if (collections.isEmpty()) return Collections.emptyList();
+		return subjectStore.query().isType(SubjectHelper.LanguageType).where("collection").satisfy(v -> collections.stream().anyMatch(v::equals)).stream().map(this::get).toList();
+	}
+
 	public List<Language> languages() {
 		return subjectStore.query().isType(SubjectHelper.LanguageType).isRoot().collect().stream().map(this::get).toList();
 	}
 
-	public Language create(String group, String name, Model metamodel, Language.Level level, String title, String description) {
-		Language language = new Language(subjectStore.create(SubjectHelper.languagePath(name)));
-		language.group(group);
+	public List<Language> languages(Collection collection) {
+		return subjectStore.query().isType(SubjectHelper.LanguageType).isRoot().where("collection").equals(collection.name()).collect().stream().map(this::get).toList();
+	}
+
+	public Language create(Collection collection, String name, Model metamodel, Language.Level level, String title, String description) {
+		Language language = new Language(subjectStore.create(SubjectHelper.languagePath(Language.key(collection.id(), name))));
+		language.collection(collection.id());
 		language.name(name.toLowerCase());
 		language.level(level);
 		language.title(title);
@@ -69,6 +85,11 @@ public class LanguageManager {
 		if (lastExecution != null) copyExecution(language, release, lastExecution);
 		else createExecution(language, release, null, LanguageExecution.Type.None);
 		return release;
+	}
+
+	public void renameRelease(Language language, LanguageRelease release, String newVersion) {
+		LanguageRelease newRelease = new LanguageRelease(subjectStore.open(SubjectHelper.pathOf(language, release.version())).rename(newVersion));
+		newRelease.version(newVersion);
 	}
 
 	public void removeRelease(Language language, LanguageRelease release) {
@@ -219,9 +240,11 @@ public class LanguageManager {
 		return get(model) != null;
 	}
 
-	public boolean exists(String language) {
+	public boolean exists(String collection, String language) {
+		if (language == null) return false;
 		if (new File(archetype.languages().root(), language).exists()) return true;
-		return !subjectStore.query().isType(SubjectHelper.LanguageType).where("name").equals(language).collect().isEmpty();
+		if (new File(archetype.languages().root(), Language.key(collection, language)).exists()) return true;
+		return !subjectStore.query().isType(SubjectHelper.LanguageType).where("collection").equals(collection).where("name").equals(language).collect().isEmpty();
 	}
 
 	public Language getDefault() {
@@ -239,13 +262,21 @@ public class LanguageManager {
 	}
 
 	public Language get(GavCoordinates gav) {
-		return get(gav.artifactId());
+		Language language = get(Language.key(gav.groupId(), gav.artifactId()));
+		if (language == null) language = get(gav.artifactId());
+		return language;
 	}
 
-	public Language get(String key) {
-		Language language = get(subjectStore.open(SubjectHelper.languagePath(key)));
-		if (language == null) language = get(subjectStore.query().isType(SubjectHelper.LanguageType).where("group").equals(Language.groupFrom(key)).where("name").equals(Language.nameFrom(key)).collect().stream().findFirst().orElse(null));
+	public Language get(String id) {
+		Language language = get(subjectStore.open(SubjectHelper.languagePath(id)));
+		if (language == null) language = get(subjectStore.query().isType(SubjectHelper.LanguageType).where("collection").equals(Language.collectionFrom(id)).where("name").equals(Language.nameFrom(id)).collect().stream().findFirst().orElse(null));
 		return language;
+	}
+
+	public void rename(Language language, String newId) {
+		language.collection(Language.collectionFrom(newId));
+		language.name(Language.nameFrom(newId));
+		subjectStore.open(SubjectHelper.pathOf(language)).rename(newId);
 	}
 
 	public void remove(Language language) {
@@ -261,13 +292,14 @@ public class LanguageManager {
 	}
 
 	public boolean hasAccess(Language language, String user) {
-		if (language.isPublic() && language.grantAccessList().isEmpty()) return true;
+		if (language.isPublic()) return true;
 		if (user == null) return false;
-		String owner = owner(language);
+		Model metamodel = language.metamodel() != null ? modelProvider.apply(language.metamodel()) : null;
+		String owner = metamodel != null ? metamodel.owner() : null;
 		if ((owner == null || owner.equals(User.Quassar)) && language.isFoundational()) return true;
 		if (owner != null && owner.equals(user)) return true;
-		List<String> patternList = language.grantAccessList();
-		return patternList.stream().anyMatch(p -> matches(p, user));
+		if (metamodel == null) return false;
+		return metamodel.collaborators().stream().anyMatch(c -> c.equals(user));
 	}
 
 	public String owner(Language language) {

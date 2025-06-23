@@ -185,7 +185,8 @@ public class ArtifactoryHelper {
 	}
 
 	public static String dependencyGroup(Language language) {
-		return (language.group() != null && !language.group().isEmpty() ? language.group() : Language.QuassarGroup) + "." + language.name();
+		if (language.isFoundational()) return language.collection();
+		return Language.QuassarGroup + (language.collection() != null && !language.collection().isEmpty() ? "." + language.collection() : "") + "." + language.name();
 	}
 
 	public static String dependencyName(File dependency) {

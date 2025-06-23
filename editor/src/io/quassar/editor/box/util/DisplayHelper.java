@@ -6,7 +6,10 @@ import io.intino.alexandria.ui.displays.components.TextEditable;
 import io.intino.alexandria.ui.server.UIFile;
 import io.intino.alexandria.ui.services.push.UISession;
 import io.intino.alexandria.ui.services.push.User;
+import io.intino.builderservice.schemas.Message;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.builder.CheckResult;
+import io.quassar.editor.model.License;
 
 import java.io.*;
 import java.util.function.Function;
@@ -33,18 +36,26 @@ public class DisplayHelper {
 		return true;
 	}
 
-	public static boolean checkLanguageId(TextEditable<?, ?> field, Function<String, String> translator, EditorBox box) {
-		if (!check(field, translator)) return false;
-		if (!NameHelper.validName(field.value())) { field.error("Name contains non alphanumeric characters"); return false; }
-		if (NameHelper.reservedName(field.value())) { field.error("This name is reserved and cannot be used."); return false; }
-		//if (NameHelper.languageInUse(field.value(), box)) { field.error("Already exists a language with that name"); return false; }
-		if (NameHelper.modelInUse(field.value(), box)) { field.error("Already exists a model with that name"); return false; }
-		return true;
+	public record CheckResult(boolean success, String message) {}
+	public static CheckResult checkCollectionName(String name, Function<String, String> translator, EditorBox box) {
+		if (name == null || name.isEmpty()) return new CheckResult(false, translator.apply("Collection name is required"));
+		if (!NameHelper.validName(name)) return new CheckResult(false, translator.apply("Collection name contains non alphanumeric characters"));
+		if (NameHelper.reservedCollectionName(name)) return new CheckResult(false, translator.apply("Collection name is reserved and cannot be used"));
+		if (NameHelper.collectionInUse(name, box)) return new CheckResult(false, translator.apply("Collection is already registered. You need to be invited as author in this collection"));
+		return new CheckResult(true, null);
 	}
 
-	public static boolean checkLanguageInUse(TextEditable<?, ?> field, Function<String, String> translator, EditorBox box) {
-		if (NameHelper.languageInUse(field.value(), box)) { field.error("Already exists a language with that name"); return false; }
-		return true;
+
+	public static CheckResult checkLanguageName(String name, Function<String, String> translator) {
+		if (name == null || name.isEmpty()) return new CheckResult(false, translator.apply("Name is required"));
+		if (!NameHelper.validName(name)) return new CheckResult(false, translator.apply("Name contains non alphanumeric characters"));
+		if (NameHelper.reservedName(name)) return new CheckResult(false, translator.apply("This name is reserved and cannot be used"));
+		return new CheckResult(true, null);
+	}
+
+	public static CheckResult checkLanguageInUse(String collection, String name, Function<String, String> translator, EditorBox box) {
+		if (NameHelper.languageInUse(collection, name, box)) return new CheckResult(false, translator.apply("A DSL with this name already exists in the selected collection"));
+		return new CheckResult(true, null);
 	}
 
 	public static Resource emptyFile() {
@@ -73,6 +84,13 @@ public class DisplayHelper {
 				return content;
 			}
 		};
+	}
+
+	public static String expirationInfo(License license, Function<String, String> translator, String language) {
+		if (license == null) return translator.apply("a valid license is required");
+		if (license.expireDate() == null) return translator.apply("perpetual license");
+		if (license.isExpired()) return translator.apply("expired since %s").formatted(Formatters.date(license.expireDate(), language, translator));
+		return translator.apply("valid until %s").formatted(Formatters.date(license.expireDate(), language, translator));
 	}
 
 }

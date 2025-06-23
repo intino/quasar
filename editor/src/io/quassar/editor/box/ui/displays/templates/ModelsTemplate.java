@@ -12,12 +12,14 @@ import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
 import io.quassar.editor.model.Model;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 	private Language language;
 	private LanguageRelease release;
 	private LanguageTab tab;
+	private Consumer<Model> beforeOpenModelListener;
 	private Function<Boolean, Model> createModelListener;
 	private Mode mode = Mode.Normal;
 	private ModelsDialog dialog;
@@ -48,6 +50,10 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 	public enum Mode { Normal, Embedded, Forge }
 	public void mode(Mode mode) {
 		this.mode = mode;
+	}
+
+	public void onBeforeOpenModel(Consumer<Model> listener) {
+		this.beforeOpenModelListener = listener;
 	}
 
 	public void onCreateModel(Function<Boolean, Model> listener) {
@@ -115,6 +121,7 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 	private void refreshSiteLabel(Model model, ModelItem display) {
 		display.siteLabel.visible(mode == Mode.Forge);
 		if (!display.siteLabel.isVisible()) return;
+		display.siteLabel.onBeforeOpen(e -> notifyBeforeOpen(model));
 		display.siteLabel.title(ModelHelper.label(model, language(), box()));
 		display.siteLabel.site(PathHelper.modelUrlFromForge(model, session()));
 	}
@@ -144,12 +151,18 @@ public class ModelsTemplate extends AbstractModelsTemplate<EditorBox> {
 	private void openModel(Model model) {
 		ModelContainer modelContainer = box().modelManager().modelContainer(model, Model.DraftRelease);
 		if (modelContainer == null) return;
+		notifyBeforeOpen(model);
 		body.hide();
 		embeddedModelBlock.show();
 		selectedModel = model;
 		modelTitle.value(ModelHelper.label(model, language(), box()));
 		embeddedModelPreview.model(model, Model.DraftRelease);
 		embeddedModelPreview.reset();
+	}
+
+	private void notifyBeforeOpen(Model model) {
+		if (beforeOpenModelListener == null) return;
+		beforeOpenModelListener.accept(model);
 	}
 
 }

@@ -1,5 +1,6 @@
 package io.quassar.editor.box.commands;
 
+import io.intino.alexandria.ui.displays.events.actionable.ToggleEvent;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command.CommandResult;
 import io.quassar.editor.box.commands.language.*;
@@ -14,11 +15,13 @@ public class LanguageCommands extends Commands {
 		super(box);
 	}
 
-	public Language create(String id, Model metamodel, Language.Level level, File logo, String username) {
+	public Language create(Collection collection, String name, Model metamodel, Language.Level level, boolean isPrivate, File logo, String username) {
 		CreateLanguageCommand command = setup(new CreateLanguageCommand(box), username);
-		command.id = id;
+		command.collection = collection;
+		command.name = name;
 		command.metamodel = metamodel;
 		command.level = level;
+		command.isPrivate = isPrivate;
 		command.logo = logo;
 		return command.execute();
 	}
@@ -38,7 +41,7 @@ public class LanguageCommands extends Commands {
 		command.execute();
 	}
 
-	public boolean rename(Language language, String newName, String username) {
+	public Language rename(Language language, String newName, String username) {
 		RenameLanguageCommand command = setup(new RenameLanguageCommand(box), username);
 		command.language = language;
 		command.newId = newName;
@@ -70,6 +73,13 @@ public class LanguageCommands extends Commands {
 		return command.execute();
 	}
 
+	public Boolean remove(Language language, String release, String username) {
+		RemoveLanguageReleaseCommand command = setup(new RemoveLanguageReleaseCommand(box), username);
+		command.language = language;
+		command.release = release;
+		return command.execute();
+	}
+
 	public LanguageExecution createExecution(Language language, String release, String name, LanguageExecution.Type type, String username) {
 		CreateLanguageReleaseExecutionCommand command = setup(new CreateLanguageReleaseExecutionCommand(box), username);
 		command.language = language;
@@ -94,6 +104,18 @@ public class LanguageCommands extends Commands {
 		command.language = language;
 		command.release = release;
 		command.installationUrl = installationUrl;
+		command.execute();
+	}
+
+	public void makePrivate(Language language, String username) {
+		MakeLanguagePrivateCommand command = setup(new MakeLanguagePrivateCommand(box), username);
+		command.language = language;
+		command.execute();
+	}
+
+	public void makePublic(Language language, String username) {
+		MakeLanguagePublicCommand command = setup(new MakeLanguagePublicCommand(box), username);
+		command.language = language;
 		command.execute();
 	}
 
