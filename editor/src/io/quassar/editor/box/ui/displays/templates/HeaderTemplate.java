@@ -39,6 +39,7 @@ public class HeaderTemplate extends AbstractHeaderTemplate<EditorBox> {
 			else notifier.redirect(session().login(session().browser().baseUrl()));
 		});
 		user.onRefresh(e -> refreshUser());
+		languageLink.onExecute(e -> notifier.redirect(PathHelper.modelUrl(model, session())));
 	}
 
 	@Override
@@ -56,7 +57,6 @@ public class HeaderTemplate extends AbstractHeaderTemplate<EditorBox> {
 		languageLink.title(LanguageHelper.label(language, this::translate));
 		Model metamodel = !language.isFoundational() ? box().modelManager().get(language.metamodel()) : null;
 		languageLink.readonly(metamodel == null);
-		if (metamodel != null) languageLink.address(path -> PathHelper.modelPath(metamodel));
 	}
 
 	private void refreshUser() {

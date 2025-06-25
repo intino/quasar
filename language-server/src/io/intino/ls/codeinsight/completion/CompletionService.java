@@ -53,6 +53,11 @@ public class CompletionService {
 				result.addAll(completionUtils.collectAllowedFacets(m));
 			}
 		});
+		map.put(ContextFilters.afterDef, (context, result) -> {
+					for (Primitive primitive : Primitive.getPrimitives())
+						result.add(create(primitive.getName().toLowerCase(), CompletionItemKind.Property));
+				}
+		);
 		map.put(ContextFilters.afterNewLineInBody, new BodyCompletionProvider());
 		map.put(ContextFilters.afterAs, new AnnotationCompletionProvider());
 		map.put(ContextFilters.afterNewLine, (context, result) -> {
