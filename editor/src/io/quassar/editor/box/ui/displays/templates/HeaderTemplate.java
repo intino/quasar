@@ -4,6 +4,8 @@ import io.intino.alexandria.ui.services.push.User;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.PathHelper;
+import io.quassar.editor.box.util.PermissionsHelper;
+import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
@@ -39,7 +41,7 @@ public class HeaderTemplate extends AbstractHeaderTemplate<EditorBox> {
 			else notifier.redirect(session().login(session().browser().baseUrl()));
 		});
 		user.onRefresh(e -> refreshUser());
-		languageLink.onExecute(e -> notifier.redirect(PathHelper.modelUrl(model, session())));
+		languageLink.onExecute(e -> gotoMetamodel());
 	}
 
 	@Override
@@ -56,11 +58,17 @@ public class HeaderTemplate extends AbstractHeaderTemplate<EditorBox> {
 		if (!languageBlock.isVisible()) return;
 		languageLink.title(LanguageHelper.label(language, this::translate));
 		Model metamodel = !language.isFoundational() ? box().modelManager().get(language.metamodel()) : null;
-		languageLink.readonly(metamodel == null);
+		languageLink.readonly(metamodel == null || !PermissionsHelper.hasPermissions(metamodel, session(), box()));
 	}
 
 	private void refreshUser() {
 		userHomeStamp.refresh();
+	}
+
+	private void gotoMetamodel() {
+		if (language.isFoundational()) return;
+		Model metamodel = box().modelManager().get(language.metamodel());
+		notifier.redirect(PathHelper.modelUrl(metamodel, session()));
 	}
 
 }

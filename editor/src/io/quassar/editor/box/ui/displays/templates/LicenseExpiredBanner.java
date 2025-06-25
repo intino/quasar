@@ -32,6 +32,7 @@ public class LicenseExpiredBanner extends AbstractLicenseExpiredBanner<EditorBox
 	@Override
 	public void init() {
 		super.init();
+		addLicenseEditor.onAdd(e -> reload());
 		renewLicense.onExecute(e -> openRenewDialog());
 		renewLicenseDialog.onRenew(e -> notifier.redirect());
 	}
@@ -47,6 +48,7 @@ public class LicenseExpiredBanner extends AbstractLicenseExpiredBanner<EditorBox
 		expirationInfo.value(DisplayHelper.expirationInfo(license, this::translate, language()));
 		expirationMessage.value(hint);
 		renewLicense.visible(license != null);
+		addLicenseBlock.visible(license == null);
 	}
 
 	private void openRenewDialog() {
@@ -56,6 +58,10 @@ public class LicenseExpiredBanner extends AbstractLicenseExpiredBanner<EditorBox
 
 	private License license() {
 		return box().collectionManager().anyLicense(language.collection(), username());
+	}
+
+	private void reload() {
+		notifier.redirect();
 	}
 
 }

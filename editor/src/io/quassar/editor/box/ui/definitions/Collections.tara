@@ -89,7 +89,7 @@ Template licensesTemplate as Relative(height=100%, width=100%)
         Block(layout=Vertical) as Relative(height=100%, offsetHeight=40px)
         	Block(format=doubleAirBottom)
 				Text(value="To proceed with revocation, please provide the license code you wish to revoke", format=bold)
-				Text revokeField as Editable(placeholder="Enter license code")
+				Text revokeField as Editable(placeholder="Enter license code") Focused
 				Block(format=airTop, visible=false) licenseBlock
 					TemplateStamp(template=licenseItemTemplate) licenseStamp
 		Divider

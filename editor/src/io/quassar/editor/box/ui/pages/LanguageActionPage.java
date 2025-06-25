@@ -3,10 +3,14 @@ package io.quassar.editor.box.ui.pages;
 import io.quassar.editor.box.ui.displays.templates.HomeTemplate;
 import io.quassar.editor.box.util.PathHelper;
 
-public class LanguageReleaseTemplatePage extends AbstractLanguageReleaseTemplatePage {
-	public String group;
+public class LanguageActionPage extends AbstractLanguageActionPage {
 	public String language;
+	public String action;
 	public String version;
+	public String tab;
+	public String view;
+	public String file;
+	public String pos;
 
 	@Override
 	public String redirectUrl() {
