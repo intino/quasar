@@ -48,7 +48,7 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
                 <div className="layout vertical flex center-center" ref={this.loading} style={{height:"100%",width:"100%",position:"absolute",background:backgroundColor,top:'0',display:'block'}}>
                     <BarLoader color={theme.palette.secondary.main} width={400} loading={true}/>
                 </div>
-                <iframe src={Application.configuration.url + "/res/monaco.html"/*?id=" + id + "&m=" + Math.random()*/}
+                <iframe src={Application.configuration.url + "/res/monaco.html?mode=" + (theme.isDark() ? "dark" : "light")/*?id=" + id + "&m=" + Math.random()*/}
                     style={{height:"calc(100% - 4px)",width:"100%",border:0}}/>
             </div>
         );
