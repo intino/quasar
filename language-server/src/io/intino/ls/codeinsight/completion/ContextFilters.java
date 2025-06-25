@@ -16,6 +16,7 @@ import static io.intino.tara.language.grammar.TaraGrammar.IDENTIFIER;
 class ContextFilters {
 	public static final Predicate<CompletionContext> afterIs = new AfterIsFilter().and(new InFacetFilter());
 	public static final Predicate<CompletionContext> afterAs = new AfterElementTypeFitFilter(TaraGrammar.AS);
+	public static final Predicate<CompletionContext> afterDef = new AfterElementTypeFitFilter(TaraGrammar.DEF);
 	public static final Predicate<CompletionContext> afterNewLineInBody = new AfterNewLineInBodyFilter();
 	public static final Predicate<CompletionContext> afterNewLine = new AfterNewLineRootFilter();
 	public static final Predicate<CompletionContext> afterEquals = new AfterEqualsFilter();
@@ -43,7 +44,7 @@ class ContextFilters {
 	private static class AfterNewLineInBodyFilter implements Predicate<CompletionContext> {
 		@Override
 		public boolean test(CompletionContext context) {
-			return context.ruleOnPosition() != null &&
+			return context.ruleOnPosition() != null && !(context.ruleOnPosition().getParent() instanceof TaraGrammar.FacetContext) &&
 					inBody(context.ruleOnPosition()) && afterNewLine(context.ruleOnPosition());
 		}
 
@@ -124,7 +125,7 @@ class ContextFilters {
 	private static class InParameters implements Predicate<CompletionContext> {
 		@Override
 		public boolean test(CompletionContext context) {
-			return acceptableParent(context.elementOnPosition(), context.ruleOnPosition()) &&
+			return acceptableParent(context.mogramOnPosition(), context.ruleOnPosition()) &&
 					parameter(context.ruleOnPosition()) &&
 					TreeUtils.getMogramContainerOf(context.ruleOnPosition()) != null;
 		}
