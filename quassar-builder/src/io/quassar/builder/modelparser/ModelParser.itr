@@ -7,6 +7,7 @@ rule type(modelparser)
 	import java.io.File;
     import java.io.IOException;
     import java.io.OutputStream;
+    import java.io.ByteArrayOutputStream;
     import java.net.URISyntaxException;
     import java.net.URL;
     import java.net.http.HttpClient;
@@ -21,6 +22,8 @@ rule type(modelparser)
     import java.util.zip.ZipInputStream;
 
     public class ModelParser {
+		public record Model($outDsl+firstUpperCase~Graph graph, String metadata, String parseLog){}
+
     	public static Model loadFromURL(URL url, String authToken) throws IOException, URISyntaxException {
 			Path zip = Files.createTempFile("_picota", ".zip");
 			authorizedDownload(url, authToken, zip);
@@ -33,31 +36,26 @@ rule type(modelparser)
 			return loadFromZip(zip.toFile());
 		}
 
-		public record Model($outDsl+firstUpperCase~Graph graph, String metadata){}
-
     	public static Model loadFromZip(File $outDsl~File) throws IOException {
 			Path dir = unzip($outDsl~File);
+			ByteArrayOutputStream stream = new ByteArrayOutputStream();
 			try (Stream<Path> files = Files.walk(dir)) {
 				$outDsl+firstUpperCase~Graph graph = load(files
 						.filter(Files::isRegularFile)
 						.filter(path -> !path.getFileName().toString().startsWith("."))
 						.filter(path -> path.getFileName().toString().endsWith(".tara"))
 						.map(Path::toFile)
-						.toList());
-				return new Model(graph, readManifest(new File(dir.toFile(), "manifest.json")));
+						.toList(), stream);
+				return new Model(graph, readManifest(new File(dir.toFile(), "manifest.json")), stream.toString());
 			}
     	}
 
-    	public static $outDsl+firstUpperCase~Graph load(File... $outDsl~File) {
-			return load(List.of($outDsl~File));
-		}
-
-    	public static $outDsl+firstUpperCase~Graph load(List<File> $outDsl~Files) {
-    		io.intino.magritte.io.model.Stash[] stashes = new StashBuilder($outDsl~Files, "$outDslCoors", "parser", new java.io.PrintStream(OutputStream.nullOutputStream())).build();
+    	private static $outDsl+firstUpperCase~Graph load(List<File> $outDsl~Files, OutputStream log) {
+    		io.intino.magritte.io.model.Stash[] stashes = new StashBuilder($outDsl~Files, "$outDslCoors", "parser", new java.io.PrintStream(log)).build();
     		return stashes == null ? null: $outDsl+firstUpperCase~Graph.load(stashes);
     	}
 
-    	public static void authorizedDownload(URL url, String authToken, Path targetPath) throws IOException, URISyntaxException {
+    	private static void authorizedDownload(URL url, String authToken, Path targetPath) throws IOException, URISyntaxException {
 			HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
 			HttpRequest request = HttpRequest.newBuilder()
 					.uri(url.toURI())
