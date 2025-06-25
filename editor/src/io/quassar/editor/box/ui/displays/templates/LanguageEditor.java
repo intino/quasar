@@ -97,6 +97,7 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
+		if (user() == null) return;
 		refreshCollectionSelector();
 		nameField.value(language != null ? language.name() : metamodelTitle());
 		nameField.readonly(language != null);
@@ -186,6 +187,10 @@ public class LanguageEditor extends AbstractLanguageEditor<EditorBox> {
 
 	private void refreshCollectionSelector() {
 		List<String> options = box().collectionManager().collections(username()).stream().map(Collection::name).toList();
+		if (options.isEmpty()) {
+			createCollectionDialog.mode(CreateCollectionDialog.Mode.FirstTime);
+			createCollectionDialog.open();
+		}
 		collectionSelector.clear();
 		collectionSelector.addAll(options);
 		if (selectedCollection != null) collectionSelector.selection(selectedCollection);

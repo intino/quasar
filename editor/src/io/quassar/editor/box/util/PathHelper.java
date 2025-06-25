@@ -125,12 +125,12 @@ public class PathHelper {
 	}
 
 	public static String modelUrl(Model model, String release, UISession session) {
-		return session.browser().baseUrl() + "/models/" + model.language().languageId() + "/" + model.id() + "/" + (release != null ? release : Model.DraftRelease);
+		return session.browser().baseUrl() + "/models/" + model.language().languageId() + "/" + model.id() + "/" + (release != null ? release : "");
 	}
 
 	private static final String ModelPath = "/models/:language/:model/:release";
 	public static String modelPath(Model model) {
-		return modelPath(ModelPath, model.language().languageId(), model.id(), Model.DraftRelease, LanguageTab.About.name(), null, null, null);
+		return modelPath(ModelPath, model.language().languageId(), model.id(), null, LanguageTab.About.name(), null, null, null);
 	}
 
 	public static String startingModelPath(Model model) {
@@ -143,7 +143,7 @@ public class PathHelper {
 	}
 
 	public static String modelPath(String path, Model model) {
-		return modelPath(path, model.language().languageId(), model.id(), Model.DraftRelease, null, null, null, null);
+		return modelPath(path, model.language().languageId(), model.id(), null, null, null, null, null);
 	}
 
 	public static String modelPath(Model model, String release) {
@@ -211,7 +211,7 @@ public class PathHelper {
 	}
 
 	public static String modelPath(String address, String language, String model, String release, String tab, String view, String file, String position) {
-		String result = address.replace(":language", language).replace(":model", model).replace(":release", release != null ? release : Model.DraftRelease);
+		String result = address.replace(":language", language).replace(":model", model).replace(":release", release != null ? release : "");
 		result += tab != null ? ((result.contains("?") ? "&" : "?") + "tab=" + tab.toLowerCase()) : "";
 		result += view != null ? ((result.contains("?") ? "&" : "?") + "view=" + view.toLowerCase()) : "";
 		result += file != null ? ((result.contains("?") ? "&" : "?") + "file=" + file) : "";

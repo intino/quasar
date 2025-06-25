@@ -37,7 +37,7 @@ public class CreateModelCommand extends Command<Model> {
 	}
 
 	private void createDefaultWorkspace(Model model) {
-		box.modelManager().createFile(model, ModelHelper.validWorkspaceFileName("Main.tara"), null, null);
+		box.modelManager().createFile(model, ModelHelper.validWorkspaceFileName("main.tara"), null, null);
 	}
 
 }

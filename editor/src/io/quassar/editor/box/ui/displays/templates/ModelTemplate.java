@@ -3,6 +3,7 @@ package io.quassar.editor.box.ui.displays.templates;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.models.File;
 import io.quassar.editor.box.models.ModelContainer;
+import io.quassar.editor.box.models.Workspace;
 import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.box.util.PermissionsHelper;
@@ -11,8 +12,11 @@ import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static io.quassar.editor.box.models.File.ResourcesDirectory;
 
@@ -84,7 +88,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		contentBlock.visible(PermissionsHelper.hasPermissions(model, session(), box()));
 		if (!contentBlock.isVisible()) return;
 		licenseExpiredBanner.language(model.language());
-		licenseExpiredBanner.hint("This model is read-only. Editing is disabled");
+		licenseExpiredBanner.hint(translate("Please request a license to enable modeling"));
 		licenseExpiredBanner.refresh();
 		modelEditor.model(model, release);
 		modelEditor.view(view());
@@ -101,10 +105,12 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	private File file() {
 		if (selectedFile != null && modelContainer.exists(selectedFile)) return selectedFile;
 		if (modelContainer == null) return null;
-		List<File> files = selectedView == null || selectedView == ModelView.Model ?
-				modelContainer.modelFiles().stream().sorted(Comparator.comparing(File::name)).toList() :
-				modelContainer.resourceFiles().stream().filter(f -> !f.uri().equals(ResourcesDirectory)).sorted(Comparator.comparing(File::name)).toList();
-		return !files.isEmpty() ? files.getFirst() : null;
+		Set<File> files = selectedView == null || selectedView == ModelView.Model ?
+				modelContainer.modelFiles().stream().sorted(Comparator.comparing(File::name)).collect(Collectors.toSet()) :
+				modelContainer.resourceFiles().stream().filter(f -> !f.uri().equals(ResourcesDirectory)).collect(Collectors.toSet());
+		if (files.isEmpty()) return null;
+		File result = files.stream().filter(f -> f.name().equals(Workspace.MainFile)).findFirst().orElse(null);
+		return result != null ? result : new ArrayList<>(files).stream().min(Comparator.comparing(File::name)).orElse(null);
 	}
 
 }

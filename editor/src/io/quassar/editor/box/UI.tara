@@ -15,9 +15,7 @@ Service EditorElements as UI(port = "{port}", title = "{title}", favicon = "/ima
 	Resource(path = "/about") about as Page(homeTemplate)
 	Resource(path = "/collections/:collection") collection as Page(homeTemplate)
 	Resource(path = "/models/:language") language as Page(homeTemplate) > Parameter tab
-	Resource(path = "/models/:language/new") languageNew as Page(homeTemplate)
-	Resource(path = "/models/:language/help") languageReleaseHelp as Page(homeTemplate) > Parameter version
-	Resource(path = "/models/:language/template") languageReleaseTemplate as Page(homeTemplate) > Parameter version
+	Resource(path = "/models/:language/:action") languageAction as Page(homeTemplate) > Parameter version
 	Resource(path = "/models/:language/:model/:release") model as Page(homeTemplate) > Parameter tab; Parameter view; Parameter file; Parameter pos
 	Resource(path = "/forge/:model/:release") forge as Page(homeTemplate) > Parameter view
 	Resource(path = "/login") login as Page(loginTemplate)
@@ -123,6 +121,7 @@ Template(layout=Vertical) licenseExpiredBanner
 			Text(format=greyColor) expirationInfo
 			Text(format=airRight) expirationMessage
 		Block(layout=Horizontal, format=middleAirTop) > Button(title="Renew", size=Small, highlight=Outline) renewLicense as Action
+		Block(format=whiteBackground, visible=false) addLicenseBlock > TemplateStamp(template=addLicenseEditor) addLicenseEditor
 
 	TemplateStamp(template=renewLicenseDialog) renewLicenseDialog
 

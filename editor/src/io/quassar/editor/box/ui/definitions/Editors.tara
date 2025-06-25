@@ -163,8 +163,8 @@ Template(layout=Vertical) createLanguageEditor
 Template languageEditor as Relative(width=100%, height=100%)
 	Link(title=" ") change as Action Affirmed("The DSL properties is about to be changed. This operation will affect all generated models.")
 
-	Block(layout=Horizontal Center)
-		Block(layout=Horizontal)
+	Block(layout=Horizontal Center Wrap)
+		Block(layout=Horizontal Wrap)
 			Block(layout=Vertical, format=doubleAirRight airTop)
 				Text(value="Collection", translate=true, format=h5 airRight)
 				Block(layout=Horizontal Center)
@@ -243,11 +243,13 @@ Template(layout=Horizontal) languageExecutionLauncher
 Template createCollectionDialog as Relative(width=100%)
 	Link(title="Create new") as OpenDialog(dialog)
 
-	Dialog(title="Create collection") dialog as Absolute(width=400px, height=200px)
-        Block(format=overflowAuto relative) as Relative(height=100%, offsetHeight=40px)
-			Text(format=dslFieldInput, mode=Lowercase) nameField as Editable
-			MaterialIcon(icon="Check", color="green", format=veryLargeIconSize rightIconField, visible=false) validIcon
-			MaterialIcon(icon="Clear", color="red", format=veryLargeIconSize rightIconField, visible=false) invalidIcon
+	Dialog(title="") dialog as Absolute(width=400px, height=220px)
+        Block(format=overflowAuto) as Relative(height=100%, offsetHeight=40px)
+        	Text(format=description airBottom) hint
+        	Block(format=relative)
+				Text(format=dslFieldInput, mode=Lowercase) nameField as Editable(placeholder="e.g. my-collection")
+				MaterialIcon(icon="Check", color="green", format=veryLargeIconSize rightIconField, visible=false) validIcon
+				MaterialIcon(icon="Clear", color="red", format=veryLargeIconSize rightIconField, visible=false) invalidIcon
 		Divider
         Block(layout=Horizontal EndJustified)
         	Button(title="Close", size=Small, format=airRight) as CloseDialog(dialog)
@@ -268,7 +270,7 @@ Template(layout=Horizontal Center, format=autoHeight) modelsDialog as Relative(w
 Template addLicenseEditor
 	Text licenseField as Editable(placeholder="Paste license here")
 
-	Dialog(title="License error") failureDialog
+	Dialog(title="Invalid license") failureDialog
         Block(format=overflowAuto relative) as Relative(height=100%, offsetHeight=40px)
         	Text(value="Failure! The license code is invalid or has already been used", format=airBottom) failureMessage
 		Divider

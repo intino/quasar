@@ -13,6 +13,8 @@ public class Workspace {
 	private final Language language;
 	private final Archetype archetype;
 
+	public static final String MainFile = "main.tara";
+
 	public Workspace(Model model, String release, Language language, Archetype archetype) {
 		this.model = model;
 		this.release = release;

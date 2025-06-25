@@ -159,7 +159,11 @@ public class Language extends SubjectWrapper {
 	}
 
 	public boolean isPublic() {
-		return !isPrivate();
+		return !isPrivate() && isFeatured();
+	}
+
+	public boolean isFeatured() {
+		return get("featured") != null && Boolean.parseBoolean(get("featured"));
 	}
 
 	public boolean isPrivate() {
