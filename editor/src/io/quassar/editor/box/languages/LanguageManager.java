@@ -3,6 +3,7 @@ package io.quassar.editor.box.languages;
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.util.ArtifactoryHelper;
+import io.quassar.editor.box.util.ImageResizer;
 import io.quassar.editor.box.util.SubjectHelper;
 import io.quassar.editor.model.*;
 import org.apache.commons.io.FileUtils;
@@ -112,6 +113,12 @@ public class LanguageManager {
 	}
 
 	public File loadLogo(Language language) {
+		return loadLogo(language, LogoSize.Original);
+	}
+
+	public File loadLogo(Language language, LogoSize size) {
+		if (size == LogoSize.S50) return createIfNotExists(archetype.languages().logo50(language.key()), language);
+		else if (size == LogoSize.S100) return createIfNotExists(archetype.languages().logo100(language.key()), language);
 		return archetype.languages().logo(language.key());
 	}
 
@@ -123,6 +130,7 @@ public class LanguageManager {
 			if (logo != null) {
 				if (current.exists()) current.delete();
 				Files.move(logo.toPath(), current.toPath());
+				createWebLogos(language);
 			}
 		} catch (IOException e) {
 			Logger.error(e);
@@ -359,6 +367,27 @@ public class LanguageManager {
 		LanguageExecution result = createExecution(language, release, execution.name(), execution.type());
 		result.content(execution.content(LanguageExecution.Type.Local));
 		result.content(execution.content(LanguageExecution.Type.Remote));
+	}
+
+	private void createWebLogos(Language language) {
+		try {
+			File logo = archetype.languages().logo(language.key());
+			if (!logo.exists()) return;
+			resize(logo, 50, archetype.languages().logo50(language.key()));
+			resize(logo, 100, archetype.languages().logo100(language.key()));
+		} catch (IOException e) {
+			Logger.error(e);
+		}
+	}
+
+	private void resize(File logo, int size, File destiny) throws IOException {
+		if (destiny.exists()) destiny.delete();
+		ImageResizer.resizeImage(logo, size, size, destiny);
+	}
+
+	private File createIfNotExists(File logo, Language language) {
+		if (!logo.exists()) createWebLogos(language);
+		return logo;
 	}
 
 }

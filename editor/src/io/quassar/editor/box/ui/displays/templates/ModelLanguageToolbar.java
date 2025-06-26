@@ -1,15 +1,13 @@
 package io.quassar.editor.box.ui.displays.templates;
 
+import io.intino.alexandria.ui.utils.DelayerUtil;
 import io.quassar.editor.box.models.File;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.PathHelper;
-import io.quassar.editor.model.FilePosition;
-import io.quassar.editor.model.Language;
-import io.quassar.editor.model.LanguageRelease;
-import io.quassar.editor.model.Model;
+import io.quassar.editor.model.*;
 
 public class ModelLanguageToolbar extends AbstractModelLanguageToolbar<EditorBox> {
 	private Model model;
@@ -81,7 +79,7 @@ public class ModelLanguageToolbar extends AbstractModelLanguageToolbar<EditorBox
 	}
 
 	private void refreshLogo(Language language) {
-		languageLogo.value(LanguageHelper.logo(language, box()));
+		languageLogo.value(LanguageHelper.logo(language, LogoSize.S50, box()));
 	}
 
 }
