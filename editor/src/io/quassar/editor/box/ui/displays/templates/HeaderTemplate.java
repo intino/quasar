@@ -22,17 +22,17 @@ public class HeaderTemplate extends AbstractHeaderTemplate<EditorBox> {
 	}
 
 	public void language(Language value) {
-		refreshRequired = refreshRequired || (this.language == null && value != null) || (value != null && !this.language.key().equals(value.key()));
+		refreshRequired = refreshRequired || this.language == null || value == null || !this.language.key().equals(value.key());
 		this.language = value;
 	}
 
 	public void release(String value) {
-		refreshRequired = refreshRequired || (this.release == null && value != null) || (value != null && !this.release.equals(value));
+		refreshRequired = refreshRequired || this.release == null || !this.release.equals(value);
 		this.release = value;
 	}
 
 	public void model(Model value) {
-		refreshRequired = refreshRequired || (this.model == null && value != null) || (value != null && !this.model.id().equals(value.id()));
+		refreshRequired = refreshRequired || this.model == null || value == null || !this.model.id().equals(value.id());
 		this.model = value;
 	}
 
