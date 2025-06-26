@@ -1,6 +1,6 @@
 dsl Legio
 
-Artifact(groupId = "io.quassar", version = "1.1.23") editor
+Artifact(groupId = "io.quassar", version = "1.1.24") editor
 	Dsl("Konos", "13.5.1") > Builder(generationPackage = "box")
 	Archetype("io.quassar", "editor-archetype", "1.0.3")
 
@@ -10,7 +10,7 @@ Artifact(groupId = "io.quassar", version = "1.1.23") editor
 		Compile("io.intino.alexandria", "logger4j", "1.1.0")
 		Compile("io.intino.alexandria", "scheduler-framework", "1.2.0")
 		Compile("io.intino.alexandria", "rest", "4.2.4")
-		Compile("io.intino.alexandria", "ui-framework", "6.6.5")
+		Compile("io.intino.alexandria", "ui-framework", "6.6.7")
 		Compile("io.intino.alexandria", "zip", "1.0.5")
 			Exclude("io.intino.tara","language")
 		Compile("io.intino", "language-server", "1.0.8")
@@ -22,7 +22,7 @@ Artifact(groupId = "io.quassar", version = "1.1.23") editor
 		Compile("org.xerial", "sqlite-jdbc", "3.49.1.0")
 		Compile("com.google.api-client", "google-api-client", "2.8.0")
 
-		Web("io.quassar", "editor-elements", "1.1.23")
+		Web("io.quassar", "editor-elements", "1.1.24")
 
 		Test("junit", "junit", "4.13")
 
