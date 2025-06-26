@@ -1,6 +1,6 @@
 dsl Legio
 
-Artifact(groupId = "io.quassar", version = "1.1.22") editor
+Artifact(groupId = "io.quassar", version = "1.1.23") editor
 	Dsl("Konos", "13.5.1") > Builder(generationPackage = "box")
 	Archetype("io.quassar", "editor-archetype", "1.0.3")
 
@@ -22,7 +22,7 @@ Artifact(groupId = "io.quassar", version = "1.1.22") editor
 		Compile("org.xerial", "sqlite-jdbc", "3.49.1.0")
 		Compile("com.google.api-client", "google-api-client", "2.8.0")
 
-		Web("io.quassar", "editor-elements", "1.1.22")
+		Web("io.quassar", "editor-elements", "1.1.23")
 
 		Test("junit", "junit", "4.13")
 
@@ -63,6 +63,23 @@ RunConfiguration local
 //	Argument("google-client-id", "")
 	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
 	Argument("language-repository", "/Users/oroncal/.m2")
+	Argument("builder-service-url", "http://localhost:9002")
+	Argument("new-user-license-time", "60")
+	Argument("enterprise-license-time-duration", "1")
+	Argument("renew-license-time-duration", "12")
+	Argument("collection-collaborators-count", "4")
+
+RunConfiguration localMario
+	Argument("port", "8080")
+	Argument("url", "http://localhost:8080")
+	Argument("home", "./temp")
+	Argument("title", "Quassar")
+	Argument("federation-url", "")
+//	Argument("federation-url", "https://www.monentia.es/login")
+	Argument("google-client-id", "910085173896-4b9kmbi0vapnffbas814ab2ruvg7cm36.apps.googleusercontent.com")
+//	Argument("google-client-id", "")
+	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
+	Argument("language-repository", "/Users/mcaballero/.m2")
 	Argument("builder-service-url", "http://localhost:9002")
 	Argument("new-user-license-time", "60")
 	Argument("enterprise-license-time-duration", "1")

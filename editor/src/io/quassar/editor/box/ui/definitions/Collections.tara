@@ -35,7 +35,7 @@ Template collectionTemplate as Relative(height=100%, width=100%, offsetHeight=2p
 						Block(layout=Vertical Flexible)
 							Text(mode=Uppercase, format=bold) subscriptionPlan as Highlighted(textColor="white", backgroundColor="transparent")
 						Block(layout=Horizontal EndJustified)
-							Link(title="remove", visible=false, format=h6) remove as Action Signed(signText="To confirm deletion, please type the name of the collection. This action cannot be undone.", mode=SimpleText)
+							MaterialIconButton(title="remove", icon="Delete", size=Small, visible=false) remove as Action Signed(signText="To confirm deletion, please type the name of the collection. This action cannot be undone.", mode=SimpleText)
 					Block(format=doubleAirBottom)
 						Text(value="DSLs", format=h5)
 						Block as Absolute(height=120px) > TemplateStamp(template=languagesCollectionTemplate) languagesCatalog

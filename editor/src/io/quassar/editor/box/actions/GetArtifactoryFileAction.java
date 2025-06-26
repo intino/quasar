@@ -7,6 +7,7 @@ import io.intino.alexandria.exceptions.Forbidden;
 import io.intino.alexandria.exceptions.NotFound;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.util.ArtifactoryHelper;
+import io.quassar.editor.box.util.Formatters;
 import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
@@ -38,7 +39,7 @@ public class GetArtifactoryFileAction implements io.intino.alexandria.rest.Reque
 
 		if (coordinates.artifactId().equals("graph")) return isJar ? new Resource(box.languageManager().loadGraph(language, release)) : emptyFile();
 
-		boolean isDsl = coordinates.artifactId().equals(language.name());
+		boolean isDsl = coordinates.artifactId().equalsIgnoreCase(Formatters.normalizeLanguageName(language.name()));
 		return isDsl ? loadDsl(language, release, isManifest, isDigest) : loadParser(language, release, coordinates.artifactId(), isManifest, isDigest);
 	}
 
