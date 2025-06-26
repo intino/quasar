@@ -3,7 +3,7 @@ rule type(pom)
     <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<modelVersion>4.0.0</modelVersion>
-		<groupId>$groupId.$name</groupId>
+		<groupId>$groupId+lowercase.$name+lowercase</groupId>
 		<artifactId>parser-java</artifactId>
 		<version>$version</version>
 		<properties>
@@ -16,6 +16,10 @@ rule type(pom)
 				<name>intino-maven-releases</name>
 				<url>https://artifactory.intino.io/artifactory/releases</url>
 			</repository>
+			<repository>
+				 <id>Quassar</id>
+				 <url>https://quassar.io/artifacts/releases</url>
+            </repository>
 		</repositories>
 
 		<build>
@@ -60,8 +64,8 @@ rule type(pom)
 
 		<dependencies>
 			<dependency>
-				<groupId>$groupId</groupId>
-				<artifactId>$name</artifactId>
+				<groupId>$groupId+lowercase</groupId>
+				<artifactId>$name+lowercase</artifactId>
 				<version>$version</version>
 				<scope>compile</scope>
 			</dependency>
