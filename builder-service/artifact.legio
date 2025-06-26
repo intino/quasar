@@ -33,6 +33,12 @@ RunConfiguration local
 	Argument("language-repository", "/Users/oroncal/.m2/repository")
 	Argument("dockerhub-auth-file", "./temp/configuration/dockerhub.properties")
 
+RunConfiguration localMario
+	Argument("port", "9002")
+	Argument("home", "./temp")
+	Argument("language-repository", "/Users/mcaballero/.m2/repository")
+	Argument("dockerhub-auth-file", "./temp/configuration/dockerhub.properties")
+
 RunConfiguration dev
 	Argument("port", "9002")
 	Argument("home", "/home/intino")

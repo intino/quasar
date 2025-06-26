@@ -167,8 +167,8 @@ Template(layout=Vertical Flexible) languageExplorer as Relative(height=100%, wid
 			TemplateStamp(template=modelsTemplate) examplesStamp
 
 Template languageForgeTemplate as Relative(height=100%, width=100%)
-	Block(layout=Horizontal Flexible) as Relative(height=100%, width=100%) Resizable(minSize=25%)
-		Block(format=forgePanelBackground minResizablePanelWidth) as Relative(width=18%)
+	Block(layout=Horizontal Flexible) as Relative(height=100%, width=100%) Resizable(minSize=30%)
+		Block(format=forgePanelBackground minResizablePanelWidth) as Relative(width=30%)
 			Block(layout=Vertical Flexible, format=doubleSpaced) as AutoSize Relative(height=100%)
 				Block(layout=Vertical Flexible) as Relative(height=100%)
 					Block(layout=Horizontal Center, format=airBottom)
@@ -176,7 +176,7 @@ Template languageForgeTemplate as Relative(height=100%, width=100%)
 							Image(format=forgeLogoStyle, colorInvertedWithDarkMode=true) logo as Absolute(width=50px)
 							Text(format=h2 airRight) languageName
 						Block(layout=Horizontal EndJustified)
-							Link(title="remove", visible=false, format=h6) removeLanguage as Action Signed(signText="To confirm deletion, please type the full name of the DSL. Deleting this DSL will permanently remove all models created with it. This action cannot be undone.", mode=SimpleText)
+							MaterialIconButton(title="remove", icon="Delete", size=Small, visible=false) removeLanguage as Action Signed(signText="To confirm deletion, please type the full name of the DSL. Deleting this DSL will permanently remove all models created with it. This action cannot be undone.", mode=SimpleText)
 					Block(layout=Vertical Flexible)
 						Link(title="properties") infoLink as Action
 						Link(title="metamodel") metamodelLink as OpenSite(site=empty)
@@ -189,7 +189,7 @@ Template languageForgeTemplate as Relative(height=100%, width=100%)
 						Link(title="", format=fullSpaceLink) parentLanguageLink as Action Addressable(EditorElements.language)
 						Image(colorInvertedWithDarkMode=true) parentLanguageImage as Absolute(width=80px)
 					Text(format=metaForgeCredits) parentLanguageTitle
-		Block(layout=Vertical Flexible) as Relative(width=75%)
+		Block(layout=Vertical Flexible) as Relative(width=70%)
 			Selector viewSelector as Tabs(format=tabsStyle) Addressable(EditorElements.forge)
 				Text(value="Modeling") kit as Option
 				Text(value="Execution") execution as Option

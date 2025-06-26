@@ -3,6 +3,7 @@ package io.quassar.editor.box.languages;
 import io.intino.alexandria.logger.Logger;
 import io.quassar.archetype.Archetype;
 import io.quassar.editor.box.util.ArtifactoryHelper;
+import io.quassar.editor.box.util.Formatters;
 import io.quassar.editor.box.util.ImageResizer;
 import io.quassar.editor.box.util.SubjectHelper;
 import io.quassar.editor.model.*;
@@ -277,7 +278,7 @@ public class LanguageManager {
 
 	public Language get(String id) {
 		Language language = get(subjectStore.open(SubjectHelper.languagePath(id)));
-		if (language == null) language = get(subjectStore.query().isType(SubjectHelper.LanguageType).where("collection").equals(Language.collectionFrom(id)).where("name").equals(Language.nameFrom(id)).collect().stream().findFirst().orElse(null));
+		if (language == null) language = get(subjectStore.query().isType(SubjectHelper.LanguageType).where("collection").equals(Language.collectionFrom(id)).where("name").satisfy(n -> Formatters.normalizeLanguageName(n).equalsIgnoreCase(Language.nameFrom(id)) || n.equalsIgnoreCase(Language.nameFrom(id))).collect().stream().findFirst().orElse(null));
 		return language;
 	}
 

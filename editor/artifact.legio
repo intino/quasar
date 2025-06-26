@@ -69,6 +69,23 @@ RunConfiguration local
 	Argument("renew-license-time-duration", "12")
 	Argument("collection-collaborators-count", "4")
 
+RunConfiguration localMario
+	Argument("port", "8080")
+	Argument("url", "http://localhost:8080")
+	Argument("home", "./temp")
+	Argument("title", "Quassar")
+	Argument("federation-url", "")
+//	Argument("federation-url", "https://www.monentia.es/login")
+	Argument("google-client-id", "910085173896-4b9kmbi0vapnffbas814ab2ruvg7cm36.apps.googleusercontent.com")
+//	Argument("google-client-id", "")
+	Argument("language-artifactory", "https://artifactory.intino.io/artifactory/releases")
+	Argument("language-repository", "/Users/mcaballero/.m2")
+	Argument("builder-service-url", "http://localhost:9002")
+	Argument("new-user-license-time", "60")
+	Argument("enterprise-license-time-duration", "1")
+	Argument("renew-license-time-duration", "12")
+	Argument("collection-collaborators-count", "4")
+
 RunConfiguration dev
 	Argument("port", "8080")
 	Argument("url", "https://dev.quassar.io")
