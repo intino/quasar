@@ -157,7 +157,7 @@ Template(layout=Vertical) createLanguageEditor
 		Text(format=h4) metamodelTitle
 		Text(value="You are about to create a new DSL associated with %s. To ensure uniqueness and proper organization, please provide the following details.", format=description doubleAirBottom)
 		TemplateStamp(template=languageEditor) editorStamp
-	Block(layout=Horizontal StartJustified, format=airTop)
+	Block(layout=Horizontal EndJustified, format=airTop)
 		Block(layout=Horizontal EndJustified) > Button(title="Create", highlight=Fill) create as Action Readonly
 
 Template languageEditor as Relative(width=100%, height=100%)
