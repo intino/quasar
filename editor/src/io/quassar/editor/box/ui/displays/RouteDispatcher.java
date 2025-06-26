@@ -4,6 +4,7 @@ import io.intino.alexandria.ui.Soul;
 import io.quassar.editor.box.ui.displays.templates.HomeTemplate;
 import io.quassar.editor.box.ui.types.*;
 import io.quassar.editor.box.util.SessionHelper;
+import io.quassar.editor.model.Model;
 
 public class RouteDispatcher extends AbstractRouteDispatcher {
 
@@ -29,24 +30,17 @@ public class RouteDispatcher extends AbstractRouteDispatcher {
 	}
 
 	@Override
-	public void dispatchLanguageNew(Soul soul, String language) {
-		soul.currentLayer(HomeTemplate.class).createModel(language);
-	}
-
-	@Override
-	public void dispatchLanguageReleaseHelp(Soul soul, String language, String version) {
-		soul.currentLayer(HomeTemplate.class).openHelp(language, version);
-	}
-
-	@Override
-	public void dispatchLanguageReleaseTemplate(Soul soul, String language, String version) {
-		soul.currentLayer(HomeTemplate.class).openTemplate(language, version);
+	public void dispatchLanguageAction(Soul soul, String language, String action, String version) {
+		if (action.equalsIgnoreCase("new")) soul.currentLayer(HomeTemplate.class).createModel(language);
+		else if (action.equalsIgnoreCase("help")) soul.currentLayer(HomeTemplate.class).openHelp(language, version);
+		else if (action.equalsIgnoreCase("template")) soul.currentLayer(HomeTemplate.class).openTemplate(language, version);
+		else soul.currentLayer(HomeTemplate.class).openModel(action, null, null, null, null, null);
 	}
 
 	@Override
 	public void dispatchModel(Soul soul, String language, String model, String release, String tab, String view, String file, String position) {
 		SessionHelper.register(soul.session(), ModelView.from(view));
-		soul.currentLayer(HomeTemplate.class).openModel(model, release, tab, view, clean(file), position);
+		soul.currentLayer(HomeTemplate.class).openModel(model, release != null && !release.isEmpty() ? release : null, tab, view, clean(file), position);
 	}
 
 	@Override

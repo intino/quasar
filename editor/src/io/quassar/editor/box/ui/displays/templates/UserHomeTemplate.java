@@ -19,7 +19,7 @@ public class UserHomeTemplate extends AbstractUserHomeTemplate<EditorBox> {
 	@Override
 	public void init() {
 		super.init();
-		addLicenseEditor.onAdd(e -> refreshLicenses());
+		addLicenseEditor.onAdd(e -> notifier.redirect());
 		renewLicenseDialog.onRenew(e -> refreshLicenses());
 	}
 

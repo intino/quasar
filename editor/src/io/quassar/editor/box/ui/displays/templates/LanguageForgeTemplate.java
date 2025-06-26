@@ -12,6 +12,7 @@ import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.LogoSize;
 import io.quassar.editor.model.Model;
 
 import java.util.List;
@@ -112,7 +113,7 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 
 	private void refreshProperties() {
 		Model metamodel = box().modelManager().get(language.metamodel());
-		logo.value(LanguageHelper.logo(language, box()));
+		logo.value(LanguageHelper.logo(language, LogoSize.S100, box()));
 		languageName.value(language.key().toLowerCase());
 		metamodelLink.site(PathHelper.modelUrl(metamodel, release, session()));
 		removeLanguage.visible(PermissionsHelper.canRemove(language, session(), box()));
@@ -150,7 +151,7 @@ public class LanguageForgeTemplate extends AbstractLanguageForgeTemplate<EditorB
 		Language parentLanguage = box().languageManager().get(language.parent());
 		parentLanguageBlock.visible(parentLanguage != null);
 		if (parentLanguage == null) return;
-		parentLanguageImage.value(LanguageHelper.logo(parentLanguage, box()));
+		parentLanguageImage.value(LanguageHelper.logo(parentLanguage, LogoSize.S100, box()));
 		parentLanguageTitle.value("%s forge".formatted(parentLanguage.name()));
 		parentLanguageLink.address(path -> PathHelper.languagePath(language));
 	}

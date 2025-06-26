@@ -20,7 +20,7 @@ public class AssignLicenseCommand extends Command<AssignResult> {
 	@Override
 	public AssignResult execute() {
 		License license = box.collectionManager().getLicense(this.license);
-		if (license == null) return new AssignResult(false, "No license was found with the provided code", null);
+		if (license == null) return new AssignResult(false, "The license code doesn't exist. Make sure you entered it correctly.", null);
 		if (license.status() == License.Status.Assigned) return new AssignResult(false, "This license code has already been used", null);
 		License currentLicense = license.collection().validLicense(author);
 		if (currentLicense != null) return new AssignResult(false, "You already have an active license for collection %s", currentLicense);

@@ -54,13 +54,13 @@ public class HomeTemplate extends AbstractHomeTemplate<EditorBox> {
 		}
 		if (!PermissionsHelper.canAddModel(language, session(), box())) {
 			session().add("callback", session().browser().requestUrl());
-			notifier.redirect(PathHelper.loginUrl(session()));
+			notifier.redirect(PathHelper.languageUrl(languageId, session()));
 			return;
 		}
 		Collection collection = box().collectionManager().get(language.collection());
 		if (!PermissionsHelper.hasCredit(1, collection, box())) {
 			session().add("callback", session().browser().requestUrl());
-			notifier.redirect(PathHelper.loginUrl(session()));
+			notifier.redirect(PathHelper.languageUrl(language, session()));
 			return;
 		}
 		List<License> licenses = new ArrayList<>(collection.licenses(username()));

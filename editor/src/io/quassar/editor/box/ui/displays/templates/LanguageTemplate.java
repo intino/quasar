@@ -4,10 +4,7 @@ import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.ModelCommands;
 import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.box.util.*;
-import io.quassar.editor.model.GavCoordinates;
-import io.quassar.editor.model.Language;
-import io.quassar.editor.model.LanguageRelease;
-import io.quassar.editor.model.Model;
+import io.quassar.editor.model.*;
 
 public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 	private Language language;
@@ -72,7 +69,7 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 
 	private void refreshHelpBlock() {
 		helpTitle.value(translate(LanguageHelper.title(LanguageTab.Help)).formatted(LanguageHelper.title(GavCoordinates.fromString(language, release)), release.version()));
-		helpLogo.value(LanguageHelper.logo(language, box()));
+		helpLogo.value(LanguageHelper.logo(language, LogoSize.S50, box()));
 		String content = box().languageManager().loadHelp(language, release);
 		helpStamp.content("<div class='help'>" + content + "</div>");
 		helpStamp.refresh();
@@ -99,7 +96,7 @@ public class LanguageTemplate extends AbstractLanguageTemplate<EditorBox> {
 	private void refreshMainBlock() {
 		mainBlock.notLoggedBlock.visible(user() == null);
 		licenseExpiredBanner.language(language);
-		licenseExpiredBanner.hint("This language is read-only. Editing is disabled");
+		licenseExpiredBanner.hint(translate("Please request a license to enable modeling"));
 		licenseExpiredBanner.refresh();
 		refreshViews(true);
 		refreshModels();

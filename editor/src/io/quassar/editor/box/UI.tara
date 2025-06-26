@@ -15,9 +15,7 @@ Service EditorElements as UI(port = "{port}", title = "{title}", favicon = "/ima
 	Resource(path = "/about") about as Page(homeTemplate)
 	Resource(path = "/collections/:collection") collection as Page(homeTemplate)
 	Resource(path = "/models/:language") language as Page(homeTemplate) > Parameter tab
-	Resource(path = "/models/:language/new") languageNew as Page(homeTemplate)
-	Resource(path = "/models/:language/help") languageReleaseHelp as Page(homeTemplate) > Parameter version
-	Resource(path = "/models/:language/template") languageReleaseTemplate as Page(homeTemplate) > Parameter version
+	Resource(path = "/models/:language/:action") languageAction as Page(homeTemplate) > Parameter version
 	Resource(path = "/models/:language/:model/:release") model as Page(homeTemplate) > Parameter tab; Parameter view; Parameter file; Parameter pos
 	Resource(path = "/forge/:model/:release") forge as Page(homeTemplate) > Parameter view
 	Resource(path = "/login") login as Page(loginTemplate)
@@ -48,7 +46,7 @@ Template(layout=Horizontal Center, format=headerStyle) headerTemplate
 		Image(value="/images/logo-expanded-dark.png", format=airLeft, mobileReduceFactor=75%) as Absolute(width=130px, height=30px)
 		Block(layout=Horizontal Center, visible=false) languageBlock
 			Text(value=" ", format=whiteColor h3 headerBullet airLeft airRight middleAirTop)
-			Link(title="", format=whiteColor h3) languageLink as Action Addressable(EditorElements.model)
+			Link(title="", format=whiteColor h3) languageLink as Action
 
 	Block(layout=Horizontal EndJustified)
 		MaterialIconButton(title="Set dark mode", format=airRight, icon="Brightness4", size=Small) as SetDarkMode
@@ -123,6 +121,7 @@ Template(layout=Vertical) licenseExpiredBanner
 			Text(format=greyColor) expirationInfo
 			Text(format=airRight) expirationMessage
 		Block(layout=Horizontal, format=middleAirTop) > Button(title="Renew", size=Small, highlight=Outline) renewLicense as Action
+		Block(format=whiteBackground, visible=false) addLicenseBlock > TemplateStamp(template=addLicenseEditor) addLicenseEditor
 
 	TemplateStamp(template=renewLicenseDialog) renewLicenseDialog
 

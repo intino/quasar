@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 
 public class CreateCollectionDialog extends AbstractCreateCollectionDialog<EditorBox> {
 	private Consumer<Collection> createListener;
+	private Mode mode = Mode.Normal;
 
 	public CreateCollectionDialog(EditorBox box) {
 		super(box);
@@ -16,6 +17,15 @@ public class CreateCollectionDialog extends AbstractCreateCollectionDialog<Edito
 
 	public void onCreate(Consumer<Collection> listener) {
 		this.createListener = listener;
+	}
+
+	public enum Mode { Normal, FirstTime }
+	public void mode(Mode mode) {
+		this.mode = mode;
+	}
+
+	public void open() {
+		dialog.open();
 	}
 
 	@Override
@@ -28,6 +38,8 @@ public class CreateCollectionDialog extends AbstractCreateCollectionDialog<Edito
 	}
 
 	private void refreshDialog() {
+		dialog.title(translate(mode == Mode.FirstTime ? "Create your first collection" : "Create collection"));
+		hint.value(translate(mode == Mode.FirstTime ? "You don't have any collections yet. Create one now to start building DSLs." : "Collections group related DSLs by project or team. Enter a name to create another one"));
 		nameField.error(null);
 		nameField.value(null);
 		nameField.focus();

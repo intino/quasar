@@ -78,7 +78,7 @@ public class PermissionsHelper {
 		if (language.isFoundational()) return true;
 		if (!box.languageManager().hasAccess(language, session.user().username())) return false;
 		Collection collection = box.collectionManager().get(language.collection());
-		return hasPermissions(collection, session, box);
+		return hasPermissions(collection, session, box) || collection.subscriptionPlan() == Collection.SubscriptionPlan.Enterprise;
 	}
 
 	public static boolean canRemove(Language language, UISession session, EditorBox box) {

@@ -159,7 +159,7 @@ Format("borderBottom:'1px solid #1B222C'") bottomBlackBordered
 Format("minHeight:'300px'") paperFormat
 Format("borderBottom:'1px dotted #ddd',width:'100%',marginBottom:'10px'") underline
 Format("borderBottom:'1px solid #ddd',width:'100%'") separator
-Format("fontSize:'10pt',color:'grey'") description
+Format("fontSize:'10pt',color:'grey'", darkContent="color:'#ddd'") description
 Format("minHeight:'60px'") headerWithIndicators
 Format("minHeight:'100%'") minHeight
 Format("minHeight:'38px'") minPeriodHeight
@@ -322,7 +322,7 @@ Format("width:'100%',borderRadius:'3px',padding:'10px',color:'black'") googleLog
 Format("background:'white'", darkContent="background:'#424242'") tabPanel
 Format("margin:'0',borderRight:'1px solid #ddd'") leftTabPanel
 Format("borderRadius:'10px',border:'0',height:'100%'") panelDrawer
-Format("fontSize:'20pt'") dslFieldInput
+Format("minWidth:'200px',fontSize:'20pt'") dslFieldInput
 Format("position:'absolute',bottom:'0',zIndex:'1'") languageEditorLogoStyle
 Format("borderRadius:'5px',marginRight:'10px'") forgeLogoStyle
 Format("background:'#dee2e9'", darkContent="background:'#212938'") forgePanelBackground
@@ -330,7 +330,7 @@ Format("color:'#294575',fontSize:'22pt',marginLeft:'11px',marginTop:'-8px'", dar
 Format("minWidth:'300px'") minResizablePanelWidth
 Format("height:'48px',borderBottom:'1px solid #efefef',width:'100%'") languageExplorerHeader
 Format("height:'calc(100vh - 140px)'") collapsedBlockLink
-Format("position:'absolute',left:'0',top:'0',background:'#e2effb',zIndex:'1',margin:'7px 33%',padding:'10px 20px',borderRadius:'6px',border:'1px solid #3376ff'", darkContent="backgroundColor:'black'") banner
+Format("position:'absolute',left:'0',top:'0',backgroundColor:'#e2effb',zIndex:'1',margin:'7px 33%',padding:'10px 20px',borderRadius:'6px',border:'1px solid #3376ff'", darkContent="backgroundColor:'black'") banner
 Format("position:'absolute',top:'0',right:'0'") releaseRemoveLinkBlock
 Format("color:'black',zIndex:'100',position:'absolute',right:'0'", darkContent="color:'white'") releaseRemoveLink
 Format("marginLeft:'10px',marginTop:'-3px'") collectionItemLink
