@@ -51,6 +51,7 @@ Artifact(groupId = "io.quassar", version = "1.1.26") editor
 	Parameter("enterprise-license-time-duration")
 	Parameter("renew-license-time-duration")
 	Parameter("collection-collaborators-count")
+	Parameter("debug-mode")
 
 RunConfiguration local
 	Argument("port", "8080")
@@ -68,6 +69,7 @@ RunConfiguration local
 	Argument("enterprise-license-time-duration", "1")
 	Argument("renew-license-time-duration", "12")
 	Argument("collection-collaborators-count", "4")
+	Argument("debug-mode", "true")
 
 RunConfiguration localMario
 	Argument("port", "8080")
@@ -85,6 +87,7 @@ RunConfiguration localMario
 	Argument("enterprise-license-time-duration", "1")
 	Argument("renew-license-time-duration", "12")
 	Argument("collection-collaborators-count", "4")
+	Argument("debug-mode", "false")
 
 RunConfiguration dev
 	Argument("port", "8080")
@@ -100,6 +103,7 @@ RunConfiguration dev
 	Argument("enterprise-license-time-duration", "1")
 	Argument("renew-license-time-duration", "12")
 	Argument("collection-collaborators-count", "4")
+	Argument("debug-mode", "false")
 
 RunConfiguration pro
 	Argument("port", "8080")
@@ -115,6 +119,7 @@ RunConfiguration pro
 	Argument("enterprise-license-time-duration", "1")
 	Argument("renew-license-time-duration", "12")
 	Argument("collection-collaborators-count", "4")
+	Argument("debug-mode", "false")
 
 Server(type=Dev) deploy-quassar-dev
 Server(type=Pro) vps-d07c88a9-vps-ovh-net

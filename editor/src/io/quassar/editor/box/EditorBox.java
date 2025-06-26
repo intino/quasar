@@ -16,7 +16,6 @@ import io.quassar.editor.box.models.ModelManager;
 import io.quassar.editor.box.projects.ProjectManager;
 import io.quassar.editor.box.ui.displays.templates.ModelHeaderTemplate;
 import io.quassar.editor.box.users.UserManager;
-import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 import io.quassar.editor.model.Utilities;
 import org.eclipse.jetty.websocket.api.Session;
@@ -188,4 +187,7 @@ public class EditorBox extends AbstractBox {
 		souls().stream().filter(Objects::nonNull).map(s -> s.displays(ModelHeaderTemplate.class)).flatMap(Collection::stream).filter(t -> t.model().id().equals(model.id())).forEach(h -> h.checked(false));
 	}
 
+	public boolean isDebugMode() {
+		return configuration.debugMode() != null && Boolean.parseBoolean(configuration.debugMode());
+	}
 }
