@@ -16,7 +16,7 @@ import static io.intino.tara.language.grammar.TaraGrammar.IDENTIFIER;
 class ContextFilters {
 	public static final Predicate<CompletionContext> afterIs = new AfterIsFilter().and(new InFacetFilter());
 	public static final Predicate<CompletionContext> afterAs = new AfterElementTypeFitFilter(TaraGrammar.AS);
-	public static final Predicate<CompletionContext> afterDef = new AfterElementTypeFitFilter(TaraGrammar.DEF);
+	public static final Predicate<CompletionContext> afterDef = new AfterDefFitFilter(TaraGrammar.DEF);
 	public static final Predicate<CompletionContext> afterNewLineInBody = new AfterNewLineInBodyFilter();
 	public static final Predicate<CompletionContext> afterNewLine = new AfterNewLineRootFilter();
 	public static final Predicate<CompletionContext> afterEquals = new AfterEqualsFilter();
@@ -24,6 +24,25 @@ class ContextFilters {
 	public static final Predicate<CompletionContext> inParameters = new InParameters().and(afterEquals.negate());
 
 	private ContextFilters() {
+	}
+
+	private static class AfterDefFitFilter implements Predicate<CompletionContext> {
+		int type;
+
+		private AfterDefFitFilter(int type) {
+			this.type = type;
+		}
+
+		@Override
+		public boolean test(CompletionContext context) {
+			if (context == null || context.ruleOnPosition().getParent() == null || context.ruleOnPosition().getParent().getParent() == null)
+				return false;
+			ParserRuleContext parent = context.ruleOnPosition().getParent().getParent();
+			int i = parent.children.indexOf(context.ruleOnPosition().getParent());
+			if (i <= 0) return false;
+			ParseTree parseTree = parent.children.get(i - 1);
+			return parseTree instanceof TerminalNode tn && type == tn.getSymbol().getType();
+		}
 	}
 
 	private static class AfterElementTypeFitFilter implements Predicate<CompletionContext> {

@@ -55,7 +55,7 @@ public class CompletionService {
 		});
 		map.put(ContextFilters.afterDef, (context, result) -> {
 					for (Primitive primitive : Primitive.getPrimitives())
-						result.add(create(primitive.getName().toLowerCase(), CompletionItemKind.Property));
+						result.add(create(primitive.getName().toLowerCase(), CompletionItemKind.Variable));
 				}
 		);
 		map.put(ContextFilters.afterNewLineInBody, new BodyCompletionProvider());
