@@ -76,7 +76,7 @@ public class PermissionsHelper {
 		if (session.user() == null) return false;
 		if (language.releases().isEmpty()) return false;
 		if (language.isFoundational()) return true;
-		if (!box.languageManager().hasAccess(language, session.user().username())) return false;
+		if (box.languageManager().hasAccess(language, session.user().username())) return true;
 		Collection collection = box.collectionManager().get(language.collection());
 		return hasPermissions(collection, session, box) || collection.subscriptionPlan() == Collection.SubscriptionPlan.Enterprise;
 	}
