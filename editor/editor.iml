@@ -134,6 +134,5 @@
     <orderEntry type="library" name="Intino: systems.intino.datamarts:subject-store:2.1.3" level="project" />
     <orderEntry type="library" name="Intino: io.quassar:editor-archetype:1.0.3" level="project" />
     <orderEntry type="library" name="Intino: io.intino.alexandria:ui-framework:6.6.5" level="project" />
-    <orderEntry type="module" module-name="editor-elements" />
   </component>
 </module>

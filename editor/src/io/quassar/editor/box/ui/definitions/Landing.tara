@@ -128,7 +128,7 @@ Template(layout=Vertical Flexible) landingTemplate as Relative(width=100%, heigh
 		Block(format=doubleAirBottom) > Text(value="divider", format=landingTransparent)
 
 		Block(layout=Horizontal Center, format=doubleAirTop doubleAirBottom)
-			Button(title="Join on Discord", format=blockMainAction doubleAirLeft doubleAirRight) as OpenSite("https://discord.gg/2TSHrbwb", target=Blank)
+			Button(title="Join on Discord", format=blockMainAction doubleAirLeft doubleAirRight) as OpenSite("https://discord.gg/RPdq3j8gzd", target=Blank)
 
 		Block(layout=Vertical CenterCenter, format=footerStyle tripleAirTop)
 			Text(value="© 2025 Monentia. All rights reserved")
