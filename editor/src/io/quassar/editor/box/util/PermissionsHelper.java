@@ -17,6 +17,7 @@ public class PermissionsHelper {
 	}
 
 	public static boolean hasPermissions(Model model, UISession session, EditorBox box) {
+		if (box.isDebugMode()) return true;
 		if (model == null) return false;
 		if (model.isPublic()) return true;
 		return isOwnerOrCollaborator(model, session, box);
@@ -125,6 +126,7 @@ public class PermissionsHelper {
 	}
 
 	public static boolean isOwnerOrCollaborator(Model model, UISession session, EditorBox box) {
+		if (box.isDebugMode()) return true;
 		String username = session.user() != null ? session.user().username() : null;
 		if (model.owner() != null && model.owner().equals(username)) return true;
 		if (model.collaborators().stream().anyMatch(c -> c.equals(username))) return true;
@@ -147,6 +149,7 @@ public class PermissionsHelper {
 	}
 
 	public static boolean canEdit(Model model, String release, UISession session, EditorBox box) {
+		if (box.isDebugMode()) return model.isDraft(release);
 		if (!hasPermissions(model, session, box)) return false;
 		if (model.isExample()) return isOwnerOrCollaborator(model, session, box);
 		if (!hasValidLicense(model.language(), session, box)) return false;
@@ -161,6 +164,7 @@ public class PermissionsHelper {
 	}
 
 	public static boolean hasValidLicense(Language language, UISession session, EditorBox box) {
+		if (box.isDebugMode()) return true;
 		if (language.isFoundational()) return true;
 		return hasValidLicense(box.collectionManager().get(language.collection()), session, box);
 	}

@@ -96,6 +96,10 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
             insertSpaces: false, tabSize: 4,
             scrollBeyondLastLine: false,
             detectIndentation: false,
+            suggestOnTriggerCharacters: true,
+            quickSuggestions: true,
+            wordBasedSuggestions: true,
+            parameterHints: { enabled: true }
         });
         this.editor.addCommand(CtrlCmd | KeyS, this.handleSave.bind(this));
         this.editor.onDidChangeCursorPosition(e => refreshFooter(e));

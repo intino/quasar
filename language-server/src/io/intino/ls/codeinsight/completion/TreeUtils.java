@@ -11,6 +11,7 @@ import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.eclipse.lsp4j.Position;
 
+import java.util.List;
 import java.util.Objects;
 
 public class TreeUtils {
@@ -23,6 +24,10 @@ public class TreeUtils {
 		return null;
 	}
 
+	public static boolean isIn(ParserRuleContext element, Class<? extends ParserRuleContext> contextClass){
+		return contextOf(element, contextClass) != null;
+	}
+
 	public static ParserRuleContext getMogramContainerOf(ParserRuleContext context) {
 		ParserRuleContext parent = context.getParent();
 		while (parent != null) {
@@ -30,6 +35,26 @@ public class TreeUtils {
 			parent = parent.getParent();
 		}
 		return null;
+	}
+
+	public static ParseTree getPreviousSibling(ParserRuleContext ctx) {
+		ParserRuleContext parent = ctx.getParent();
+		if (parent == null) {
+			return null; // No hay padre, no hay hermanos
+		}
+
+		List<ParseTree> children = parent.children;
+		if (children == null || children.size() < 2) {
+			return null; // No hay suficientes hijos para tener un hermano anterior
+		}
+
+		for (int i = 1; i < children.size(); i++) {
+			if (children.get(i) == ctx) {
+				return children.get(i - 1); // Hermano anterior
+			}
+		}
+
+		return null; // No encontrado
 	}
 
 	public static Mogram getMogramContainerOn(Model model, Position position) {
