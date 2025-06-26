@@ -10,6 +10,7 @@ import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.box.util.SessionHelper;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.LogoSize;
 
 import java.util.Collections;
 import java.util.List;
@@ -69,7 +70,7 @@ public class LanguagesTemplate extends AbstractLanguagesTemplate<EditorBox> {
 	private void refresh(AddCollectionItemEvent event) {
 		Language language = event.item();
 		LanguageItem item = event.component();
-		item.logo.value(LanguageHelper.logo(language, box()));
+		item.logo.value(LanguageHelper.logo(language, LogoSize.S50, box()));
 		refreshLogo(language, item);
 		refreshLogoSelector(language, item);
 		refreshName(language, item);

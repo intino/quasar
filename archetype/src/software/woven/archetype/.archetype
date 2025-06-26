@@ -21,6 +21,8 @@ TARGETS:{editor}
 + languages in "dsls"
     - get(dsl) in "{dsl}"
     - logo(dsl) in "{dsl}/logo.png"
+    - logo50(dsl) in "{dsl}/logox50.png"
+    - logo100(dsl) in "{dsl}/logox100.png"
     - releases(dsl) in "{dsl}/releases"
     - release(dsl, version) in "{dsl}/releases/{version}"
     - releaseDslJar(dsl, version) in "{dsl}/releases/{version}/dsl.jar"

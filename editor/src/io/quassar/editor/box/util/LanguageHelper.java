@@ -5,6 +5,7 @@ import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.ui.types.LanguageTab;
 import io.quassar.editor.model.GavCoordinates;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.LogoSize;
 import io.quassar.editor.model.Model;
 
 import javax.imageio.ImageIO;
@@ -59,10 +60,10 @@ public class LanguageHelper {
 		return box.modelManager().get(language.metamodel());
 	}
 
-	public static URL logo(Language language, EditorBox box) {
+	public static URL logo(Language language, LogoSize size, EditorBox box) {
 		try {
 			if (language == null) return ModelHelper.class.getResource("/images/language-logo.png");
-			File logo = box.languageManager().loadLogo(language);
+			File logo = box.languageManager().loadLogo(language, size);
 			return logo.exists() ? logo.toURI().toURL() : ModelHelper.class.getResource("/images/language-logo.png");
 		} catch (MalformedURLException e) {
 			Logger.error(e);

@@ -6,6 +6,7 @@ import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.Language;
 import io.quassar.editor.model.LanguageRelease;
+import io.quassar.editor.model.LogoSize;
 
 public class LanguageToolbar extends AbstractLanguageToolbar<EditorBox> {
 	private Language language;
@@ -56,7 +57,7 @@ public class LanguageToolbar extends AbstractLanguageToolbar<EditorBox> {
 	}
 
 	private void refreshLogo() {
-		languageLogo.value(LanguageHelper.logo(language, box()));
+		languageLogo.value(LanguageHelper.logo(language, LogoSize.S50, box()));
 	}
 
 }

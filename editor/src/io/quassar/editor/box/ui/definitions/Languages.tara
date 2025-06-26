@@ -187,7 +187,7 @@ Template languageForgeTemplate as Relative(height=100%, width=100%)
 				Block(layout=Vertical EndJustified, visible=false) parentLanguageBlock
 					Block(format=relative)
 						Link(title="", format=fullSpaceLink) parentLanguageLink as Action Addressable(EditorElements.language)
-						Image(colorInvertedWithDarkMode=true) parentLanguageImage as Absolute(width=70px)
+						Image(colorInvertedWithDarkMode=true) parentLanguageImage as Absolute(width=80px)
 					Text(format=metaForgeCredits) parentLanguageTitle
 		Block(layout=Vertical Flexible) as Relative(width=75%)
 			Selector viewSelector as Tabs(format=tabsStyle) Addressable(EditorElements.forge)

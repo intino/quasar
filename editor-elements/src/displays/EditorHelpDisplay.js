@@ -119,7 +119,7 @@ const EditorHelpDisplayShortcuts = {
       { "action": "Toggle high contrast theme", "shortcut": "Command Palette: Toggle High Contrast Theme" }
     ],
     "mac": [
-      { "action": "Autocomplete", "shortcut": "Cmd + Space" },
+      { "action": "Autocomplete", "shortcut": "Ctrl + Space" },
       { "action": "Go to definition", "shortcut": "F12" },
       { "action": "Go to definition (new tab)", "shortcut": "Cmd + Click" },
       { "action": "Peek definition", "shortcut": "Option + F12" },
@@ -156,7 +156,7 @@ const EditorHelpDisplayShortcuts = {
       { "action": "Show all commands", "shortcut": "F1 / Cmd + Shift + P" },
       { "action": "Change file language", "shortcut": "Cmd + K M" },
       { "action": "Format document", "shortcut": "Shift + Option + F" },
-      { "action": "Trigger suggestions", "shortcut": "Cmd + Space" },
+      { "action": "Trigger suggestions", "shortcut": "Ctrl + Space" },
       { "action": "Save (if supported)", "shortcut": "Cmd + S" },
       { "action": "Go to next error/warning", "shortcut": "F8" },
       { "action": "Go to previous error/warning", "shortcut": "Shift + F8" },

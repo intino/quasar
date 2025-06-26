@@ -10,6 +10,7 @@ import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.Collection;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.LogoSize;
 
 import java.util.Collections;
 import java.util.List;
@@ -57,7 +58,7 @@ public class LanguagesCollectionTemplate extends AbstractLanguagesCollectionTemp
 	private void refresh(AddCollectionItemEvent event) {
 		Language language = event.item();
 		LanguageCollectionItem item = event.component();
-		item.logo.value(LanguageHelper.logo(language, box()));
+		item.logo.value(LanguageHelper.logo(language, LogoSize.S50, box()));
 		item.logoLink.address(path -> PathHelper.languagePath(path, language));
 		item.name.title(language.name());
 		item.name.address(path -> PathHelper.languagePath(path, language));

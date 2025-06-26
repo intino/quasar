@@ -2,9 +2,11 @@ package io.quassar.editor.box.ui.displays.templates;
 
 import io.intino.alexandria.ui.services.push.User;
 import io.quassar.editor.box.EditorBox;
+import io.quassar.editor.box.languages.LanguageManager;
 import io.quassar.editor.box.util.LanguageHelper;
 import io.quassar.editor.box.util.PathHelper;
 import io.quassar.editor.model.Language;
+import io.quassar.editor.model.LogoSize;
 import io.quassar.editor.model.Model;
 
 public class ForgeHeaderTemplate extends AbstractForgeHeaderTemplate<EditorBox> {
@@ -36,7 +38,7 @@ public class ForgeHeaderTemplate extends AbstractForgeHeaderTemplate<EditorBox> 
 		super.refresh();
 		Language language = model != null ? box().languageManager().get(model) : null;
 		User loggedUser = session().user();
-		logo.value(LanguageHelper.logo(language, box()));
+		logo.value(LanguageHelper.logo(language, LogoSize.S100, box()));
 		homeLink.site(PathHelper.homeUrl(session()));
 		aboutLink.site(PathHelper.aboutUrl(session()));
 		projectsLink.site(PathHelper.homeUrl(session()));
