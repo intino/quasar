@@ -38,6 +38,7 @@ import static io.intino.ls.codeinsight.completion.CompletionProvider.createKeywo
 import static io.intino.ls.codeinsight.completion.TreeUtils.getMogramContainerOn;
 import static io.intino.tara.model.Primitive.*;
 import static org.eclipse.lsp4j.CompletionItemKind.Keyword;
+import static org.eclipse.lsp4j.CompletionItemKind.Variable;
 
 public class CompletionService {
 	public static final String TARA_FAKE_TOKEN = "Tara_Fake_Token";
@@ -54,15 +55,18 @@ public class CompletionService {
 			}
 		});
 		map.put(ContextFilters.afterDef, (context, result) -> {
-					for (Primitive primitive : Primitive.getPrimitives())
-						result.add(create(primitive.getName().toLowerCase(), CompletionItemKind.Variable));
+					for (Primitive primitive : Primitive.getPrimitives()) {
+						String name = primitive.getName().toLowerCase();
+						if (primitive.equals(WORD)) result.add(create(name, name + ":{}", Variable));
+						else result.add(create(name, CompletionItemKind.Variable));
+					}
 				}
 		);
 		map.put(ContextFilters.afterNewLineInBody, new BodyCompletionProvider());
 		map.put(ContextFilters.afterAs, new AnnotationCompletionProvider());
 		map.put(ContextFilters.afterNewLine, (context, result) -> {
 					Element element = context.mogramOnPosition();
-					if (element instanceof Mogram m && ((Mogram) element).types().get(0).equals(TARA_FAKE_TOKEN))
+					if (element instanceof Mogram m && ((Mogram) element).types().get(0).contains(TARA_FAKE_TOKEN))
 						element = m.container();
 					if (element instanceof ElementContainer ec) {
 						new Resolver(context.language()).resolve(ec);
@@ -78,7 +82,7 @@ public class CompletionService {
 					if (valued instanceof Valued p && WORD.equals(p.type())) {
 						if (p.rule(WordRule.class) != null)
 							(p.rule(WordRule.class)).words().forEach(w -> result.add(create(w, CompletionItemKind.Enum)));
-					} else if (valued instanceof PropertyDescription pd) {
+					} else if (valued instanceof Valued pd) {
 						if (REFERENCE.equals(pd.type()) && !(rule.getParent() instanceof StringValueContext))
 							result.add(createKeyword("empty"));
 						else if (BOOLEAN.equals(pd.type()))

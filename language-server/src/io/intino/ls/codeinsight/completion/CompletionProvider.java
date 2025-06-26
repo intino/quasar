@@ -11,6 +11,13 @@ public interface CompletionProvider {
 	static CompletionItem createKeyword(String text) {
 		return create(text, CompletionItemKind.Keyword);
 	}
+
+	static CompletionItem create(String name, String text, CompletionItemKind kind) {
+		CompletionItem item = new CompletionItem(name);
+		item.setInsertText(text);
+		item.setKind(kind);
+		return item;
+	}
 	static CompletionItem create(String text, CompletionItemKind kind) {
 		CompletionItem item = new CompletionItem();
 		item.setLabel(text);

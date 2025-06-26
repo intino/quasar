@@ -121,7 +121,14 @@ class ContextFilters {
 	private static class AfterNewLineRootFilter implements Predicate<CompletionContext> {
 		@Override
 		public boolean test(CompletionContext context) {
-			return context.position().getCharacter() == 0;
+			ParserRuleContext rule = context.ruleOnPosition();
+			ParserRuleContext signature = rule.getParent();
+			if (signature == null) return false;
+			if (rule instanceof TaraGrammar.MetaidentifierContext && !afterAs.test(context) && !inAnnotations(rule)) {
+				return !TreeUtils.isIn(rule, BodyContext.class) &&
+						(previousNewLine(signature.getParent()) || previousNewLineIndent(rule));
+			}
+			return false;
 		}
 	}
 
@@ -170,7 +177,7 @@ class ContextFilters {
 	}
 
 	private static boolean acceptableParent(Object element, ParserRuleContext context) {
-		return context instanceof ParserRuleContext && context != null && context.getParent() != null;
+		return context.getParent() != null;
 	}
 
 	private static boolean in(ParserRuleContext context, Class<? extends ParserRuleContext> target) {

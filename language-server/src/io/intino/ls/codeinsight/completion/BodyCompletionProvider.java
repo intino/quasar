@@ -11,6 +11,8 @@ import org.eclipse.lsp4j.CompletionItemKind;
 import java.util.List;
 
 import static io.intino.ls.codeinsight.completion.CompletionProvider.create;
+import static io.intino.ls.codeinsight.completion.CompletionService.TARA_FAKE_TOKEN;
+import static org.eclipse.lsp4j.CompletionItemKind.Keyword;
 
 public class BodyCompletionProvider implements CompletionProvider {
 	@Override
@@ -21,16 +23,15 @@ public class BodyCompletionProvider implements CompletionProvider {
 		ElementContainer container = (ElementContainer) m.container();
 		new Resolver(context.language()).resolve(container);
 		result.addAll(utils.collectAllowedComponents(container));
-		if (container instanceof Mogram mn) {
-			result.addAll(utils.collectBodyParameters(mn));
-			if (mn.level() != Level.M1) addKeywords(result);
-		}
+		result.addAll(utils.collectBodyParameters(m));
+		if (m.level() != Level.M1) addKeywords(result);
 	}
 
 	private void addKeywords(List<CompletionItem> resultSet) {
-		resultSet.add(create("has ", CompletionItemKind.Keyword));
-		resultSet.add(create("sub ", CompletionItemKind.Keyword));
-		resultSet.add(create("def ", CompletionItemKind.Keyword));
+		resultSet.add(create("has ", Keyword));
+		resultSet.add(create("sub ", Keyword));
+		resultSet.add(create("def ", Keyword));
+		resultSet.add(create("facet ", Keyword));
 	}
 
 }
