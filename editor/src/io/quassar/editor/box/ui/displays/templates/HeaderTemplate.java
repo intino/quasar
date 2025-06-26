@@ -15,20 +15,24 @@ public class HeaderTemplate extends AbstractHeaderTemplate<EditorBox> {
 	private Language language;
 	private String release;
 	private Model model;
+	private boolean refreshRequired = true;
 
 	public HeaderTemplate(EditorBox box) {
 		super(box);
 	}
 
 	public void language(Language value) {
+		refreshRequired = refreshRequired || (this.language == null && value != null) || (value != null && !this.language.key().equals(value.key()));
 		this.language = value;
 	}
 
-	public void release(String release) {
-		this.release = release;
+	public void release(String value) {
+		refreshRequired = refreshRequired || (this.release == null && value != null) || (value != null && !this.release.equals(value));
+		this.release = value;
 	}
 
 	public void model(Model value) {
+		refreshRequired = refreshRequired || (this.model == null && value != null) || (value != null && !this.model.id().equals(value.id()));
 		this.model = value;
 	}
 
@@ -47,10 +51,12 @@ public class HeaderTemplate extends AbstractHeaderTemplate<EditorBox> {
 	@Override
 	public void refresh() {
 		super.refresh();
+		if (!refreshRequired) return;
 		User loggedUser = session().user();
 		login.visible(loggedUser == null);
 		user.visible(loggedUser != null);
 		refreshLanguageBlock();
+		refreshRequired = false;
 	}
 
 	private void refreshLanguageBlock() {

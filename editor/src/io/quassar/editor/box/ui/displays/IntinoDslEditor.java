@@ -102,7 +102,7 @@ public class IntinoDslEditor extends AbstractIntinoDslEditor<EditorBox> {
 	}
 
 	public void fileContent(IntinoDslEditorFileContent content) {
-		if (saveFileListener == null) return;
+		if (saveFileListener == null || !PermissionsHelper.canEdit(model, release, session(), box())) return;
 		saveFileListener.accept(content);
 	}
 

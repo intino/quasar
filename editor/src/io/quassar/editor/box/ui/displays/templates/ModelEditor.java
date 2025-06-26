@@ -1,12 +1,9 @@
 package io.quassar.editor.box.ui.displays.templates;
 
 import io.intino.alexandria.MimeTypes;
-import io.intino.alexandria.logger.Logger;
-import io.intino.alexandria.schemas.HtmlViewerOperation;
 import io.intino.alexandria.ui.displays.UserMessage;
 import io.intino.alexandria.ui.displays.events.SelectionEvent;
 import io.intino.alexandria.ui.utils.DelayerUtil;
-import io.intino.alexandria.ui.utils.IOUtils;
 import io.intino.builderservice.schemas.Message;
 import io.quassar.editor.box.EditorBox;
 import io.quassar.editor.box.commands.Command;
@@ -27,8 +24,6 @@ import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -158,6 +153,7 @@ public class ModelEditor extends AbstractModelEditor<EditorBox> {
 
 	private void initHeader() {
 		headerStamp.onOpenSettings(m -> settingsDialog.open());
+		headerStamp.onEdit(m -> { model(model, Model.DraftRelease); refresh(); });
 		headerStamp.onCheck(m -> check());
 		headerStamp.onClone(m -> cloneModel());
 		headerStamp.onDeploy((m, e) -> updateConsole(e));

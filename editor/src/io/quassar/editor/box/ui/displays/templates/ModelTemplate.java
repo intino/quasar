@@ -9,12 +9,10 @@ import io.quassar.editor.box.ui.types.ModelView;
 import io.quassar.editor.box.util.PermissionsHelper;
 import io.quassar.editor.model.FilePosition;
 import io.quassar.editor.model.GavCoordinates;
-import io.quassar.editor.model.Language;
 import io.quassar.editor.model.Model;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -60,6 +58,7 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 	}
 
 	public void open(String model, String release, String tab, String view, String file, String position, boolean showHelp) {
+		if (samePath(model, release, tab, view, file, position, showHelp)) return;
 		this.model = box().modelManager().get(model);
 		this.release = release != null ? release : Model.DraftRelease;
 		this.selectedTab = tab != null ? LanguageTab.from(tab) : LanguageTab.Help;
@@ -69,6 +68,17 @@ public class ModelTemplate extends AbstractModelTemplate<EditorBox> {
 		this.selectedPosition = position != null ? FilePosition.from(position) : null;
 		this.showHelp = showHelp;
 		refresh();
+	}
+
+	private boolean samePath(String model, String release, String tab, String view, String file, String position, boolean showHelp) {
+		if (this.model == null || !this.model.id().equals(model)) return false;
+		if ((this.release == null && release != null) || (release != null && !this.release.equals(release))) return false;
+		if ((this.selectedTab == null && tab != null) || (tab != null && !this.selectedTab.name().equalsIgnoreCase(tab))) return false;
+		if ((this.selectedView == null && view != null) || (view != null && !this.selectedView.name().equalsIgnoreCase(view))) return false;
+		if ((this.selectedFile == null && file != null) || (file != null && !this.selectedFile.name().equals(file))) return false;
+		if ((this.selectedPosition == null && position != null) || (position != null && !this.selectedPosition.toString().equals(position))) return false;
+		if (this.showHelp != showHelp) return false;
+		return true;
 	}
 
 	@Override

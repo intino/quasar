@@ -24,6 +24,7 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 	private LanguageTab tab;
 	private io.quassar.editor.box.models.File file;
 	private FilePosition filePosition;
+	private Consumer<Model> editListener;
 	private Function<Model, Boolean> checkListener;
 	private Consumer<Model> openSettingsListener;
 	private Consumer<Model> cloneListener;
@@ -67,6 +68,10 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 
 	public void onOpenSettings(Consumer<Model> listener) {
 		this.openSettingsListener = listener;
+	}
+
+	public void onEdit(Consumer<Model> listener) {
+		this.editListener = listener;
 	}
 
 	public void onCheck(Function<Model, Boolean> listener) {
@@ -183,12 +188,13 @@ public class ModelHeaderTemplate extends AbstractModelHeaderTemplate<EditorBox> 
 
 	private void openRelease(String release) {
 		String releaseName = release.equals(translate(Model.DraftRelease)) ? Model.DraftRelease : release;
-		notifier.dispatch(PathHelper.modelPath(model, releaseName, tab, view, file));
+		notifier.redirect(PathHelper.modelPath(model, releaseName, tab, view, file));
 	}
 
 	private void edit() {
 		openRelease(Model.DraftRelease);
 		refreshToolbar();
+		editListener.accept(model);
 	}
 
 	private void check() {
