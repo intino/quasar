@@ -92,11 +92,5 @@
     <orderEntry type="library" scope="TEST" name="Intino: org.eclipse.jetty.websocket:websocket-servlet:11.0.25" level="project" />
     <orderEntry type="library" scope="TEST" name="Intino: org.eclipse.jetty.websocket:websocket-core-server:11.0.25" level="project" />
     <orderEntry type="library" scope="TEST" name="Intino: log4j:log4j:1.2.17" level="project" />
-    <orderEntry type="library" scope="TEST" name="Intino: io.intino.magritte:framework:5.2.1" level="project" />
-    <orderEntry type="library" scope="TEST" name="Intino: io.intino.magritte:io:5.0.0" level="project" />
-    <orderEntry type="library" scope="TEST" name="Intino: com.esotericsoftware:kryo:5.4.0" level="project" />
-    <orderEntry type="library" scope="TEST" name="Intino: com.esotericsoftware:reflectasm:1.11.9" level="project" />
-    <orderEntry type="library" scope="TEST" name="Intino: org.objenesis:objenesis:3.3" level="project" />
-    <orderEntry type="library" scope="TEST" name="Intino: com.esotericsoftware:minlog:1.3.1" level="project" />
   </component>
 </module>
