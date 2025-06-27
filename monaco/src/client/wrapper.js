@@ -40,21 +40,74 @@ export const runClient = async () => {
     initWebSocketAndStartClient(parameters.webSocketUrl);
     handleEvents();
 };
-/** parameterized version , support all languageId */
+
+let activeWebSocket = null;
+let reconnectAttempts = 0;
+let reconnectTimeout = null;
+
+const MAX_RECONNECT_ATTEMPTS = 5;
+
 export const initWebSocketAndStartClient = (url) => {
-    const parameters = window.parent.intinoDslEditorParameters();
-    if (parameters.language != "tara") return;
-    const webSocket = new WebSocket(url);
-    webSocket.onopen = () => {
-        const socket = toSocket(webSocket);
-        const reader = new WebSocketMessageReader(socket);
-        const writer = new WebSocketMessageWriter(socket);
-        const languageClient = createLanguageClient({reader,writer});
-        languageClient.start();
-        reader.onClose(() => languageClient.stop());
-    };
-    return webSocket;
+  const parameters = window.parent.intinoDslEditorParameters();
+  if (parameters.language !== "tara") return;
+
+  if (activeWebSocket && activeWebSocket.readyState < WebSocket.CLOSING) {
+    console.warn("LSP already active. Skipping initialization.");
+    return activeWebSocket;
+  }
+
+  console.log("[LSP] Connecting to " + url + "...");
+
+  const webSocket = new WebSocket(url);
+  activeWebSocket = webSocket;
+
+  webSocket.onopen = () => {
+    console.log("[LSP] Connected.");
+    reconnectAttempts = 0;
+    clearTimeout(reconnectTimeout);
+
+    const socket = toSocket(webSocket);
+    const reader = new WebSocketMessageReader(socket);
+    const writer = new WebSocketMessageWriter(socket);
+    const languageClient = createLanguageClient({ reader, writer });
+
+    languageClient.start();
+
+    reader.onClose(() => {
+      console.warn("[LSP] Reader closed. Stopping language client.");
+      languageClient.stop();
+      activeWebSocket = null;
+      scheduleReconnect(url);
+    });
+  };
+
+  webSocket.onerror = (err) => {
+    console.error("[LSP] Error:", err);
+  };
+
+  webSocket.onclose = (event) => {
+    console.warn("[LSP] Connection closed (code: " + event.code + ".");
+    activeWebSocket = null;
+    scheduleReconnect(url);
+  };
+
+  return webSocket;
 };
+
+function scheduleReconnect(url) {
+  if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+    console.error("[LSP] Max reconnection attempts reached. Giving up.");
+    return;
+  }
+
+  const delay = Math.pow(2, reconnectAttempts) * 1000;
+  reconnectAttempts++;
+  console.log(`[WebSocket] Reconnecting in ${delay / 1000}s... (attempt ${reconnectAttempts})`);
+
+  reconnectTimeout = setTimeout(() => {
+    initWebSocketAndStartClient(url);
+  }, delay);
+}
 export const createLanguageClient = (transports) => {
     return new MonacoLanguageClient({
         name: window.parent.intinoDslEditorParameters().language + ' client',
