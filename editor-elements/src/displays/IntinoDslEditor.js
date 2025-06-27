@@ -86,6 +86,20 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
         const theme = Theme.get();
         monaco.editor.registerEditorOpener(this.editorOpenerListener(monaco));
         monaco.languages.register({id:"tara", extensions: ['.tara'], aliases: ["TARA", "tara"]});
+        monaco.languages.setLanguageConfiguration('tara', {
+            autoClosingPairs: [
+                { open: '{', close: '}' },
+                { open: '[', close: ']' },
+                { open: '(', close: ')' },
+                { open: '"', close: '"', notIn: ['string', 'comment'] }
+            ],
+            surroundingPairs: [
+                { open: '{', close: '}' },
+                { open: '[', close: ']' },
+                { open: '(', close: ')' },
+                { open: '"', close: '"' }
+            ],
+        });
         this.monaco = monaco;
         this.editor = monaco.editor.create(container, {
             automaticLayout: true,
@@ -98,6 +112,9 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
             suggestOnTriggerCharacters: true,
             quickSuggestions: true,
             wordBasedSuggestions: 'off',
+            autoClosingBrackets: 'always',
+            autoClosingQuotes: true,
+            autoSurround: "languageDefined",
             parameterHints: { enabled: true }
         });
         this.editor.addCommand(CtrlCmd | KeyS, this.handleSave.bind(this));
