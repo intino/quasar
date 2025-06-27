@@ -61,7 +61,7 @@ public class CompletionUtils {
 				.collect(Collectors.toList());
 	}
 
-	List<CompletionItem> collectBodyParameters(Mogram mogram) {
+	List<CompletionItem> collectBodyProperties(Mogram mogram) {
 		if (language == null || mogram == null) return null;
 		return buildCompletionForParameters(parameterConstraintsOf(mogram), mogram.parameters());
 	}
@@ -140,10 +140,10 @@ public class CompletionUtils {
 						collect(toList());
 	}
 
-	private List<CompletionItem> buildCompletionForParameters(List<Constraint.Property> constraints, List<PropertyDescription> props) {
+	private List<CompletionItem> buildCompletionForParameters(List<Constraint.Property> constraints, List<PropertyDescription> currentProps) {
 		Set<String> added = new HashSet<>();
 		return constraints.stream()
-				.filter(c -> c != null && !contains(props, c.name()))
+				.filter(c -> c != null && !contains(currentProps, c.name()))
 				.map(this::createCompletionItem)
 				.filter(l -> added.add(l.getInsertText())).
 				collect(toList());
@@ -187,10 +187,15 @@ public class CompletionUtils {
 	}
 
 	private CompletionItem createCompletionItem(Constraint.Property c) {
-		CompletionItem item = new CompletionItem(c.type() + " " + c.name());
+		CompletionItem item = new CompletionItem(c.type().getName() + " " + c.name() + facetContext(c));
 		item.setInsertText(c.name());
-		item.setKind(CompletionItemKind.Constructor);
+		item.setKind(CompletionItemKind.Property);
 		return item;
+	}
+
+	private static String facetContext(Constraint.Property c) {
+		String facet = c.facet();
+		return facet.isEmpty() ? "" : " (" + facet + ")";
 	}
 
 	private static String shortType(String type) {

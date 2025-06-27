@@ -1,6 +1,7 @@
 package io.intino.ls.codeinsight.completion;
 
 import io.intino.alexandria.logger.Logger;
+import io.intino.ls.codeinsight.ReferenceResolver;
 import io.intino.ls.parsing.CompletionErrorStrategy;
 import io.intino.ls.parsing.Parser;
 import io.intino.tara.Language;
@@ -44,67 +45,15 @@ public class CompletionService {
 	public static final String TARA_FAKE_TOKEN = "Tara_Fake_Token";
 	private final Map<Predicate<CompletionContext>, CompletionProvider> map = new LinkedHashMap<>();
 
-	public CompletionService() {
-		map.put(ContextFilters.afterIs, (context, result) -> {
-			if (!(context.ruleOnPosition() instanceof TaraGrammar.MetaidentifierContext)) return;
-			final CompletionUtils completionUtils = new CompletionUtils(context);
-			Element element = context.mogramOnPosition();
-			if (element instanceof Mogram m) {
-				new Resolver(context.language()).resolve(m);
-				result.addAll(completionUtils.collectAllowedFacets(m));
-			}
-		});
-		map.put(ContextFilters.afterDef, (context, result) -> {
-					for (Primitive primitive : Primitive.getPrimitives()) {
-						String name = primitive.getName().toLowerCase();
-						if (primitive.equals(WORD)) result.add(create(name, name + ":{}", Variable));
-						else result.add(create(name, CompletionItemKind.Variable));
-					}
-				}
-		);
-		map.put(ContextFilters.afterNewLineInBody, new BodyCompletionProvider());
+	public CompletionService(Language language) {
+		map.put(ContextFilters.afterIs, (context, result) -> afterIs(context, result));
+		map.put(ContextFilters.afterDef, (context, result) -> afterDef(result));
+		map.put(ContextFilters.afterNewLineInBody, new BodyCompletionProvider(language));
 		map.put(ContextFilters.afterAs, new AnnotationCompletionProvider());
-		map.put(ContextFilters.afterNewLine, (context, result) -> {
-					Element element = context.mogramOnPosition();
-					if (element instanceof Mogram m && ((Mogram) element).types().get(0).contains(TARA_FAKE_TOKEN))
-						element = m.container();
-					if (element instanceof ElementContainer ec) {
-						new Resolver(context.language()).resolve(ec);
-						result.addAll(new CompletionUtils(context).collectAllowedComponents(ec));
-					}
-				}
-		);
-		map.put(ContextFilters.afterEquals, (context, result) -> {
-					Element valued = context.elementOnPosition();
-					ParserRuleContext rule = context.ruleOnPosition();
-					if (valued == null) return;
-					new Resolver(context.language()).resolve(context.mogramOnPosition());
-					if (valued instanceof Valued p && WORD.equals(p.type())) {
-						if (p.rule(WordRule.class) != null)
-							(p.rule(WordRule.class)).words().forEach(w -> result.add(create(w, CompletionItemKind.Enum)));
-					} else if (valued instanceof Valued pd) {
-						if (REFERENCE.equals(pd.type()) && !(rule.getParent() instanceof StringValueContext))
-							result.add(createKeyword("empty"));
-						else if (BOOLEAN.equals(pd.type()))
-							result.addAll(List.of(createKeyword("true"), createKeyword("false")));
-					}
-				}
-		);
-		map.put(ContextFilters.afterMogramIdentifier, (context, result) -> {
-					if (!(context.mogramOnPosition() instanceof Mogram m)) return;
-					if (m.level() != Level.M1)
-						result.addAll(List.of(create("extends ", Keyword), create("as ", Keyword)));
-					else if (!m.applicableFacets().isEmpty())
-						result.add(create("is ", Keyword));
-				}
-		);
-		map.put(ContextFilters.inParameters, (context, result) -> {
-					if (context.mogramOnPosition() instanceof Mogram m) {
-						new Resolver(context.language()).resolve(m);
-						result.addAll(new CompletionUtils(context).collectSignatureParameters(m));
-					}
-				}
-		);
+		map.put(ContextFilters.afterNewLine, (context, result) -> afterNewLine(context, result));
+		map.put(ContextFilters.afterEquals, (context, result) -> afterEquals(context, result));
+		map.put(ContextFilters.afterMogramIdentifier, (context, result) -> afterMogramIdentifier(context, result));
+		map.put(ContextFilters.inParameters, (context, result) -> inParameters(context, result));
 	}
 
 	public List<CompletionItem> propose(CompletionContext params) {
@@ -113,6 +62,62 @@ public class CompletionService {
 				.filter(p -> p.test(params))
 				.forEach(p -> map.get(p).addCompletions(params, items));
 		return items;
+	}
+
+	private static void afterMogramIdentifier(CompletionContext context, List<CompletionItem> result) {
+		if (!(context.mogramOnPosition() instanceof Mogram m)) return;
+		if (m.level() != Level.M1)
+			result.addAll(List.of(create("extends ", Keyword), create("as ", Keyword)));
+		else if (!m.applicableFacets().isEmpty())
+			result.add(create("is ", Keyword));
+	}
+
+	private static void afterEquals(CompletionContext context, List<CompletionItem> result) {
+		Element valued = context.elementOnPosition();
+		ParserRuleContext rule = context.ruleOnPosition();
+		if (valued == null) return;
+		new Resolver(context.language()).resolve(context.mogramOnPosition());
+		if (valued instanceof Valued p && WORD.equals(p.type())) {
+			if (p.rule(WordRule.class) != null)
+				(p.rule(WordRule.class)).words().forEach(w -> result.add(create(w, CompletionItemKind.Enum)));
+		} else if (valued instanceof Valued pd) {
+			if (REFERENCE.equals(pd.type()) && !(rule.getParent() instanceof StringValueContext))
+
+				result.add(createKeyword("empty"));
+
+			else if (BOOLEAN.equals(pd.type()))
+				result.addAll(List.of(createKeyword("true"), createKeyword("false")));
+		}
+	}
+
+	private static void afterNewLine(CompletionContext context, List<CompletionItem> result) {
+		ElementContainer ec = context.mogramOnPosition() instanceof Mogram ? context.mogramOnPosition().container() : context.mogramOnPosition();
+		result.addAll(new CompletionUtils(context).collectAllowedComponents(ec));
+	}
+
+	private static void afterDef(List<CompletionItem> result) {
+		for (Primitive primitive : Primitive.getPrimitives()) {
+			String name = primitive.getName().toLowerCase();
+			if (primitive.equals(WORD)) result.add(create(name, name + ":{}", Variable));
+			else result.add(create(name, CompletionItemKind.Variable));
+		}
+	}
+
+	private static void afterIs(CompletionContext context, List<CompletionItem> result) {
+		if (!(context.ruleOnPosition() instanceof TaraGrammar.MetaidentifierContext)) return;
+		final CompletionUtils completionUtils = new CompletionUtils(context);
+		Element element = context.mogramOnPosition();
+		if (element instanceof Mogram m) {
+			new Resolver(context.language()).resolve(m);
+			result.addAll(completionUtils.collectAllowedFacets(m));
+		}
+	}
+
+	private static void inParameters(CompletionContext context, List<CompletionItem> result) {
+		if (context.mogramOnPosition() instanceof Mogram m) {
+			new Resolver(context.language()).resolve(m);
+			result.addAll(new CompletionUtils(context).collectSignatureParameters(m));
+		}
 	}
 
 

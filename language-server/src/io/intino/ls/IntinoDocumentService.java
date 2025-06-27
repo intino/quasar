@@ -56,7 +56,7 @@ public class IntinoDocumentService implements TextDocumentService {
 		this.diagnosticService = diagnosticService;
 		this.referenceResolver = new ReferenceResolver(models, language);
 		this.parsingService = new ParsingService(models);
-		this.completionService = new CompletionService();
+		this.completionService = new CompletionService(language);
 		this.models = models;
 		this.client = client;
 		loadModels();

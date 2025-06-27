@@ -65,7 +65,7 @@ public class LanguagesLandingTemplate extends AbstractLanguagesLandingTemplate<E
 	private void refresh(AddCollectionItemEvent event) {
 		Language language = event.item();
 		LanguageLandingItem item = event.component();
-		item.logo.value(LanguageHelper.logo(language, LogoSize.S50, box()));
+		item.logo.value(LanguageHelper.logo(language, LogoSize.S100, box()));
 		refreshLogo(language, item);
 		refreshLogoSelector(language, item);
 		refreshName(language, item);
