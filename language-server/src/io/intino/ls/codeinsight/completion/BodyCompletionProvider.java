@@ -1,5 +1,6 @@
 package io.intino.ls.codeinsight.completion;
 
+import io.intino.tara.Language;
 import io.intino.tara.language.grammar.TaraGrammar;
 import io.intino.tara.model.ElementContainer;
 import io.intino.tara.model.Level;
@@ -15,6 +16,12 @@ import static io.intino.ls.codeinsight.completion.CompletionService.TARA_FAKE_TO
 import static org.eclipse.lsp4j.CompletionItemKind.Keyword;
 
 public class BodyCompletionProvider implements CompletionProvider {
+	private final Language language;
+
+	public BodyCompletionProvider(Language language) {
+		this.language = language;
+	}
+
 	@Override
 	public void addCompletions(CompletionContext context, List<CompletionItem> result) {
 		if (!(context.ruleOnPosition() instanceof TaraGrammar.MetaidentifierContext)) return;
@@ -24,7 +31,8 @@ public class BodyCompletionProvider implements CompletionProvider {
 		new Resolver(context.language()).resolve(container);
 		result.addAll(utils.collectAllowedComponents(container));
 		result.addAll(utils.collectBodyParameters(m));
-		if (m.level() != Level.M1) addKeywords(result);
+		if (m.level() != null && m.level() != Level.M1 || m.level() == null && ((Mogram) m.container()).level() != Level.M1)
+			addKeywords(result);
 	}
 
 	private void addKeywords(List<CompletionItem> resultSet) {

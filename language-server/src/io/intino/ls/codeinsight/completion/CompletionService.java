@@ -44,7 +44,7 @@ public class CompletionService {
 	public static final String TARA_FAKE_TOKEN = "Tara_Fake_Token";
 	private final Map<Predicate<CompletionContext>, CompletionProvider> map = new LinkedHashMap<>();
 
-	public CompletionService() {
+	public CompletionService(Language language) {
 		map.put(ContextFilters.afterIs, (context, result) -> {
 			if (!(context.ruleOnPosition() instanceof TaraGrammar.MetaidentifierContext)) return;
 			final CompletionUtils completionUtils = new CompletionUtils(context);
@@ -62,7 +62,7 @@ public class CompletionService {
 					}
 				}
 		);
-		map.put(ContextFilters.afterNewLineInBody, new BodyCompletionProvider());
+		map.put(ContextFilters.afterNewLineInBody, new BodyCompletionProvider(language));
 		map.put(ContextFilters.afterAs, new AnnotationCompletionProvider());
 		map.put(ContextFilters.afterNewLine, (context, result) -> {
 					Element element = context.mogramOnPosition();

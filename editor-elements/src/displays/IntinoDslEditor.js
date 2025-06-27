@@ -89,7 +89,6 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
         this.monaco = monaco;
         this.editor = monaco.editor.create(container, {
             automaticLayout: true,
-            wordBasedSuggestions: 'off',
             theme: "vs-dark",
             readOnly: this.state.info.readonly,
             domReadOnly: this.state.info.readonly,
@@ -98,7 +97,7 @@ class IntinoDslEditor extends AbstractIntinoDslEditor {
             detectIndentation: false,
             suggestOnTriggerCharacters: true,
             quickSuggestions: true,
-            wordBasedSuggestions: true,
+            wordBasedSuggestions: 'off',
             parameterHints: { enabled: true }
         });
         this.editor.addCommand(CtrlCmd | KeyS, this.handleSave.bind(this));
