@@ -1,20 +1,25 @@
 package io.intino.ls.codeinsight.completion;
 
+import io.intino.tara.Language;
 import io.intino.tara.language.grammar.TaraGrammar;
 import io.intino.tara.model.ElementContainer;
 import io.intino.tara.model.Level;
 import io.intino.tara.model.Mogram;
 import io.intino.tara.processors.Resolver;
 import org.eclipse.lsp4j.CompletionItem;
-import org.eclipse.lsp4j.CompletionItemKind;
 
 import java.util.List;
 
 import static io.intino.ls.codeinsight.completion.CompletionProvider.create;
-import static io.intino.ls.codeinsight.completion.CompletionService.TARA_FAKE_TOKEN;
 import static org.eclipse.lsp4j.CompletionItemKind.Keyword;
 
 public class BodyCompletionProvider implements CompletionProvider {
+	private final Language language;
+
+	public BodyCompletionProvider(Language language) {
+		this.language = language;
+	}
+
 	@Override
 	public void addCompletions(CompletionContext context, List<CompletionItem> result) {
 		if (!(context.ruleOnPosition() instanceof TaraGrammar.MetaidentifierContext)) return;
@@ -23,8 +28,9 @@ public class BodyCompletionProvider implements CompletionProvider {
 		ElementContainer container = (ElementContainer) m.container();
 		new Resolver(context.language()).resolve(container);
 		result.addAll(utils.collectAllowedComponents(container));
-		result.addAll(utils.collectBodyParameters(m));
-		if (m.level() != Level.M1) addKeywords(result);
+		if (container instanceof Mogram mn) result.addAll(utils.collectBodyProperties(mn));
+		if (m.level() != null && m.level() != Level.M1 || m.level() == null && ((Mogram) m.container()).level() != Level.M1)
+			addKeywords(result);
 	}
 
 	private void addKeywords(List<CompletionItem> resultSet) {

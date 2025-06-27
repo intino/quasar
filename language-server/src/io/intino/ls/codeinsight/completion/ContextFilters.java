@@ -10,6 +10,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.function.Predicate;
 
+import static io.intino.ls.codeinsight.completion.TreeUtils.isIn;
 import static io.intino.tara.language.grammar.TaraGrammar.IDENTIFIER;
 
 
@@ -125,7 +126,7 @@ class ContextFilters {
 			ParserRuleContext signature = rule.getParent();
 			if (signature == null) return false;
 			if (rule instanceof TaraGrammar.MetaidentifierContext && !afterAs.test(context) && !inAnnotations(rule)) {
-				return !TreeUtils.isIn(rule, BodyContext.class) &&
+				return !isIn(rule, BodyContext.class) &&
 						(previousNewLine(signature.getParent()) || previousNewLineIndent(rule));
 			}
 			return false;
@@ -140,6 +141,7 @@ class ContextFilters {
 		@Override
 		public boolean test(CompletionContext context) {
 			return acceptableParent(context.tokenOnPosition(), context.ruleOnPosition()) &&
+					isIn(context.ruleOnPosition(), TaraGrammar.FacetsContext.class)&&
 					!(facet(context.ruleOnPosition()) && TreeUtils.getMogramContainerOf(context.ruleOnPosition()) == null);
 		}
 
